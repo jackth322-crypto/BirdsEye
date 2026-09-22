@@ -51,6 +51,7 @@
       --warn-bg: #451a03;
       --warn-bd: #92400e;
       --gold: #fbbf24;
+      --gold-ink: #fbbf24;
       --gold-bd: rgba(251,191,36,.65);
       --cool: #93c5fd;
       --lock: #57534e;
@@ -113,8 +114,9 @@
       --warn: #c2410c;
       --warn-bg: #fff7ed;
       --warn-bd: #fdba74;
-      --gold: #f59e0b;
-      --gold-bd: #d97706;
+      --gold: #d97706;
+      --gold-ink: #92400e;
+      --gold-bd: #b45309;
       --cool: #1d4ed8;
       --lock: #a8a29e;
       --scroll-track: #f5f5f4;
@@ -308,6 +310,365 @@
     }
     .icon-btn svg { width: 18px; height: 18px; display: block; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .icon-btn:hover { color: var(--em3); border-color: var(--em-dim); }
+    .ach-btn { position: relative; width: auto; padding: 0 8px 0 6px; gap: 5px; }
+    .ach-btn .ach-count {
+      font-family: ui-monospace, monospace; font-size: 11px; font-weight: 800;
+      color: var(--gold-ink); line-height: 1; min-width: 0.8em;
+    }
+    .ach-btn .ach-count.zero { color: var(--muted-2); }
+    .ach-recent { padding: 10px 0 8px; border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+    .ach-recent-h {
+      font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--muted-2); padding: 0 2px 8px;
+    }
+    .ach-feature {
+      position: relative; min-width: 0;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--em) 12%, var(--photo)) 0%, var(--photo) 62%);
+      border: 1px solid color-mix(in srgb, var(--em) 40%, var(--line));
+      border-radius: 16px; padding: 12px 12px 10px; color: var(--text); text-align: left;
+    }
+    .ach-feature.max {
+      background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 16%, var(--photo)) 0%, var(--photo) 62%);
+      border-color: var(--gold-bd);
+    }
+    .ach-recent .ach-feature {
+      height: 12.6rem;
+      display: flex; flex-direction: column;
+    }
+    .ach-pager {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-top: 8px;
+    }
+    .ach-feature-nav {
+      width: 28px; height: 28px; border-radius: 99px; flex: none;
+      border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+      font-size: 16px; font-weight: 700; line-height: 1;
+    }
+    .ach-feature-nav:disabled { opacity: .3; }
+    .ach-feature-top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; min-height: 1.4em; }
+    .ach-feature-top b {
+      font-size: 16px; line-height: 1.2;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ach-feature .ach-pips { margin-top: 0; }
+    .ach-feature .ach-pip { height: 14px; border-radius: 7px; }
+    .ach-blurb {
+      margin-top: 4px; font-size: 11px; color: var(--muted); font-weight: 600; line-height: 1.3;
+    }
+    .ach-feature .ach-blurb {
+      min-height: 2.6em;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .ach-row .ach-blurb { margin: 2px 0 4px; min-height: 0; display: block; -webkit-line-clamp: unset; }
+    .ach-feature-sub { margin-top: 4px; font-size: 12px; color: var(--muted); font-weight: 650; min-height: 1.35em; }
+    .ach-feature-track { margin-top: 6px; min-height: 2.35rem; display: flex; flex-direction: column; justify-content: flex-end; }
+    .ach-feature-foot {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      min-height: 1.35em; margin-top: auto; padding-top: 8px;
+    }
+    .ach-feature-meta { margin-top: 0; font-size: 10px; color: var(--muted-2); font-weight: 700; }
+    .ach-dots { display: flex; justify-content: center; align-items: center; gap: 5px; margin: 0; }
+    .ach-dots i {
+      width: 6px; height: 6px; border-radius: 99px; background: var(--line-2); display: block;
+    }
+    .ach-dots i.on { width: 14px; background: var(--em3); }
+    .ach-note {
+      display: none; position: fixed; right: 12px; bottom: 72px; z-index: 7100;
+      max-width: min(20rem, calc(100% - 24px));
+      background: var(--glass-96); border: 1px solid var(--gold-bd);
+      border-radius: 14px; padding: 10px 12px; box-shadow: var(--shadow);
+      color: var(--text); text-align: left; cursor: pointer;
+    }
+    .ach-note.on { display: block; }
+    .ach-note b { display: block; color: var(--gold-ink); font-size: 12px; margin-bottom: 2px; }
+    .ach-note span { display: block; font-size: 12px; color: var(--text-2); font-weight: 650; }
+    .ach-pop {
+      display: none; position: fixed; inset: 0; z-index: 7200;
+      background: rgba(0,0,0,.58); padding: 20px;
+      align-items: center; justify-content: center;
+    }
+    .ach-pop.on { display: flex; }
+    .ach-pop-stage { width: min(26rem, 100%); position: relative; }
+    .ach-pop-fx { position: relative; }
+    .ach-pop-fx .ach-spark {
+      position: absolute; width: 6px; height: 6px; border-radius: 50%;
+      pointer-events: none; z-index: 3;
+      background: var(--gold);
+      box-shadow: 0 0 8px color-mix(in srgb, var(--gold) 80%, transparent);
+      opacity: 0;
+      animation-name: ach-spark-rise;
+      animation-timing-function: ease-out;
+      animation-iteration-count: infinite;
+    }
+    .ach-pop-fx .ach-spark.em {
+      background: var(--em3);
+      box-shadow: 0 0 8px color-mix(in srgb, var(--em3) 75%, transparent);
+    }
+    @keyframes ach-spark-rise {
+      0% { transform: translate(0, 6px) scale(.35); opacity: 0; }
+      12% { opacity: .95; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(.15); opacity: 0; }
+    }
+    .ach-pop .ach-feature {
+      --ach-pulse: var(--em3);
+      position: relative;
+      border-color: color-mix(in srgb, var(--ach-pulse) 48%, var(--line));
+      box-shadow: var(--shadow), 0 0 14px color-mix(in srgb, var(--ach-pulse) 16%, transparent);
+      cursor: pointer;
+      height: 16.8rem; display: flex; flex-direction: column;
+      overflow: hidden;
+      animation: ach-card-glow 3.4s ease-in-out infinite;
+    }
+    .ach-pop .ach-feature.max,
+    .ach-pop .ach-feature.level {
+      --ach-pulse: var(--gold);
+    }
+    @keyframes ach-card-glow {
+      0%, 100% {
+        border-color: color-mix(in srgb, var(--ach-pulse) 28%, var(--line));
+        box-shadow: var(--shadow), 0 0 8px color-mix(in srgb, var(--ach-pulse) 8%, transparent);
+      }
+      50% {
+        border-color: color-mix(in srgb, var(--ach-pulse) 88%, var(--line));
+        box-shadow: var(--shadow), 0 0 20px color-mix(in srgb, var(--ach-pulse) 28%, transparent);
+      }
+    }
+    .ach-pop .ach-feature .ach-pip { height: 16px; }
+    .ach-feature.level {
+      background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 22%, var(--photo)) 0%, var(--photo) 68%);
+      border-color: var(--gold-bd);
+    }
+    .ach-feature.tierup,
+    .ach-feature.levelup {
+      animation: ach-level-burst 1.15s ease;
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent), 0 0 28px color-mix(in srgb, var(--gold) 40%, transparent);
+    }
+    .ach-lvl-burst {
+      display: inline; margin: 0 6px 0 0;
+      font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--gold-ink);
+      animation: ach-level-pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes ach-level-burst {
+      0% { transform: scale(.9); filter: brightness(1.55); }
+      35% { transform: scale(1.045); }
+      100% { transform: scale(1); filter: none; }
+    }
+    @keyframes ach-level-pulse {
+      0%, 100% { opacity: .65; }
+      50% { opacity: 1; }
+    }
+    #ach-modal .sheet { max-width: 36rem; }
+    .ach-head { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .ach-head strong { font-size: 15px; }
+    .ach-lvl {
+      margin-top: 6px; display: flex; flex-direction: column; gap: 4px;
+    }
+    .ach-lvl-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+    .ach-lvl-top b { font-size: 12px; color: var(--gold-ink); }
+    .ach-lvl .ach-bar { margin-top: 0; height: 6px; }
+    .ach-lvl .ach-bar > i {
+      background: linear-gradient(90deg, #d97706, var(--gold));
+      box-shadow: none;
+    }
+    .ach-xp {
+      font-family: ui-monospace, monospace; font-size: 9px; font-weight: 800;
+      color: var(--gold-ink); letter-spacing: .02em;
+    }
+    .ach-xp-parts {
+      display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px;
+      min-height: 1.7em;
+    }
+    .ach-xp-chip {
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      height: 22px; min-width: 6.2em; box-sizing: border-box;
+      padding: 0 8px; border-radius: 99px;
+      font-size: 10px; font-weight: 800; letter-spacing: .02em;
+      border: 1px solid color-mix(in srgb, var(--gold) 40%, var(--line));
+      background: color-mix(in srgb, var(--gold) 16%, var(--panel));
+      color: var(--gold-ink);
+    }
+    .ach-xp-chip.prog {
+      border-color: color-mix(in srgb, var(--em3) 40%, var(--line));
+      background: color-mix(in srgb, var(--em3) 16%, var(--panel));
+      color: var(--em3);
+    }
+    .ach-xp-chip.field {
+      border-color: color-mix(in srgb, var(--text-2) 28%, var(--line));
+      background: var(--panel-2);
+      color: var(--text);
+    }
+    .ach-level-bar { position: relative; overflow: hidden; }
+    .ach-level-bar > i {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      transition: none;
+    }
+    .ach-level-bar > i.old {
+      background: linear-gradient(90deg, var(--em), var(--em3));
+      box-shadow: none;
+      z-index: 2;
+    }
+    .ach-level-bar > i.gain {
+      background:
+        repeating-linear-gradient(135deg,
+          color-mix(in srgb, var(--em3) 92%, white) 0 5px,
+          color-mix(in srgb, var(--em) 78%, #06281c) 5px 10px);
+      box-shadow: none;
+      z-index: 1;
+    }
+    .ach-tools { display: flex; gap: 8px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+    .ach-tools input { flex: 1; padding: 6px 8px; font-size: 12px; }
+    .ach-sum { font-size: 11px; color: var(--muted); font-weight: 650; white-space: nowrap; }
+    .ach-cat { border-bottom: 1px solid var(--line); }
+    .ach-cat > button.ach-cat-btn {
+      width: 100%; display: flex; align-items: center; gap: 8px;
+      background: none; border: 0; color: var(--text); text-align: left;
+      padding: 10px 12px; font-size: 13px; font-weight: 750;
+    }
+    .ach-cat > button.ach-cat-btn:hover { background: var(--panel-2); }
+    .ach-cat .ach-cat-meta { margin-left: auto; font-size: 11px; color: var(--muted); font-weight: 650; font-family: ui-monospace, monospace; }
+    .ach-cat .ach-caret { color: var(--muted-2); font-size: 10px; width: 12px; }
+    .ach-cat-body { display: none; padding: 0 10px 10px; }
+    .ach-cat.open .ach-cat-body { display: block; }
+    .ach-row {
+      background: var(--photo); border: 1px solid var(--line); border-radius: 12px;
+      padding: 10px 10px 9px; margin-bottom: 7px;
+    }
+    .ach-row.play {
+      border-color: color-mix(in srgb, var(--em) 45%, var(--line));
+      background: linear-gradient(180deg, color-mix(in srgb, var(--em) 10%, var(--photo)) 0%, var(--photo) 70%);
+    }
+    .ach-row.got {
+      border-color: var(--gold-bd);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 16%, var(--photo)) 0%, var(--photo) 72%);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 28%, transparent), 0 6px 16px color-mix(in srgb, var(--gold) 12%, transparent);
+    }
+    .ach-row.lock { opacity: .78; }
+    .ach-row-top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+    .ach-row-top b { font-size: 13px; letter-spacing: .01em; }
+    .ach-row .ach-mark { color: var(--gold-ink); font-size: 14px; flex: none; }
+    .ach-bar { height: 7px; border-radius: 99px; background: var(--line); margin-top: 7px; overflow: hidden; }
+    .ach-bar > i {
+      display: block; height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--em), var(--em3));
+      box-shadow: 0 0 10px color-mix(in srgb, var(--em3) 55%, transparent);
+    }
+    .ach-row.got .ach-bar > i {
+      background: linear-gradient(90deg, #d97706, var(--gold));
+      box-shadow: 0 0 12px color-mix(in srgb, var(--gold) 55%, transparent);
+    }
+    .ach-medal {
+      display: inline-flex; align-items: baseline; gap: 5px;
+      flex: none; white-space: nowrap; line-height: 1;
+      border-radius: 999px; padding: 4px 8px;
+      background: var(--panel-2); border: 1px solid var(--line-2);
+    }
+    .ach-medal strong {
+      font-size: 12px; font-weight: 800; font-family: ui-monospace, monospace;
+      color: var(--text);
+    }
+    .ach-medal span {
+      font-size: 9px; font-weight: 800; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--muted-2);
+    }
+    .ach-medal.live { border-color: var(--em-dim); background: var(--em-bg); }
+    .ach-medal.live strong, .ach-medal.live span { color: var(--em3); }
+    .ach-medal.max { border-color: var(--gold-bd); background: color-mix(in srgb, var(--gold) 16%, var(--photo)); }
+    .ach-medal.max strong, .ach-medal.max span { color: var(--gold-ink); }
+    .ach-pool { display: block; font-size: 9px; font-weight: 700; color: var(--muted-2); }
+    .ach-pips {
+      display: grid;
+      grid-template-columns: repeat(var(--ach-n, 6), minmax(0, 1fr));
+      gap: 5px;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .ach-pip-cell { min-width: 0; width: 100%; text-align: center; }
+    .ach-pip {
+      width: 100%; height: 10px; border-radius: 5px;
+      background: var(--line-2); overflow: hidden;
+    }
+    .ach-pip > i { display: block; height: 100%; width: 0; }
+    .ach-pip.got > i {
+      width: 100%;
+      background: linear-gradient(90deg, #d97706, var(--gold));
+    }
+    .ach-pip.now > i {
+      background: linear-gradient(90deg, var(--em), var(--em3));
+    }
+    .ach-pip-cell em {
+      display: block; margin-top: 4px;
+      font-style: normal; font-size: 8px; font-weight: 800;
+      letter-spacing: 0; line-height: 1;
+      color: var(--muted-2); font-family: ui-monospace, monospace;
+      white-space: nowrap; overflow: hidden;
+    }
+    .ach-pip-cell.got em { color: var(--gold-ink); }
+    .ach-pip-cell.now em { color: var(--em3); }
+    .ach-row { cursor: default; }
+    .ach-row-hit { cursor: pointer; }
+    .ach-row-side { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; text-align: right; flex: none; }
+    .ach-tiers { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+    .ach-row.open .ach-tiers { display: block; }
+    .ach-tier-line {
+      display: flex; align-items: center; gap: 8px; padding: 5px 0;
+      font-size: 11px;
+    }
+    .ach-tier-line b { flex: none; min-width: 3.2em; font-family: ui-monospace, monospace; font-size: 10px; }
+    .ach-tier-line .ach-bar { flex: 1; margin-top: 0; height: 8px; background: var(--line-2); }
+    .ach-tier-line .ach-bar > i {
+      background: var(--lock);
+      box-shadow: none;
+    }
+    .ach-tier-line.got b { color: var(--gold-ink); }
+    .ach-tier-line.got .ach-bar > i {
+      background: linear-gradient(90deg, #d97706, var(--gold));
+      box-shadow: 0 0 8px color-mix(in srgb, var(--gold) 45%, transparent);
+    }
+    .ach-tier-line.now b { color: var(--em3); }
+    .ach-tier-line.now .ach-bar > i {
+      background: linear-gradient(90deg, var(--em), var(--em3));
+      box-shadow: 0 0 8px color-mix(in srgb, var(--em3) 45%, transparent);
+    }
+    .ach-row.got .ach-tier-line .ach-bar > i {
+      background: linear-gradient(90deg, #d97706, var(--gold));
+    }
+    .ach-row.got .ach-tier-line.now .ach-bar > i,
+    .ach-row.got .ach-tier-line:not(.got) .ach-bar > i {
+      background: var(--lock);
+    }
+    .ach-row.got .ach-tier-line.got .ach-bar > i {
+      background: linear-gradient(90deg, #d97706, var(--gold));
+    }
+    .ach-birds { margin-top: 10px; }
+    .ach-birds-h {
+      font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+      color: var(--muted-2); margin: 8px 0 4px;
+    }
+    .ach-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+    .ach-chip {
+      border-radius: 999px; padding: 3px 8px; font-size: 11px; font-weight: 650;
+      max-width: 100%;
+    }
+    .ach-chip.got {
+      background: var(--em-bg); border: 1px solid var(--em-dim); color: var(--em3);
+    }
+    .ach-chip.rec {
+      background: var(--chip-s-bg); border: 1px solid var(--chip-s-bd); color: var(--chip-s-fg);
+    }
+    .ach-chip-more {
+      background: none; border: 1px dashed var(--line-2); color: var(--muted);
+      border-radius: 999px; padding: 3px 8px; font-size: 11px;
+    }
+    .ach-state { margin-bottom: 8px; }
+    .ach-state > button {
+      width: 100%; display: flex; align-items: center; gap: 8px;
+      background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px;
+      color: var(--text); padding: 7px 8px; font-size: 12px; font-weight: 700; text-align: left;
+    }
+    .ach-state > button .ach-cat-meta { margin-left: auto; font-family: ui-monospace, monospace; font-size: 11px; color: var(--muted); font-weight: 650; }
+    .ach-state-body { display: none; padding: 6px 0 2px; }
+    .ach-state.open .ach-state-body { display: block; }
     .lock-btn svg { width: 16px; height: 16px; display: block; }
     .lock-btn.on { color: var(--em3); }
     .log-here-pop { min-width: 160px; text-align: left; }
@@ -483,6 +844,94 @@
     .row-card { background: var(--photo); border: 1px solid var(--line); border-radius: 10px; padding: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; text-align: left; }
     .row-card.hl { border-color: var(--em3); box-shadow: 0 0 0 1px var(--hl); }
     .row-card > div { text-align: left; flex: 1; }
+    .tgt-ribbon { align-items: start; }
+    .tgt-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .tgt-pill {
+      font-size: 10px; font-weight: 800; letter-spacing: .02em;
+      padding: 3px 8px; border-radius: 999px;
+      border: 1px solid var(--line-2); color: var(--muted); background: var(--panel-2);
+    }
+    .tgt-pill.go { color: var(--em3); border-color: var(--em-dim); background: var(--em-bg); }
+    .tgt-pill.pulse { color: var(--gold); border-color: var(--gold-bd); background: color-mix(in srgb, var(--gold) 14%, var(--panel)); }
+    .tgt-pill.near { color: var(--cool); border-color: var(--chip-w-bd); background: var(--chip-w-bg); }
+    .tgt-help {
+      width: 28px; height: 28px; padding: 0; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800;
+    }
+    .tgt-lenses { margin-top: 10px; }
+    .tgt-lenses .seg { width: 100%; flex-wrap: wrap; }
+    .tgt-lenses .seg button { flex: 1; min-width: 4.4em; }
+    .tgt-tools { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .tgt-tools .two { gap: 8px; }
+    .tgt-tools .mini { max-width: none; width: 100%; }
+    .tgt-places { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; margin-top: 8px; }
+    .tgt-place {
+      flex: none; width: 168px; text-align: left;
+      background: var(--photo); border: 1px solid var(--line); border-radius: 12px;
+      padding: 8px 10px;
+    }
+    .tgt-place b { display: block; font-size: 12px; line-height: 1.25; }
+    .tgt-card { flex-direction: column; align-items: stretch; gap: 0; }
+    .tgt-card > .tgt-row,
+    .tgt-card > .tgt-expand { flex: none; }
+    .tgt-row { display: flex; align-items: center; gap: 8px; width: 100%; cursor: pointer; }
+    .tgt-row > div { flex: 1; min-width: 0; }
+    .tgt-expand {
+      display: none;
+      width: 100%;
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+    .tgt-card.open { border-color: var(--em3); box-shadow: 0 0 0 1px var(--hl); }
+    .tgt-card.open .tgt-expand { display: block; }
+    .tgt-thumb {
+      width: 52px; height: 52px; border-radius: 10px; object-fit: cover;
+      background: var(--panel-2); border: 1px solid var(--line-2); flex: none;
+    }
+    .tgt-thumb.empty { display: flex; align-items: center; justify-content: center; color: var(--lock); font-size: 10px; font-weight: 800; }
+    .tgt-name { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .tgt-name b { font-size: 13px; }
+    .tgt-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .chip.pulse { background: color-mix(in srgb, var(--gold) 16%, var(--panel)); color: var(--gold); border-color: var(--gold-bd); }
+    .chip.rare { background: var(--chip-m-bg); color: var(--chip-m-fg); border-color: var(--chip-m-bd); }
+    .chip.go { background: var(--em-bg); color: var(--em3); border-color: var(--em-dim); }
+    .chip.near { background: var(--chip-w-bg); color: var(--chip-w-fg); border-color: var(--chip-w-bd); }
+    .chip.leave { background: var(--warn-bg); color: var(--warn); border-color: var(--warn-bd); }
+    .chip.off { background: var(--panel-2); color: var(--muted-2); }
+    .tgt-hero { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; background: var(--photo); border: 1px solid var(--line); }
+    .tgt-spark-wide { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; align-items: end; height: 52px; margin: 10px 0 4px; }
+    .tgt-spark-wide span { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
+    .tgt-spark-wide i { width: 100%; max-width: 10px; border-radius: 2px; display: block; }
+    .tgt-spark-wide em { font-size: 9px; font-style: normal; color: var(--muted-2); font-weight: 700; }
+    .tgt-spark-wide span.now em { color: var(--cool); }
+    .tgt-brief-actions { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 4px; }
+    .tgt-brief-actions a, .tgt-brief-actions button {
+      display: flex; align-items: center; justify-content: center;
+      padding: 5px 6px; border-radius: 7px; font-size: 10px; font-weight: 750;
+      text-decoration: none; text-align: center; line-height: 1.2;
+    }
+    .tgt-brief-actions a { background: var(--input); border: 1px solid var(--line-2); color: var(--text-2); }
+    .tgt-report {
+      display: block; width: 100%;
+      background: none; border: 0; border-bottom: 1px solid var(--line);
+      padding: 5px 0; margin: 0; text-align: left; color: inherit; cursor: pointer;
+    }
+    .tgt-report b { display: block; font-size: 11px; font-weight: 650; line-height: 1.25; }
+    .tgt-report .muted { font-size: 10px; margin-top: 1px; }
+    .tgt-report:last-child { border-bottom: 0; }
+    .tgt-report:hover b { color: var(--em3); }
+    .tgt-pager {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin: 10px 0 4px;
+    }
+    .tgt-pager button {
+      background: var(--input); border: 1px solid var(--line-2); color: var(--text-2);
+      border-radius: 8px; padding: 6px 10px; font-size: 11px; font-weight: 750;
+    }
+    .tgt-pager button:disabled { opacity: .4; }
+    .tgt-pager span { font-size: 11px; color: var(--muted); font-weight: 650; }
     .check-progress { padding: 8px 12px 4px; border-bottom: 1px solid var(--line); }
     .check-score { font-size: 13px; font-weight: 700; color: var(--text-3); margin: 0 0 4px; }
     .check-pill { background: var(--line); border: 1px solid var(--line-2); color: var(--text-2); border-radius: 999px; padding: 3px 8px; font-size: 10px; cursor: pointer; }
@@ -769,6 +1218,16 @@
       </div>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
+      <button class="icon-btn ach-btn" type="button" onclick="openAchModal()" title="Achievements" aria-label="Achievements">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 4h8v3a4 4 0 0 1-8 0V4z"/>
+          <path d="M8 5H5a3 3 0 0 0 3 5M16 5h3a3 3 0 0 1-3 5"/>
+          <path d="M12 12v3"/>
+          <path d="M8 21h8"/>
+          <path d="M9 21v-4a3 3 0 0 1 6 0v4"/>
+        </svg>
+        <span class="ach-count zero" id="ach-badge">0</span>
+      </button>
       <button class="icon-btn" type="button" onclick="openKeyModal()" title="Settings" aria-label="Settings">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="12" r="3"/>
@@ -965,31 +1424,72 @@
 
     <section id="view-radar" class="view">
       <div class="scroll">
-        <div class="hud-label">Phenology Occurrence Radar</div>
-        <h2 style="margin:4px 0 0;font-size:16px">Unlogged Targets</h2>
-        <p class="hint" id="radar-explainer">Statewide list uses your saved seasonality file. “This map / Near me / County” uses live eBird recent reports in that area, then drops species already on your life list. Bars are still the statewide monthly shape when we have one.</p>
-        <div class="two" style="margin-top:10px">
-          <select id="radar-scope" class="mini" style="max-width:none" onchange="onRadarScopeChange()">
-            <option value="state">Statewide</option>
-            <option value="map">This map view</option>
-            <option value="near">Near me</option>
-            <option value="county">This county</option>
-          </select>
-          <select id="radar-sort" class="mini" style="max-width:none" onchange="renderRadar()">
-            <option value="prob">This month (high → low)</option>
-            <option value="probAsc">This month (low → high)</option>
-            <option value="year">Year-round total (high → low)</option>
-            <option value="yearAsc">Year-round total (low → high)</option>
-            <option value="az">Species A–Z</option>
+        <div class="list-head">
+          <div class="ribbon tgt-ribbon">
+            <div>
+              <div class="ribbon-kicker" id="radar-kicker">Targets</div>
+              <div class="ribbon-num" id="radar-count-num">0</div>
+              <div class="ribbon-meta" id="radar-scoreline">Unlogged this month</div>
+              <div class="tgt-pills" id="radar-pills"></div>
+            </div>
+            <div class="ribbon-side">
+              <button type="button" class="ghost tgt-help" onclick="toggleRadarHelp()" title="How Targets works" aria-label="How Targets works">?</button>
+            </div>
+          </div>
+        </div>
+        <p class="hint" id="radar-explainer" hidden>Statewide uses your saved seasonality file. This map / Near me / County pulls live eBird reports in that area, then drops birds already on your list. Bars stay the statewide monthly shape. In season is the default chase list; Nearby is birds actually reported in the current scope. Pulse uses the same rarity ranks as Hunt.</p>
+        <div class="tgt-lenses">
+          <div class="seg" id="radar-lenses">
+            <button type="button" id="btn-lens-season" class="on" onclick="setRadarLens('season')">In season</button>
+            <button type="button" id="btn-lens-nearby" onclick="setRadarLens('nearby')">Nearby</button>
+            <button type="button" id="btn-lens-pulse" onclick="setRadarLens('pulse')">Pulse</button>
+            <button type="button" id="btn-lens-leaving" onclick="setRadarLens('leaving')">Moving</button>
+            <button type="button" id="btn-lens-all" onclick="setRadarLens('all')">All</button>
+          </div>
+        </div>
+        <div class="tgt-tools">
+          <div class="two">
+            <select id="radar-scope" class="mini" onchange="onRadarScopeChange()">
+              <option value="state">Statewide</option>
+              <option value="map">This map view</option>
+              <option value="near">Near me</option>
+              <option value="county">This county</option>
+            </select>
+            <select id="radar-sort" class="mini" onchange="renderRadar()">
+              <option value="chase">Chase score</option>
+              <option value="prob">This month (high → low)</option>
+              <option value="probAsc">This month (low → high)</option>
+              <option value="year">Year-round total (high → low)</option>
+              <option value="yearAsc">Year-round total (low → high)</option>
+              <option value="az">Species A–Z</option>
+            </select>
+          </div>
+          <input type="text" id="radar-search" placeholder="Search species…" oninput="renderRadar()" />
+          <div class="two">
+            <select id="radar-status" class="mini" onchange="renderRadar()">
+              <option value="all">All seasons</option>
+              <option value="Year-round Resident">Year-round</option>
+              <option value="Spring/Fall Migrant">Migrant</option>
+              <option value="Summer Breeding">Summer</option>
+              <option value="Winter Visitor">Winter</option>
+              <option value="Seasonal">Seasonal</option>
+            </select>
+            <select id="radar-type" class="mini" onchange="renderRadar()">
+              <option value="all">All types</option>
+            </select>
+          </div>
+          <select id="radar-rarity" class="mini" onchange="renderRadar()">
+            <option value="all">All rarity</option>
+            <option value="1">Common</option>
+            <option value="2">Uncommon</option>
+            <option value="3">Rare</option>
+            <option value="4">Pulse</option>
           </select>
         </div>
-        <select id="radar-shown" class="mini" style="max-width:none;margin-top:8px" onchange="renderRadar()">
-          <option value="all">All unlogged</option>
-          <option value="month">Only recorded this month</option>
-          <option value="nearby">Only nearby reports</option>
-        </select>
         <p class="hint" id="radar-count" style="margin:8px 0 0"></p>
-        <div id="radar-list" style="margin-top:12px"></div>
+        <div id="radar-places"></div>
+        <div id="radar-list" style="margin-top:10px"></div>
+        <div id="radar-pager"></div>
         <button type="button" class="to-top" aria-label="Back to top">↑</button>
       </div>
     </section>
@@ -1247,6 +1747,28 @@
     </div>
   </div>
 
+  <div id="ach-modal" class="modal">
+    <div class="sheet">
+      <div class="sheet-h">
+        <div class="ach-head">
+          <strong id="ach-title">Achievements</strong>
+          <span class="muted" id="ach-mode-hint">State mode · switch in Settings</span>
+          <div class="ach-lvl" id="ach-lvl"></div>
+        </div>
+        <button class="x" onclick="closeAchModal()">✕</button>
+      </div>
+      <div class="ach-tools">
+        <input type="text" id="ach-search" placeholder="Search achievements" oninput="renderAchievements()" />
+        <span class="ach-sum" id="ach-sum">0 earned</span>
+      </div>
+      <div class="sheet-b" id="ach-list"></div>
+    </div>
+  </div>
+  <button type="button" class="ach-note" id="ach-note" onclick="openAchNote()"></button>
+  <div class="ach-pop" id="ach-pop" onclick="if(event.target===this) dismissAchPop()">
+    <div class="ach-pop-stage" id="ach-pop-stage"></div>
+  </div>
+
   <div id="key-modal" class="modal">
     <div class="sheet">
       <div class="sheet-h"><strong>Settings</strong><button class="x" onclick="closeKeyModal()">✕</button></div>
@@ -1378,6 +1900,13 @@
     let radiusCircle = null;
     let mapMode = 'photos';
     let radarScope = 'state';
+    let radarLens = 'season';
+    let radarBriefCode = '';
+    let radarPage = 0;
+    let radarPageSig = '';
+    const RADAR_PAGE = 30;
+    let targetObsCache = {};
+    let targetObsPending = {};
     let activeCounty = '';
     let activeCountyCode = '';
     let huntCache = { obs: [], hotspots: [], label: '' };
@@ -1639,7 +2168,7 @@ function exportLogs() {
             try { localStorage.setItem('avian_saved_places', JSON.stringify(savedPlaces.slice(0, 20))); } catch (e) {}
             loadSavedPlaces();
           }
-          refreshUI();
+          refreshUI({ toast: true });
           renderLifeList();
           renderGallery();
           renderRadar();
@@ -1741,7 +2270,7 @@ function exportLogs() {
         clearTimeout(huntTimer);
       });
       mapInstance.on('popupopen', () => { huntCardOpen = true; });
-      mapInstance.on('popupclose', () => { huntCardOpen = false; });
+      mapInstance.on('popupclose', () => { huntCardOpen = false; clearChitFocus(); });
       mapInstance.on('moveend', () => {
         clearTimeout(moveTimer);
         moveTimer = setTimeout(() => {
@@ -2000,6 +2529,9 @@ function exportLogs() {
       const modal = document.getElementById('region-species-modal');
       if (modal && modal.classList.contains('on')) renderChecklistViews();
       if (mapMode === 'hunt') renderHuntMap();
+      if (typeof updateAchBadge === 'function') updateAchBadge();
+      const ach = document.getElementById('ach-modal');
+      if (ach && ach.classList.contains('on') && typeof syncAchievements === 'function') syncAchievements({ toast: false });
     }
 
     function toggleStateLock() {
@@ -2035,14 +2567,24 @@ function exportLogs() {
       return out.length ? out : [marker];
     }
 
+    let chitFocusGen = 0;
     function clearChitFocus() {
-      document.querySelectorAll('.chit-focus').forEach(el => el.classList.remove('chit-focus'));
+      chitFocusGen++;
+      document.querySelectorAll('.chit-focus').forEach(el => {
+        el.classList.remove('chit-focus');
+        el.style.zIndex = '';
+      });
     }
 
     function highlightCycleMarker(marker) {
-      clearChitFocus();
+      const token = ++chitFocusGen;
+      document.querySelectorAll('.chit-focus').forEach(el => {
+        el.classList.remove('chit-focus');
+        el.style.zIndex = '';
+      });
       if (!marker) return;
       const paint = function () {
+        if (token !== chitFocusGen) return;
         const el = marker.getElement && marker.getElement();
         if (!el) return;
         el.classList.add('chit-focus');
@@ -2192,9 +2734,11 @@ function exportLogs() {
       return s / m.length;
     }
 
-    function rarityRank(code, stateName) {
+    function rarityRankAt(code, stateName, monthIdx) {
       const sp = speciesFromState(code, stateName);
-      const now = monthProb(sp);
+      const monthly = sp.monthly || [];
+      const mi = monthIdx == null ? CURRENT_MONTH : monthIdx;
+      const now = monthly[mi] || 0;
       const peak = yearPeak(sp);
       const avg = yearAvg(sp);
       if (now >= 0.35 && avg <= 0.22) return 4;
@@ -2202,6 +2746,18 @@ function exportLogs() {
       if (avg >= 0.4) return 1;
       if (avg >= 0.18) return 2;
       return 3;
+    }
+    function rarityStable(code, stateName) {
+      const sp = speciesFromState(code, stateName);
+      const peak = yearPeak(sp);
+      const avg = yearAvg(sp);
+      if (peak < 0.22 || avg < 0.12) return 3;
+      if (avg >= 0.4) return 1;
+      if (avg >= 0.18) return 2;
+      return 3;
+    }
+    function rarityRank(code, stateName) {
+      return rarityRankAt(code, stateName, CURRENT_MONTH);
     }
 
     function huntColor(code, stateName) {
@@ -2563,6 +3119,7 @@ function exportLogs() {
         if (mapMode === 'hunt') scheduleHunt();
       }
       if (heatOn) loadHeatMonth(heatMonth);
+      if (radarScope === 'map' && radarBriefCode) refreshOpenTargetReports();
     }
 
     function updateRadiusButton() {
@@ -2589,6 +3146,7 @@ function exportLogs() {
       drawRadiusCircle();
       loadHuntData();
       if (heatOn) loadHeatMonth(heatMonth);
+      if (radarScope === 'map' && radarBriefCode) refreshOpenTargetReports();
     }
 
     let huntBusy = false;
@@ -4593,73 +5151,627 @@ function exportLogs() {
       }
     }
 
+    function peakMonthIndex(sp) {
+      const m = (sp && sp.monthly) || [];
+      let mx = -1, ix = CURRENT_MONTH;
+      for (let i = 0; i < m.length; i++) {
+        if ((m[i] || 0) > mx) { mx = m[i] || 0; ix = i; }
+      }
+      return ix;
+    }
+    function isLeaving(sp) {
+      const m = (sp && sp.monthly) || [];
+      const now = m[CURRENT_MONTH] || 0;
+      const prev = m[(CURRENT_MONTH + 11) % 12] || 0;
+      const next = m[(CURRENT_MONTH + 1) % 12] || 0;
+      return prev >= 0.15 && now < prev && next <= now + 0.02;
+    }
+    function isArriving(sp) {
+      const m = (sp && sp.monthly) || [];
+      const now = m[CURRENT_MONTH] || 0;
+      const prev = m[(CURRENT_MONTH + 11) % 12] || 0;
+      const peak = peakMonthIndex(sp);
+      return now >= 0.12 && now > prev && (peak === CURRENT_MONTH || peak === (CURRENT_MONTH + 1) % 12);
+    }
+    function rarityChip(rank) {
+      if (rank === 4) return '<span class="chip pulse">Pulse</span>';
+      if (rank === 3) return '<span class="chip rare">Rare</span>';
+      if (rank === 2) return '<span class="chip s">Uncommon</span>';
+      return '<span class="chip y">Common</span>';
+    }
+    function reportStamp(when) {
+      if (!when) return '';
+      const s = String(when);
+      if (s.length >= 10) return s.slice(5, 10);
+      return s;
+    }
+    function recencyWeight(when) {
+      if (!when) return 0;
+      const t = Date.parse(String(when).replace(' ', 'T'));
+      if (!isFinite(t)) return 0.25;
+      const days = Math.max(0, (Date.now() - t) / 86400000);
+      if (days <= 1) return 1;
+      if (days <= 3) return 0.75;
+      if (days <= 7) return 0.45;
+      if (days <= 14) return 0.25;
+      return 0.1;
+    }
+    function chaseScore(t) {
+      const prob = t.prob || 0;
+      const r = t.rarity || 1;
+      const rareW = r === 4 ? 2.4 : r === 3 ? 1.75 : r === 2 ? 1.12 : 0.82;
+      const rec = t.reportN ? Math.min(1, 0.35 + recencyWeight(t.when) + Math.min(0.3, t.reportN / 10)) : 0;
+      const peak = peakMonthIndex(t);
+      const peakW = peak === CURRENT_MONTH ? 1.22 : (peak === (CURRENT_MONTH + 1) % 12 ? 1.08 : 1);
+      const bucket = seasonBucket(t);
+      const seasonW = bucket.label === 'Likely' ? 1.18 : bucket.label === 'Possible' ? 1 : 0.42;
+      return (0.28 + prob) * rareW * seasonW * peakW * (1 + 0.7 * rec);
+    }
+    function targetReason(t) {
+      if (t.reportN) return { label: t.when ? ('Seen ' + reportStamp(t.when)) : 'Reported nearby', cls: 'near' };
+      if (isLeaving(t)) return { label: 'Leaving', cls: 'leave' };
+      const peak = peakMonthIndex(t);
+      if (peak === (CURRENT_MONTH + 1) % 12) return { label: 'Peaks ' + MONTH_LABELS[peak], cls: 's' };
+      if (isArriving(t)) return { label: 'Arriving', cls: 's' };
+      const b = seasonBucket(t);
+      if (b.label === 'Likely') return { label: 'Likely now', cls: 'go' };
+      if (b.label === 'Possible') return { label: 'Possible', cls: 's' };
+      return { label: 'Off-season', cls: 'off' };
+    }
+    function targetReasonChip(t) {
+      const why = targetReason(t);
+      if (!why || why.cls === 'pulse' || why.cls === 'rare') return '';
+      return ' <span class="chip ' + why.cls + '">' + why.label + '</span>';
+    }
+    function mapViewGeo() {
+      if (radiusLocked && radiusLock && radiusLock.lat != null && radiusLock.lng != null) {
+        return { lat: Number(radiusLock.lat), lng: Number(radiusLock.lng), dist: Number(radiusLock.dist) || 20, locked: true };
+      }
+      if (mapInstance) {
+        const c = mapInstance.getCenter();
+        return { lat: c.lat, lng: c.lng, dist: mapRadiusKm(), locked: false };
+      }
+      return null;
+    }
+    function targetScopeKey() {
+      if (radarScope === 'county') return 'county:' + (activeCountyCode || activeCounty || '');
+      if (radarScope === 'near') return 'near';
+      if (radarScope === 'map') {
+        const g = mapViewGeo();
+        if (g) return 'map:' + g.lat.toFixed(2) + ',' + g.lng.toFixed(2) + ',' + Math.round(g.dist) + (g.locked ? ':lock' : '');
+        return 'map';
+      }
+      return 'state:' + (STATE_CODES[activeState] || 'US-NC');
+    }
+    function targetCacheKey(code) {
+      return (code || '') + '|' + targetScopeKey();
+    }
+    function targetScopeLabel() {
+      if (radarScope === 'county') return activeCounty || 'this county';
+      if (radarScope === 'near') return 'near me';
+      if (radarScope === 'map') {
+        const g = mapViewGeo();
+        if (g && g.locked) return g.dist + ' km radius';
+        if (g) return 'this map view · ' + g.dist + ' km';
+        return 'this map view';
+      }
+      return activeState || 'statewide';
+    }
+    function reportsForCode(code) {
+      const cached = targetObsCache[targetCacheKey(code)];
+      return (cached || []).slice().sort((a, b) => String(b.obsDt || '').localeCompare(String(a.obsDt || '')));
+    }
+    function syncMapSpeciesFilterUI(code) {
+      currentSpeciesFilter = code || 'all';
+      const on = currentSpeciesFilter !== 'all';
+      const box = document.getElementById('map-species-box');
+      const btn = document.getElementById('map-species-btn');
+      const clear = document.getElementById('map-species-clear');
+      if (box) box.classList.toggle('on', on);
+      if (btn) btn.textContent = on ? taxName(currentSpeciesFilter).comName : 'All Species ▾';
+      if (clear) clear.hidden = !on;
+      const results = document.getElementById('map-species-results');
+      if (results) results.classList.remove('on');
+    }
+    function applySpeciesHuntCache(code, obs) {
+      const rows = obs || [];
+      const spots = [];
+      const seenLoc = new Set();
+      rows.forEach(o => {
+        if (o.lat == null || o.lng == null) return;
+        const id = o.locId || (o.lat + ',' + o.lng);
+        if (seenLoc.has(id)) return;
+        seenLoc.add(id);
+        spots.push({ locId: o.locId, locName: o.locName, lat: o.lat, lng: o.lng, numSpeciesAllTime: '' });
+      });
+      huntCache = {
+        obs: rows,
+        hotspots: spots,
+        label: taxName(code).comName + ' · ' + targetScopeLabel() + ' · last 30d'
+      };
+      huntBack = 30;
+      [3, 7, 30].forEach(d => {
+        const el = document.getElementById('btn-hunt-' + d + 'd');
+        if (el) el.className = d === 30 ? 'on' : '';
+      });
+      syncMapSpeciesFilterUI(code);
+      if (mapMode === 'hunt') renderHuntMap();
+    }
+    async function targetReportEndpoint(code) {
+      if (radarScope === 'county' && activeCountyCode) {
+        return ebirdGet('/data/obs/' + activeCountyCode + '/recent/' + code, { back: '30', maxResults: '100' });
+      }
+      if (radarScope === 'near' || radarScope === 'map') {
+        let lat, lng, dist;
+        if (radarScope === 'near') {
+          try {
+            const pos = await new Promise((resolve, reject) => {
+              if (!navigator.geolocation) reject(new Error('no geo'));
+              navigator.geolocation.getCurrentPosition(p => resolve(p), reject, { enableHighAccuracy: true, timeout: 6000 });
+            });
+            lat = pos.coords.latitude; lng = pos.coords.longitude; dist = 25;
+          } catch (e) {
+            if (mapInstance) {
+              const c = mapInstance.getCenter();
+              lat = c.lat; lng = c.lng; dist = 25;
+            }
+          }
+        } else {
+          const g = mapViewGeo();
+          if (g) { lat = g.lat; lng = g.lng; dist = g.dist; }
+        }
+        if (lat != null) {
+          return ebirdGet('/data/obs/geo/recent/' + code, {
+            lat: String(lat), lng: String(lng), dist: String(dist || 25),
+            back: '30', maxResults: '100'
+          });
+        }
+      }
+      const region = STATE_CODES[activeState] || 'US-NC';
+      return ebirdGet('/data/obs/' + region + '/recent/' + code, { back: '30', maxResults: '100' });
+    }
+    function loadTargetReports(code) {
+      if (!code) return Promise.resolve([]);
+      const key = targetCacheKey(code);
+      if (Object.prototype.hasOwnProperty.call(targetObsCache, key)) return Promise.resolve(targetObsCache[key]);
+      if (targetObsPending[key]) return targetObsPending[key];
+      if (!getEbirdKey()) return Promise.resolve([]);
+      const run = (async () => {
+        try {
+          const raw = await targetReportEndpoint(code);
+          const obs = (raw || []).filter(o => o && o.lat != null && o.lng != null)
+            .sort((a, b) => String(b.obsDt || '').localeCompare(String(a.obsDt || '')));
+          if (targetCacheKey(code) !== key) return obs;
+          targetObsCache[key] = obs;
+          applySpeciesHuntCache(code, obs);
+          return obs;
+        } catch (e) {
+          if (!Object.prototype.hasOwnProperty.call(targetObsCache, key)) targetObsCache[key] = [];
+          return targetObsCache[key];
+        } finally {
+          delete targetObsPending[key];
+        }
+      })();
+      targetObsPending[key] = run;
+      return run;
+    }
+    function refreshOpenTargetReports() {
+      const code = radarBriefCode;
+      if (!code) return;
+      fillTargetExpand(code);
+    }
+    function enterHuntForTarget(code) {
+      if (!getEbirdKey()) { requireEbirdKey(); return false; }
+      const obs = reportsForCode(code);
+      applySpeciesHuntCache(code, obs);
+      mapMode = 'hunt';
+      const photos = document.getElementById('btn-map-photos');
+      const hunt = document.getElementById('btn-map-hunt');
+      if (photos) photos.className = '';
+      if (hunt) hunt.className = 'on';
+      const photoF = document.getElementById('photo-time-filters');
+      const huntF = document.getElementById('hunt-filters');
+      const huntP = document.getElementById('hunt-panel');
+      if (photoF) photoF.style.display = 'none';
+      if (huntF) huntF.style.display = 'flex';
+      if (huntP) huntP.style.display = 'block';
+      huntPanelTab = 'reports';
+      if (typeof syncHuntPanelTabs === 'function') syncHuntPanelTabs();
+      renderHuntMap();
+      return true;
+    }
+    function openTargetReport(btn) {
+      if (!btn) return;
+      if (event) event.stopPropagation();
+      const code = btn.getAttribute('data-code');
+      const lat = Number(btn.getAttribute('data-lat'));
+      const lng = Number(btn.getAttribute('data-lng'));
+      if (!code || !isFinite(lat) || !isFinite(lng)) return;
+      if (!enterHuntForTarget(code)) return;
+      switchTab('map');
+      setTimeout(() => flyHuntTarget(lat, lng, 'reports'), 80);
+    }
+    function enrichTarget(sp, extra) {
+      const code = (extra && extra.code) || sp.code;
+      const n = taxName(code);
+      const reports = reportsForCode(code);
+      const last = reports[0];
+      const com = (extra && extra.comName) || n.comName;
+      const sci = (extra && extra.sciName) || n.sciName;
+      return Object.assign({
+        code: code,
+        status: sp.status || 'Seasonal',
+        monthly: sp.monthly || [],
+        prob: monthProb(sp),
+        comName: com,
+        sciName: sci,
+        group: birdGroup(com, sci),
+        rarity: rarityRank(code),
+        reportN: reports.length,
+        loc: last && last.locName,
+        when: last && last.obsDt,
+        reports: reports.slice(0, 6)
+      }, extra || {});
+    }
+    function stateTargetPool(have, focusOnce) {
+      const entry = decodeState(STATE_CODES[activeState] || 'US-NC');
+      const out = [];
+      for (let i = 0; i < entry.list.length; i++) {
+        const sp = entry.list[i];
+        if (!isRealSpecies(sp.code) || (have.has(sp.code) && sp.code !== focusOnce)) continue;
+        out.push(enrichTarget(sp));
+      }
+      return out;
+    }
+    function nearbyTargetPool(have, focusOnce) {
+      const seen = new Set();
+      const out = [];
+      (huntCache.obs || []).forEach(o => {
+        const spCode = o.speciesCode;
+        if (!spCode || seen.has(spCode) || (have.has(spCode) && spCode !== focusOnce)) return;
+        if (DATA.T[spCode] && !isRealSpecies(spCode)) return;
+        seen.add(spCode);
+        const sp = speciesFromState(spCode);
+        const n = taxName(spCode);
+        out.push(enrichTarget(sp, {
+          code: spCode,
+          comName: n.comName !== spCode ? n.comName : (o.comName || spCode),
+          sciName: n.sciName || o.sciName || ''
+        }));
+      });
+      return out;
+    }
+    function passesRadarLens(t) {
+      if (radarLens === 'season') return seasonBucket(t).label !== 'Off-season';
+      if (radarLens === 'nearby') return t.reportN > 0;
+      if (radarLens === 'pulse') return t.rarity === 4;
+      if (radarLens === 'leaving') return isLeaving(t) || isArriving(t) || peakMonthIndex(t) === CURRENT_MONTH || peakMonthIndex(t) === (CURRENT_MONTH + 1) % 12;
+      return true;
+    }
+    function fillRadarTypeSelect(rows) {
+      const el = document.getElementById('radar-type');
+      if (!el) return;
+      const prev = el.value || 'all';
+      const set = new Set();
+      rows.forEach(r => { if (r.group) set.add(r.group); });
+      const known = (typeof ACH_GROUPS !== 'undefined' ? ACH_GROUPS : []).filter(g => set.has(g));
+      const extra = [...set].filter(g => known.indexOf(g) < 0).sort();
+      el.innerHTML = ['<option value="all">All types</option>'].concat(
+        known.concat(extra).map(g => '<option value="' + g + '">' + g + '</option>')
+      ).join('');
+      el.value = set.has(prev) || prev === 'all' ? prev : 'all';
+    }
+    function toggleRadarHelp() {
+      const el = document.getElementById('radar-explainer');
+      if (el) el.hidden = !el.hidden;
+    }
+    function setRadarLens(lens) {
+      radarLens = lens || 'season';
+      ['season', 'nearby', 'pulse', 'leaving', 'all'].forEach(id => {
+        const btn = document.getElementById('btn-lens-' + id);
+        if (btn) btn.className = id === radarLens ? 'on' : '';
+      });
+      if (radarLens === 'nearby' && radarScope === 'state') {
+        const key = localStorage.getItem('avian_ebird_key');
+        if (key && typeof loadHuntData === 'function') {
+          document.getElementById('radar-scope').value = 'map';
+          radarScope = 'map';
+          loadHuntData('radar');
+          return;
+        }
+      }
+      renderRadar();
+    }
+    function targetHotspotNeeds(have) {
+      const spots = huntCache.hotspots || [];
+      if (!spots.length || radarScope === 'state') return [];
+      return spots.map(h => {
+        const rows = tallySpecies(obsAtHotspot(h)).filter(r => r.code && !have.has(r.code) && isRealSpecies(r.code));
+        return { h: h, need: rows.length, rows: rows };
+      }).filter(x => x.need > 0).sort((a, b) => b.need - a.need || (b.h.numSpeciesAllTime || 0) - (a.h.numSpeciesAllTime || 0)).slice(0, 6);
+    }
+    function renderTargetPlaces(have) {
+      const box = document.getElementById('radar-places');
+      if (!box) return;
+      const rows = targetHotspotNeeds(have);
+      if (!rows.length) { box.innerHTML = ''; return; }
+      box.innerHTML = '<div class="hud-label" style="margin-top:10px">Places for your targets</div>' +
+        '<div class="tgt-places">' + rows.map(x =>
+          '<button type="button" class="tgt-place" onclick="openTargetPlace(' + x.h.lat + ',' + x.h.lng + ')">' +
+          '<b>' + (x.h.locName || 'Hotspot') + '</b>' +
+          '<div class="muted">' + x.need + ' unlogged · ' + (tallySpecies(obsAtHotspot(x.h)).length) + ' in 30d</div>' +
+          '</button>'
+        ).join('') + '</div>';
+    }
+    function openTargetPlace(lat, lng) {
+      closeTargetBrief();
+      switchTab('map');
+      if (typeof setMapMode === 'function') setMapMode('hunt');
+      flyHuntTarget(lat, lng, 'hotspots');
+    }
+    function sparkMonthsHTML(monthly) {
+      const m = monthly || [];
+      let html = '<div class="tgt-spark-wide">';
+      for (let i = 0; i < 12; i++) {
+        const v = m[i] || 0;
+        const h = Math.max(4, Math.min(36, Math.round(v * 36)));
+        const pal = themePal();
+        const col = v >= 0.45 ? pal.em2 : v >= 0.15 ? pal.warn : pal.muted;
+        html += '<span class="' + (i === CURRENT_MONTH ? 'now' : '') + '"><i style="height:' + h + 'px;background:' + col + '"></i><em>' + MONTH_LABELS[i].charAt(0) + '</em></span>';
+      }
+      return html + '</div>';
+    }
+    function fillTargetThumbs(codes) {
+      (codes || []).forEach(code => {
+        const apply = (url) => {
+          if (!url) return;
+          document.querySelectorAll('img[data-tgt="' + code + '"]').forEach(img => { img.src = url; img.classList.remove('empty'); });
+          const hero = document.getElementById('tgt-brief-hero');
+          if (hero && hero.getAttribute('data-code') === code) hero.src = url;
+        };
+        if (speciesPhotoCache[code]) { apply(speciesPhotoCache[code]); return; }
+        resolveSpeciesPhoto(code, taxName(code).comName).then(apply);
+      });
+    }
+
+    function setRadarPage(page) {
+      radarPage = Math.max(0, Number(page) || 0);
+      if (radarBriefCode) closeTargetBrief();
+      renderRadar();
+      const box = document.querySelector('#view-radar .scroll');
+      if (box) box.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     function onRadarScopeChange() {
       radarScope = document.getElementById('radar-scope').value || 'state';
-      if (radarScope === 'state') { renderRadar(); return; }
+      const openCode = radarBriefCode;
+      if (radarScope === 'state') {
+        renderRadar();
+        if (openCode) refreshOpenTargetReports();
+        return;
+      }
       if (!requireEbirdKey()) { document.getElementById('radar-scope').value = 'state'; radarScope = 'state'; renderRadar(); return; }
       loadHuntData('radar');
+      if (openCode) refreshOpenTargetReports();
     }
 
     function renderRadar() {
-      const code = STATE_CODES[activeState] || 'US-NC';
-      const entry = decodeState(code);
       const have = lifeCodes();
-      const sort = (document.getElementById('radar-sort') || {}).value || 'prob';
-      const shown = (document.getElementById('radar-shown') || {}).value || 'all';
+      const sort = (document.getElementById('radar-sort') || {}).value || 'chase';
+      const q = ((document.getElementById('radar-search') || {}).value || '').trim();
+      const status = (document.getElementById('radar-status') || {}).value || 'all';
+      const type = (document.getElementById('radar-type') || {}).value || 'all';
+      const rarity = (document.getElementById('radar-rarity') || {}).value || 'all';
       const focusOnce = radarFocusCode;
-      const targets = [];
-      const nearby = shown === 'nearby' || (radarScope !== 'state' && shown !== 'all');
-      if (!nearby) {
-        for (let i = 0; i < entry.list.length; i++) {
-          const sp = entry.list[i];
-          if (!isRealSpecies(sp.code) || (have.has(sp.code) && sp.code !== focusOnce)) continue;
-          if (shown === 'month' && monthProb(sp) <= 0) continue;
-          targets.push({ ...sp, prob: monthProb(sp), ...taxName(sp.code) });
-        }
-      } else {
-        const seen = new Set();
-        (huntCache.obs || []).forEach(o => {
-          const spCode = o.speciesCode;
-          if (!spCode || seen.has(spCode) || (have.has(spCode) && spCode !== focusOnce)) return;
-          if (DATA.T[spCode] && !isRealSpecies(spCode)) return;
-          seen.add(spCode);
-          const sp = speciesFromState(spCode);
-          if (shown === 'month' && monthProb(sp) <= 0) return;
-          const n = taxName(spCode);
-          targets.push({ ...sp, code: spCode, prob: monthProb(sp), loc: o.locName, when: o.obsDt, comName: n.comName !== spCode ? n.comName : (o.comName || spCode), sciName: n.sciName || o.sciName || '' });
-        });
-      }
+      const pool = radarLens === 'nearby' ? nearbyTargetPool(have, focusOnce) : stateTargetPool(have, focusOnce);
+      fillRadarTypeSelect(pool);
+      const typeNow = (document.getElementById('radar-type') || {}).value || type;
+      let likely = 0, possible = 0, pulse = 0, nearN = 0;
+      pool.forEach(t => {
+        const b = seasonBucket(t);
+        if (b.label === 'Likely') likely++;
+        else if (b.label === 'Possible') possible++;
+        if (t.rarity === 4) pulse++;
+        if (t.reportN) nearN++;
+      });
+      let targets = pool.filter(t => {
+        if (!passesRadarLens(t) && t.code !== focusOnce) return false;
+        if (status !== 'all' && t.status !== status) return false;
+        if (typeNow !== 'all' && t.group !== typeNow) return false;
+        if (rarity !== 'all' && String(t.rarity) !== String(rarity)) return false;
+        if (q && !nameMatches(t.comName, q) && !nameMatches(t.sciName, q)) return false;
+        return true;
+      });
       if (sort === 'az') targets.sort((a,b) => a.comName.localeCompare(b.comName));
-      else if (sort === 'status') targets.sort((a,b) => a.status.localeCompare(b.status) || b.prob - a.prob);
       else if (sort === 'probAsc') targets.sort((a,b) => a.prob - b.prob || a.comName.localeCompare(b.comName));
+      else if (sort === 'prob') targets.sort((a,b) => b.prob - a.prob || a.comName.localeCompare(b.comName));
       else if (sort === 'year') targets.sort((a,b) => yearTotal(b) - yearTotal(a) || a.comName.localeCompare(b.comName));
       else if (sort === 'yearAsc') targets.sort((a,b) => yearTotal(a) - yearTotal(b) || a.comName.localeCompare(b.comName));
-      else targets.sort((a,b) => b.prob - a.prob || a.comName.localeCompare(b.comName));
-      const countEl = document.getElementById('radar-count');
-      const scopeLabel = radarScope === 'state' ? activeState : (huntCache.label || radarScope);
-      if (countEl) countEl.textContent = targets.length + ' unlogged targets · ' + scopeLabel;
+      else targets.sort((a,b) => chaseScore(b) - chaseScore(a) || b.prob - a.prob || a.comName.localeCompare(b.comName));
       if (focusOnce && !targets.some(t => t.code === focusOnce)) {
-        const shownEl = document.getElementById('radar-shown');
-        if (shownEl && shownEl.value !== 'all') { shownEl.value = 'all'; renderRadar(); return; }
+        if (radarLens !== 'all' || status !== 'all' || typeNow !== 'all' || rarity !== 'all' || q) {
+          radarLens = 'all';
+          ['season', 'nearby', 'pulse', 'leaving', 'all'].forEach(id => {
+            const btn = document.getElementById('btn-lens-' + id);
+            if (btn) btn.className = id === 'all' ? 'on' : '';
+          });
+          const st = document.getElementById('radar-status');
+          const ty = document.getElementById('radar-type');
+          const rr = document.getElementById('radar-rarity');
+          const se = document.getElementById('radar-search');
+          if (st) st.value = 'all';
+          if (ty) ty.value = 'all';
+          if (rr) rr.value = 'all';
+          if (se) se.value = '';
+          renderRadar();
+          return;
+        }
         const n = taxName(focusOnce);
         const sp = speciesFromState(focusOnce);
-        targets.unshift({ ...sp, code: focusOnce, prob: monthProb(sp), comName: n.comName, sciName: n.sciName });
+        targets.unshift(enrichTarget(sp, { code: focusOnce, comName: n.comName, sciName: n.sciName }));
       }
-      document.getElementById('radar-list').innerHTML = targets.map(t => {
+      const isCountry = statsMode === 'country';
+      const scopeLabel = radarScope === 'state' ? activeState : (huntCache.label || radarScope);
+      const loggedWhere = isCountry ? 'Unlogged nationally' : ('Unlogged in ' + activeState);
+      const lensLabel = radarLens === 'season' ? 'in season' : radarLens === 'nearby' ? 'reported nearby' : radarLens === 'pulse' ? 'pulse' : radarLens === 'leaving' ? 'arriving or leaving' : 'unlogged';
+      const kicker = document.getElementById('radar-kicker');
+      if (kicker) kicker.textContent = 'Targets · ' + (isCountry ? 'United States' : activeState);
+      const numEl = document.getElementById('radar-count-num');
+      if (numEl) numEl.textContent = String(targets.length);
+      const score = document.getElementById('radar-scoreline');
+      if (score) score.textContent = loggedWhere + ' · ' + lensLabel;
+      const pills = document.getElementById('radar-pills');
+      if (pills) {
+        pills.innerHTML =
+          '<span class="tgt-pill go">' + likely + ' likely</span>' +
+          '<span class="tgt-pill">' + possible + ' possible</span>' +
+          '<span class="tgt-pill pulse">' + pulse + ' pulse</span>' +
+          (nearN ? '<span class="tgt-pill near">' + nearN + ' nearby</span>' : '');
+      }
+      const countEl = document.getElementById('radar-count');
+      const sig = [radarLens, radarScope, sort, q, status, typeNow, rarity, activeState, statsMode].join('|');
+      if (sig !== radarPageSig) { radarPage = 0; radarPageSig = sig; }
+      if (focusOnce) {
+        const ix = targets.findIndex(t => t.code === focusOnce);
+        if (ix >= 0) radarPage = Math.floor(ix / RADAR_PAGE);
+      }
+      const pageCount = Math.max(1, Math.ceil((targets.length || 0) / RADAR_PAGE));
+      if (radarPage > pageCount - 1) radarPage = pageCount - 1;
+      if (radarPage < 0) radarPage = 0;
+      const pageRows = targets.slice(radarPage * RADAR_PAGE, radarPage * RADAR_PAGE + RADAR_PAGE);
+      const from = pageRows.length ? radarPage * RADAR_PAGE + 1 : 0;
+      const to = radarPage * RADAR_PAGE + pageRows.length;
+      if (countEl) {
+        countEl.textContent = targets.length
+          ? (from + '–' + to + ' of ' + targets.length + ' ' + lensLabel + ' · ' + scopeLabel)
+          : ('0 ' + lensLabel + ' · ' + scopeLabel);
+      }
+      if (typeof noteAchTargetCodes === 'function') noteAchTargetCodes(stateTargetPool(have).map(t => t.code));
+      renderTargetPlaces(have);
+      const empty = radarLens === 'nearby' && !(huntCache.obs || []).length
+        ? '<div class="hint">No live reports in this scope yet. Pick This map, Near me, or This county — or add an eBird key in Settings.</div>'
+        : radarLens === 'season'
+          ? '<div class="hint">Nothing in season in this filter. Try Pulse, All, or a wider scope.</div>'
+          : radarLens === 'pulse'
+            ? '<div class="hint">No pulse unlogged birds in this filter.</div>'
+            : radarLens === 'leaving'
+              ? '<div class="hint">No arriving or leaving unlogged birds in this filter.</div>'
+              : '<div class="hint">All regional targets logged. Compare a neighboring state from the checklist, or tighten to a county.</div>';
+      document.getElementById('radar-list').innerHTML = pageRows.map(t => {
         const b = seasonBucket(t);
-        return '<div class="row-card' + (focusOnce === t.code ? ' hl' : '') + '" id="radar-row-' + t.code + '" onclick="jumpSpeciesToRadarMap(\'' + t.code + '\')" style="cursor:pointer"><div>' +
-        '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><b>' + t.comName + '</b> ' + statusChip(t.status) +
-        ' <a class="merlin-link" href="https://merlinbirds.org/species/' + encodeURIComponent(t.code) + '" target="_blank" rel="noopener" title="Open in Merlin" onclick="event.stopPropagation()">Merlin ↗</a></div>' +
-        '<div class="muted" style="font-style:italic">' + t.sciName + '</div>' +
-        sparkHTML(t.monthly) + ' <span class="mono" style="font-size:10px;color:' + b.color + '">' + MONTH_LABELS[CURRENT_MONTH] + ' ' + seasonScore(t) + '/10</span>' +
-        (t.loc ? '<div class="muted">' + t.loc + (t.when ? ' · ' + t.when : '') + '</div>' : '') + '</div>' +
-        '<button class="ghost" onclick="event.stopPropagation();openUploadModal();setFormSpecies(\'' + t.code + '\')">Log</button></div>';
-      }).join('') || '<div class="hint">All regional targets logged.</div>';
+        const photo = speciesPhotoCache[t.code] || '';
+        const open = radarBriefCode === t.code || focusOnce === t.code;
+        return '<div class="row-card tgt-card' + (open ? ' open hl' : '') + '" id="radar-row-' + t.code + '">' +
+          '<div class="tgt-row" onclick="toggleTargetCard(\'' + t.code + '\')">' +
+          '<img class="tgt-thumb' + (photo ? '' : ' empty') + '" data-tgt="' + t.code + '" src="' + (photo || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7') + '" alt="" />' +
+          '<div><div class="tgt-name"><b>' + t.comName + '</b> ' + statusChip(t.status) + targetReasonChip(t) + '</div>' +
+          '<div class="tgt-meta">' + rarityChip(t.rarity) + ' <span class="chip">' + t.group + '</span> ' +
+          sparkHTML(t.monthly) + ' <span class="mono" style="font-size:10px;color:' + b.color + '">' + MONTH_LABELS[CURRENT_MONTH] + ' ' + seasonScore(t) + '/10</span></div>' +
+          (t.loc ? '<div class="muted">' + t.loc + (t.when ? ' · ' + t.when : '') + (t.reportN > 1 ? ' · ' + t.reportN + ' reports' : '') + '</div>' : '') +
+          '</div></div><div class="tgt-expand" id="tgt-expand-' + t.code + '"></div></div>';
+      }).join('') || empty;
+      const pager = document.getElementById('radar-pager');
+      if (pager) {
+        pager.innerHTML = (targets.length > RADAR_PAGE)
+          ? '<div class="tgt-pager">' +
+            '<button type="button"' + (radarPage <= 0 ? ' disabled' : '') + ' onclick="setRadarPage(' + (radarPage - 1) + ')">Prev</button>' +
+            '<span>Page ' + (radarPage + 1) + ' of ' + pageCount + '</span>' +
+            '<button type="button"' + (radarPage >= pageCount - 1 ? ' disabled' : '') + ' onclick="setRadarPage(' + (radarPage + 1) + ')">Next</button>' +
+            '</div>'
+          : '';
+      }
+      fillTargetThumbs(pageRows.map(t => t.code));
+      if (radarBriefCode) fillTargetExpand(radarBriefCode);
       if (focusOnce) {
         radarFocusCode = '';
         const el = document.getElementById('radar-row-' + focusOnce);
         if (el) setTimeout(() => el.scrollIntoView({ block: 'center', behavior: 'smooth' }), 40);
+        if (!radarBriefCode) openTargetBrief(focusOnce);
       }
+    }
+
+    function targetExpandHTML(code) {
+      const n = taxName(code);
+      const sp = speciesFromState(code);
+      const t = enrichTarget(sp, { code: code, comName: n.comName, sciName: n.sciName });
+      const reports = reportsForCode(code).slice(0, 8);
+      const peak = peakMonthIndex(t);
+      const key = targetCacheKey(code);
+      const loading = !!targetObsPending[key];
+      const fetched = Object.prototype.hasOwnProperty.call(targetObsCache, key);
+      let places;
+      if (loading && !reports.length) {
+        places = '<p class="hint" style="margin-top:8px">Loading live reports in ' + targetScopeLabel() + '…</p>';
+      } else if (!getEbirdKey() && !reports.length) {
+        places = '<p class="hint" style="margin-top:8px">Add an eBird key in Settings to load live reports.</p>';
+      } else if (reports.length) {
+        places = '<div class="hud-label" style="margin-top:10px">Recent reports · ' + targetScopeLabel() + (loading ? ' · updating' : '') + '</div>' +
+          reports.map(o =>
+            '<button type="button" class="tgt-report" data-code="' + code + '" data-lat="' + o.lat + '" data-lng="' + o.lng + '" onclick="openTargetReport(this)">' +
+            '<b>' + (o.locName || 'Location') + '</b><div class="muted">' + (o.obsDt || '') +
+            (o.howMany ? ' · ' + o.howMany : '') + '</div></button>'
+          ).join('');
+      } else if (fetched) {
+        places = '<p class="hint" style="margin-top:8px">No reports in the last 30 days in ' + targetScopeLabel() + '.</p>';
+      } else {
+        places = '<p class="hint" style="margin-top:8px">Loading live reports in ' + targetScopeLabel() + '…</p>';
+      }
+      return (t.sciName ? '<div class="muted" style="font-style:italic;margin-bottom:4px">' + t.sciName + '</div>' : '') +
+        sparkMonthsHTML(t.monthly) +
+        '<div class="muted">Peaks in ' + MONTH_LABELS[peak] + ' · ' + MONTH_LABELS[CURRENT_MONTH] + ' ' + seasonScore(t) + '/10</div>' +
+        places +
+        '<div class="tgt-brief-actions" style="margin-top:8px">' +
+        '<button type="button" class="btn-em" onclick="event.stopPropagation();showTargetOnMap(\'' + code + '\')">Show on map</button>' +
+        '<a class="merlin-link" href="https://merlinbirds.org/species/' + encodeURIComponent(code) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Merlin ↗</a>' +
+        '<a class="merlin-link" href="https://ebird.org/species/' + encodeURIComponent(code) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">eBird ↗</a>' +
+        '</div>';
+    }
+    function fillTargetExpand(code) {
+      const panel = document.getElementById('tgt-expand-' + code);
+      const card = document.getElementById('radar-row-' + code);
+      if (!panel || !card) return;
+      card.classList.add('open');
+      panel.innerHTML = targetExpandHTML(code);
+      const key = targetCacheKey(code);
+      if (getEbirdKey() && !Object.prototype.hasOwnProperty.call(targetObsCache, key) && !targetObsPending[key]) {
+        loadTargetReports(code).then(() => {
+          if (radarBriefCode === code && targetCacheKey(code) === key) fillTargetExpand(code);
+        });
+      } else if (Object.prototype.hasOwnProperty.call(targetObsCache, key)) {
+        applySpeciesHuntCache(code, targetObsCache[key]);
+      }
+    }
+    function toggleTargetCard(code) {
+      if (!code) return;
+      if (radarBriefCode === code) { closeTargetBrief(); return; }
+      openTargetBrief(code);
+    }
+    function openTargetBrief(code) {
+      if (!code) return;
+      document.querySelectorAll('#radar-list .tgt-card.open').forEach(el => {
+        if (el.id !== 'radar-row-' + code) el.classList.remove('open');
+      });
+      radarBriefCode = code;
+      fillTargetExpand(code);
+      const card = document.getElementById('radar-row-' + code);
+      if (card) setTimeout(() => card.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 30);
+    }
+    function closeTargetBrief() {
+      document.querySelectorAll('#radar-list .tgt-card.open').forEach(el => el.classList.remove('open'));
+      radarBriefCode = '';
+    }
+    function showTargetOnMap(code) {
+      const use = code || radarBriefCode;
+      if (!use) return;
+      if (reportsForCode(use).length) {
+        if (!enterHuntForTarget(use)) return;
+        closeTargetBrief();
+        switchTab('map');
+        requestFitActiveState();
+        return;
+      }
+      closeTargetBrief();
+      jumpSpeciesToRadarMap(use);
     }
 
     function stashChecklistScroll() {
@@ -4924,10 +6036,22 @@ function exportLogs() {
     function openTargetFromChecklist(code) {
       checklistResume = false;
       closeRegionSpeciesModal();
-      const shown = document.getElementById('radar-shown');
-      if (shown) shown.value = 'all';
+      radarLens = 'all';
+      ['season', 'nearby', 'pulse', 'leaving', 'all'].forEach(id => {
+        const btn = document.getElementById('btn-lens-' + id);
+        if (btn) btn.className = id === 'all' ? 'on' : '';
+      });
+      const st = document.getElementById('radar-status');
+      const ty = document.getElementById('radar-type');
+      const rr = document.getElementById('radar-rarity');
+      const se = document.getElementById('radar-search');
+      if (st) st.value = 'all';
+      if (ty) ty.value = 'all';
+      if (rr) rr.value = 'all';
+      if (se) se.value = '';
       radarFocusCode = code;
       switchTab('radar');
+      openTargetBrief(code);
     }
 
     function restoreChecklistModal() {
@@ -5365,7 +6489,7 @@ function exportLogs() {
       persistSightings();
       closeUploadModal();
       closeDetailModal();
-      refreshUI();
+      refreshUI({ toast: true });
       renderLifeList();
       renderGallery();
       renderRadar();
@@ -6024,6 +7148,8 @@ function exportLogs() {
       }
       persistSightings();
       rememberLastLogLocation(payload);
+      markAchTargetIfNeeded(speciesCode);
+      if (!editingId && bulkQueue.length >= 10) markAchBulkIfNeeded(bulkQueue.length);
       const savedId = editingId || (sightings[sightings.length - 1] && sightings[sightings.length - 1].id);
       const moreBulk = !editingId && bulkQueue.length && bulkIndex < bulkQueue.length - 1;
       if (moreBulk) {
@@ -6034,7 +7160,7 @@ function exportLogs() {
       const finishId = savedId;
       clearBulkQueue();
       closeUploadModal();
-      refreshUI();
+      refreshUI({ toast: true });
       renderLifeList();
       renderGallery();
       renderRadar();
@@ -6292,12 +7418,2024 @@ function exportLogs() {
       if (el) el.innerHTML = opts.join('');
     }
 
-    function refreshUI() {
+    const ACH_PCT = [10, 25, 50, 75, 90, 100];
+    const ACH_YEAR = [50, 100, 150, 200, 250, 300, 400];
+    const ACH_BIGMONTH = [25, 50, 75, 100, 125, 150, 200];
+    const ACH_MOY = [25, 50, 75, 100, 150];
+    const ACH_GROUPS = [
+      'Warbler','Raptor','Owl','Waterfowl','Wading','Shorebird','Gull / Tern','Woodpecker',
+      'Sparrow','Finch','Blackbird','Thrush','Flycatcher','Vireo','Swallow','Wren','Hummingbird',
+      'Dove','Cardinal / Tanager','Corvid','Chickadee','Nuthatch','Kinglet','Mimic','Loon / Grebe',
+      'Pelican / Cormorant','Tubenoose','Rail','Crane','Upland game','Nightjar','Swift','Kingfisher',
+      'Vulture','Other passerine','Other'
+    ];
+    const PACIFIC_STATES = { Washington:1, Oregon:1, California:1, Alaska:1, Hawaii:1 };
+    const ATLANTIC_STATES = {
+      Maine:1, 'New Hampshire':1, Massachusetts:1, 'Rhode Island':1, Connecticut:1,
+      'New York':1, 'New Jersey':1, Delaware:1, Maryland:1, Virginia:1,
+      'North Carolina':1, 'South Carolina':1, Georgia:1, Florida:1
+    };
+    const LOWER48 = Object.keys(STATE_CODES).filter(n => n !== 'Alaska' && n !== 'Hawaii' && n !== 'District of Columbia');
+    const STATE_ABBR = {};
+    Object.keys(STATE_CODES).forEach(n => { STATE_ABBR[n] = STATE_CODES[n].replace('US-', ''); });
+
+    let achEarned = { state: {}, country: {} };
+    let achFlags = { bulk10: false, targetLog: false };
+    let achInitSilent = true;
+    let achOpenCats = {};
+    let achOpenStates = {};
+    let achOpenFams = {};
+    let achFocusFam = '';
+    let achLastRows = [];
+    let achLastCtx = null;
+    let achBirdMore = {};
+    let achPulse = { state: {}, country: {} };
+    let achXpSeen = 0;
+    let achXpMode = { state: 0, country: 0 };
+    let achXpSplit = { state: { earned: 0, progress: 0 }, country: { earned: 0, progress: 0 } };
+    let achXpSnap = null;
+    let achLevelSeen = 1;
+    let achRecentIdx = 0;
+    let achPopQueue = [];
+    let achPopIdx = 0;
+    let achPopPending = [];
+    let achNoteTimer = 0;
+
+    function loadAchStore() {
+      try {
+        const raw = JSON.parse(localStorage.getItem('avian_achievements') || 'null');
+        if (raw && raw.state && raw.country) {
+          achEarned.state = raw.state || {};
+          achEarned.country = raw.country || {};
+        }
+      } catch (e) {}
+      try {
+        const f = JSON.parse(localStorage.getItem('avian_ach_flags') || 'null');
+        if (f) achFlags = Object.assign(achFlags, f);
+      } catch (e) {}
+      try {
+        const p = JSON.parse(localStorage.getItem('avian_ach_pulse') || 'null');
+        if (p && p.state && p.country) achPulse = p;
+      } catch (e) {}
+      try { achXpSeen = Number(localStorage.getItem('avian_ach_xp_seen') || 0) || 0; } catch (e) {}
+      try { achLevelSeen = Number(localStorage.getItem('avian_ach_level') || 1) || 1; } catch (e) {}
+      try {
+        const x = JSON.parse(localStorage.getItem('avian_ach_xp_mode') || 'null');
+        if (x && typeof x.state === 'number') achXpMode = x;
+      } catch (e) {}
+    }
+    function saveAchStore() {
+      try { localStorage.setItem('avian_achievements', JSON.stringify(achEarned)); } catch (e) {}
+      try { localStorage.setItem('avian_ach_flags', JSON.stringify(achFlags)); } catch (e) {}
+      try { localStorage.setItem('avian_ach_pulse', JSON.stringify(achPulse)); } catch (e) {}
+      try { localStorage.setItem('avian_ach_xp_seen', String(achXpSeen)); } catch (e) {}
+      try { localStorage.setItem('avian_ach_xp_mode', JSON.stringify(achXpMode)); } catch (e) {}
+      try { localStorage.setItem('avian_ach_level', String(achLevelSeen)); } catch (e) {}
+    }
+    loadAchStore();
+
+    function usOfficialList() {
+      let entry = decodeState('US');
+      if (entry && entry.list && entry.list.length) return entry.list;
+      const merged = [];
+      const seen = new Set();
+      Object.keys(STATE_CODES).forEach(name => {
+        const e = decodeState(STATE_CODES[name]);
+        (e.list || []).forEach(sp => {
+          if (!seen.has(sp.code)) { seen.add(sp.code); merged.push(sp); }
+        });
+      });
+      return merged;
+    }
+
+    function officialRows(regionCode) {
+      return ((decodeState(regionCode) || {}).list || []).filter(sp => isRealSpecies(sp.code));
+    }
+
+    function groupOfCode(code) {
+      const n = taxName(code);
+      return birdGroup(n.comName, n.sciName);
+    }
+
+    function typePoolUS() {
+      const pools = {};
+      ACH_GROUPS.forEach(g => { pools[g] = new Set(); });
+      usOfficialList().forEach(sp => {
+        if (!isRealSpecies(sp.code)) return;
+        const g = groupOfCode(sp.code);
+        if (!pools[g]) pools[g] = new Set();
+        pools[g].add(sp.code);
+      });
+      return pools;
+    }
+
+    function typePoolState(stateName) {
+      const pools = {};
+      officialRows(STATE_CODES[stateName] || 'US-NC').forEach(sp => {
+        const g = groupOfCode(sp.code);
+        if (!pools[g]) pools[g] = new Set();
+        pools[g].add(sp.code);
+      });
+      return pools;
+    }
+
+    function filterPctSteps(total, steps) {
+      if (total <= 0) return [];
+      if (total <= 3) return steps.filter(s => s === 100);
+      const out = [];
+      let lastNeed = 0;
+      steps.forEach(s => {
+        const need = Math.max(1, Math.ceil(total * s / 100));
+        if (need > lastNeed && need <= total) {
+          out.push(s);
+          lastNeed = need;
+        }
+      });
+      if (out.indexOf(100) < 0 && total > 0) out.push(100);
+      return out;
+    }
+
+    function ymKey(date) {
+      const p = String(date || '').slice(0, 7);
+      return /^\d{4}-\d{2}$/.test(p) ? p : '';
+    }
+    function yearOf(date) {
+      const y = parseInt(String(date || '').slice(0, 4), 10);
+      return y > 1900 && y < 2100 ? y : 0;
+    }
+    function monthOf(date) {
+      const m = parseInt(String(date || '').slice(5, 7), 10);
+      return m >= 1 && m <= 12 ? m - 1 : -1;
+    }
+    function todayISO() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function buildAchCtx() {
+      const logs = sightings.filter(s => s && s.species_code && (s.country === 'United States' || !s.country));
+      const usPool = typePoolUS();
+      const statePools = {};
+      const byState = {};
+      Object.keys(STATE_CODES).forEach(name => {
+        byState[name] = {
+          codes: new Set(), first: null, counties: new Set(),
+          byYear: {}, byYM: {}, byMonth: {}, photos: new Set(), covers: new Set()
+        };
+      });
+      const us = {
+        codes: new Set(), photos: new Set(), covers: new Set(), notes: 0,
+        counties: new Set(), countyState: new Set(),
+        locations: {}, locLogs: {},
+        byYear: {}, byYM: {}, byMonth: {},
+        firstByCode: {}, firstByStateCode: {},
+        statesByCode: {},
+        photoCountByCode: {},
+        logsByDate: {},
+        rarityCounts: { 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() },
+        rarityCountsState: {},
+        statusHits: new Set(),
+        statusSets: { resident: new Set(), winter: new Set(), summer: new Set(), migrant: new Set() },
+        speciesMonths: {},
+        pulse: new Set(), offseason: false,
+        states: new Set(),
+        night: new Set(),
+        maxMonth: 0, maxMonthState: 0,
+        patchYear: {},
+        liferDayCountry: {}, liferDayState: {},
+        raptorDays: {},
+        dayStates: {},
+        dayCodes: {}
+      };
+
+      logs.forEach(s => {
+        const code = s.species_code;
+        if (!isRealSpecies(code)) return;
+        const st = s.state || '';
+        const date = s.date || '';
+        const y = yearOf(date);
+        const mi = monthOf(date);
+        const ym = ymKey(date);
+        const bucket = byState[st];
+        us.codes.add(code);
+        us.states.add(st);
+        if (s.photo_url || s.photo_full) {
+          us.photos.add(code);
+          us.photoCountByCode[code] = (us.photoCountByCode[code] || 0) + 1;
+        }
+        if (s.is_cover) us.covers.add(code);
+        if ((s.notes || '').trim()) us.notes += 1;
+        if (s.county) {
+          us.counties.add(String(s.county).toLowerCase() + '|' + st);
+          us.countyState.add(st + '|' + String(s.county).toLowerCase());
+        }
+        const loc = (s.location_name || '').trim().toLowerCase();
+        if (loc) {
+          if (!us.locations[loc]) us.locations[loc] = new Set();
+          us.locations[loc].add(code);
+          us.locLogs[loc] = (us.locLogs[loc] || 0) + 1;
+        }
+        if (y) {
+          if (!us.byYear[y]) us.byYear[y] = new Set();
+          us.byYear[y].add(code);
+        }
+        if (ym) {
+          if (!us.byYM[ym]) us.byYM[ym] = new Set();
+          us.byYM[ym].add(code);
+        }
+        if (mi >= 0) {
+          if (!us.byMonth[mi]) us.byMonth[mi] = new Set();
+          us.byMonth[mi].add(code);
+          if (!us.speciesMonths[code]) us.speciesMonths[code] = new Set();
+          us.speciesMonths[code].add(mi);
+        }
+        if (date) {
+          if (!us.logsByDate[date]) us.logsByDate[date] = [];
+          us.logsByDate[date].push(s);
+          if (!us.dayCodes[date]) us.dayCodes[date] = new Set();
+          us.dayCodes[date].add(code);
+          if (!us.dayStates[date]) us.dayStates[date] = new Set();
+          if (st) us.dayStates[date].add(st);
+          const g = groupOfCode(code);
+          if (g === 'Raptor') {
+            if (!us.raptorDays[date]) us.raptorDays[date] = new Set();
+            us.raptorDays[date].add(code);
+          }
+          if (g === 'Owl' || g === 'Nightjar') us.night.add(code);
+        }
+        if (!us.firstByCode[code] || String(date) < String(us.firstByCode[code].date || '9999')) {
+          us.firstByCode[code] = s;
+        }
+        const sk = st + '|' + code;
+        if (!us.firstByStateCode[sk] || String(date) < String(us.firstByStateCode[sk].date || '9999')) {
+          us.firstByStateCode[sk] = s;
+        }
+        if (!us.statesByCode[code]) us.statesByCode[code] = new Set();
+        if (st) us.statesByCode[code].add(st);
+
+        const rank = rarityRankAt(code, st, mi >= 0 ? mi : CURRENT_MONTH);
+        if (us.rarityCounts[rank]) us.rarityCounts[rank].add(code);
+        if (!us.rarityCountsState[st]) us.rarityCountsState[st] = { 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() };
+        if (us.rarityCountsState[st][rank]) us.rarityCountsState[st][rank].add(code);
+        if (rank === 4) us.pulse.add(code);
+
+        const sp = speciesFromState(code, st);
+        const bar = (sp.monthly && mi >= 0) ? (sp.monthly[mi] || 0) : 1;
+        if (mi >= 0 && bar === 0) us.offseason = true;
+        const status = sp.status || '';
+        us.statusHits.add(status);
+        if (status === 'Year-round Resident' || status === 'Resident') us.statusSets.resident.add(code);
+        if (status === 'Winter Visitor') us.statusSets.winter.add(code);
+        if (status === 'Summer Breeding') us.statusSets.summer.add(code);
+        if (status === 'Spring/Fall Migrant') us.statusSets.migrant.add(code);
+
+        if (bucket) {
+          bucket.codes.add(code);
+          if (!bucket.first || String(date) < String(bucket.first)) bucket.first = date;
+          if (s.county) bucket.counties.add(String(s.county).toLowerCase());
+          if (s.photo_url || s.photo_full) bucket.photos.add(code);
+          if (s.is_cover) bucket.covers.add(code);
+          if (y) {
+            if (!bucket.byYear[y]) bucket.byYear[y] = new Set();
+            bucket.byYear[y].add(code);
+          }
+          if (ym) {
+            if (!bucket.byYM[ym]) bucket.byYM[ym] = new Set();
+            bucket.byYM[ym].add(code);
+          }
+          if (mi >= 0) {
+            if (!bucket.byMonth[mi]) bucket.byMonth[mi] = new Set();
+            bucket.byMonth[mi].add(code);
+          }
+        }
+      });
+
+      Object.keys(us.byYM).forEach(k => {
+        const n = us.byYM[k].size;
+        if (n > us.maxMonth) us.maxMonth = n;
+      });
+      Object.keys(byState).forEach(name => {
+        Object.keys(byState[name].byYM).forEach(k => {
+          const n = byState[name].byYM[k].size;
+          if (n > us.maxMonthState) us.maxMonthState = n;
+        });
+        Object.keys(byState[name].byYear).forEach(y => {
+          const n = byState[name].byYear[y].size;
+          if (!us.patchYear[y] || n > us.patchYear[y]) us.patchYear[y] = n;
+        });
+      });
+
+      Object.keys(us.firstByCode).forEach(code => {
+        const d = us.firstByCode[code].date;
+        if (!d) return;
+        if (!us.liferDayCountry[d]) us.liferDayCountry[d] = 0;
+        us.liferDayCountry[d]++;
+      });
+      Object.keys(us.firstByStateCode).forEach(sk => {
+        const d = us.firstByStateCode[sk].date;
+        if (!d) return;
+        if (!us.liferDayState[d]) us.liferDayState[d] = 0;
+        us.liferDayState[d]++;
+      });
+
+      let maxLocSpp = 0, maxLocLogs = 0;
+      Object.keys(us.locations).forEach(k => { if (us.locations[k].size > maxLocSpp) maxLocSpp = us.locations[k].size; });
+      Object.keys(us.locLogs).forEach(k => { if (us.locLogs[k] > maxLocLogs) maxLocLogs = us.locLogs[k]; });
+      us.maxLocSpp = maxLocSpp;
+      us.maxLocLogs = maxLocLogs;
+      us.maxPhotoRepeat = 0;
+      Object.keys(us.photoCountByCode).forEach(k => {
+        if (us.photoCountByCode[k] > us.maxPhotoRepeat) us.maxPhotoRepeat = us.photoCountByCode[k];
+      });
+      us.maxRaptorDay = 0;
+      Object.keys(us.raptorDays).forEach(d => {
+        if (us.raptorDays[d].size > us.maxRaptorDay) us.maxRaptorDay = us.raptorDays[d].size;
+      });
+      us.maxDayCodes = 0;
+      Object.keys(us.dayCodes).forEach(d => {
+        if (us.dayCodes[d].size > us.maxDayCodes) us.maxDayCodes = us.dayCodes[d].size;
+      });
+      us.twoStateDay = Object.keys(us.dayStates).some(d => us.dayStates[d].size >= 2);
+      us.maxSpeciesStates = 0;
+      Object.keys(us.statesByCode).forEach(c => {
+        const n = us.statesByCode[c].size;
+        if (n > us.maxSpeciesStates) us.maxSpeciesStates = n;
+      });
+
+      const monthsWith = Object.keys(us.byYM).sort();
+      let streak = 0, bestStreak = 0, prev = '';
+      monthsWith.forEach(k => {
+        if (prev) {
+          const [py, pm] = prev.split('-').map(Number);
+          const [cy, cm] = k.split('-').map(Number);
+          const ok = (cy === py && cm === pm + 1) || (cy === py + 1 && pm === 12 && cm === 1);
+          streak = ok ? streak + 1 : 1;
+        } else streak = 1;
+        if (streak > bestStreak) bestStreak = streak;
+        prev = k;
+      });
+      us.monthStreak = bestStreak;
+
+      const years = Array.from(new Set(logs.map(s => yearOf(s.date)).filter(Boolean))).sort();
+      us.years = years;
+      us.greenYears = years.filter(y => {
+        const hit = new Set();
+        logs.forEach(s => { if (yearOf(s.date) === y) { const m = monthOf(s.date); if (m >= 0) hit.add(m); } });
+        return hit.size === 12;
+      });
+      us.bookendYears = years.filter(y => {
+        const a = logs.some(s => s.date === y + '-01-01');
+        const b = logs.some(s => s.date === y + '-12-31');
+        return a && b;
+      });
+
+      return { logs, us, byState, usPool, statePools };
+    }
+
+    function toTitleCase(str) {
+      const small = /^(a|an|and|as|at|but|by|for|in|nor|of|on|or|the|to|via)$/i;
+      let first = true;
+      return String(str || '').replace(/[A-Za-z][A-Za-z']*/g, function (word) {
+        const keep = first;
+        first = false;
+        if (word.length <= 3 && word === word.toUpperCase()) return word;
+        if (!keep && small.test(word)) return word.toLowerCase();
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      });
+    }
+    function pushDef(list, def) {
+      if (def.title) def.title = toTitleCase(def.title);
+      if (def.familyTitle) def.familyTitle = toTitleCase(def.familyTitle);
+      list.push(def);
+    }
+
+    function statePctHave(ctx, stateName) {
+      const official = officialRows(STATE_CODES[stateName] || '');
+      const haveSet = ctx.byState[stateName] ? ctx.byState[stateName].codes : new Set();
+      let have = 0;
+      official.forEach(sp => { if (haveSet.has(sp.code)) have++; });
+      return { have: have, total: official.length };
+    }
+
+    const rarSplitCache = {};
+    function raritySplit(regionCode) {
+      if (rarSplitCache[regionCode]) return rarSplitCache[regionCode];
+      const rows = officialRows(regionCode);
+      const buckets = { 1: [], 2: [], 3: [] };
+      rows.forEach(sp => {
+        const peak = yearPeak(sp);
+        const avg = yearAvg(sp);
+        let r = 3;
+        if (peak < 0.22 || avg < 0.12) r = 3;
+        else if (avg >= 0.4) r = 1;
+        else if (avg >= 0.18) r = 2;
+        buckets[r].push(sp.code);
+      });
+      rarSplitCache[regionCode] = buckets;
+      return buckets;
+    }
+
+    function loggedInScope(ctx, isCountry, stateName) {
+      if (isCountry) return ctx.us.codes;
+      return (ctx.byState[stateName] && ctx.byState[stateName].codes) || new Set();
+    }
+
+    function buildAchDefs(mode) {
+      const isCountry = mode === 'country';
+      const pfx = isCountry ? 'co' : 'st';
+      const defs = [];
+
+      if (!isCountry) {
+        Object.keys(STATE_CODES).forEach(name => {
+          const ab = STATE_ABBR[name];
+          pushDef(defs, {
+            id: 'st.ink.' + ab, mode: 'state', cat: 'states', state: name,
+            title: 'First ink — ' + name, hint: 'Log any species in ' + name,
+            kind: 'ink', family: 'st.ink.' + ab, familyTitle: 'First ink'
+          });
+          ACH_PCT.forEach(p => {
+            pushDef(defs, {
+              id: 'st.pct.' + ab + '.' + p, mode: 'state', cat: 'states', state: name,
+              title: name + ' ' + p + '%', hint: 'Official ' + name + ' checklist',
+              kind: 'statepct', pct: p, family: 'st.pct.' + ab, familyTitle: name + ' checklist', tierLabel: p + '%'
+            });
+          });
+          [50, 100].forEach(p => {
+            pushDef(defs, {
+              id: 'st.rar.' + ab + '.common.' + p, mode: 'state', cat: 'states', state: name,
+              title: name + ' commons ' + p + '%', hint: 'Common species on the ' + name + ' list',
+              kind: 'staterar', bucket: 1, pct: p, family: 'st.rar.' + ab + '.common', familyTitle: name + ' · Common', tierLabel: p + '%'
+            });
+            pushDef(defs, {
+              id: 'st.rar.' + ab + '.uncommon.' + p, mode: 'state', cat: 'states', state: name,
+              title: name + ' uncommons ' + p + '%', hint: 'Uncommon species on the ' + name + ' list',
+              kind: 'staterar', bucket: 2, pct: p, family: 'st.rar.' + ab + '.uncommon', familyTitle: name + ' · Uncommon', tierLabel: p + '%'
+            });
+          });
+          [25, 50, 100].forEach(p => {
+            pushDef(defs, {
+              id: 'st.rar.' + ab + '.rare.' + p, mode: 'state', cat: 'states', state: name,
+              title: name + ' rares ' + p + '%', hint: 'Rare species on the ' + name + ' list',
+              kind: 'staterar', bucket: 3, pct: p, family: 'st.rar.' + ab + '.rare', familyTitle: name + ' · Rare', tierLabel: p + '%'
+            });
+          });
+          pushDef(defs, {
+            id: 'st.specialist.' + ab, mode: 'state', cat: 'states', state: name,
+            title: name + ' specialist', hint: 'Complete any one type on the ' + name + ' list',
+            kind: 'specialist', family: 'st.specialist.' + ab, familyTitle: name + ' specialist'
+          });
+        });
+      } else {
+        ACH_PCT.forEach(p => {
+          pushDef(defs, {
+            id: 'co.pct.' + p, mode: 'country', cat: 'national',
+            title: 'United States ' + p + '%', hint: 'Official US list',
+            kind: 'uspct', pct: p, family: 'co.pct', familyTitle: 'United States', tierLabel: p + '%'
+          });
+        });
+        [50, 100, 200, 300, 400, 500, 600, 700].forEach(n => {
+          pushDef(defs, {
+            id: 'co.count.' + n, mode: 'country', cat: 'national',
+            title: 'US ' + n, hint: 'Unique US species',
+            kind: 'uscount', need: n, family: 'co.count', familyTitle: 'US species', tierLabel: String(n)
+          });
+        });
+        [1, 5, 10, 15, 25, 35, 48, 50, 51].forEach(n => {
+          const lab = n === 48 ? 'Lower 48' : n === 51 ? '50 + DC' : n === 50 ? '50 states' : String(n);
+          pushDef(defs, {
+            id: 'co.states.' + n, mode: 'country', cat: 'breadth',
+            title: n === 48 ? 'Lower forty-eight' : n === 51 ? 'Fifty plus DC' : n === 50 ? 'Fifty states' : ('States touched ' + n),
+            hint: n === 48 ? 'Log in all contiguous states' : ('Distinct states with a log: ' + n),
+            kind: 'statesn', need: n, family: 'co.states', familyTitle: 'States touched', tierLabel: lab
+          });
+        });
+        pushDef(defs, { id: 'co.breadth.coast', mode: 'country', cat: 'breadth', title: 'Coast to coast', hint: 'Pacific and Atlantic state logs', kind: 'coast' });
+        pushDef(defs, { id: 'co.breadth.corners', mode: 'country', cat: 'breadth', title: 'Four corners', hint: 'Arizona, Colorado, New Mexico, Utah', kind: 'corners' });
+        pushDef(defs, { id: 'co.breadth.frontiers', mode: 'country', cat: 'breadth', title: 'Both frontiers', hint: 'Alaska and Hawaii', kind: 'frontiers' });
+      }
+
+      ACH_GROUPS.forEach(g => {
+        const slug = g.replace(/[^A-Za-z]+/g, '');
+        ACH_PCT.forEach(p => {
+          pushDef(defs, {
+            id: pfx + '.type.' + slug + '.' + p, mode: mode, cat: 'types',
+            title: g + ' ' + p + '%', hint: 'US pool for ' + g,
+            kind: 'typepct', group: g, pct: p,
+            family: pfx + '.type.' + slug, familyTitle: g, tierLabel: p + '%'
+          });
+        });
+      });
+      pushDef(defs, { id: pfx + '.type.collector', mode: mode, cat: 'types', title: 'Type collector', hint: 'At least one species in every type', kind: 'typecol' });
+      pushDef(defs, { id: pfx + '.type.specialist', mode: mode, cat: 'types', title: 'Type specialist', hint: 'Any one type at 100% of the US pool', kind: 'typespec' });
+      pushDef(defs, { id: pfx + '.type.atlas', mode: mode, cat: 'types', title: 'Type atlas', hint: 'Ten types at 50% or more', kind: 'typeatlas' });
+      pushDef(defs, { id: pfx + '.type.noleftovers', mode: mode, cat: 'types', title: 'No leftovers', hint: '100% of every type with 10+ US species', kind: 'typenoleft' });
+
+      const rarCount = isCountry
+        ? { common: [25, 50, 100, 200, 300], uncommon: [15, 25, 50, 100, 150], rare: [5, 10, 25, 50, 75], pulse: [1, 5, 10, 25, 50] }
+        : { common: [25, 50, 100, 150, 200], uncommon: [10, 25, 50, 75, 100], rare: [5, 10, 25, 50], pulse: [1, 5, 10, 25] };
+      const rarKey = { common: 1, uncommon: 2, rare: 3, pulse: 4 };
+      Object.keys(rarCount).forEach(name => {
+        rarCount[name].forEach(n => {
+          pushDef(defs, {
+            id: pfx + '.rar.' + (isCountry ? 'n.' : '') + name + '.' + n,
+            mode: mode, cat: 'rarity',
+            title: name.charAt(0).toUpperCase() + name.slice(1) + ' ' + n,
+            hint: 'Unique species logged at this rarity in the log’s state',
+            kind: 'rarcount', bucket: rarKey[name], need: n,
+            family: pfx + '.rar.n.' + name, familyTitle: name.charAt(0).toUpperCase() + name.slice(1),
+            tierLabel: String(n)
+          });
+        });
+      });
+      if (isCountry) {
+        ['common', 'uncommon', 'rare'].forEach(name => {
+          ACH_PCT.forEach(p => {
+            pushDef(defs, {
+              id: 'co.rar.' + name + '.' + p, mode: 'country', cat: 'rarity',
+              title: 'US ' + name.charAt(0).toUpperCase() + name.slice(1) + ' ' + p + '%',
+              hint: 'Share of the US ' + name + ' list',
+              kind: 'usrar', bucket: name === 'common' ? 1 : name === 'uncommon' ? 2 : 3, pct: p,
+              family: 'co.rar.' + name, familyTitle: 'US ' + name.charAt(0).toUpperCase() + name.slice(1),
+              tierLabel: p + '%'
+            });
+          });
+        });
+      }
+
+      MONTH_LABELS.forEach((lab, mi) => {
+        ACH_MOY.forEach(n => {
+          pushDef(defs, {
+            id: pfx + '.moy.' + lab + '.' + n, mode: mode, cat: 'months',
+            title: lab + ' ' + n, hint: 'Unique species ever logged in ' + lab,
+            kind: 'moy', month: mi, need: n,
+            family: pfx + '.moy.' + lab, familyTitle: lab, tierLabel: String(n)
+          });
+        });
+      });
+      [[50, 100], [50, 100], [25, 50, 100], [50, 100]].forEach(() => {});
+      [50, 100].forEach(n => {
+        pushDef(defs, { id: pfx + '.season.spring.' + n, mode: mode, cat: 'months', title: 'Spring wave ' + n, hint: 'March–May', kind: 'season', months: [2, 3, 4], need: n, family: pfx + '.season.spring', familyTitle: 'Spring wave', tierLabel: String(n) });
+        pushDef(defs, { id: pfx + '.season.fall.' + n, mode: mode, cat: 'months', title: 'Fall wave ' + n, hint: 'August–October', kind: 'season', months: [7, 8, 9], need: n, family: pfx + '.season.fall', familyTitle: 'Fall wave', tierLabel: String(n) });
+        pushDef(defs, { id: pfx + '.season.breed.' + n, mode: mode, cat: 'months', title: 'Breeding season ' + n, hint: 'June–July', kind: 'season', months: [5, 6], need: n, family: pfx + '.season.breed', familyTitle: 'Breeding season', tierLabel: String(n) });
+      });
+      [25, 50, 100].forEach(n => {
+        pushDef(defs, { id: pfx + '.season.winter.' + n, mode: mode, cat: 'months', title: 'Winter list ' + n, hint: 'December–February', kind: 'season', months: [11, 0, 1], need: n, family: pfx + '.season.winter', familyTitle: 'Winter list', tierLabel: String(n) });
+      });
+      pushDef(defs, { id: pfx + '.season.every', mode: mode, cat: 'months', title: 'Every month', hint: 'At least one species in all 12 months', kind: 'everymonth' });
+      ACH_BIGMONTH.forEach(n => {
+        pushDef(defs, {
+          id: pfx + '.bigmonth.' + n, mode: mode, cat: 'months',
+          title: 'Big month ' + n, hint: 'Unique species in any single calendar month',
+          kind: 'bigmonth', need: n, family: pfx + '.bigmonth', familyTitle: 'Big month', tierLabel: String(n)
+        });
+      });
+
+      const fieldCommon = function (id, title, hint, kind, extra) {
+        pushDef(defs, Object.assign({ id: pfx + '.' + id, mode: mode, cat: 'field', title: title, hint: hint, kind: kind }, extra || {}));
+      };
+      fieldCommon('photo.first', 'Shot fired', 'Log a photo', 'photofirst');
+      [25, 50, 100, 200].forEach(n => fieldCommon('photo.' + n, 'Portfolio ' + n, 'Unique species with a photo', 'photos', { need: n, family: pfx + '.photo', familyTitle: 'Portfolio', tierLabel: String(n) }));
+      [10, 25, 50].forEach(n => fieldCommon('cover.' + n, 'Cover wall ' + n, 'Species with a cover photo', 'covers', { need: n, family: pfx + '.cover', familyTitle: 'Cover wall', tierLabel: String(n) }));
+      fieldCommon('notes.25', 'Field notes', '25 logs with a note', 'notes', { need: 25 });
+      fieldCommon('photo.repeat', 'Same bird, new frame', 'Five photos of one species', 'photorepeat', { need: 5 });
+      fieldCommon('bulk.10', 'Bulk day', 'Finish a bulk upload of 10+ photos', 'flag', { flag: 'bulk10' });
+      fieldCommon('patch.25', 'Named patch', '25 species at one location name', 'patch', { need: 25 });
+      fieldCommon('county.first', 'County starter', 'A log with a county', 'countyfirst');
+      [5, 10, 25].forEach(n => fieldCommon('county.state.' + n, 'County map ' + n, 'Counties in a single state', 'countystate', { need: n, family: pfx + '.county.state', familyTitle: 'County map', tierLabel: String(n) }));
+      fieldCommon('hotspot.10', 'Hotspot regular', '10 logs at one location', 'hotspot', { need: 10 });
+      fieldCommon('day.lifer5', 'Lifer morning', 'Five new-to-list species on one date', 'liferday', { need: 5 });
+      fieldCommon('day.10', 'Double-digit day', '10 unique species on one date', 'daycodes', { need: 10 });
+      [3, 6, 12].forEach(n => fieldCommon('streak.' + n, 'Month streak ' + n, 'Consecutive months with a log', 'streak', { need: n, family: pfx + '.streak', familyTitle: 'Month streak', tierLabel: String(n) }));
+      fieldCommon('status.resident.25', 'Home birds', '25 year-round / resident species', 'statusset', { set: 'resident', need: 25 });
+      fieldCommon('status.winter.15', 'Snowbirds', '15 winter visitors', 'statusset', { set: 'winter', need: 15 });
+      fieldCommon('status.summer.15', 'Nesters', '15 summer breeding species', 'statusset', { set: 'summer', need: 15 });
+      fieldCommon('status.migrant.25', 'Passage', '25 spring/fall migrants', 'statusset', { set: 'migrant', need: 25 });
+      fieldCommon('status.fullcal', 'Full calendar bird', 'One species in four different months', 'fullcal');
+      fieldCommon('target.log', 'Needful thing', 'Log a species that was on Targets that day', 'flag', { flag: 'targetLog' });
+      [10, 25, 50, 100].forEach(n => {
+        pushDef(defs, { id: pfx + '.meta.' + n, mode: mode, cat: 'field', title: 'Pinned ' + n, hint: 'Earn ' + n + ' other achievements in this mode', kind: 'meta', need: n, meta: true, family: pfx + '.meta', familyTitle: 'Pinned', tierLabel: String(n) });
+      });
+
+      if (isCountry) {
+        [25, 50, 100].forEach(n => {
+          pushDef(defs, { id: 'co.county.grid.' + n, mode: 'country', cat: 'field', title: 'County grid ' + n, hint: 'Distinct US counties', kind: 'countygrid', need: n, family: 'co.county.grid', familyTitle: 'County grid', tierLabel: String(n) });
+        });
+        pushDef(defs, { id: 'co.day.twostate', mode: 'country', cat: 'field', title: 'State-line day', hint: 'Logs in two states on one date', kind: 'twostate' });
+        pushDef(defs, { id: 'co.day.raptor5', mode: 'country', cat: 'field', title: 'Raptor day', hint: 'Five raptor species on one date', kind: 'raptorday', need: 5 });
+        pushDef(defs, { id: 'co.species.states.5', mode: 'country', cat: 'field', title: 'Repeat traveler', hint: 'One species logged in five states', kind: 'spstates', need: 5 });
+      }
+
+      const secrets = isCountry ? [
+        { id: 'co.sec.pulse', title: 'Pulse catch', hint: 'Log a species during a pulse month', kind: 'pulse1' },
+        { id: 'co.sec.offseason', title: 'Off-season', hint: 'Log a bird in a month its state bar is 0', kind: 'offseason' },
+        { id: 'co.sec.night', title: 'Night shift', hint: 'Five owls and nightjars', kind: 'night', need: 5 },
+        { id: 'co.sec.wanderer', title: 'Ten-state bird', hint: 'One species in ten states', kind: 'spstates', need: 10 },
+        { id: 'co.sec.hats', title: 'All hats', hint: 'Every official status', kind: 'hats' },
+        { id: 'co.sec.bookends', title: 'Bookends', hint: 'January 1 and December 31 in the same year', kind: 'bookends' }
+      ] : [
+        { id: 'st.sec.pulse', title: 'Pulse catch', hint: 'Log a species during a pulse month', kind: 'pulse1' },
+        { id: 'st.sec.offseason', title: 'Off-season', hint: 'Log a bird in a month its state bar is 0', kind: 'offseason' },
+        { id: 'st.sec.night', title: 'Night shift', hint: 'Five owls and nightjars', kind: 'night', need: 5 },
+        { id: 'st.sec.hats', title: 'All hats', hint: 'Every official status', kind: 'hats' },
+        { id: 'st.sec.solstice', title: 'Bookends', hint: 'January 1 and December 31 in the same year', kind: 'bookends' },
+        { id: 'st.sec.rare100', title: 'Ghost list', hint: '100% of one state’s rare list', kind: 'ghost' }
+      ];
+      secrets.forEach(s => pushDef(defs, Object.assign({ mode: mode, cat: 'secrets', secret: true }, s)));
+      return defs;
+    }
+
+    function seasonUnion(ctx, isCountry, months) {
+      const set = new Set();
+      months.forEach(mi => {
+        const src = ctx.us.byMonth[mi];
+        if (src) src.forEach(c => set.add(c));
+      });
+      return set.size;
+    }
+
+    function evalDef(def, ctx) {
+      const isCountry = def.mode === 'country';
+      const codes = isCountry ? ctx.us.codes : ctx.us.codes;
+      const empty = { have: 0, total: 1, earned: false, detail: '' };
+      const done = (have, total, extra, pool) => {
+        const t = Math.max(1, total || 0);
+        const h = have || 0;
+        return { have: h, total: t, earned: h >= t && t > 0, detail: extra || (h + ' / ' + t), pool: pool || 0 };
+      };
+      const kind = def.kind;
+      if (kind === 'ink') {
+        const n = ctx.byState[def.state] ? ctx.byState[def.state].codes.size : 0;
+        return done(n ? 1 : 0, 1);
+      }
+      if (kind === 'statepct') {
+        const t = statePctHave(ctx, def.state);
+        if (!t.total) return empty;
+        const steps = filterPctSteps(t.total, ACH_PCT);
+        if (steps.indexOf(def.pct) < 0) return { have: t.have, total: t.total, earned: false, skip: true, detail: t.have + ' / ' + t.total };
+        const need = Math.max(1, Math.ceil(t.total * def.pct / 100));
+        return done(t.have, need, t.have + ' / ' + t.total + ' · ' + def.pct + '%', t.total);
+      }
+      if (kind === 'staterar') {
+        const split = raritySplit(STATE_CODES[def.state]);
+        const pool = split[def.bucket] || [];
+        if (!pool.length) return { have: 0, total: 1, earned: false, skip: true, detail: '0 / 0' };
+        const haveSet = ctx.byState[def.state] ? ctx.byState[def.state].codes : new Set();
+        const have = pool.filter(c => haveSet.has(c)).length;
+        const steps = filterPctSteps(pool.length, def.bucket === 3 ? [25, 50, 100] : [50, 100]);
+        if (steps.indexOf(def.pct) < 0) return { have: have, total: pool.length, earned: false, skip: true };
+        const need = Math.max(1, Math.ceil(pool.length * def.pct / 100));
+        return done(have, need, have + ' / ' + pool.length, pool.length);
+      }
+      if (kind === 'specialist') {
+        const pools = typePoolState(def.state);
+        const haveSet = ctx.byState[def.state] ? ctx.byState[def.state].codes : new Set();
+        let bestG = '', bestH = 0, bestT = 0, complete = '';
+        Object.keys(pools).forEach(g => {
+          const tot = pools[g].size;
+          if (!tot) return;
+          let h = 0;
+          pools[g].forEach(c => { if (haveSet.has(c)) h++; });
+          if (h === tot && tot > 0 && !complete) complete = g;
+          if (tot && h / tot > (bestT ? bestH / bestT : -1)) { bestG = g; bestH = h; bestT = tot; }
+        });
+        return { have: complete ? 1 : 0, total: 1, earned: !!complete, detail: complete ? complete : (bestG ? (bestG + ' ' + bestH + '/' + bestT) : 'No types') };
+      }
+      if (kind === 'uspct') {
+        const rows = officialRows('US');
+        const total = rows.length;
+        if (!total) return empty;
+        let have = 0;
+        rows.forEach(sp => { if (ctx.us.codes.has(sp.code)) have++; });
+        const steps = filterPctSteps(total, ACH_PCT);
+        if (steps.indexOf(def.pct) < 0) return { have: have, total: total, earned: false, skip: true };
+        const need = Math.max(1, Math.ceil(total * def.pct / 100));
+        return done(have, need, have + ' / ' + total, total);
+      }
+      if (kind === 'uscount') return done(ctx.us.codes.size, def.need, '', officialRows('US').length);
+      if (kind === 'statesn') {
+        const names = Array.from(ctx.us.states).filter(n => STATE_CODES[n]);
+        let have = names.length;
+        if (def.need === 48) have = LOWER48.filter(n => ctx.us.states.has(n)).length;
+        else if (def.need === 50) have = names.filter(n => n !== 'District of Columbia').length;
+        else if (def.need === 51) have = names.length;
+        const need = def.need === 48 ? 48 : def.need === 50 ? 50 : def.need === 51 ? 51 : def.need;
+        return done(have, need);
+      }
+      if (kind === 'coast') {
+        const pac = Object.keys(PACIFIC_STATES).some(n => ctx.us.states.has(n));
+        const atl = Object.keys(ATLANTIC_STATES).some(n => ctx.us.states.has(n));
+        return done((pac ? 1 : 0) + (atl ? 1 : 0), 2, (pac ? 'Pacific' : '—') + ' / ' + (atl ? 'Atlantic' : '—'));
+      }
+      if (kind === 'corners') {
+        const need = ['Arizona', 'Colorado', 'New Mexico', 'Utah'];
+        const have = need.filter(n => ctx.us.states.has(n)).length;
+        return done(have, 4);
+      }
+      if (kind === 'frontiers') {
+        const have = (ctx.us.states.has('Alaska') ? 1 : 0) + (ctx.us.states.has('Hawaii') ? 1 : 0);
+        return done(have, 2);
+      }
+      if (kind === 'typepct') {
+        const pool = ctx.usPool[def.group] || new Set();
+        const total = pool.size;
+        if (!total) return { have: 0, total: 1, earned: false, skip: true };
+        const steps = filterPctSteps(total, ACH_PCT);
+        if (steps.indexOf(def.pct) < 0) return { have: 0, total: total, earned: false, skip: true };
+        let have = 0;
+        const src = isCountry ? ctx.us.codes : ctx.us.codes;
+        pool.forEach(c => { if (src.has(c)) have++; });
+        const need = Math.max(1, Math.ceil(total * def.pct / 100));
+        return done(have, need, have + ' / ' + total, total);
+      }
+      if (kind === 'typecol') {
+        let have = 0;
+        ACH_GROUPS.forEach(g => {
+          const pool = ctx.usPool[g] || new Set();
+          let ok = false;
+          pool.forEach(c => { if (ctx.us.codes.has(c)) ok = true; });
+          if (ok || pool.size === 0) have++;
+        });
+        return done(have, ACH_GROUPS.length);
+      }
+      if (kind === 'typespec') {
+        let ok = false, detail = '';
+        ACH_GROUPS.forEach(g => {
+          const pool = ctx.usPool[g] || new Set();
+          if (pool.size <= 0) return;
+          let h = 0;
+          pool.forEach(c => { if (ctx.us.codes.has(c)) h++; });
+          if (h === pool.size) { ok = true; detail = g; }
+        });
+        return { have: ok ? 1 : 0, total: 1, earned: ok, detail: detail || 'None complete' };
+      }
+      if (kind === 'typeatlas') {
+        let have = 0;
+        ACH_GROUPS.forEach(g => {
+          const pool = ctx.usPool[g] || new Set();
+          if (pool.size <= 0) return;
+          let h = 0;
+          pool.forEach(c => { if (ctx.us.codes.has(c)) h++; });
+          if (h / pool.size >= 0.5) have++;
+        });
+        return done(have, 10);
+      }
+      if (kind === 'typenoleft') {
+        const big = ACH_GROUPS.filter(g => (ctx.usPool[g] || new Set()).size >= 10);
+        let have = 0;
+        big.forEach(g => {
+          const pool = ctx.usPool[g];
+          let h = 0;
+          pool.forEach(c => { if (ctx.us.codes.has(c)) h++; });
+          if (h === pool.size) have++;
+        });
+        return done(have, Math.max(1, big.length), have + ' / ' + big.length);
+      }
+      if (kind === 'rarcount') {
+        const set = ctx.us.rarityCounts[def.bucket] || new Set();
+        const split = raritySplit(isCountry ? 'US' : (STATE_CODES[activeState] || 'US'));
+        const poolN = (split[def.bucket] || []).length;
+        return done(set.size, def.need, '', poolN);
+      }
+      if (kind === 'usrar') {
+        const split = raritySplit('US');
+        const pool = split[def.bucket] || [];
+        if (!pool.length) return { have: 0, total: 1, earned: false, skip: true };
+        const have = pool.filter(c => ctx.us.codes.has(c)).length;
+        const steps = filterPctSteps(pool.length, ACH_PCT);
+        if (steps.indexOf(def.pct) < 0) return { have: have, total: pool.length, earned: false, skip: true };
+        const need = Math.max(1, Math.ceil(pool.length * def.pct / 100));
+        return done(have, need, have + ' / ' + pool.length, pool.length);
+      }
+      if (kind === 'moy') {
+        const set = ctx.us.byMonth[def.month] || new Set();
+        return done(set.size, def.need);
+      }
+      if (kind === 'season') return done(seasonUnion(ctx, isCountry, def.months), def.need);
+      if (kind === 'everymonth') {
+        let have = 0;
+        for (let i = 0; i < 12; i++) if ((ctx.us.byMonth[i] || new Set()).size) have++;
+        return done(have, 12);
+      }
+      if (kind === 'bigmonth') {
+        const have = isCountry ? ctx.us.maxMonth : ctx.us.maxMonthState;
+        return done(have, def.need);
+      }
+      if (kind === 'photofirst') return done(ctx.us.photos.size ? 1 : 0, 1);
+      if (kind === 'photos') return done(ctx.us.photos.size, def.need);
+      if (kind === 'covers') return done(ctx.us.covers.size, def.need);
+      if (kind === 'notes') return done(ctx.us.notes, def.need);
+      if (kind === 'photorepeat') return done(ctx.us.maxPhotoRepeat, def.need);
+      if (kind === 'flag') return done(achFlags[def.flag] ? 1 : 0, 1);
+      if (kind === 'patch') return done(ctx.us.maxLocSpp, def.need);
+      if (kind === 'countyfirst') return done(ctx.us.counties.size ? 1 : 0, 1);
+      if (kind === 'countystate') {
+        let max = 0;
+        Object.keys(ctx.byState).forEach(n => { const c = ctx.byState[n].counties.size; if (c > max) max = c; });
+        return done(max, def.need);
+      }
+      if (kind === 'hotspot') return done(ctx.us.maxLocLogs, def.need);
+      if (kind === 'liferday') {
+        const src = isCountry ? ctx.us.liferDayCountry : ctx.us.liferDayState;
+        let max = 0;
+        Object.keys(src).forEach(d => { if (src[d] > max) max = src[d]; });
+        return done(max, def.need);
+      }
+      if (kind === 'daycodes') return done(ctx.us.maxDayCodes, def.need);
+      if (kind === 'streak') return done(ctx.us.monthStreak, def.need);
+      if (kind === 'statusset') return done((ctx.us.statusSets[def.set] || new Set()).size, def.need);
+      if (kind === 'fullcal') {
+        let max = 0;
+        Object.keys(ctx.us.speciesMonths).forEach(c => {
+          const n = ctx.us.speciesMonths[c].size;
+          if (n > max) max = n;
+        });
+        return done(max, 4);
+      }
+      if (kind === 'countygrid') return done(ctx.us.counties.size, def.need);
+      if (kind === 'twostate') return done(ctx.us.twoStateDay ? 1 : 0, 1);
+      if (kind === 'raptorday') return done(ctx.us.maxRaptorDay, def.need);
+      if (kind === 'spstates') return done(ctx.us.maxSpeciesStates, def.need);
+      if (kind === 'pulse1') return done(ctx.us.pulse.size ? 1 : 0, 1);
+      if (kind === 'offseason') return done(ctx.us.offseason ? 1 : 0, 1);
+      if (kind === 'night') return done(ctx.us.night.size, def.need || 5);
+      if (kind === 'hats') return done(ctx.us.statusHits.size, DATA.L.length || 6, ctx.us.statusHits.size + ' / ' + (DATA.L.length || 6));
+      if (kind === 'bookends') return done(ctx.us.bookendYears.length ? 1 : 0, 1, ctx.us.bookendYears[0] ? String(ctx.us.bookendYears[0]) : '');
+      if (kind === 'ghost') {
+        let ok = false, detail = '';
+        Object.keys(STATE_CODES).forEach(name => {
+          const split = raritySplit(STATE_CODES[name]);
+          const pool = split[3] || [];
+          if (!pool.length) return;
+          const haveSet = ctx.byState[name] ? ctx.byState[name].codes : new Set();
+          const have = pool.filter(c => haveSet.has(c)).length;
+          if (have === pool.length) { ok = true; detail = name; }
+        });
+        return { have: ok ? 1 : 0, total: 1, earned: ok, detail: detail || 'No state complete' };
+      }
+      return empty;
+    }
+
+    function yearDefsFor(mode, ctx) {
+      const isCountry = mode === 'country';
+      const pfx = isCountry ? 'co' : 'st';
+      const defs = [];
+      const years = (ctx.us.years || []).slice();
+      const thisY = new Date().getFullYear();
+      if (years.indexOf(thisY) < 0 && years.length) years.push(thisY);
+      years.sort();
+      years.forEach(y => {
+        ACH_YEAR.forEach(n => {
+          pushDef(defs, {
+            id: pfx + '.year.' + y + '.' + n, mode: mode, cat: 'years',
+            title: y + ' · ' + n, hint: 'Unique species in ' + y, kind: 'yearn', year: y, need: n,
+            family: pfx + '.year.' + y, familyTitle: String(y), tierLabel: String(n)
+          });
+        });
+        pushDef(defs, { id: pfx + '.year.first.' + y, mode: mode, cat: 'years', title: 'First of ' + y, hint: 'Any log in ' + y, kind: 'yearfirst', year: y });
+        pushDef(defs, { id: pfx + '.year.opener.' + y, mode: mode, cat: 'years', title: 'Opener ' + y, hint: 'Log on January 1', kind: 'yearopener', year: y });
+        pushDef(defs, { id: pfx + '.year.closer.' + y, mode: mode, cat: 'years', title: 'Closer ' + y, hint: 'Log on December 31', kind: 'yearcloser', year: y });
+        if (isCountry) {
+          [300, 400, 500].forEach(n => {
+            pushDef(defs, { id: 'co.year.national.' + y + '.' + n, mode: 'country', cat: 'years', title: 'National year ' + y + ' · ' + n, hint: 'US species in ' + y, kind: 'yearn', year: y, need: n, family: 'co.year.national.' + y, familyTitle: 'National year ' + y, tierLabel: String(n) });
+          });
+        } else {
+          pushDef(defs, { id: 'st.year.patch.' + y, mode: 'state', cat: 'years', title: 'Patch year ' + y, hint: '100 species in one state in ' + y, kind: 'patchyear', year: y, need: 100 });
+        }
+        pushDef(defs, { id: pfx + '.green.' + y, mode: mode, cat: 'years', title: 'Green Year ' + y, hint: 'A log in every month of ' + y, kind: 'green', year: y });
+      });
+      return defs;
+    }
+
+    function evalYearDef(def, ctx) {
+      const y = def.year;
+      const set = ctx.us.byYear[y] || new Set();
+      if (def.kind === 'yearn') return { have: set.size, total: def.need, earned: set.size >= def.need, detail: set.size + ' / ' + def.need };
+      if (def.kind === 'yearfirst') return { have: set.size ? 1 : 0, total: 1, earned: set.size > 0, detail: set.size ? 'Logged' : '—' };
+      if (def.kind === 'yearopener') {
+        const ok = ctx.logs.some(s => s.date === y + '-01-01');
+        return { have: ok ? 1 : 0, total: 1, earned: ok, detail: ok ? y + '-01-01' : '' };
+      }
+      if (def.kind === 'yearcloser') {
+        const ok = ctx.logs.some(s => s.date === y + '-12-31');
+        return { have: ok ? 1 : 0, total: 1, earned: ok, detail: ok ? y + '-12-31' : '' };
+      }
+      if (def.kind === 'patchyear') {
+        const n = ctx.us.patchYear[y] || 0;
+        return { have: n, total: 100, earned: n >= 100, detail: n + ' / 100' };
+      }
+      if (def.kind === 'green') {
+        const ok = (ctx.us.greenYears || []).indexOf(y) >= 0;
+        return { have: ok ? 12 : 0, total: 12, earned: ok, detail: ok ? '12 / 12' : '' };
+      }
+      return { have: 0, total: 1, earned: false };
+    }
+
+    const ACH_CATS = [
+      { id: 'states', label: 'States' },
+      { id: 'national', label: 'United States' },
+      { id: 'breadth', label: 'Breadth' },
+      { id: 'types', label: 'Types' },
+      { id: 'rarity', label: 'Rarity' },
+      { id: 'months', label: 'Months' },
+      { id: 'years', label: 'Years' },
+      { id: 'field', label: 'Field' },
+      { id: 'secrets', label: 'Secrets' }
+    ];
+
+    const ACH_BANDS = [
+      'Fledgling', 'Local Patch', 'County Walker', 'State Lister',
+      'Flyway Traveler', 'National Guide', 'Atlas Keeper', 'Season Veteran',
+      'Field Master', 'Life Lister', 'Range Mapper', 'Sky Lister',
+      'Archive Keeper', 'Mythic Birder'
+    ];
+    function defXp(def) {
+      if (!def) return 0;
+      const pctMap = { 10: 15, 25: 28, 50: 55, 75: 90, 90: 140, 100: 220 };
+      let xp = 0;
+      const need = def.need || 0;
+      switch (def.kind) {
+        case 'ink': xp = 12; break;
+        case 'statepct': xp = pctMap[def.pct] || 20; break;
+        case 'uspct': xp = Math.round((pctMap[def.pct] || 20) * 1.35); break;
+        case 'uscount': xp = Math.max(18, Math.round(need * 0.45)); break;
+        case 'staterar': xp = Math.round((pctMap[def.pct] || 20) * (def.bucket === 3 ? 1.6 : def.bucket === 2 ? 1.25 : 0.9)); break;
+        case 'usrar': xp = Math.round((pctMap[def.pct] || 20) * (def.bucket === 3 ? 1.8 : def.bucket === 2 ? 1.3 : 1)); break;
+        case 'typepct': xp = pctMap[def.pct] || 20; break;
+        case 'rarcount': xp = Math.round(Math.max(8, need) * (def.bucket === 4 ? 4 : def.bucket === 3 ? 2.5 : def.bucket === 2 ? 1.4 : 0.8)); break;
+        case 'moy': xp = Math.max(15, Math.round(need * 0.5)); break;
+        case 'season': xp = Math.max(20, Math.round(need * 0.35)); break;
+        case 'everymonth': xp = 80; break;
+        case 'bigmonth': xp = Math.max(25, Math.round(need * 0.7)); break;
+        case 'yearn': xp = Math.max(20, Math.round(need * 0.4)); break;
+        case 'yearfirst': xp = 10; break;
+        case 'yearopener': xp = 18; break;
+        case 'yearcloser': xp = 18; break;
+        case 'patchyear': xp = 90; break;
+        case 'green': xp = 110; break;
+        case 'statesn': xp = need >= 51 ? 220 : need >= 50 ? 180 : need >= 48 ? 150 : Math.max(20, need * 4); break;
+        case 'coast': xp = 40; break;
+        case 'corners': xp = 45; break;
+        case 'frontiers': xp = 55; break;
+        case 'specialist': xp = 120; break;
+        case 'typecol': xp = 80; break;
+        case 'typespec': xp = 140; break;
+        case 'typeatlas': xp = 100; break;
+        case 'typenoleft': xp = 220; break;
+        case 'photos': xp = Math.max(20, Math.round(need * 1.1)); break;
+        case 'photofirst': xp = 12; break;
+        case 'covers': xp = Math.max(18, Math.round(need * 1.4)); break;
+        case 'notes': xp = 25; break;
+        case 'photorepeat': xp = 30; break;
+        case 'flag': xp = 22; break;
+        case 'patch': xp = 40; break;
+        case 'countyfirst': xp = 10; break;
+        case 'countystate': xp = Math.max(16, Math.round(need * 3)); break;
+        case 'countygrid': xp = Math.max(20, Math.round(need * 2.2)); break;
+        case 'hotspot': xp = 28; break;
+        case 'liferday': xp = 35; break;
+        case 'daycodes': xp = 30; break;
+        case 'streak': xp = Math.max(20, need * 6); break;
+        case 'statusset': xp = Math.max(20, Math.round(need * 1.2)); break;
+        case 'fullcal': xp = 45; break;
+        case 'meta': xp = Math.max(15, Math.round(need * 1.2)); break;
+        case 'twostate': xp = 35; break;
+        case 'raptorday': xp = 40; break;
+        case 'spstates': xp = Math.max(25, need * 8); break;
+        case 'pulse1': xp = 50; break;
+        case 'offseason': xp = 55; break;
+        case 'night': xp = 40; break;
+        case 'hats': xp = 70; break;
+        case 'bookends': xp = 60; break;
+        case 'ghost': xp = 160; break;
+        default: xp = need ? Math.max(16, Math.round(need * 0.55)) : 24;
+      }
+      if (def.secret) xp = Math.round(xp * 1.45) + 20;
+      return xp;
+    }
+    function actionXpParts(ctx) {
+      const empty = { logs: 0, species: 0, photos: 0, covers: 0, notes: 0, states: 0, counties: 0, total: 0 };
+      if (!ctx || !ctx.us) return empty;
+      const us = ctx.us;
+      const logs = sightings.filter(s => s && s.species_code && (s.country === 'United States' || !s.country)).length;
+      const parts = {
+        logs: logs * 2,
+        species: us.codes.size * 10,
+        photos: us.photos.size * 8,
+        covers: us.covers.size * 6,
+        notes: (us.notes || 0) * 3,
+        states: us.states.size * 20,
+        counties: us.counties.size * 10
+      };
+      parts.total = parts.logs + parts.species + parts.photos + parts.covers + parts.notes + parts.states + parts.counties;
+      return parts;
+    }
+    function actionXp(ctx) {
+      return actionXpParts(ctx).total;
+    }
+    function progressXpFor(have, total, bucket) {
+      if (!bucket || !total) return 0;
+      return Math.floor(bucket * 0.5 * Math.max(0, Math.min(1, (have || 0) / total)));
+    }
+    function xpSplitRows(rows) {
+      let earned = 0, progress = 0;
+      (rows || []).forEach(r => {
+        const bucket = r.xp || defXp(r.def);
+        if (r.p && r.p.earned) earned += bucket;
+        else progress += progressXpFor(r.p && r.p.have, r.p && r.p.total, bucket);
+      });
+      return { earned: earned, progress: progress };
+    }
+    function xpFromRows(rows) {
+      const s = xpSplitRows(rows);
+      return s.earned + s.progress;
+    }
+    function takeXpSnapshot() {
+      const st = achXpSplit.state || { earned: 0, progress: 0 };
+      const co = achXpSplit.country || { earned: 0, progress: 0 };
+      return {
+        earned: (st.earned || 0) + (co.earned || 0),
+        progress: (st.progress || 0) + (co.progress || 0),
+        actions: actionXpParts(achLastCtx || buildAchCtx())
+      };
+    }
+    function diffXpSnap(prev, next, freshXp) {
+      prev = prev || { earned: 0, progress: 0, actions: {} };
+      next = next || { earned: 0, progress: 0, actions: {} };
+      const out = [];
+      const completed = Math.max(0, freshXp || 0);
+      const achNet = ((next.earned || 0) + (next.progress || 0)) - ((prev.earned || 0) + (prev.progress || 0));
+      const prog = achNet - completed;
+      if (completed) out.push({ label: 'Completed', xp: completed });
+      if (prog > 0) out.push({ label: 'Progress', xp: prog });
+      const labels = { logs: 'Logs', species: 'Species', photos: 'Photos', covers: 'Covers', notes: 'Notes', states: 'States', counties: 'Counties' };
+      Object.keys(labels).forEach(k => {
+        const d = (next.actions[k] || 0) - (prev.actions[k] || 0);
+        if (d > 0) out.push({ label: labels[k], xp: d });
+      });
+      return out;
+    }
+    function computeAchLevelFrom(total) {
+      let level = 1, spent = 0, need = 50;
+      while (total >= spent + need && level < 99) {
+        spent += need;
+        level += 1;
+        need = Math.round(50 + (level - 1) * 35);
+      }
+      const into = Math.max(0, total - spent);
+      const band = ACH_BANDS[Math.min(ACH_BANDS.length - 1, Math.floor((level - 1) / 5))];
+      return { total: total, level: level, into: into, need: need, band: band };
+    }
+    function computeAchLevel() {
+      const total = (achXpMode.state || 0) + (achXpMode.country || 0) + actionXp(achLastCtx || buildAchCtx());
+      return computeAchLevelFrom(total);
+    }
+    function paintAchLevel() {
+      const el = document.getElementById('ach-lvl');
+      if (!el) return;
+      const L = computeAchLevel();
+      const pct = L.need ? Math.max(4, Math.min(100, Math.round(L.into / L.need * 100))) : 100;
+      el.innerHTML = '<div class="ach-lvl-top"><b>Lv ' + L.level + ' · ' + L.band + '</b><span class="muted">' + L.into + ' / ' + L.need + ' XP</span></div>' +
+        '<div class="ach-bar"><i style="width:' + pct + '%"></i></div>';
+      const btn = document.getElementById('ach-badge');
+      const wrap = document.querySelector('.ach-btn');
+      if (wrap) wrap.title = 'Lv ' + L.level + ' ' + L.band + ' · ' + L.total + ' XP';
+    }
+
+    function evaluateAchievements(mode) {
+      const ctx = buildAchCtx();
+      const defs = buildAchDefs(mode).concat(yearDefsFor(mode, ctx));
+      const prev = Object.assign({}, achEarned[mode] || {});
+      const next = {};
+      const rows = [];
+      defs.forEach(def => {
+        if (def.meta) return;
+        const p = ({ yearn:1, yearfirst:1, yearopener:1, yearcloser:1, patchyear:1, green:1 })[def.kind]
+          ? evalYearDef(def, ctx) : evalDef(def, ctx);
+        if (p.skip) return;
+        if (p.earned) next[def.id] = prev[def.id] || todayISO();
+        rows.push({ def: def, p: p, earnedAt: next[def.id] || '', xp: defXp(def) });
+      });
+      const nonMeta = Object.keys(next).length;
+      defs.forEach(def => {
+        if (!def.meta) return;
+        const earned = nonMeta >= def.need;
+        const p = { have: Math.min(nonMeta, def.need), total: def.need, earned: earned, detail: nonMeta + ' / ' + def.need };
+        if (earned) next[def.id] = prev[def.id] || todayISO();
+        rows.push({ def: def, p: p, earnedAt: next[def.id] || '', xp: defXp(def) });
+      });
+      achEarned[mode] = next;
+      achLastCtx = ctx;
+      const split = xpSplitRows(rows);
+      achXpSplit[mode] = split;
+      achXpMode[mode] = split.earned + split.progress;
+      return { rows: rows, prev: prev, next: next, ctx: ctx };
+    }
+
+    function updateAchBadge() {
+      const mode = statsMode === 'country' ? 'country' : 'state';
+      const n = Object.keys(achEarned[mode] || {}).length;
+      const el = document.getElementById('ach-badge');
+      if (el) {
+        el.textContent = String(n);
+        el.className = 'ach-count' + (n ? '' : ' zero');
+      }
+    }
+
+    function familyScore(f) {
+      return (f.tierHave || 0) * 100000 + (f.have || 0);
+    }
+    function touchAchPulse(mode, families) {
+      if (!achPulse[mode]) achPulse[mode] = {};
+      const bucket = achPulse[mode];
+      const moved = [];
+      families.forEach(f => {
+        const score = familyScore(f);
+        const prev = bucket[f.key];
+        if (!prev) {
+          const seed = f.earnedAt ? Date.parse(f.earnedAt) : 0;
+          const progXp = progressXpFor(f.have, f.total, f.nextXp);
+          bucket[f.key] = { score: score, at: seed && !isNaN(seed) ? seed : 0, have: f.have, tierHave: f.tierHave || 0, earnedXp: f.earnedXp || 0, progXp: progXp };
+          return;
+        }
+        const progXp = progressXpFor(f.have, f.total, f.nextXp);
+        const famXp = (f.earnedXp || 0) + progXp;
+        const newTiers = (f.tierHave || 0) - (prev.tierHave || 0);
+        if (score > (prev.score || 0)) {
+          const prevFam = (prev.earnedXp || 0) + (prev.progXp || 0);
+          f.gainXp = Math.max(0, famXp - prevFam);
+          f.newTiers = Math.max(0, newTiers);
+          const keepRecent = !f.complete || newTiers > 0;
+          bucket[f.key] = { score: score, at: keepRecent ? Date.now() : (prev.at || 0), have: f.have, tierHave: f.tierHave || 0, earnedXp: f.earnedXp || 0, progXp: progXp };
+          if (!isHiddenSecret(f) && keepRecent) moved.push(f);
+        } else {
+          prev.score = score;
+          prev.have = f.have;
+          prev.tierHave = f.tierHave || 0;
+          prev.earnedXp = f.earnedXp || 0;
+          prev.progXp = progXp;
+        }
+      });
+      return moved;
+    }
+    function recentFamilies(families) {
+      const mode = statsMode === 'country' ? 'country' : 'state';
+      const bucket = achPulse[mode] || {};
+      return families.filter(f => !isHiddenSecret(f) && !f.complete && bucket[f.key] && bucket[f.key].at)
+        .slice()
+        .sort((a, b) => (bucket[b.key].at || 0) - (bucket[a.key].at || 0))
+        .slice(0, 10);
+    }
+    function isHiddenSecret(f) {
+      return !!(f && f.secret && !f.complete && !f.tierHave);
+    }
+    function achBlurb(def) {
+      if (!def) return '';
+      const name = def.state || '';
+      const g = def.group || '';
+      switch (def.kind) {
+        case 'ink': return 'Log any species in ' + name + '.';
+        case 'statepct': return 'Percent of the official ' + name + ' checklist you have logged.';
+        case 'staterar': return 'Percent of ' + name + '’s ' + (['', 'common', 'uncommon', 'rare'][def.bucket] || 'rarity') + ' list you have logged.';
+        case 'specialist': return 'Complete every species of any one type on the ' + name + ' list.';
+        case 'uspct': return 'Percent of the official United States checklist you have logged.';
+        case 'uscount': return 'Lifetime unique species logged anywhere in the United States.';
+        case 'statesn': return 'How many states (and DC) you have logged at least one bird in.';
+        case 'coast': return 'Log a bird on both the Pacific and Atlantic coasts.';
+        case 'corners': return 'Log in Arizona, Colorado, New Mexico, and Utah.';
+        case 'frontiers': return 'Log in both Alaska and Hawaii.';
+        case 'typepct': return 'Percent of US ' + g.toLowerCase() + ' species you have logged.';
+        case 'typecol': return 'Log at least one species from every bird type.';
+        case 'typespec': return 'Finish 100% of any one type in the US pool.';
+        case 'typeatlas': return 'Reach 50% in ten different US type pools.';
+        case 'typenoleft': return 'Complete every US type that has 10 or more species.';
+        case 'rarcount': return 'Species logged in a state and month when they ranked this rarity.';
+        case 'usrar': return 'Percent of the US list that sits in this rarity band.';
+        case 'moy': return 'Unique species you have ever logged during this month of the year.';
+        case 'season': return 'Unique species logged in these months, any year.';
+        case 'everymonth': return 'At least one species logged in every month of the year, lifetime.';
+        case 'bigmonth': return 'Most unique species logged in any single calendar month.';
+        case 'yearn': return 'Unique species logged during this calendar year.';
+        case 'yearfirst': return 'Any sighting dated this year.';
+        case 'yearopener': return 'A sighting on January 1 of this year.';
+        case 'yearcloser': return 'A sighting on December 31 of this year.';
+        case 'patchyear': return '100 species in a single state during this year.';
+        case 'green': return 'At least one log in every month of this year.';
+        case 'photos': return 'Unique species with at least one photo attached.';
+        case 'photofirst': return 'Attach a photo to any sighting.';
+        case 'covers': return 'Species you have chosen a cover photo for.';
+        case 'notes': return 'Sightings that include a written note.';
+        case 'photorepeat': return 'Five separate photos of the same species.';
+        case 'flag': return def.flag === 'bulk10' ? 'Finish a bulk upload of 10 or more photos.' : 'Log a species that was on Targets that day.';
+        case 'patch': return '25 species logged at one named location.';
+        case 'countyfirst': return 'Save a sighting with a county filled in.';
+        case 'countystate': return 'Distinct counties logged inside a single state.';
+        case 'countygrid': return 'Distinct counties logged anywhere in the US.';
+        case 'hotspot': return 'Ten logs at the same location name.';
+        case 'liferday': return 'Five species that were new to your list on one date.';
+        case 'daycodes': return 'Ten unique species logged on a single date.';
+        case 'streak': return 'Consecutive calendar months with at least one log.';
+        case 'statusset': return 'Species whose official status matches this bucket.';
+        case 'fullcal': return 'The same species logged in four different months.';
+        case 'meta': return 'Earn this many other achievements in the current stats mode.';
+        case 'twostate': return 'Logs from two different states on the same date.';
+        case 'raptorday': return 'Five raptor species on a single date.';
+        case 'spstates': return 'The same species logged in this many states.';
+        case 'pulse1': return 'Log a species during a month it ranks Pulse in that state.';
+        case 'offseason': return 'Log a species in a month its state bar is zero.';
+        case 'night': return 'Owls and nightjars on your list.';
+        case 'hats': return 'At least one species in every official status.';
+        case 'bookends': return 'Logs on January 1 and December 31 of the same year.';
+        case 'ghost': return 'Every rare species on one state’s official list.';
+        default: return def.hint || '';
+      }
+    }
+    function renderAchPips(row) {
+      if (!row || row.secret && !row.complete && !row.tierHave) return '';
+      if (!(row.tierTotal > 1) || !row.items) {
+        return '<div class="ach-bar" style="margin-top:0;height:14px"><i style="width:' + (row.pct || 0) + '%"></i></div>';
+      }
+      let nowIdx = -1;
+      return '<div class="ach-pips" style="--ach-n:' + row.items.length + '">' + row.items.map(function (it, idx) {
+        const got = !!it.p.earned;
+        const now = !got && nowIdx < 0;
+        if (now) nowIdx = idx;
+        const need = it.p.total || 0;
+        const fill = got ? 100 : (now && need ? Math.max(10, Math.min(100, Math.round((it.p.have || 0) / need * 100))) : 0);
+        const cls = got ? ' got' : (now ? ' now' : '');
+        return '<div class="ach-pip-cell' + cls + '">' +
+          '<div class="ach-pip' + cls + '"><i style="width:' + fill + '%"></i></div>' +
+          '<em>' + (it.def.tierLabel || '') + '</em>' +
+          '</div>';
+      }).join('') + '</div>';
+    }
+    function renderAchDots(n, i) {
+      if (!n || n < 2) return '';
+      let html = '<div class="ach-dots">';
+      for (let k = 0; k < n; k++) html += '<i class="' + (k === i ? 'on' : '') + '"></i>';
+      return html + '</div>';
+    }
+    function renderAchPager(n, i, step) {
+      if (!n || n < 2) return '';
+      return '<div class="ach-pager">' +
+        '<button type="button" class="ach-feature-nav" onclick="event.stopPropagation();' + step + '(-1)">‹</button>' +
+        renderAchDots(n, i) +
+        '<button type="button" class="ach-feature-nav" onclick="event.stopPropagation();' + step + '(1)">›</button>' +
+        '</div>';
+    }
+    function renderAchLevelCard(opts) {
+      opts = opts || {};
+      const L = opts.L || computeAchLevel();
+      const fromL = opts.fromL;
+      const sameLevel = !fromL || fromL.level === L.level;
+      const startPct = fromL && fromL.need
+        ? Math.max(0, Math.min(100, Math.round(fromL.into / fromL.need * 100)))
+        : (L.need ? Math.max(6, Math.min(100, Math.round(L.into / L.need * 100))) : 100);
+      const bandStart = Math.floor((L.level - 1) / 5) * 5 + 1;
+      const bandEnd = bandStart + 4;
+      const leveled = !!opts.leveled;
+      const gain = opts.gainXp || 0;
+      const parts = opts.parts || [];
+      const partsHtml = '<div class="ach-xp-parts">' + parts.map(function (p) {
+        const cls = p.label === 'Completed' ? '' : (p.label === 'Progress' ? ' prog' : ' field');
+        return '<span class="ach-xp-chip' + cls + '">' + p.label + ' +' + p.xp + '</span>';
+      }).join('') + '</div>';
+      return '<div class="ach-feature max level' + (leveled ? ' levelup' : '') + '">' +
+        '<div class="ach-feature-top"><b>Level ' + L.level + '</b><span class="ach-medal max"><span>Rank</span><strong>' + L.level + '</strong></span></div>' +
+        '<div class="ach-blurb">' + (leveled ? '<span class="ach-lvl-burst">Level up</span> ' : '') + L.band + ' · levels ' + bandStart + '–' + bandEnd + '</div>' +
+        '<div class="ach-feature-sub">' + L.into + ' / ' + L.need + ' XP to level ' + Math.min(99, L.level + 1) + '</div>' +
+        '<div class="ach-feature-track"><div class="ach-bar ach-level-bar" style="height:14px;margin-top:0;position:relative">' +
+          '<i class="gain" style="width:' + startPct + '%"></i>' +
+          '<i class="old" style="width:' + (sameLevel ? startPct : 0) + '%"></i>' +
+        '</div></div>' +
+        '<div class="ach-feature-foot">' +
+          '<span class="ach-feature-meta"></span>' +
+          '<span class="ach-xp">' + (gain ? ('+' + gain + ' XP') : '') + '</span>' +
+        '</div>' +
+        partsHtml +
+        '</div>';
+    }
+    function playAchLevelBar(item) {
+      if (!item || !item.levelCard || !item.fromL || !item.L) return;
+      const gain = document.querySelector('#ach-pop .ach-level-bar > i.gain');
+      const old = document.querySelector('#ach-pop .ach-level-bar > i.old');
+      if (!gain) return;
+      const fromL = item.fromL;
+      const L = item.L;
+      const fromPct = fromL.need ? Math.max(0, Math.min(100, fromL.into / fromL.need * 100)) : 0;
+      const toPct = L.need ? Math.max(0, Math.min(100, L.into / L.need * 100)) : 100;
+      if (old) {
+        old.style.transition = 'none';
+        old.style.width = (fromL.level === L.level ? fromPct : fromPct) + '%';
+      }
+      gain.style.transition = 'none';
+      gain.style.width = fromPct + '%';
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          gain.style.transition = 'width 1.05s ease';
+          if (fromL.level === L.level) {
+            gain.style.width = toPct + '%';
+            return;
+          }
+          gain.style.width = '100%';
+          setTimeout(function () {
+            if (old) old.style.width = '0%';
+            gain.style.transition = 'none';
+            gain.style.width = '0%';
+            window.requestAnimationFrame(function () {
+              window.requestAnimationFrame(function () {
+                gain.style.transition = 'width .9s ease';
+                gain.style.width = toPct + '%';
+              });
+            });
+          }, 1100);
+        });
+      });
+    }
+    function renderAchFeature(row, opts) {
+      opts = opts || {};
+      const multi = row.tierTotal > 1;
+      let sub = '';
+      if (opts.earnedLabel) sub = 'Unlocked ' + opts.earnedLabel;
+      else if (!row.complete) {
+        const goal = multi ? (row.nextLabel || row.total) : (row.total || row.nextLabel || '');
+        if (row.have > 0 && goal) sub = row.have + ' now · ' + row.left + ' more to reach ' + goal;
+        else if (goal) sub = row.left + ' more to reach ' + goal;
+        else sub = row.hint || row.detail || '';
+      } else if (row.complete && multi && row.lastLabel) {
+        sub = 'Maxed · ' + row.lastLabel;
+      } else if (row.complete) {
+        sub = 'Complete' + (row.total ? (' · ' + row.total) : '');
+      } else sub = row.hint || '';
+      const medalCls = row.complete ? ' max' : (row.inPlay ? ' live' : '');
+      const medal = multi
+        ? '<span class="ach-medal' + medalCls + '"><span>Tier</span><strong>' + row.tierHave + '/' + row.tierTotal + '</strong></span>'
+        : (row.complete ? '<span class="ach-mark">★</span>' : '');
+      const denom = row.pool > 1 ? row.pool : (row.total > 1 ? row.total : 0);
+      const pool = denom ? ((row.have || 0) + ' / ' + denom) : '';
+      const blurb = (!row.secret || row.complete || row.tierHave) ? (row.blurb || achBlurb(row.def) || '') : '';
+      const gain = opts.gainXp || row.gainXp || 0;
+      const xpText = gain ? ('+' + gain + ' XP') : (row.nextXp ? ('Next +' + row.nextXp + ' XP') : '');
+      const tierUp = !!(opts.tierUp || opts.earnedLabel);
+      const burst = tierUp
+        ? '<span class="ach-lvl-burst">' + (opts.maxed || row.complete ? 'Maxed' : 'Tier up') + '</span> '
+        : '';
+      return '<div class="ach-feature' + (row.complete ? ' max' : '') + (tierUp ? ' tierup' : '') + '">' +
+        '<div class="ach-feature-top"><b>' + (row.title || '').replace(/</g, '') + '</b>' + medal + '</div>' +
+        '<div class="ach-blurb">' + burst + blurb + '</div>' +
+        '<div class="ach-feature-sub">' + sub + '</div>' +
+        '<div class="ach-feature-track">' + renderAchPips(row) + '</div>' +
+        '<div class="ach-feature-foot"><span class="ach-feature-meta">' + pool + '</span><span class="ach-xp">' + xpText + '</span></div>' +
+        '</div>';
+    }
+    function showAchPops(families) {
+      if (!families || !families.length) return;
+      achPopQueue = families;
+      achPopIdx = 0;
+      paintAchPop();
+    }
+    function paintAchPop() {
+      const stage = document.getElementById('ach-pop-stage');
+      const pop = document.getElementById('ach-pop');
+      if (!stage || !pop) return;
+      if (!achPopQueue.length) {
+        pop.classList.remove('on');
+        stage.innerHTML = '';
+        return;
+      }
+      const item = achPopQueue[achPopIdx] || achPopQueue[0];
+      const n = achPopQueue.length;
+      let inner;
+      if (item && item.levelCard) {
+        inner = renderAchLevelCard(item);
+      } else {
+        const row = item.row || item;
+        inner = '<div onclick="openAchFromToast(\'' + encodeURIComponent(row.key) + '\',\'' + (row.def.cat || '') + '\',\'' + String(row.def.state || '').replace(/'/g, '\\\'') + '\');dismissAchPop()">' +
+          renderAchFeature(row, { earnedLabel: item.earnedLabel, idx: achPopIdx, total: n, step: 'stepAchPop', gainXp: item.gainXp || row.gainXp || 0, tierUp: item.tierUp, maxed: item.maxed }) +
+          '</div>';
+      }
+      const hot = !!(item && (item.leveled || item.tierUp || item.earnedLabel));
+      stage.innerHTML = '<div class="ach-pop-fx' + (hot ? ' hot' : '') + '">' + renderAchSparks(hot) + inner + '</div>' + renderAchPager(n, achPopIdx, 'stepAchPop');
+      pop.classList.add('on');
+      if (item && item.levelCard) playAchLevelBar(item);
+    }
+    function renderAchSparks(hot) {
+      const n = hot ? 22 : 14;
+      let html = '';
+      for (let i = 0; i < n; i++) {
+        const left = 4 + Math.random() * 92;
+        const top = 8 + Math.random() * 84;
+        const dx = (Math.random() * 36 - 18).toFixed(1) + 'px';
+        const dy = (-18 - Math.random() * 46).toFixed(1) + 'px';
+        const delay = (Math.random() * 2.4).toFixed(2) + 's';
+        const dur = (2.2 + Math.random() * 1.8).toFixed(2) + 's';
+        const cls = (!hot && i % 3 === 0) ? 'ach-spark em' : 'ach-spark';
+        html += '<i class="' + cls + '" style="left:' + left + '%;top:' + top + '%;--dx:' + dx + ';--dy:' + dy + ';animation-duration:' + dur + ';animation-delay:' + delay + '"></i>';
+      }
+      return html;
+    }
+    function stepAchPop(dir) {
+      const n = achPopQueue.length;
+      if (n < 2) return;
+      achPopIdx = (achPopIdx + dir + n) % n;
+      paintAchPop();
+    }
+    function dismissAchPop() {
+      achPopQueue = [];
+      achPopIdx = 0;
+      const pop = document.getElementById('ach-pop');
+      if (pop) pop.classList.remove('on');
+    }
+    function hideAchNote() {
+      const el = document.getElementById('ach-note');
+      if (el) el.classList.remove('on');
+      if (achNoteTimer) { clearTimeout(achNoteTimer); achNoteTimer = 0; }
+    }
+    function showAchNote(pops, progressed, completed, xpGain, leveled) {
+      achPopPending = pops || [];
+      const el = document.getElementById('ach-note');
+      if (!el || !achPopPending.length) return;
+      const bits = [];
+      if (leveled) bits.push('Level up');
+      if (progressed) bits.push(progressed + ' progressed');
+      if (completed) bits.push(completed + ' completed');
+      if (xpGain) bits.push('+' + xpGain + ' XP');
+      el.innerHTML = '<b>' + (leveled ? 'Level up' : 'Achievements') + '</b><span>' + (bits.join(' · ') || 'Update') + '</span><span class="muted">Tap to review</span>';
+      el.classList.add('on');
+      if (achNoteTimer) clearTimeout(achNoteTimer);
+      achNoteTimer = setTimeout(() => {
+        hideAchNote();
+        achPopPending = [];
+      }, 5200);
+    }
+    function openAchNote() {
+      hideAchNote();
+      const pending = achPopPending.slice();
+      achPopPending = [];
+      if (pending.length) showAchPops(pending);
+    }
+    function openAchFromToast(famKey, cat, state) {
+      try { famKey = decodeURIComponent(famKey || ''); } catch (e) {}
+      if (cat) achOpenCats[cat] = true;
+      if (state) achOpenStates[state] = true;
+      if (famKey) achOpenFams[famKey] = true;
+      achFocusFam = famKey || '';
+      openAchModal();
+    }
+
+    function syncAchievements(opts) {
+      opts = opts || {};
+      const prevSnap = achXpSnap;
+      const mode = statsMode === 'country' ? 'country' : 'state';
+      const a = evaluateAchievements(mode);
+      achLastCtx = a.ctx;
+      updateAchBadge();
+      achLastRows = a.rows;
+      const families = groupAchRows(a.rows.filter(r => r.def.mode === mode));
+      const moved = touchAchPulse(mode, families);
+      saveAchStore();
+      paintAchLevel();
+      if (achInitSilent || !opts.toast) {
+        const cur = computeAchLevel();
+        achXpSeen = cur.total;
+        achLevelSeen = cur.level;
+      }
+      if (opts.toast && !achInitSilent) {
+        const fresh = a.rows.filter(r => r.p.earned && !a.prev[r.def.id] && !r.def.secret);
+        const visibleMoved = moved.filter(f => !isHiddenSecret(f));
+        const byFam = {};
+        fresh.forEach(r => {
+          const key = r.def.family || r.def.id;
+          if (!byFam[key]) byFam[key] = [];
+          byFam[key].push(r);
+        });
+        const pops = [];
+        families.forEach(f => {
+          const hits = byFam[f.key];
+          if (!hits || !hits.length) return;
+          const top = hits[hits.length - 1];
+          pops.push({
+            row: f,
+            earnedLabel: top.def.tierLabel || top.def.title,
+            tierUp: true,
+            maxed: !!f.complete,
+            gainXp: f.gainXp || hits.reduce((s, r) => s + (r.xp || defXp(r.def)), 0)
+          });
+        });
+        visibleMoved.forEach(f => {
+          if (f.complete && !(f.newTiers > 0)) return;
+          const existing = pops.find(p => p.row.key === f.key);
+          if (existing) {
+            existing.gainXp = Math.max(existing.gainXp || 0, f.gainXp || 0);
+            existing.tierUp = existing.tierUp || (f.newTiers > 0);
+            existing.maxed = !!f.complete;
+            return;
+          }
+          pops.push({ row: f, gainXp: f.gainXp || 0, tierUp: f.newTiers > 0, maxed: !!f.complete });
+        });
+        const L = computeAchLevel();
+        const fromTotal = achXpSeen || 0;
+        const xpGain = Math.max(0, L.total - fromTotal);
+        const leveled = L.level > (achLevelSeen || 1);
+        const freshXp = fresh.reduce((s, r) => s + (r.xp || defXp(r.def)), 0);
+        const parts = diffXpSnap(prevSnap || takeXpSnapshot(), takeXpSnapshot(), freshXp);
+        achXpSeen = L.total;
+        if (xpGain || leveled || pops.length) {
+          pops.unshift({
+            levelCard: true,
+            L: L,
+            fromL: computeAchLevelFrom(fromTotal),
+            gainXp: xpGain,
+            parts: parts,
+            leveled: leveled,
+            from: achLevelSeen,
+            to: L.level
+          });
+        }
+        achLevelSeen = L.level;
+        if (pops.length) showAchNote(pops, visibleMoved.length, Object.keys(byFam).length, xpGain, leveled);
+      }
+      achXpSnap = takeXpSnapshot();
+      const modal = document.getElementById('ach-modal');
+      if (modal && modal.classList.contains('on')) renderAchievements();
+    }
+
+    function openAchModal() {
+      const mode = statsMode === 'country' ? 'country' : 'state';
+      document.getElementById('ach-title').textContent = 'Achievements';
+      document.getElementById('ach-mode-hint').textContent = (mode === 'country' ? 'Country mode' : 'State mode') + ' · switch in Settings';
+      document.getElementById('ach-modal').classList.add('on');
+      const rowsMode = achLastRows[0] && achLastRows[0].def && achLastRows[0].def.mode;
+      if (!achLastRows.length || rowsMode !== mode) syncAchievements({ toast: false });
+      else renderAchievements();
+    }
+    function closeAchModal() {
+      document.getElementById('ach-modal').classList.remove('on');
+      achOpenCats = {};
+      achOpenStates = {};
+      achOpenFams = {};
+      achBirdMore = {};
+    }
+
+    function regionSp(code, regionCode) {
+      const entry = decodeState(regionCode || 'US');
+      return ((entry && entry.list) || []).find(sp => sp.code === code) || { code: code, monthly: [], status: 'Seasonal' };
+    }
+    function birdAvail(code, regionCode, monthIdx) {
+      const sp = regionSp(code, regionCode);
+      const mi = monthIdx == null ? CURRENT_MONTH : monthIdx;
+      const now = (sp.monthly && sp.monthly[mi]) || 0;
+      return now * 3 + yearAvg(sp) * 2 + yearPeak(sp);
+    }
+    function birdChipName(code) {
+      return (taxName(code).comName || code);
+    }
+    function sortAvail(codes, regionCode, monthIdx) {
+      return codes.slice().sort((a, b) => birdAvail(b, regionCode, monthIdx) - birdAvail(a, regionCode, monthIdx) || birdChipName(a).localeCompare(birdChipName(b)));
+    }
+    function sortAlpha(codes) {
+      return codes.slice().sort((a, b) => birdChipName(a).localeCompare(birdChipName(b)));
+    }
+    function officialCodeList(regionCode) {
+      return officialRows(regionCode).map(sp => sp.code);
+    }
+    function achGoalBirds(def, ctx) {
+      const empty = { counted: [], rec: [], region: 'US', month: CURRENT_MONTH };
+      if (!def || !ctx) return empty;
+      const isCountry = def.mode === 'country';
+      const logged = ctx.us.codes;
+      let region = 'US';
+      let month = CURRENT_MONTH;
+      let counted = [];
+      let pool = [];
+      const kind = def.kind;
+
+      if (kind === 'statepct' || kind === 'ink') {
+        region = STATE_CODES[def.state] || 'US-NC';
+        pool = officialCodeList(region);
+        const have = ctx.byState[def.state] ? ctx.byState[def.state].codes : new Set();
+        counted = pool.filter(c => have.has(c));
+      } else if (kind === 'staterar') {
+        region = STATE_CODES[def.state] || 'US-NC';
+        pool = raritySplit(region)[def.bucket] || [];
+        const have = ctx.byState[def.state] ? ctx.byState[def.state].codes : new Set();
+        counted = pool.filter(c => have.has(c));
+      } else if (kind === 'specialist') {
+        region = STATE_CODES[def.state] || 'US-NC';
+        const pools = typePoolState(def.state);
+        const have = ctx.byState[def.state] ? ctx.byState[def.state].codes : new Set();
+        let best = '', bestR = -1;
+        Object.keys(pools).forEach(g => {
+          const tot = pools[g].size;
+          if (!tot) return;
+          let h = 0;
+          pools[g].forEach(c => { if (have.has(c)) h++; });
+          const r = h / tot;
+          if (r > bestR) { bestR = r; best = g; pool = Array.from(pools[g]); }
+        });
+        counted = pool.filter(c => have.has(c));
+      } else if (kind === 'uspct' || kind === 'uscount') {
+        pool = officialCodeList('US');
+        counted = pool.filter(c => logged.has(c));
+      } else if (kind === 'typepct') {
+        pool = Array.from(ctx.usPool[def.group] || []);
+        counted = pool.filter(c => logged.has(c));
+        region = isCountry ? 'US' : (STATE_CODES[activeState] || 'US');
+      } else if (kind === 'usrar') {
+        pool = raritySplit('US')[def.bucket] || [];
+        counted = pool.filter(c => logged.has(c));
+      } else if (kind === 'rarcount') {
+        counted = Array.from(ctx.us.rarityCounts[def.bucket] || []);
+        const split = raritySplit(isCountry ? 'US' : (STATE_CODES[activeState] || 'US'));
+        pool = split[def.bucket] || [];
+        region = isCountry ? 'US' : (STATE_CODES[activeState] || 'US');
+      } else if (kind === 'moy') {
+        month = def.month;
+        counted = Array.from(ctx.us.byMonth[month] || []);
+        pool = officialCodeList(isCountry ? 'US' : (STATE_CODES[activeState] || 'US'));
+        region = isCountry ? 'US' : (STATE_CODES[activeState] || 'US');
+      } else if (kind === 'season') {
+        const set = new Set();
+        (def.months || []).forEach(mi => (ctx.us.byMonth[mi] || new Set()).forEach(c => set.add(c)));
+        counted = Array.from(set);
+        month = (def.months || []).indexOf(CURRENT_MONTH) >= 0 ? CURRENT_MONTH : ((def.months || [])[0] || CURRENT_MONTH);
+        pool = officialCodeList(isCountry ? 'US' : (STATE_CODES[activeState] || 'US'));
+        region = isCountry ? 'US' : (STATE_CODES[activeState] || 'US');
+      } else if (kind === 'bigmonth') {
+        let bestK = '', bestN = 0;
+        Object.keys(ctx.us.byYM).forEach(k => {
+          const n = ctx.us.byYM[k].size;
+          if (n > bestN) { bestN = n; bestK = k; }
+        });
+        counted = bestK ? Array.from(ctx.us.byYM[bestK]) : [];
+        pool = officialCodeList(isCountry ? 'US' : (STATE_CODES[activeState] || 'US'));
+        region = isCountry ? 'US' : (STATE_CODES[activeState] || 'US');
+      } else if (kind === 'yearn' || kind === 'yearfirst' || kind === 'patchyear' || kind === 'green') {
+        counted = Array.from(ctx.us.byYear[def.year] || []);
+        pool = officialCodeList(isCountry ? 'US' : (STATE_CODES[activeState] || 'US'));
+        region = isCountry ? 'US' : (STATE_CODES[activeState] || 'US');
+      } else if (kind === 'photos' || kind === 'photofirst') {
+        counted = Array.from(ctx.us.photos);
+        pool = Array.from(logged);
+      } else if (kind === 'covers') {
+        counted = Array.from(ctx.us.covers);
+        pool = Array.from(logged);
+      } else if (kind === 'statusset') {
+        counted = Array.from(ctx.us.statusSets[def.set] || []);
+        const rows = officialRows(isCountry ? 'US' : (STATE_CODES[activeState] || 'US'));
+        const want = def.set === 'resident'
+          ? { 'Year-round Resident':1, Resident:1 }
+          : def.set === 'winter' ? { 'Winter Visitor':1 }
+          : def.set === 'summer' ? { 'Summer Breeding':1 }
+          : { 'Spring/Fall Migrant':1 };
+        pool = rows.filter(sp => want[sp.status]).map(sp => sp.code);
+        region = isCountry ? 'US' : (STATE_CODES[activeState] || 'US');
+      } else if (kind === 'night') {
+        counted = Array.from(ctx.us.night);
+        pool = officialCodeList('US').filter(c => {
+          const g = groupOfCode(c);
+          return g === 'Owl' || g === 'Nightjar';
+        });
+      } else if (kind === 'fullcal') {
+        let best = [], max = 0;
+        Object.keys(ctx.us.speciesMonths).forEach(c => {
+          const n = ctx.us.speciesMonths[c].size;
+          if (n > max) { max = n; best = [c]; }
+          else if (n === max) best.push(c);
+        });
+        counted = best;
+      } else {
+        return empty;
+      }
+
+      const haveSet = new Set(counted);
+      const rec = sortAvail(pool.filter(c => !haveSet.has(c) && isRealSpecies(c)), region, month).slice(0, 20);
+      return { counted: sortAlpha(counted.filter(isRealSpecies)), rec: rec, region: region, month: month };
+    }
+
+    function renderAchChips(codes, rec, key, which, cap0) {
+      const expanded = achBirdMore[key] && achBirdMore[key][which];
+      const cap = expanded ? 80 : (cap0 || 12);
+      const show = codes.slice(0, cap);
+      const extra = codes.length - show.length;
+      const chips = show.map(code => {
+        const cls = rec ? 'ach-chip rec' : 'ach-chip got';
+        return '<button type="button" class="' + cls + '" onclick="event.stopPropagation();jumpAchBird(\'' + code + '\')">' +
+          birdChipName(code).replace(/</g, '') + '</button>';
+      }).join('');
+      const more = extra > 0
+        ? '<button type="button" class="ach-chip-more" onclick="event.stopPropagation();toggleAchBirds(\'' + encodeURIComponent(key) + '\',\'' + which + '\')">+' + extra + ' more</button>'
+        : (expanded && codes.length > 12
+          ? '<button type="button" class="ach-chip-more" onclick="event.stopPropagation();toggleAchBirds(\'' + encodeURIComponent(key) + '\',\'' + which + '\')">Show less</button>'
+          : '');
+      return '<div class="ach-chips">' + chips + more + '</div>';
+    }
+    function toggleAchBirds(key, which) {
+      try { key = decodeURIComponent(key); } catch (e) {}
+      if (!achBirdMore[key]) achBirdMore[key] = {};
+      achBirdMore[key][which] = !achBirdMore[key][which];
+      renderAchievements();
+    }
+    function jumpAchBird(code) {
+      closeAchModal();
+      if (typeof openTargetFromChecklist === 'function') openTargetFromChecklist(code);
+    }
+
+    function groupAchRows(rows) {
+      const map = {};
+      const order = [];
+      rows.forEach(r => {
+        const key = r.def.family || r.def.id;
+        if (!map[key]) {
+          map[key] = [];
+          order.push(key);
+        }
+        map[key].push(r);
+      });
+      return order.map(key => {
+        const items = map[key].slice();
+        items.sort((a, b) => {
+          const av = a.def.pct != null ? a.def.pct : (a.def.need || 0);
+          const bv = b.def.pct != null ? b.def.pct : (b.def.need || 0);
+          return av - bv;
+        });
+        const earnedItems = items.filter(r => r.p.earned);
+        const next = items.find(r => !r.p.earned);
+        const last = earnedItems[earnedItems.length - 1];
+        const focus = next || items[items.length - 1];
+        const have = focus ? focus.p.have : 0;
+        const total = focus ? focus.p.total : 1;
+        const pct = total ? Math.max(0, Math.min(100, Math.round(have / total * 100))) : 0;
+        const complete = earnedItems.length === items.length;
+        const inPlay = have > 0 || earnedItems.length > 0;
+        const newest = earnedItems.slice().sort((a, b) => String(b.earnedAt || '').localeCompare(String(a.earnedAt || '')))[0];
+        const def0 = items[0].def;
+        return {
+          key: key,
+          def: def0,
+          items: items,
+          title: toTitleCase(def0.familyTitle || def0.title),
+          hint: def0.hint || '',
+          blurb: achBlurb(def0),
+          secret: !!def0.secret,
+          state: def0.state,
+          tierHave: earnedItems.length,
+          tierTotal: items.length,
+          nextLabel: next ? (next.def.tierLabel || next.def.title) : '',
+          lastLabel: last ? (last.def.tierLabel || last.def.title) : '',
+          detail: focus && focus.p.detail ? focus.p.detail : (have + ' / ' + total),
+          have: have,
+          total: total,
+          pct: complete ? 100 : pct,
+          complete: complete,
+          inPlay: inPlay,
+          earnedAt: newest && newest.earnedAt,
+          earnedXp: earnedItems.reduce((s, r) => s + (r.xp || defXp(r.def)), 0),
+          nextXp: next ? (next.xp || defXp(next.def)) : 0,
+          left: Math.max(0, (total || 0) - (have || 0)),
+          pool: (focus && focus.p && focus.p.pool) || (items[0].p && items[0].p.pool) || 0,
+          p: { have: have, total: total, earned: complete }
+        };
+      });
+    }
+
+    function renderAchRow(row) {
+      const hidden = row.secret && !row.complete && !row.tierHave;
+      const title = hidden ? '???' : row.title;
+      const multi = row.tierTotal > 1;
+      const open = !!achOpenFams[row.key];
+      let sub = hidden ? 'Hidden' : '';
+      if (!hidden && multi && !row.complete && row.nextLabel) {
+        const left = row.left;
+        if (row.have > 0) sub = row.have + ' now · ' + left + ' more to reach ' + row.nextLabel;
+        else sub = left + ' more to reach ' + row.nextLabel;
+      } else if (!hidden && !row.complete) {
+        const left = row.left;
+        if (row.nextLabel && left > 0) sub = left + ' more to reach ' + row.nextLabel;
+        else sub = row.hint || row.detail || '';
+      } else if (!hidden && row.complete && multi && row.lastLabel) {
+        sub = 'Maxed · ' + row.lastLabel;
+      } else if (!hidden) {
+        sub = row.hint || '';
+      }
+      const poolN = row.pool || 0;
+      const poolLine = (!hidden && poolN > 1)
+        ? '<span class="ach-pool">' + (row.have || 0) + ' / ' + poolN + '</span>'
+        : '';
+      const xpLine = !hidden
+        ? '<span class="ach-xp">' + (row.complete ? ('+' + (row.earnedXp || 0) + ' XP') : ((row.nextXp ? ('Next +' + row.nextXp + ' XP') : '') + (row.earnedXp ? (' · ' + row.earnedXp + ' earned') : ''))) + '</span>'
+        : '';
+      const medalCls = row.complete ? ' max' : (row.inPlay ? ' live' : '');
+      const mark = hidden ? '' : (multi
+        ? '<span class="ach-row-side"><span class="ach-medal' + medalCls + '"><span>Tier</span><strong>' + row.tierHave + '/' + row.tierTotal + '</strong></span>' + poolLine + xpLine + '</span>'
+        : '<span class="ach-row-side">' + (row.complete ? '<span class="ach-mark">★</span>' : '') + poolLine + xpLine + '</span>');
+      let pips = '';
+      if (!hidden && multi) {
+        let nowIdx = -1;
+        pips = '<div class="ach-pips" style="--ach-n:' + row.items.length + '">' + row.items.map(function (it, idx) {
+          const got = !!it.p.earned;
+          const now = !got && nowIdx < 0;
+          if (now) nowIdx = idx;
+          const need = it.p.total || 0;
+          const fill = got ? 100 : (now && need ? Math.max(10, Math.min(100, Math.round((it.p.have || 0) / need * 100))) : 0);
+          const cls = got ? ' got' : (now ? ' now' : '');
+          return '<div class="ach-pip-cell' + cls + '">' +
+            '<div class="ach-pip' + cls + '"><i style="width:' + fill + '%"></i></div>' +
+            '<em>' + (it.def.tierLabel || '') + '</em>' +
+            '</div>';
+        }).join('') + '</div>';
+      }
+      let tiersInner = '';
+      if (!hidden && open) {
+        if (multi) {
+          let nowIdx = -1;
+          tiersInner += row.items.map(function (it, idx) {
+            const lab = it.def.tierLabel || it.def.title;
+            const need = it.p.total || 0;
+            const hv = it.p.have || 0;
+            const pct = need ? Math.max(0, Math.min(100, Math.round(hv / need * 100))) : 0;
+            const left = Math.max(0, need - hv);
+            const got = !!it.p.earned;
+            const now = !got && nowIdx < 0;
+            if (now) nowIdx = idx;
+            const status = got ? 'Done' : (left + ' more');
+            const cls = got ? ' got' : (now ? ' now' : '');
+            return '<div class="ach-tier-line' + cls + '">' +
+              '<b>' + lab + '</b>' +
+              '<div class="ach-bar"><i style="width:' + (got ? 100 : pct) + '%"></i></div>' +
+              '<span class="muted">' + hv + '/' + need + ' · ' + status + '</span>' +
+              '</div>';
+          }).join('');
+        }
+        const birds = achGoalBirds(row.def, achLastCtx);
+        if (birds.counted.length || birds.rec.length) {
+          tiersInner += '<div class="ach-birds">';
+          tiersInner += '<div class="ach-birds-h">Counted · ' + birds.counted.length + '</div>';
+          tiersInner += birds.counted.length ? renderAchChips(birds.counted, false, row.key, 'counted') : '<div class="muted">None yet</div>';
+          if (!row.complete && birds.rec.length) {
+            tiersInner += '<div class="ach-birds-h">Recommended · most available</div>';
+            tiersInner += renderAchChips(birds.rec, true, row.key, 'rec', 20);
+          }
+          tiersInner += '</div>';
+        }
+      }
+      const tiers = hidden || !tiersInner ? '' : '<div class="ach-tiers">' + tiersInner + '</div>';
+      const when = row.complete && row.earnedAt && !multi ? '<div style="margin-top:4px"><span class="muted">' + row.earnedAt + '</span></div>' : '';
+      const keyAttr = encodeURIComponent(row.key);
+      const rowCls = row.complete ? ' got' : (row.inPlay ? ' play' : ' lock');
+      return '<div class="ach-row' + rowCls + (open ? ' open' : '') + '" data-ach-fam="' + keyAttr + '">' +
+        '<div class="ach-row-hit" onclick="toggleAchFam(\'' + keyAttr + '\')">' +
+        '<div class="ach-row-top"><b>' + title + '</b>' + mark + '</div>' +
+        (!hidden && (row.blurb || achBlurb(row.def)) ? '<div class="ach-blurb">' + (row.blurb || achBlurb(row.def)) + '</div>' : '') +
+        '<div class="muted">' + sub + '</div>' +
+        pips +
+        (!hidden && !multi ? '<div class="ach-bar"><i style="width:' + row.pct + '%"></i></div>' : '') +
+        when +
+        '</div>' +
+        tiers +
+        '</div>';
+    }
+
+    function sortAchRows(rows) {
+      rows.sort((a, b) => {
+        const ae = a.complete ? 1 : 0, be = b.complete ? 1 : 0;
+        const ap = (!ae && a.inPlay) ? 1 : 0;
+        const bp = (!be && b.inPlay) ? 1 : 0;
+        if (ap !== bp) return bp - ap;
+        if (ae !== be) return ae - be;
+        if (ae && be) return String(b.earnedAt || '').localeCompare(String(a.earnedAt || ''));
+        if (a.tierHave !== b.tierHave) return b.tierHave - a.tierHave;
+        if (a.pct !== b.pct) return b.pct - a.pct;
+        return String(a.title).localeCompare(String(b.title));
+      });
+    }
+
+    function renderAchievements() {
+      const mode = statsMode === 'country' ? 'country' : 'state';
+      const q = foldName((document.getElementById('ach-search') || {}).value || '');
+      let rows = achLastRows.filter(r => r.def.mode === mode);
+      if (!rows.length) {
+        const ev = evaluateAchievements(mode);
+        achLastRows = ev.rows;
+        rows = ev.rows;
+      }
+      if (q) {
+        rows = rows.filter(r => {
+          if (r.def.secret && !r.p.earned) return foldName('hidden secret').indexOf(q) >= 0;
+          return foldName((r.def.familyTitle || '') + ' ' + r.def.title + ' ' + (r.def.hint || '') + ' ' + (r.def.state || '')).indexOf(q) >= 0;
+        });
+      }
+      const familiesAll = groupAchRows(rows);
+      const earnedTiers = rows.filter(r => r.p.earned).length;
+      const sum = document.getElementById('ach-sum');
+      if (sum) sum.textContent = earnedTiers + ' earned';
+      paintAchLevel();
+      const hint = document.getElementById('ach-mode-hint');
+      if (hint) hint.textContent = (mode === 'country' ? 'Country mode' : 'State mode') + ' · switch in Settings';
+
+      const byCat = {};
+      familiesAll.forEach(f => {
+        const c = f.def.cat || 'field';
+        if (!byCat[c]) byCat[c] = [];
+        byCat[c].push(f);
+      });
+      const html = [];
+      if (!q) {
+        const recent = [{ levelCard: true, L: computeAchLevel() }].concat(recentFamilies(familiesAll));
+        if (achRecentIdx >= recent.length) achRecentIdx = 0;
+        if (achRecentIdx < 0) achRecentIdx = recent.length - 1;
+        const f = recent[achRecentIdx];
+        html.push('<div class="ach-recent"><div class="ach-recent-h">In progress</div>');
+        if (f.levelCard) {
+          html.push('<div>' + renderAchLevelCard(f) + renderAchPager(recent.length, achRecentIdx, 'stepAchRecent') + '</div></div>');
+        } else {
+          html.push('<div onclick="openAchFromToast(\'' + encodeURIComponent(f.key) + '\',\'' + (f.def.cat || '') + '\',\'' + String(f.state || '').replace(/'/g, '\\\'') + '\')">' +
+            renderAchFeature(f, { idx: achRecentIdx, total: recent.length, step: 'stepAchRecent' }) +
+            renderAchPager(recent.length, achRecentIdx, 'stepAchRecent') +
+            '</div></div>');
+        }
+      }
+      ACH_CATS.forEach(cat => {
+        const list = byCat[cat.id];
+        if (!list || !list.length) return;
+        const got = list.filter(r => r.complete).length;
+        const open = achOpenCats[cat.id] ? ' open' : '';
+        html.push('<div class="ach-cat' + open + '" data-ach-cat="' + cat.id + '">');
+        html.push('<button type="button" class="ach-cat-btn" onclick="toggleAchCat(\'' + cat.id + '\')"><span class="ach-caret">' + (achOpenCats[cat.id] ? '▼' : '▶') + '</span>' + cat.label + '<span class="ach-cat-meta">' + got + '/' + list.length + '</span></button>');
+        html.push('<div class="ach-cat-body">');
+        if (cat.id === 'states') {
+          const bySt = {};
+          list.forEach(r => {
+            const st = r.state || 'Other';
+            if (!bySt[st]) bySt[st] = [];
+            bySt[st].push(r);
+          });
+          const names = Object.keys(bySt).sort((a, b) => {
+            const ah = bySt[a].filter(r => r.complete).length;
+            const bh = bySt[b].filter(r => r.complete).length;
+            const ap = bySt[a].some(r => r.inPlay) ? 1 : 0;
+            const bp = bySt[b].some(r => r.inPlay) ? 1 : 0;
+            if (ap !== bp) return bp - ap;
+            if (ah !== bh) return bh - ah;
+            return a.localeCompare(b);
+          });
+          names.forEach(name => {
+            const items = bySt[name];
+            sortAchRows(items);
+            const g = items.filter(r => r.complete).length;
+            const isOpen = !!achOpenStates[name];
+            html.push('<div class="ach-state' + (isOpen ? ' open' : '') + '">');
+            html.push('<button type="button" onclick="toggleAchState(\'' + name.replace(/'/g, '\\\'') + '\')">' + name + '<span class="ach-cat-meta">' + g + '/' + items.length + '</span></button>');
+            html.push('<div class="ach-state-body">' + items.map(renderAchRow).join('') + '</div></div>');
+          });
+        } else {
+          sortAchRows(list);
+          html.push(list.map(renderAchRow).join(''));
+        }
+        html.push('</div></div>');
+      });
+      const box = document.getElementById('ach-list');
+      if (box) box.innerHTML = html.join('') || '<p class="muted">No achievements match.</p>';
+      if (achFocusFam) {
+        const el = box && box.querySelector('[data-ach-fam="' + CSS.escape(encodeURIComponent(achFocusFam)) + '"]');
+        if (el && el.scrollIntoView) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        achFocusFam = '';
+      }
+    }
+
+    function stepAchRecent(dir) {
+      achRecentIdx += dir;
+      renderAchievements();
+    }
+    function toggleAchCat(id) {
+      achOpenCats[id] = !achOpenCats[id];
+      renderAchievements();
+    }
+    function toggleAchState(name) {
+      achOpenStates[name] = !achOpenStates[name];
+      renderAchievements();
+    }
+    function toggleAchFam(key) {
+      try { key = decodeURIComponent(key); } catch (e) {}
+      achOpenFams[key] = !achOpenFams[key];
+      renderAchievements();
+    }
+
+    function noteAchTargetCodes(codes) {
+      window._achTargetCodes = codes instanceof Set ? codes : new Set(codes || []);
+    }
+    function markAchTargetIfNeeded(code) {
+      if (window._achTargetCodes && window._achTargetCodes.has(code)) achFlags.targetLog = true;
+    }
+    function markAchBulkIfNeeded(n) {
+      if (n >= 10) achFlags.bulk10 = true;
+    }
+
+    function refreshUI(opts) {
       populateFilterDropdowns();
       renderMapMarkers();
       updateRegionalHUD();
       persistSightings();
       refreshExportStamp();
+      if (typeof syncAchievements === 'function') syncAchievements({ toast: !!(opts && opts.toast) });
     }
 
     async function loadData() {
@@ -6309,6 +9447,7 @@ function exportLogs() {
         DATA.T = json.T || {};
         DATA.S = json.S || {};
         stateCache.clear();
+        try { for (const k in rarSplitCache) delete rarSplitCache[k]; } catch (e) {}
       } catch (e) {}
     }
 
@@ -6319,7 +9458,11 @@ function exportLogs() {
       if (btn) btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleMapSpeciesList(); });
       if (search) search.addEventListener('input', filterMapSpeciesList);
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closePhotoLightbox();
+        if (e.key === 'Escape') {
+          closePhotoLightbox();
+          if (typeof closeTargetBrief === 'function') closeTargetBrief();
+          if (typeof closeAchModal === 'function') closeAchModal();
+        }
       });
       document.addEventListener('click', (e) => {
         const box = document.getElementById('map-species-box');
@@ -6363,6 +9506,7 @@ function exportLogs() {
       refreshUI();
       await loadData();
       refreshUI();
+      achInitSilent = false;
       backfillCounties();
     });
   </script>
