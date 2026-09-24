@@ -150,12 +150,12 @@
     header { height: 56px; display: flex; align-items: center; background: var(--header); border-bottom: 1px solid var(--line); justify-content: space-between; padding: 0 16px; z-index: 20; }
     nav { height: 56px; display: flex; align-items: stretch; background: var(--header); border-top: 1px solid var(--line); justify-content: space-around; z-index: 20; }
     main { height: calc(100% - 112px); position: relative; overflow: hidden; }
-    .brand { display: flex; gap: 8px; align-items: center; }
+    .brand { display: flex; gap: 8px; align-items: center; flex: 0 0 auto; }
     .logo { width: 28px; height: 28px; border-radius: 8px; background: var(--bg); border: 1px solid var(--em-dim); display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .logo svg { width: 22px; height: 22px; display: block; }
-    .logo-img, .wordmark-img { display: none; }
+    .logo-img { display: none; }
     html[data-theme="light"] .brand,
-    html[data-theme="dark"] .brand { gap: 4px; }
+    html[data-theme="dark"] .brand { gap: 2px; }
     html[data-theme="light"] .logo,
     html[data-theme="dark"] .logo {
       width: 44px; height: 44px; background: transparent; border: 0; border-radius: 0; overflow: visible;
@@ -164,13 +164,17 @@
     html[data-theme="dark"] .logo svg { display: none; }
     html[data-theme="light"] .logo-img-light,
     html[data-theme="dark"] .logo-img-dark { display: block; width: 44px; height: 44px; object-fit: contain; }
-    html[data-theme="light"] .brand-copy h1,
-    html[data-theme="light"] .brand-copy .sub,
-    html[data-theme="dark"] .brand-copy h1,
-    html[data-theme="dark"] .brand-copy .sub { display: none; }
-    html[data-theme="light"] .wordmark-img-light,
-    html[data-theme="dark"] .wordmark-img-dark {
-      display: block; height: 44px; width: auto; max-width: 320px; object-fit: contain; transform: translateY(3px);
+    .brand-copy h1, .brand-copy .sub { display: none !important; }
+    .brand-copy { display: flex; align-items: center; line-height: 0; flex: 0 0 auto; }
+    #header-wordmark {
+      display: block;
+      width: 148px;
+      height: 36px;
+      object-fit: contain;
+      object-position: center;
+      flex: 0 0 148px;
+      image-rendering: auto;
+      transform: translate(-1px, 2px);
     }
     h1 { font-size: 16px; margin: 0; }
     .sub { font-size: 10px; color: var(--muted); }
@@ -260,7 +264,7 @@
       padding: 4px 0; border-radius: 0; line-height: 1;
     }
     .heat-months button.on { background: none; color: var(--em); }
-    .seg { display: flex; background: var(--glass-92); border: 1px solid var(--line-2); border-radius: 8px; padding: 2px; }
+    .seg { display: flex; gap: 3px; background: var(--glass-92); border: 1px solid var(--line-2); border-radius: 8px; padding: 2px; }
     .seg button { background: none; border: 0; color: var(--muted); font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 6px; }
     .seg button.on { background: var(--em); color: #fff; }
     .toolbar {
@@ -770,8 +774,111 @@
     .gallery-counts { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
     .gallery-counts .ribbon-num { font-size: 22px; margin: 0; }
     .gallery-side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex: none; }
-    .gallery-filters { display: flex; gap: 8px; margin: 8px 0 0; }
-    .gallery-filters .mini { flex: 1; max-width: none; width: 100%; }
+    .gallery-filters, .lifelist-filters { display: flex; gap: 8px; margin: 8px 0 0; }
+    .gallery-filters .mini, .lifelist-filters .mini { flex: 1; max-width: none; width: 100%; }
+    #fieldbook-modal .sheet { max-width: 40rem; height: min(96vh, 920px); }
+    .fb-tools { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 10px; }
+    .fb-tools .mini { flex: 1; max-width: none; width: 100%; }
+    .fb-rarities { display: flex; gap: 6px; }
+    .fb-rar {
+      flex: 1; min-width: 0; border-radius: 7px; padding: 4px 5px;
+      font-size: 10px; font-weight: 700; letter-spacing: .01em;
+      background: var(--panel-2); color: var(--muted); border: 1px solid var(--line-2);
+    }
+    .fb-rar.r1.on { color: #fff; border-color: #059669; background: #059669; }
+    .fb-rar.r2.on { color: #fff; border-color: #c2410c; background: #c2410c; }
+    .fb-rar.r3.on { color: #fff; border-color: #6d28d9; background: #6d28d9; }
+    .fb-rar.r4.on { color: #1c1917; border-color: #a8a29e; background: #d6d3d1; }
+    html[data-theme="light"] .fb-rar.r1.on { color: #fff; }
+    html[data-theme="light"] .fb-rar.r2.on { color: #fff; }
+    html[data-theme="light"] .fb-rar.r3.on { color: #fff; }
+    .fb-hint { padding: 0 14px 8px; margin: 0; }
+    .fb-sum { padding: 0 14px 10px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .fb-sum b { font-size: 18px; letter-spacing: -.03em; }
+    .fb-type {
+      width: 100%; text-align: left; background: var(--photo);
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 10px 12px; margin-bottom: 8px;
+    }
+    .fb-type.on { border-color: var(--em-dim); box-shadow: 0 0 0 1px var(--hl); }
+    .fb-type.done { border-color: var(--gold-bd); }
+    .fb-type-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .fb-type-top strong { font-size: 13px; }
+    .fb-type-top span { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .fb-rarity-row {
+      display: flex; align-items: stretch; gap: 5px;
+      margin-top: 9px; width: 100%;
+    }
+    .fb-rbar {
+      flex: 1; min-width: 0; height: 5px; border-radius: 99px;
+      background: color-mix(in srgb, var(--line) 88%, transparent);
+      overflow: hidden;
+    }
+    .fb-rbar i { display: block; height: 100%; width: 0; border-radius: 99px; }
+    .fb-rbar.r1 i { background: #10b981; box-shadow: 0 0 8px rgba(16,185,129,.35); }
+    .fb-rbar.r2 i { background: #f97316; box-shadow: 0 0 8px rgba(249,115,22,.32); }
+    .fb-rbar.r3 i { background: #7c3aed; box-shadow: 0 0 8px rgba(124,58,237,.34); }
+    .fb-rbar.r4 i { background: #d6d3d1; box-shadow: 0 0 8px rgba(214,211,209,.35); }
+    .fb-combo {
+      height: 6px; border-radius: 99px; width: 100%;
+      background: color-mix(in srgb, var(--line) 88%, transparent);
+      margin-top: 6px; overflow: hidden;
+    }
+    .fb-combo-fill {
+      display: flex; height: 100%; border-radius: 99px; overflow: hidden;
+    }
+    .fb-combo-fill i {
+      display: block; height: 100%; min-width: 0; border-radius: 0;
+    }
+    .fb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; margin: 8px 0 12px; }
+    .fb-band { margin: 10px 0 2px; }
+    .fb-band-h {
+      display: flex; align-items: center; gap: 8px;
+      margin: 2px 2px 8px; letter-spacing: .14em;
+      font-size: 10px; font-weight: 800; text-transform: uppercase;
+    }
+    .fb-band-h::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, currentColor, transparent);
+      opacity: .35;
+    }
+    .fb-band-h b { font-weight: 800; }
+    .fb-band-h span { letter-spacing: 0; font-weight: 600; text-transform: none; color: var(--muted); font-size: 10px; }
+    .fb-band.r1 .fb-band-h { color: #34d399; }
+    .fb-band.r2 .fb-band-h { color: #fb923c; }
+    .fb-band.r3 .fb-band-h { color: #a78bfa; }
+    .fb-band.r4 .fb-band-h { color: #d6d3d1; }
+    html[data-theme="light"] .fb-band.r1 .fb-band-h { color: #047857; }
+    html[data-theme="light"] .fb-band.r2 .fb-band-h { color: #c2410c; }
+    html[data-theme="light"] .fb-band.r3 .fb-band-h { color: #6d28d9; }
+    html[data-theme="light"] .fb-band.r4 .fb-band-h { color: #57534e; }
+    .fb-card {
+      background: var(--photo); border: 1px solid var(--line); border-radius: 10px;
+      overflow: hidden; cursor: pointer; text-align: left; padding: 0; color: inherit;
+    }
+    .fb-media {
+      position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; background: var(--photo);
+    }
+    .fb-card img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center; display: block;
+    }
+    .fb-card.miss img { filter: grayscale(1) contrast(.92) brightness(.78); opacity: .88; }
+    .fb-ph {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--lock); font-size: 11px; background: var(--photo);
+    }
+    .fb-card.got-1 { border-color: #10b981; box-shadow: 0 0 0 1px rgba(16,185,129,.45), 0 0 14px rgba(16,185,129,.28); }
+    .fb-card.got-2 { border-color: #f97316; box-shadow: 0 0 0 1px rgba(249,115,22,.45), 0 0 14px rgba(249,115,22,.26); }
+    .fb-card.got-3 { border-color: #7c3aed; box-shadow: 0 0 0 1px rgba(124,58,237,.5), 0 0 16px rgba(124,58,237,.32); }
+    .fb-card.got-4 { border-color: #d6d3d1; box-shadow: 0 0 0 1px rgba(214,211,209,.55), 0 0 14px rgba(214,211,209,.28); }
+    .fb-card .meta { padding: 6px 7px 8px; }
+    .fb-card h4 { margin: 0; font-size: 11px; line-height: 1.25; }
+    html[data-theme="light"] .fb-card.got-1 { box-shadow: 0 0 0 1px rgba(5,150,105,.35), 0 0 10px rgba(5,150,105,.16); }
+    html[data-theme="light"] .fb-card.got-2 { box-shadow: 0 0 0 1px rgba(194,65,12,.3), 0 0 10px rgba(194,65,12,.12); }
+    html[data-theme="light"] .fb-card.got-3 { box-shadow: 0 0 0 1px rgba(109,40,217,.3), 0 0 10px rgba(109,40,217,.12); }
+    html[data-theme="light"] .fb-card.got-4 { box-shadow: 0 0 0 1px rgba(87,83,78,.35), 0 0 10px rgba(87,83,78,.12); }
     .btn-report {
       background: var(--em); color: #fff; border: 0; border-radius: 999px;
       padding: 6px 11px; font-size: 11px; font-weight: 800; letter-spacing: .02em;
@@ -780,6 +887,20 @@
     .btn-report:hover { background: var(--em2); }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 8px; margin-top: 12px; }
     .card { background: var(--photo); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; cursor: pointer; position: relative; }
+    #gallery-grid.picking, #lifelist-grid.picking { touch-action: none; }
+    #gallery-grid.picking, #lifelist-grid.picking,
+    #gallery-grid.picking *, #lifelist-grid.picking * {
+      user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+    }
+    #photo-pick-bar {
+      position: fixed; left: 12px; right: 12px; bottom: 72px; z-index: 4300;
+      display: none; gap: 6px; padding: 8px; border-radius: 14px;
+      background: var(--panel); border: 1px solid var(--line-2);
+      box-shadow: 0 10px 28px rgba(0,0,0,.35);
+    }
+    #photo-pick-bar.on { display: flex; flex-wrap: wrap; }
+    #photo-pick-bar button { flex: 1; min-width: 72px; font-size: 11px; padding: 8px 6px; }
+    #photo-pick-bar button:disabled { opacity: .35; }
     .card.cover { border-color: var(--line); }
     .cover-mark {
       position: absolute; top: 8px; left: 8px; width: 22px; height: 22px;
@@ -812,6 +933,85 @@
     .modal { position: fixed; inset: 0; background: var(--scrim); display: none; align-items: center; justify-content: center; padding: 12px; z-index: 5000; overflow: auto; }
     .modal.on { display: flex; }
     .sheet { background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; width: 100%; max-width: 32rem; max-height: 96vh; height: min(96vh, 860px); display: flex; flex-direction: column; overflow: hidden; }
+    #analyze-modal { z-index: 5200; }
+    .analyze-sheet { max-width: 40rem; height: min(96vh, 920px); }
+    .analyze-tools { display: flex; flex-wrap: nowrap; gap: 5px; padding: 0 12px 8px; align-items: center; }
+    .analyze-tools .mini {
+      flex: 1; min-width: 0; height: 30px; padding: 0 22px 0 9px;
+      font-size: 11px; font-weight: 650; border-radius: 8px;
+      appearance: none; -webkit-appearance: none;
+      background-color: var(--panel-2);
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23a8a29e' d='M1 1l4 4 4-4'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+    }
+    .analyze-tools .mini:focus { outline: none; border-color: var(--em-dim); }
+    .analyze-tools #analyze-reset {
+      flex: none; height: 30px; padding: 0 11px;
+      font-size: 11px; font-weight: 650; border-radius: 8px;
+      background: var(--panel-2); border: 1px solid var(--line-2); color: var(--muted);
+    }
+    .analyze-tools #analyze-reset:hover { color: var(--text); border-color: var(--em-dim); }
+    .analyze-map-wrap {
+      position: relative; margin: 0 12px; border-radius: 12px; overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    .analyze-time { display: none; }
+    #analyze-legend span { cursor: pointer; user-select: none; }
+    #analyze-legend span.off { text-decoration: line-through; opacity: .4; }
+    #analyze-map { height: 28vh; min-height: 140px; margin: 0; border: 0; border-radius: 0; }
+    .analyze-range {
+      position: absolute; left: 8px; bottom: 8px; z-index: 400;
+      max-width: calc(100% - 16px);
+      font-size: 9px; font-weight: 650; letter-spacing: .02em;
+      color: #f5f5f4;
+      background: rgba(12, 10, 9, .82);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 6px;
+      padding: 3px 7px;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none; user-select: none;
+    }
+    #analyze-chart {
+      padding: 8px 12px 4px; min-height: 120px;
+      user-select: none; -webkit-user-select: none;
+    }
+    #analyze-legend { padding: 0 14px 8px; display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 10px; color: var(--muted); }
+    #analyze-list { padding: 0 12px 16px; overflow: auto; flex: 1; min-height: 0; }
+    .az-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 5px; }
+    .az-card {
+      text-align: left; background: var(--photo); border: 1px solid var(--line);
+      border-radius: 8px; padding: 6px 6px 6px 9px; cursor: pointer; color: inherit;
+      position: relative;
+    }
+    .az-card.on { border-color: var(--em3); box-shadow: 0 0 0 1px var(--hl); }
+    .az-card b { display: block; font-size: 11px; line-height: 1.2; }
+    .az-card span { font-size: 10px; color: var(--muted); }
+    .az-card em {
+      position: absolute; left: 0; top: 7px; bottom: 7px; width: 3px;
+      display: flex; flex-direction: column; gap: 2px; background: #0c0a09;
+    }
+    #analyze-chart { touch-action: none; }
+    .az-card em i { flex: 1; min-height: 2px; border-radius: 1px; }
+    .az-logs { grid-column: 1 / -1; margin: 2px 0 4px; display: flex; flex-direction: column; gap: 3px; }
+    .az-log {
+      display: flex; align-items: center; gap: 7px; width: 100%;
+      text-align: left; background: var(--photo); border: 1px solid var(--line);
+      border-radius: 7px; padding: 4px 8px; color: inherit; cursor: pointer;
+    }
+    .az-log.on { border-color: var(--em3); }
+    .az-log i { width: 3px; height: 16px; border-radius: 99px; flex: none; }
+    .az-log b { display: inline; font-size: 11px; }
+    .az-log span { font-size: 10px; color: var(--muted); }
+    #analyze-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+    .az-dot { stroke: rgba(12,10,9,.4); stroke-width: 0.55; cursor: pointer; }
+    .az-dot.on { stroke: #fff; stroke-width: 1.1; }
+    .az-col { cursor: pointer; }
+    .az-col.on { opacity: 1; }
+    .az-axis { fill: var(--muted); font-size: 9px; }
     .sheet-h, .sheet-f { padding: 12px 16px; border-color: var(--line); display: flex; justify-content: space-between; align-items: center; }
     #region-species-modal .sheet-h { border-bottom: 0; padding: 16px 16px 10px; }
     .check-kicker { font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); margin: 0 0 6px; padding-top: 8px; border-top: 1px solid var(--line-2); }
@@ -936,13 +1136,47 @@
     .check-score { font-size: 13px; font-weight: 700; color: var(--text-3); margin: 0 0 4px; }
     .check-pill { background: var(--line); border: 1px solid var(--line-2); color: var(--text-2); border-radius: 999px; padding: 3px 8px; font-size: 10px; cursor: pointer; }
     .check-pill.on { border-color: var(--em); color: var(--em3); }
-    .ring-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 8px 0 2px; width: 100%; max-width: 100%; }
-    .ring-wrap { text-align: center; background: none; border: 1px solid transparent; color: inherit; padding: 4px 0 6px; border-radius: 12px; cursor: pointer; width: 100%; min-width: 0; overflow: hidden; }
-    .ring-wrap.on { border-color: var(--em3); background: var(--ring-on-bg); }
-    .ring-wrap svg { width: 100%; height: auto; max-width: 92px; display: block; margin: 0 auto; }
-    .ring-wrap .muted { font-size: 10px; line-height: 1.2; }
-    .ring-label { font-size: 12px; font-weight: 800; margin-top: 4px; letter-spacing: .01em; }
-    .ring-fill { transition: stroke-dashoffset .9s cubic-bezier(.22,1,.36,1); }
+    .ring-row { display: flex; flex-direction: column; gap: 14px; margin: 10px 0 2px; width: 100%; }
+    .check-rar-grid { display: flex; flex-direction: column; gap: 10px; }
+    .check-rar {
+      text-align: left; background: transparent; border: 0;
+      color: #fff; padding: 2px 0 2px 10px; border-radius: 0; cursor: pointer;
+      width: 100%; min-width: 0; box-shadow: inset 2px 0 0 transparent;
+    }
+    .check-rar-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .check-rar-top b {
+      font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; color: #fff;
+    }
+    .check-rar-top span { font-size: 12px; color: #fff; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .check-rar strong { display: none; }
+    .check-rar.all strong { display: block; font-size: 28px; line-height: 1.05; margin: 4px 0 10px; font-weight: 800; letter-spacing: -.03em; color: #fff; }
+    .check-rar-bar {
+      height: 4px; border-radius: 99px; overflow: hidden; margin-top: 6px;
+      background: color-mix(in srgb, #fff 12%, transparent);
+    }
+    .check-rar.all .check-rar-bar { height: 6px; margin-top: 0; }
+    .check-rar-bar i { display: block; height: 100%; width: 0; border-radius: 99px; }
+    .check-rar-bar i.anim { transition: width .7s cubic-bezier(.22,1,.36,1); }
+    .check-all-fill {
+      display: flex; height: 100%; border-radius: 99px; overflow: hidden;
+    }
+    .check-all-fill.anim { transition: width .7s cubic-bezier(.22,1,.36,1); }
+    .check-all-fill i {
+      display: block; height: 100%; width: auto; min-width: 0; border-radius: 0; flex: 1 1 0;
+    }
+    .check-rar.common .check-rar-bar i { background: #34d399; }
+    .check-rar.uncommon .check-rar-bar i { background: #f97316; }
+    .check-rar.rare .check-rar-bar i { background: #7c3aed; }
+    .check-rar.vagrant .check-rar-bar i { background: #d6d3d1; }
+    .check-rar.on { box-shadow: inset 2px 0 0 #78716c; }
+    .check-rar.on .check-rar-bar { height: 6px; background: color-mix(in srgb, #fff 22%, transparent); }
+    .check-rar.all.on .check-rar-bar { height: 7px; }
+    html[data-theme="light"] .check-rar,
+    html[data-theme="light"] .check-rar-top b,
+    html[data-theme="light"] .check-rar-top span,
+    html[data-theme="light"] .check-rar.all strong { color: #1c1917; }
+    html[data-theme="light"] .check-rar.on { box-shadow: inset 2px 0 0 #a8a29e; }
+    html[data-theme="light"] .check-rar-bar { background: color-mix(in srgb, #1c1917 10%, transparent); }
     #region-species-modal .check-progress { padding: 8px 12px 10px; overflow-x: hidden; }
     #region-species-modal .check-tools,
     #region-species-modal .check-progress .two { gap: 6px; margin-bottom: 0; }
@@ -1020,7 +1254,7 @@
     .cmp-delta.down { color: var(--cool); }
     .cmp-delta.even { color: var(--muted); }
     @media (max-width: 420px) {
-      .ring-wrap svg { max-width: 78px; }
+      .check-rar strong { font-size: 16px; }
       .ring-label { font-size: 11px; }
       .cmp-stat .num { font-size: 22px; }
       .cmp-cols { gap: 6px; padding: 6px 8px 12px; }
@@ -1213,8 +1447,7 @@
       <div class="brand-copy">
         <h1>BirdsEye</h1>
         <div class="sub">Find what's flying.</div>
-        <img class="wordmark-img wordmark-img-light" src="light_mode_wordmark-removebg-preview.png" alt="birdseye" />
-        <img class="wordmark-img wordmark-img-dark" src="dark_mode_wordmark-removebg-preview.png" alt="birdseye" />
+        <img id="header-wordmark" src="wordmark-dark.png?v=aa4" width="148" height="36" alt="birdseye" />
       </div>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
@@ -1276,11 +1509,11 @@
               <button id="btn-heatmap" onclick="toggleHeatmap()">Heatmap</button>
             </div>
             <div class="seg">
-              <button id="btn-rar-all" class="on" onclick="setHuntRarity('all')">All</button>
-              <button id="btn-rar-common" onclick="setHuntRarity('common')">Com</button>
-              <button id="btn-rar-uncommon" onclick="setHuntRarity('uncommon')">Unc</button>
-              <button id="btn-rar-rare" onclick="setHuntRarity('rare')">Rare</button>
-              <button id="btn-rar-pulse" onclick="setHuntRarity('pulse')">Pulse</button>
+              <button id="btn-rar-common" class="on" onclick="toggleHuntRarity('common')">Com</button>
+              <button id="btn-rar-uncommon" class="on" onclick="toggleHuntRarity('uncommon')">Unc</button>
+              <button id="btn-rar-rare" class="on" onclick="toggleHuntRarity('rare')">Rare</button>
+              <button id="btn-rar-pulse" class="on" onclick="toggleHuntRarity('pulse')">Pulse</button>
+              <button id="btn-rar-vagrant" class="on" onclick="toggleHuntRarity('vagrant')">Vgr</button>
             </div>
           </div>
           <button type="button" class="toolbar-min-btn" id="btn-toolbar-min" title="Minimize controls" onclick="toggleMapToolbar()">▾</button>
@@ -1368,22 +1601,33 @@
     <section id="view-lifelist" class="view">
       <div class="scroll">
         <div class="list-head">
-          <div class="ribbon">
-            <div>
+          <div class="ribbon gallery-ribbon">
+            <div class="gallery-id">
               <div class="ribbon-kicker">Life List</div>
-              <div class="ribbon-num" id="lifelist-count">0</div>
-              <div class="ribbon-meta" id="lifelist-scoreline">New this year</div>
+              <div class="gallery-counts">
+                <div class="ribbon-num" id="lifelist-count">0</div>
+                <div class="ribbon-meta" id="lifelist-scoreline">New this year</div>
+              </div>
             </div>
-            <div class="ribbon-side">
-              <select id="lifelist-sort" class="mini" onchange="renderLifeList()">
-                <option value="firstSeen">Lifer Date</option>
-                <option value="recent">Most Recent</option>
-                <option value="count">Most Logged</option>
-                <option value="alpha">Species (A-Z)</option>
-              </select>
+            <div class="gallery-side">
+              <button type="button" class="btn-report" onclick="openFieldBook()">Field Book</button>
               <div id="lifelist-spark" class="spark"></div>
             </div>
           </div>
+        </div>
+        <div class="lifelist-filters">
+          <select id="lifelist-state" class="mini" onchange="renderLifeList()">
+            <option value="all">All States</option>
+          </select>
+          <select id="lifelist-sort" class="mini" onchange="renderLifeList()">
+            <option value="first-desc">Lifer Date → Newest to Oldest</option>
+            <option value="first-asc">Lifer Date → Oldest to Newest</option>
+            <option value="last-asc">Last Logged → Oldest to Newest</option>
+            <option value="last-desc">Last Logged → Newest to Oldest</option>
+            <option value="count">Most Logged</option>
+            <option value="az">Species A–Z</option>
+            <option value="za">Species Z–A</option>
+          </select>
         </div>
         <div id="lifelist-grid" class="grid"></div>
         <button type="button" class="to-top" aria-label="Back to top">↑</button>
@@ -1473,6 +1717,7 @@
               <option value="Summer Breeding">Summer</option>
               <option value="Winter Visitor">Winter</option>
               <option value="Seasonal">Seasonal</option>
+              <option value="Vagrant">Vagrant</option>
             </select>
             <select id="radar-type" class="mini" onchange="renderRadar()">
               <option value="all">All types</option>
@@ -1484,6 +1729,7 @@
             <option value="2">Uncommon</option>
             <option value="3">Rare</option>
             <option value="4">Pulse</option>
+            <option value="v">Vagrant</option>
           </select>
         </div>
         <p class="hint" id="radar-count" style="margin:8px 0 0"></p>
@@ -1514,6 +1760,18 @@
     </button>
   </nav>
 
+  <div id="photo-pick-bar"></div>
+  <div id="photo-pick-confirm" class="modal">
+    <div class="sheet" style="height:auto;max-height:none;max-width:22rem">
+      <div class="sheet-h"><strong>Delete?</strong></div>
+      <div class="sheet-b"><p class="hint" id="photo-pick-confirm-msg" style="margin:0"></p></div>
+      <div class="sheet-f" style="gap:8px">
+        <button class="ghost" type="button" onclick="closePhotoPickConfirm()">Cancel</button>
+        <button class="danger" type="button" onclick="confirmPhotoPickDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <div id="region-species-modal" class="modal">
     <div class="sheet">
       <div class="sheet-h">
@@ -1539,6 +1797,7 @@
             <option value="Summer Breeding">Summer</option>
             <option value="Winter Visitor">Winter</option>
             <option value="Seasonal">Seasonal</option>
+            <option value="Vagrant">Vagrant</option>
           </select>
           <select id="checklist-group-break" onchange="setChecklistGroupFilter(this.value)">
             <option value="all">All types</option>
@@ -1550,6 +1809,7 @@
         <button id="tab-btn-discovered" class="on" onclick="switchRegionModalTab('discovered')">Discovered (<span id="modal-discovered-count">0</span>)</button>
         <button id="tab-btn-missing" onclick="switchRegionModalTab('missing')">Missing (<span id="modal-missing-count">0</span>)</button>
         <button id="tab-btn-compare" onclick="switchRegionModalTab('compare')">Compare</button>
+        <button id="tab-btn-analyze" type="button" onclick="openAnalyzeSheet()">Analyze</button>
       </div>
       <div class="check-tools" id="checklist-list-tools">
         <div class="two">
@@ -1660,6 +1920,75 @@
         <button class="ghost" type="button" id="btn-report-all" onclick="toggleAllReportPicks()">Select all</button>
         <button class="btn-em" type="button" style="flex:1" id="btn-download-report" onclick="downloadFieldReport()">Save JPG</button>
       </div>
+    </div>
+  </div>
+
+  <div id="analyze-modal" class="modal">
+    <div class="sheet analyze-sheet">
+      <div class="sheet-h">
+        <div>
+          <div class="hud-label">Analyze</div>
+          <strong id="analyze-title">North Carolina</strong>
+        </div>
+        <button class="x" type="button" onclick="closeAnalyzeSheet()" aria-label="Close analyze">✕</button>
+      </div>
+      <div class="analyze-tools">
+        <select id="analyze-view" class="mini" onchange="onAnalyzeViewChange()">
+          <option value="newrepeat">New vs repeat</option>
+          <option value="curve">Finds vs curve</option>
+          <option value="typeshare">Type share</option>
+        </select>
+        <select id="analyze-slice" class="mini" onchange="onAnalyzeSliceChange()">
+          <option value="all">All logs</option>
+        </select>
+        <select id="analyze-share" class="mini" onchange="renderAnalyze()" hidden>
+          <option value="all">Types · every log</option>
+          <option value="new">Types · new ticks only</option>
+        </select>
+        <select id="analyze-grain" class="mini" onchange="onAnalyzeGrain()">
+          <option value="day">Days</option>
+          <option value="week">Weeks</option>
+          <option value="month" selected>Months</option>
+          <option value="year">Years</option>
+        </select>
+        <button type="button" class="ghost" id="analyze-reset" onclick="resetAnalyzeAxis()">Reset</button>
+      </div>
+      <div class="analyze-map-wrap">
+        <div id="analyze-map"></div>
+        <div class="analyze-range" id="analyze-range-label"></div>
+      </div>
+      <div id="analyze-chart"></div>
+      <div id="analyze-legend"></div>
+      <div id="analyze-list"></div>
+    </div>
+  </div>
+
+  <div id="fieldbook-modal" class="modal">
+    <div class="sheet">
+      <div class="sheet-h">
+        <div>
+          <div class="ribbon-kicker">Field Book</div>
+          <strong id="fieldbook-title">Complete the sets</strong>
+        </div>
+        <button class="x" type="button" onclick="closeFieldBook()" aria-label="Close field book">✕</button>
+      </div>
+      <div class="fb-tools">
+        <select id="fieldbook-state" class="mini" onchange="renderFieldBook()">
+          <option value="US">United States</option>
+        </select>
+        <div class="fb-rarities" id="fieldbook-rarities">
+          <button type="button" class="fb-rar r1 on" onclick="toggleFieldBookRarity(1)">Common</button>
+          <button type="button" class="fb-rar r2 on" onclick="toggleFieldBookRarity(2)">Uncommon</button>
+          <button type="button" class="fb-rar r3 on" onclick="toggleFieldBookRarity(3)">Rare</button>
+          <button type="button" class="fb-rar r4 on" onclick="toggleFieldBookRarity(4)">Vagrant</button>
+        </div>
+      </div>
+      <div class="fb-sum">
+        <b id="fieldbook-count">0 / 0</b>
+        <span class="muted" id="fieldbook-sets">0 types complete</span>
+      </div>
+      <p class="hint fb-hint">Open a type to see every bird that can be logged here. Logged birds glow by static rarity. Missing birds stay in black and white.</p>
+      <div class="sheet-b" id="fieldbook-body"></div>
     </div>
   </div>
 
@@ -1819,6 +2148,59 @@
   <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
   <script>
     let stateShapes = [];
+    const STATE_NEIGHBORS = {
+      'Alabama': ['Florida', 'Georgia', 'Mississippi', 'Tennessee'],
+      'Alaska': [],
+      'Arizona': ['California', 'Colorado', 'Nevada', 'New Mexico', 'Utah'],
+      'Arkansas': ['Louisiana', 'Mississippi', 'Missouri', 'Oklahoma', 'Tennessee', 'Texas'],
+      'California': ['Arizona', 'Nevada', 'Oregon'],
+      'Colorado': ['Arizona', 'Kansas', 'Nebraska', 'New Mexico', 'Oklahoma', 'Utah', 'Wyoming'],
+      'Connecticut': ['Massachusetts', 'New York', 'Rhode Island'],
+      'Delaware': ['Maryland', 'New Jersey', 'Pennsylvania'],
+      'District of Columbia': ['Maryland', 'Virginia'],
+      'Florida': ['Alabama', 'Georgia'],
+      'Georgia': ['Alabama', 'Florida', 'North Carolina', 'South Carolina', 'Tennessee'],
+      'Hawaii': [],
+      'Idaho': ['Montana', 'Nevada', 'Oregon', 'Utah', 'Washington', 'Wyoming'],
+      'Illinois': ['Indiana', 'Iowa', 'Kentucky', 'Missouri', 'Wisconsin'],
+      'Indiana': ['Illinois', 'Kentucky', 'Michigan', 'Ohio'],
+      'Iowa': ['Illinois', 'Minnesota', 'Missouri', 'Nebraska', 'South Dakota', 'Wisconsin'],
+      'Kansas': ['Colorado', 'Missouri', 'Nebraska', 'Oklahoma'],
+      'Kentucky': ['Illinois', 'Indiana', 'Missouri', 'Ohio', 'Tennessee', 'Virginia', 'West Virginia'],
+      'Louisiana': ['Arkansas', 'Mississippi', 'Texas'],
+      'Maine': ['New Hampshire'],
+      'Maryland': ['Delaware', 'District of Columbia', 'Pennsylvania', 'Virginia', 'West Virginia'],
+      'Massachusetts': ['Connecticut', 'New Hampshire', 'New York', 'Rhode Island', 'Vermont'],
+      'Michigan': ['Indiana', 'Ohio', 'Wisconsin'],
+      'Minnesota': ['Iowa', 'North Dakota', 'South Dakota', 'Wisconsin'],
+      'Mississippi': ['Alabama', 'Arkansas', 'Louisiana', 'Tennessee'],
+      'Missouri': ['Arkansas', 'Illinois', 'Iowa', 'Kansas', 'Kentucky', 'Nebraska', 'Oklahoma', 'Tennessee'],
+      'Montana': ['Idaho', 'North Dakota', 'South Dakota', 'Wyoming'],
+      'Nebraska': ['Colorado', 'Iowa', 'Kansas', 'Missouri', 'South Dakota', 'Wyoming'],
+      'Nevada': ['Arizona', 'California', 'Idaho', 'Oregon', 'Utah'],
+      'New Hampshire': ['Maine', 'Massachusetts', 'Vermont'],
+      'New Jersey': ['Delaware', 'New York', 'Pennsylvania'],
+      'New Mexico': ['Arizona', 'Colorado', 'Oklahoma', 'Texas', 'Utah'],
+      'New York': ['Connecticut', 'Massachusetts', 'New Jersey', 'Pennsylvania', 'Vermont'],
+      'North Carolina': ['Georgia', 'South Carolina', 'Tennessee', 'Virginia'],
+      'North Dakota': ['Minnesota', 'Montana', 'South Dakota'],
+      'Ohio': ['Indiana', 'Kentucky', 'Michigan', 'Pennsylvania', 'West Virginia'],
+      'Oklahoma': ['Arkansas', 'Colorado', 'Kansas', 'Missouri', 'New Mexico', 'Texas'],
+      'Oregon': ['California', 'Idaho', 'Nevada', 'Washington'],
+      'Pennsylvania': ['Delaware', 'Maryland', 'New Jersey', 'New York', 'Ohio', 'West Virginia'],
+      'Rhode Island': ['Connecticut', 'Massachusetts'],
+      'South Carolina': ['Georgia', 'North Carolina'],
+      'South Dakota': ['Iowa', 'Minnesota', 'Montana', 'Nebraska', 'North Dakota', 'Wyoming'],
+      'Tennessee': ['Alabama', 'Arkansas', 'Georgia', 'Kentucky', 'Mississippi', 'Missouri', 'North Carolina', 'Virginia'],
+      'Texas': ['Arkansas', 'Louisiana', 'New Mexico', 'Oklahoma'],
+      'Utah': ['Arizona', 'Colorado', 'Idaho', 'Nevada', 'New Mexico', 'Wyoming'],
+      'Vermont': ['Massachusetts', 'New Hampshire', 'New York'],
+      'Virginia': ['District of Columbia', 'Kentucky', 'Maryland', 'North Carolina', 'Tennessee', 'West Virginia'],
+      'Washington': ['Idaho', 'Oregon'],
+      'West Virginia': ['Kentucky', 'Maryland', 'Ohio', 'Pennsylvania', 'Virginia'],
+      'Wisconsin': ['Illinois', 'Iowa', 'Michigan', 'Minnesota'],
+      'Wyoming': ['Colorado', 'Idaho', 'Montana', 'Nebraska', 'South Dakota', 'Utah']
+    };
     const STATE_CODES = {
       'Alabama':'US-AL','Alaska':'US-AK','Arizona':'US-AZ','Arkansas':'US-AR','California':'US-CA',
       'Colorado':'US-CO','Connecticut':'US-CT','Delaware':'US-DE','District of Columbia':'US-DC','Florida':'US-FL',
@@ -1888,7 +2270,8 @@
     let heatPlaying = false;
     let heatPlayTimer = null;
     let heatSpeed = Number(localStorage.getItem('avian_heat_speed') || 1) || 1;
-    let huntRarity = 'all';
+    const HUNT_RARITY_KEYS = ['common', 'uncommon', 'rare', 'pulse', 'vagrant'];
+    let huntRarity = new Set(HUNT_RARITY_KEYS);
     let darkTiles = localStorage.getItem('avian_dark_tiles') === '1';
     let uiTheme = (localStorage.getItem('avian_ui_theme') === 'light') ? 'light' : 'dark';
     let baseLayer = null;
@@ -1939,6 +2322,7 @@
     let modalTab = 'discovered';
     let checklistWindow = 'all';
     let checklistRarity = 'all';
+    let checklistAnimateBars = false;
     let checklistStatus = 'all';
     let checklistGroup = 'all';
     let checklistResume = false;
@@ -2189,6 +2573,18 @@ function exportLogs() {
       return out;
     }
 
+    function officialStatus(raw) {
+      const s = String(raw || '').trim();
+      if (!s) return 'Seasonal';
+      if (s === 'Vagrant') return 'Seasonal';
+      return s;
+    }
+
+    function statusForSpecies(sp, stateName) {
+      if (sp && sp.code && rarityStatic(sp.code, stateName) === 4) return 'Vagrant';
+      return officialStatus(sp && sp.status);
+    }
+
     function decodeState(code) {
       if (stateCache.has(code)) return stateCache.get(code);
       const raw = DATA.S[code];
@@ -2201,7 +2597,7 @@ function exportLogs() {
         const parts = items[i].split(':');
         list.push({
           code: parts[0],
-          status: DATA.L[Number(parts[1])] || 'Seasonal',
+          status: officialStatus(DATA.L[Number(parts[1])]),
           monthly: unpackMonth(parts[2] || '')
         });
       }
@@ -2370,6 +2766,7 @@ function exportLogs() {
         gold: cssVar('--gold', '#fbbf24'),
         unc: uiTheme === 'light' ? '#c2410c' : '#fb923c',
         rare: uiTheme === 'light' ? '#7c3aed' : '#c084fc',
+        vag: uiTheme === 'light' ? '#78716c' : '#d6d3d1',
         photo: cssVar('--photo', '#0c0a09')
       };
     }
@@ -2379,6 +2776,8 @@ function exportLogs() {
       const dark = document.getElementById('btn-theme-dark');
       if (light) light.className = uiTheme === 'light' ? 'on' : '';
       if (dark) dark.className = uiTheme === 'dark' ? 'on' : '';
+      const wm = document.getElementById('header-wordmark');
+      if (wm) wm.src = (uiTheme === 'light' ? 'wordmark-light.png' : 'wordmark-dark.png') + '?v=aa4';
     }
     function setUiTheme(mode) {
       uiTheme = (mode === 'light') ? 'light' : 'dark';
@@ -2723,7 +3122,7 @@ function exportLogs() {
     function speciesFromState(code, stateName) {
       const name = stateName && STATE_CODES[stateName] ? stateName : activeState;
       const entry = decodeState(STATE_CODES[name] || 'US-NC');
-      return entry.list.find(sp => sp.code === code) || { code: code, status: 'Seasonal', monthly: [] };
+      return entry.list.find(sp => sp.code === code) || { code: code, status: 'Vagrant', monthly: [] };
     }
 
     function yearAvg(sp) {
@@ -2747,25 +3146,193 @@ function exportLogs() {
       if (avg >= 0.18) return 2;
       return 3;
     }
-    function rarityStable(code, stateName) {
-      const sp = speciesFromState(code, stateName);
-      const peak = yearPeak(sp);
-      const avg = yearAvg(sp);
-      if (peak < 0.22 || avg < 0.12) return 3;
-      if (avg >= 0.4) return 1;
-      if (avg >= 0.18) return 2;
+    function monthlyStats(monthly) {
+      const m = monthly || [];
+      const vals = [];
+      let peak = 0, sum = 0;
+      for (let i = 0; i < m.length; i++) {
+        const v = m[i] || 0;
+        vals.push(v);
+        sum += v;
+        if (v > peak) peak = v;
+      }
+      const n = vals.length || 12;
+      const avg = sum / n;
+      const top = vals.slice().sort((a, b) => b - a).slice(0, 3);
+      const season = top.length ? (top[0] + (top[1] || 0) + (top[2] || 0)) / top.length : 0;
+      let monthsOn = 0;
+      for (let i = 0; i < vals.length; i++) if (vals[i] >= 0.15) monthsOn++;
+      return { peak: peak, avg: avg, season: season, monthsOn: monthsOn };
+    }
+
+    function rarityStaticFromMonthly(monthly) {
+      const s = monthlyStats(monthly);
+      if (!monthly || !monthly.length || s.peak <= 0) return 4;
+      if (s.season < 0.18 || s.peak < 0.18) return 3;
+      if (s.avg >= 0.40 || (s.season >= 0.40 && s.monthsOn >= 3)) return 1;
+      if (s.season >= 0.22 || s.avg >= 0.16 || s.monthsOn >= 3) return 2;
       return 3;
+    }
+
+    let staticRawCache = {};
+
+    function rarityStable(code, stateName) {
+      return rarityStaticRaw(code, stateName);
+    }
+
+    function rarityStaticRaw(code, stateName) {
+      const name = stateName && STATE_CODES[stateName] ? stateName : activeState;
+      const key = name + ':' + code;
+      if (Object.prototype.hasOwnProperty.call(staticRawCache, key)) return staticRawCache[key];
+      const rank = rarityStaticFromMonthly(speciesFromState(code, name).monthly);
+      staticRawCache[key] = rank;
+      return rank;
+    }
+
+    function rarityStaticKind(code, stateName) {
+      const name = stateName && STATE_CODES[stateName] ? stateName : activeState;
+      const raw = rarityStaticRaw(code, name);
+      if (raw !== 4) return raw === 1 ? 'common' : raw === 2 ? 'uncommon' : 'rare';
+      const nbrs = STATE_NEIGHBORS[name] || [];
+      for (let i = 0; i < nbrs.length; i++) {
+        if (rarityStaticRaw(code, nbrs[i]) < 4) return 'neighbor-rare';
+      }
+      return 'vagrant';
+    }
+
+    function rarityStatic(code, stateName) {
+      const kind = rarityStaticKind(code, stateName);
+      if (kind === 'vagrant') return 4;
+      if (kind === 'common') return 1;
+      if (kind === 'uncommon') return 2;
+      return 3;
+    }
+
+    const CONTIG_UNITS = Object.keys(STATE_CODES).filter(n => n !== 'Alaska' && n !== 'Hawaii');
+    let usStaticIndex = null;
+    let usStaticCache = {};
+
+    function resetUsStatic() {
+      usStaticIndex = null;
+      usStaticCache = {};
+      staticRawCache = {};
+    }
+
+    function ensureUsStaticIndex() {
+      if (usStaticIndex) return usStaticIndex;
+      const map = {};
+      if (!DATA || !DATA.S || !Object.keys(DATA.S).length) return map;
+      Object.keys(STATE_CODES).forEach(name => {
+        const akhi = name === 'Alaska' || name === 'Hawaii';
+        officialRows(STATE_CODES[name] || '').forEach(sp => {
+          if (!map[sp.code]) map[sp.code] = { l48: [], akhi: false, akhiRanks: [] };
+          const rank = rarityStaticFromMonthly(sp.monthly);
+          if (akhi) {
+            map[sp.code].akhi = true;
+            map[sp.code].akhiRanks.push(rank);
+          } else {
+            map[sp.code].l48.push(rank);
+          }
+        });
+      });
+      usStaticIndex = map;
+      return map;
+    }
+
+    function medianNum(vals) {
+      if (!vals || !vals.length) return 3;
+      const a = vals.slice().sort((x, y) => x - y);
+      const n = a.length;
+      if (n % 2) return a[(n - 1) / 2];
+      return (a[n / 2 - 1] + a[n / 2]) / 2;
+    }
+
+    function rarityStaticUS(code) {
+      if (Object.prototype.hasOwnProperty.call(usStaticCache, code)) return usStaticCache[code];
+      const rec = ensureUsStaticIndex()[code];
+      let rank = 4;
+      if (rec) {
+        const listedN = rec.l48.length + (rec.akhiRanks || []).length;
+        const established = function (ranks) {
+          return (ranks || []).some(r => r === 1 || r === 2);
+        };
+        if (!rec.l48.length) {
+          rank = established(rec.akhiRanks) ? 3 : 4;
+        } else if (listedN <= 2) {
+          rank = established(rec.l48.concat(rec.akhiRanks || [])) ? 3 : 4;
+        } else {
+          const folded = rec.l48.map(r => r === 4 ? 3 : r);
+          const quality = medianNum(folded);
+          const q = quality < 1.5 ? 1 : quality < 2.5 ? 2 : 3;
+          const coverage = rec.l48.length / Math.max(1, CONTIG_UNITS.length);
+          if (q === 1 && coverage >= 0.40) rank = 1;
+          else if (q <= 2 && coverage >= 0.15) rank = 2;
+          else rank = 3;
+        }
+      }
+      usStaticCache[code] = rank;
+      return rank;
     }
     function rarityRank(code, stateName) {
       return rarityRankAt(code, stateName, CURRENT_MONTH);
     }
 
-    function huntColor(code, stateName) {
-      const r = rarityRank(code, stateName);
-      if (r === 4) return '#c084fc';
-      if (r === 3) return '#7c3aed';
-      if (r === 1) return '#10b981';
+    function stateNameFromRegionCode(code) {
+      if (!code) return '';
+      if (STATE_CODES[code]) return code;
+      const keys = Object.keys(STATE_CODES);
+      for (let i = 0; i < keys.length; i++) {
+        if (STATE_CODES[keys[i]] === code) return keys[i];
+      }
+      return '';
+    }
+
+    function obsStateName(o) {
+      if (!o) return activeState;
+      if (o.state && STATE_CODES[o.state]) return o.state;
+      const sub = o.subnational1Code || o.subnationalCode || o.regionCode || '';
+      const named = stateNameFromRegionCode(sub);
+      return named || activeState;
+    }
+
+    function monthlyForMap(code, stateName) {
+      if (currentRegionLevel === 'country') {
+        const rows = officialRows('US');
+        for (let i = 0; i < rows.length; i++) {
+          if (rows[i].code === code) return rows[i].monthly || [];
+        }
+        return [];
+      }
+      return speciesFromState(code, stateName).monthly || [];
+    }
+
+    function mapStableRank(code, stateName) {
+      if (currentRegionLevel === 'country') return rarityStaticUS(code);
+      return rarityStatic(code, stateName);
+    }
+
+    function mapLiveRank(code, stateName) {
+      if (currentRegionLevel === 'country') return rarityFromMonthly(monthlyForMap(code, stateName));
+      return rarityRank(code, stateName);
+    }
+
+    function shelfColor(rank) {
+      if (rank === 4) return '#d6d3d1';
+      if (rank === 3) return '#7c3aed';
+      if (rank === 1) return '#10b981';
       return '#f97316';
+    }
+
+    function photoColor(code, stateName) {
+      return shelfColor(mapStableRank(code, stateName));
+    }
+
+    function huntColor(code, stateName) {
+      if (mapStableRank(code, stateName) === 4) return '#d6d3d1';
+      const live = mapLiveRank(code, stateName);
+      if (live === 4) return '#c084fc';
+      const shelf = currentRegionLevel === 'country' ? mapStableRank(code, stateName) : live;
+      return shelfColor(shelf);
     }
 
     function rarityClusterIcon(cluster) {
@@ -3028,16 +3595,39 @@ function exportLogs() {
       heatLoading = false;
     }
 
-    function rarityWantsStatewide() {
-      return !radiusLocked && currentSpeciesFilter === 'all' && (huntRarity === 'uncommon' || huntRarity === 'rare' || huntRarity === 'pulse');
+    function huntRarityAll() {
+      return huntRarity.size === HUNT_RARITY_KEYS.length;
     }
 
-    function setHuntRarity(level) {
-      huntRarity = level;
-      ['all','common','uncommon','rare','pulse'].forEach(k => {
+    function huntRarityLabel() {
+      if (huntRarityAll()) return 'all rarities';
+      const names = { common: 'com', uncommon: 'unc', rare: 'rare', pulse: 'pulse', vagrant: 'vgr' };
+      return HUNT_RARITY_KEYS.filter(k => huntRarity.has(k)).map(k => names[k]).join(' · ');
+    }
+
+    function rarityWantsStatewide() {
+      return !radiusLocked && currentSpeciesFilter === 'all' &&
+        (huntRarity.has('uncommon') || huntRarity.has('rare') || huntRarity.has('pulse') || huntRarity.has('vagrant'));
+    }
+
+    function syncHuntRarityChips() {
+      HUNT_RARITY_KEYS.forEach(k => {
         const el = document.getElementById('btn-rar-' + k);
-        if (el) el.className = k === level ? 'on' : '';
+        if (el) el.className = huntRarity.has(k) ? 'on' : '';
       });
+    }
+
+    function toggleHuntRarity(level) {
+      if (HUNT_RARITY_KEYS.indexOf(level) < 0) return;
+      if (huntRarityAll()) {
+        huntRarity = new Set([level]);
+      } else if (huntRarity.has(level)) {
+        huntRarity.delete(level);
+        if (!huntRarity.size) huntRarity = new Set(HUNT_RARITY_KEYS);
+      } else {
+        huntRarity.add(level);
+      }
+      syncHuntRarityChips();
       if (mapMode === 'hunt') {
         loadHuntData();
         renderHuntMap();
@@ -3046,16 +3636,35 @@ function exportLogs() {
       }
     }
 
+    function setHuntRarity(level) {
+      if (level === 'all') huntRarity = new Set(HUNT_RARITY_KEYS);
+      else if (HUNT_RARITY_KEYS.indexOf(level) >= 0) huntRarity = new Set([level]);
+      syncHuntRarityChips();
+      if (mapMode === 'hunt') {
+        loadHuntData();
+        renderHuntMap();
+        renderHuntPanel();
+        refreshHuntStatusCounts();
+      }
+    }
+
+    function huntRarityMatches(code, stateName) {
+      if (huntRarityAll()) return true;
+      const live = mapLiveRank(code, stateName);
+      const stable = mapStableRank(code, stateName);
+      if (huntRarity.has('vagrant') && stable === 4) return true;
+      if (huntRarity.has('pulse') && live === 4) return true;
+      const shelf = currentRegionLevel === 'country' ? stable : live;
+      if (huntRarity.has('common') && shelf === 1) return true;
+      if (huntRarity.has('uncommon') && shelf === 2) return true;
+      if (huntRarity.has('rare') && shelf === 3 && stable !== 4) return true;
+      return false;
+    }
+
     function passesHuntFilters(code) {
       if (currentSpeciesFilter !== 'all' && code !== currentSpeciesFilter) return false;
       if (hideLogged && lifeCodes().has(code)) return false;
-      if (huntRarity !== 'all') {
-        const r = rarityRank(code);
-        if (huntRarity === 'common' && r !== 1) return false;
-        if (huntRarity === 'uncommon' && r !== 2) return false;
-        if (huntRarity === 'rare' && r !== 3) return false;
-        if (huntRarity === 'pulse' && r !== 4) return false;
-      }
+      if (!huntRarityMatches(code, activeState)) return false;
       return true;
     }
 
@@ -3271,13 +3880,18 @@ function exportLogs() {
         iconAnchor: [14, 26]
       });
     }
+    const SPECIES_PHOTO_PAGE = {
+      redhea: 'Redhead_(bird)'
+    };
+
     async function resolveSpeciesPhoto(code, comName) {
       if (!code) return '';
       if (Object.prototype.hasOwnProperty.call(speciesPhotoCache, code)) return speciesPhotoCache[code] || '';
       const name = comName || taxName(code).comName;
       if (!name) return '';
+      const wikiPage = SPECIES_PHOTO_PAGE[code] || name;
       try {
-        const res = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(name));
+        const res = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(wikiPage));
         if (res.ok) {
           const data = await res.json();
           const url = data && data.thumbnail && data.thumbnail.source;
@@ -3625,7 +4239,7 @@ function exportLogs() {
     }
 
     function hotspotHasFilteredBirds(h) {
-      if (huntRarity === 'all' && currentSpeciesFilter === 'all' && !hideLogged) return true;
+      if (huntRarityAll() && currentSpeciesFilter === 'all' && !hideLogged) return true;
       const obs = huntCache.obs || [];
       return obs.some(o => {
         if (!passesHuntFilters(o.speciesCode)) return false;
@@ -3812,14 +4426,14 @@ function exportLogs() {
       }
       if (mapMode === 'hunt' && rarityWantsStatewide()) {
         const region = STATE_CODES[activeState] || 'US-NC';
-        setHuntStatus('Loading statewide ' + huntRarity + '…');
+        setHuntStatus('Loading statewide ' + huntRarityLabel() + '…');
         let raw = [];
         try {
           raw = await ebirdGet('/data/obs/' + region + '/recent', {
             back: String(huntBack), maxResults: '200', cat: 'species'
           }) || [];
         } catch (e) { raw = []; }
-        if (huntRarity === 'rare' || huntRarity === 'pulse') {
+        if (huntRarity.has('rare') || huntRarity.has('pulse')) {
           raw = raw.filter(o => o && o.speciesCode && passesHuntFilters(o.speciesCode));
         }
         const seenObs = new Set();
@@ -3841,7 +4455,7 @@ function exportLogs() {
           spots.push({ locId: o.locId, locName: o.locName, lat: o.lat, lng: o.lng, numSpeciesAllTime: '' });
         });
         huntCache = { obs: kept, hotspots: spots, label: activeState + ' statewide · last ' + huntBack + 'd' };
-        setHuntStatus(spots.length + ' sites · ' + kept.length + ' ' + huntRarity + ' ▾');
+        setHuntStatus(spots.length + ' sites · ' + kept.length + ' ' + huntRarityLabel() + ' ▾');
         renderHuntMap();
         renderHuntPanel();
         setHuntBusy(false);
@@ -3949,10 +4563,11 @@ function exportLogs() {
         if (!code || o.lat == null || o.lng == null) continue;
         if (!passesHuntFilters(code)) continue;
         placed++;
-        const color = huntColor(code);
+        const st = obsStateName(o);
+        const color = huntColor(code, st);
         const name = o.comName || taxName(code).comName;
         const mk = L.marker([o.lat, o.lng], {
-          rarity: rarityRank(code),
+          rarity: mapLiveRank(code, st) === 4 ? 4 : mapStableRank(code, st),
           rarityColor: color,
           speciesCode: code,
           icon: L.divIcon({
@@ -4092,6 +4707,8 @@ function exportLogs() {
       document.getElementById('btn-level-state').className = level === 'state' ? 'on' : '';
       document.getElementById('btn-level-country').className = level === 'country' ? 'on' : '';
       updateRegionalHUD();
+      if (typeof renderMapMarkers === 'function') renderMapMarkers();
+      if (typeof renderAnalyze === 'function') renderAnalyze();
     }
 
     function loggedCodesFor(stateName, countryOnly) {
@@ -4118,9 +4735,14 @@ function exportLogs() {
 
     function countLoggedOnOfficialList(logged, regionCode) {
       const onList = officialListCodes(regionCode);
-      let count = 0;
-      onList.forEach(c => { if (logged && logged.has(c)) count++; });
-      return { count: count, total: onList.size };
+      const isUS = regionCode === 'US';
+      let count = 0, total = 0;
+      onList.forEach(c => {
+        const vag = isUS ? rarityStaticUS(c) === 4 : rarityStaticFromMonthly(speciesFromState(c).monthly) === 4;
+        if (!vag) total++;
+        if (logged && logged.has(c)) count++;
+      });
+      return { count: count, total: total };
     }
 
     function updateRegionalHUD() {
@@ -4159,6 +4781,7 @@ function exportLogs() {
       if (status === 'Summer Breeding') return '<span class="chip s">Summer</span>';
       if (status === 'Winter Visitor') return '<span class="chip w">Winter</span>';
       if (status === 'Spring/Fall Migrant') return '<span class="chip m">Migrant</span>';
+      if (status === 'Vagrant') return '<span class="chip">Vagrant</span>';
       return '<span class="chip">Seasonal</span>';
     }
 
@@ -4167,48 +4790,61 @@ function exportLogs() {
       if (status === 'Summer Breeding') return 'Summer';
       if (status === 'Winter Visitor') return 'Winter';
       if (status === 'Spring/Fall Migrant') return 'Migrant';
+      if (status === 'Vagrant') return 'Vagrant';
       return 'Seasonal';
     }
 
     function birdGroup(comName, sciName) {
       const n = ((comName || '') + ' ' + (sciName || '')).toLowerCase();
       const hit = (re) => re.test(n);
-      if (hit(/warbler|redstart|ovenbird|waterthrush|parula|yellowthroat|chat\b/)) return 'Warbler';
-      if (hit(/\bhawk\b|eagle|kite|osprey|falcon|kestrel|merlin|harrier|goshawk|accipiter/)) return 'Raptor';
-      if (hit(/\bowl\b/)) return 'Owl';
-      if (hit(/duck|goose|swan|teal|wigeon|pintail|mallard|merganser|scoter|eider|gadwall|shoveler|canvasback|redhead|scaup|goldeneye|bufflehead|whistling-duck/)) return 'Waterfowl';
-      if (hit(/heron|egret|bittern|ibis|spoonbill|stork/)) return 'Wading';
-      if (hit(/sandpiper|plover|yellowlegs|godwit|curlew|snipe|woodcock|phalarope|turnstone|dunlin|knot|dowitcher|oystercatcher|avocet|stilt|willet|sanderling|killdeer|whimbrel/)) return 'Shorebird';
-      if (hit(/gull|tern|skimmer|kittiwake/)) return 'Gull / Tern';
-      if (hit(/woodpecker|sapsucker|flicker/)) return 'Woodpecker';
-      if (hit(/sparrow|junco|towhee|longspur/)) return 'Sparrow';
-      if (hit(/finch|goldfinch|siskin|crossbill|redpoll|grosbeak/)) return 'Finch';
-      if (hit(/blackbird|grackle|oriole|cowbird|meadowlark|bobolink/)) return 'Blackbird';
-      if (hit(/thrush|robin|bluebird|veery|solitaire/)) return 'Thrush';
-      if (hit(/flycatcher|phoebe|kingbird|pewee|kiskadee/)) return 'Flycatcher';
+      if (hit(/vulture|condor/)) return 'Vulture';
+      if (hit(/caracara|\bhawk\b|eagle|\bkite\b|osprey|falcon|kestrel|merlin|harrier|goshawk|accipiter|honey-buzzard/)) return 'Raptor';
+      if (hit(/\bowl\b|boobook/)) return 'Owl';
+      if (hit(/whistling-duck|shelduck|\bduck\b|goose|swan|teal|wigeon|widgeon|pintail|mallard|merganser|scoter|eider|gadwall|shoveler|canvasback|\bredhead\b|scaup|goldeneye|bufflehead|pochard|\bbrant\b|smew|garganey/)) return 'Waterfowl';
+      if (hit(/heron|egret|bittern|ibis|spoonbill|stork|flamingo|limpkin|jabiru/)) return 'Wading';
+      if (hit(/sandpiper|plover|yellowlegs|godwit|curlew|snipe|woodcock|phalarope|turnstone|dunlin|\bknot\b|dowitcher|oystercatcher|avocet|\bstilt\b|willet|sanderling|killdeer|whimbrel|surfbird|tattler|jacana|\bruff\b|redshank|greenshank|lapwing|stint|pratincole|thick-knee|dotterel/)) return 'Shorebird';
+      if (hit(/gull|\bterns?\b|skimmer|kittiwake|jaeger|skua|noddy/)) return 'Gull / Tern';
+      if (hit(/puffin|murre|murrelet|guillemot|auklet|\bauk\b|razorbill|dovekie/)) return 'Alcid';
+      if (hit(/woodpecker|sapsucker|flicker|wryneck/)) return 'Woodpecker';
+      if (hit(/yellow-breasted chat/)) return 'Cardinal / Tanager';
+      if (hit(/warbler|redstart|ovenbird|waterthrush|parula|yellowthroat|whitestart|whitethroat|chiffchaff/)) return 'Warbler';
+      if (hit(/lark bunting|lark sparrow|snow bunting|mckay/)) return 'Sparrow';
+      if (hit(/sparrow|junco|towhee|longspur|seedeater|grassquit/)) return 'Sparrow';
+      if (hit(/evening grosbeak|pine grosbeak|rosy-finch|rosy finch|brambling/)) return 'Finch';
+      if (hit(/finch|goldfinch|siskin|crossbill|redpoll|\bserin\b|\bcanary\b|linnet|greenfinch|yellowhammer/)) return 'Finch';
+      if (hit(/blackbird|grackle|oriole|cowbird|meadowlark|bobolink|troupial|cacique|oropendola/)) return 'Blackbird';
+      if (hit(/thrush|robin|bluebird|veery|solitaire|wheatear|bluethroat|rubythroat|stonechat|\bredwing\b|bluetail|fieldfare|shama/)) return 'Thrush';
+      if (hit(/flycatcher|phoebe|kingbird|pewee|kiskadee|elaenia|tyrannulet|becard|tityra|wood-pewee|cattle tyrant/)) return 'Flycatcher';
       if (hit(/vireo/)) return 'Vireo';
-      if (hit(/swallow|martin/)) return 'Swallow';
-      if (hit(/wren/)) return 'Wren';
-      if (hit(/hummingbird/)) return 'Hummingbird';
+      if (hit(/swallow|\bmartin\b/)) return 'Swallow';
+      if (hit(/\bwren\b/)) return 'Wren';
+      if (hit(/hummingbird|mountain-gem|violetear|woodstar|starthroat|\bmango\b/)) return 'Hummingbird';
       if (hit(/dove|pigeon/)) return 'Dove';
-      if (hit(/wood-pewee/) ) return 'Flycatcher';
-      if (hit(/cardinal|tanager|bunting|dickcissel/)) return 'Cardinal / Tanager';
-      if (hit(/jay|crow|raven|magpie/)) return 'Corvid';
-      if (hit(/chickadee|titmouse/)) return 'Chickadee';
+      if (hit(/cardinal|pyrrhuloxia|tanager|dickcissel|spindalis|grosbeak|painted bunting|indigo bunting|lazuli bunting|varied bunting|blue bunting|\bbunting\b/)) return 'Cardinal / Tanager';
+      if (hit(/shrike/)) return 'Shrike';
+      if (hit(/jay|crow|raven|magpie|nutcracker|jackdaw/)) return 'Corvid';
+      if (hit(/chickadee|titmouse|verdin|bushtit|\btit\b/)) return 'Chickadee';
       if (hit(/nuthatch|creeper/)) return 'Nuthatch';
       if (hit(/kinglet|gnatcatcher/)) return 'Kinglet';
       if (hit(/catbird|thrasher|mockingbird/)) return 'Mimic';
       if (hit(/loon|grebe/)) return 'Loon / Grebe';
-      if (hit(/cormorant|anhinga|pelican|booby|gannet/)) return 'Pelican / Cormorant';
-      if (hit(/petrel|shearwater|fulmar|storm-petrel/)) return 'Tubenoose';
-      if (hit(/rail|coot|gallinule|moorhen|sora|crake/)) return 'Rail';
-      if (hit(/crane/)) return 'Crane';
-      if (hit(/turkey|quail|grouse|pheasant|bobwhite|prairie-chicken/)) return 'Upland game';
-      if (hit(/nightjar|nighthawk|whip-poor-will|chuck-will/)) return 'Nightjar';
-      if (hit(/swift/)) return 'Swift';
-      if (hit(/kingfisher/)) return 'Kingfisher';
-      if (hit(/vulture/)) return 'Vulture';
-      if (hit(/waxwing|starling|pipit|lark|shrike/)) return 'Other passerine';
+      if (hit(/cormorant|anhinga|pelican|booby|gannet|frigatebird|tropicbird/)) return 'Pelican / Cormorant';
+      if (hit(/albatross|petrel|shearwater|fulmar|storm-petrel|storm petrel/)) return 'Tubenose';
+      if (hit(/rail|coot|gallinule|moorhen|sora|crake|swamphen/)) return 'Rail';
+      if (hit(/\bcrane\b/)) return 'Crane';
+      if (hit(/turkey|quail|grouse|pheasant|bobwhite|prairie-chicken|ptarmigan|chukar|partridge|chachalaca|guineafowl|peafowl|junglefowl|snowcock|francolin/)) return 'Landfowl';
+      if (hit(/nightjar|nighthawk|whip-poor-will|chuck-will|poorwill|pauraque|potoo/)) return 'Nightjar';
+      if (hit(/\bswift\b|swiftlet|needletail/)) return 'Swift';
+      if (hit(/kingfisher|kookaburra/)) return 'Kingfisher';
+      if (hit(/cuckoo|\bani\b|roadrunner/)) return 'Cuckoo';
+      if (hit(/parrot|parakeet|macaw|conure|lovebird|cockatoo|\bamazon\b|lorikeet|\blory\b|corella|eclectus|galah|cockatiel|budgerigar|rosella/)) return 'Parrot';
+      if (hit(/trogon|quetzal/)) return 'Trogon';
+      if (hit(/waxwing|phainopepla/)) return 'Waxwing';
+      if (hit(/pipit|wagtail|\blark\b|skylark/)) return 'Lark / Pipit';
+      if (hit(/starling|myna/)) return 'Starling';
+      if (hit(/elepaio|omao|olomao|kamao|puaiohi|amakihi|apapane|iiwi|akepa|akialoa|nukupuu|palila|akiapolaau|anianiau|akekee|poo-uli|poouli|akikiki|akohekohe|millerbird|\bou\b|alauahio|\boo\b/)) return 'Hawaiian';
+      if (hit(/waxbill|munia|silverbill|mannikin|whydah|widowbird|bishop|weaver|fody|indigobird|cordonbleu|twinspot|firetail|cut-throat|avadavat|pytilia/)) return 'Weaver / Munia';
+      if (hit(/dipper|bulbul|white-eye|bananaquit|dacnis|honeycreeper|euphonia|leiothrix|accentor|hwamei|wrentit/)) return 'Other passerine';
       return 'Other';
     }
 
@@ -4459,8 +5095,8 @@ function exportLogs() {
         const lat = Number(s.lat), lng = Number(s.lng);
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
         const name = taxName(s.species_code).comName;
-        const color = huntColor(s.species_code, s.state);
-        const rarity = rarityRank(s.species_code, s.state);
+        const color = photoColor(s.species_code, s.state);
+        const rarity = mapStableRank(s.species_code, s.state);
         const src = s.photo_url || s.photo_full || '';
         let marker;
         if (usePhotos && src) {
@@ -4507,10 +5143,12 @@ function exportLogs() {
       }
     }
 
-    function groupBySpecies() {
+    function groupBySpecies(stateName) {
       const map = new Map();
+      const scoped = stateName && stateName !== 'all';
       for (let i = 0; i < sightings.length; i++) {
         const s = sightings[i];
+        if (scoped && (s.state || '') !== stateName) continue;
         let g = map.get(s.species_code);
         if (!g) {
           g = { species_code: s.species_code, first: s.date, last: s.date, count: 0, cover: s.photo_url, loc: s.location_name };
@@ -4525,14 +5163,41 @@ function exportLogs() {
       return Array.from(map.values());
     }
 
+    function loggedStates() {
+      const set = new Set();
+      for (let i = 0; i < sightings.length; i++) {
+        const st = sightings[i].state;
+        if (st) set.add(st);
+      }
+      return Array.from(set).sort((a, b) => a.localeCompare(b));
+    }
+
+    function populateLifeListStates() {
+      const el = document.getElementById('lifelist-state');
+      if (!el) return;
+      const prev = el.value || 'all';
+      const states = loggedStates();
+      el.innerHTML = '<option value="all">All States</option>' +
+        states.map(st => '<option value="' + escHtml(st) + '">' + escHtml(st) + '</option>').join('');
+      el.value = states.indexOf(prev) >= 0 ? prev : 'all';
+      if (el.selectedIndex < 0) el.value = 'all';
+    }
+
     function renderLifeList() {
-      const sort = document.getElementById('lifelist-sort').value;
-      let list = groupBySpecies();
+      populateLifeListStates();
+      const stateEl = document.getElementById('lifelist-state');
+      const sortEl = document.getElementById('lifelist-sort');
+      const state = stateEl ? stateEl.value : 'all';
+      const sort = sortEl ? sortEl.value : 'first-desc';
+      let list = groupBySpecies(state);
       list.forEach(item => Object.assign(item, taxName(item.species_code)));
-      if (sort === 'recent') list.sort((a,b) => b.last.localeCompare(a.last));
-      else if (sort === 'count') list.sort((a,b) => b.count - a.count);
-      else if (sort === 'alpha') list.sort((a,b) => a.comName.localeCompare(b.comName));
-      else list.sort((a,b) => a.first.localeCompare(b.first));
+      if (sort === 'first-asc') list.sort((a,b) => String(a.first).localeCompare(String(b.first)) || a.comName.localeCompare(b.comName));
+      else if (sort === 'last-asc') list.sort((a,b) => String(a.last).localeCompare(String(b.last)) || a.comName.localeCompare(b.comName));
+      else if (sort === 'last-desc') list.sort((a,b) => String(b.last).localeCompare(String(a.last)) || a.comName.localeCompare(b.comName));
+      else if (sort === 'count') list.sort((a,b) => b.count - a.count || a.comName.localeCompare(b.comName));
+      else if (sort === 'az') list.sort((a,b) => a.comName.localeCompare(b.comName));
+      else if (sort === 'za') list.sort((a,b) => b.comName.localeCompare(a.comName));
+      else list.sort((a,b) => String(b.first).localeCompare(String(a.first)) || a.comName.localeCompare(b.comName));
       const countEl = document.getElementById('lifelist-count');
       if (countEl) countEl.innerHTML = list.length + '<span>lifers</span>';
       const sub = document.getElementById('lifelist-subtitle');
@@ -4555,12 +5220,19 @@ function exportLogs() {
           return '<i title="' + MONTH_LABELS[i] + ' ' + n + '" style="height:' + h + 'px;background:' + (n ? pal.em : pal.track) + '"></i>';
         }).join('');
       }
-      document.getElementById('lifelist-grid').innerHTML = list.map(item =>
-        '<div class="card" onclick="openSpeciesDossier(\'' + item.species_code + '\')">' +
+      const picking = photoPick.mode === 'life';
+      const grid = document.getElementById('lifelist-grid');
+      grid.classList.toggle('picking', picking);
+      grid.innerHTML = list.map(item =>
+        '<div class="card' + (picking ? ' rpt-pick' : '') + (picking && photoPick.ids.has(item.species_code) ? ' on' : '') + '"' +
+          ' data-pick="life" data-id="' + item.species_code + '"' +
+          ' onclick="onPhotoCardClick(event,\'life\',\'' + item.species_code + '\')">' +
+          (picking ? '<span class="tick">✓</span>' : '') +
           (item.cover ? '<img src="' + item.cover + '" loading="lazy" alt="" />' : '<div class="ph">No Photo</div>') +
           '<div class="meta"><h3>' + item.comName + '</h3><div class="muted" style="font-style:italic">' + item.sciName + '</div>' +
           '<div class="muted mono">' + fmtShortDate(item.first) + ' · ' + item.count + (item.count === 1 ? ' log' : ' logs') + '</div></div></div>'
       ).join('');
+      bindPhotoPickGrid('lifelist-grid');
     }
 
     function renderGallery() {
@@ -4596,12 +5268,568 @@ function exportLogs() {
           return '<i title="' + MONTH_LABELS[i] + ' ' + n + '" style="height:' + h + 'px;background:' + (n ? pal.em : pal.track) + '"></i>';
         }).join('');
       }
-      document.getElementById('gallery-grid').innerHTML = photos.map(p =>
-        '<div class="card' + (Number(p.is_cover) ? ' cover' : '') + '" onclick="openDetailModal(\'' + p.id + '\')">' +
+      const picking = photoPick.mode === 'gallery';
+      const grid = document.getElementById('gallery-grid');
+      grid.classList.toggle('picking', picking);
+      grid.innerHTML = photos.map(p =>
+        '<div class="card' + (Number(p.is_cover) ? ' cover' : '') + (picking ? ' rpt-pick' : '') + (picking && photoPick.ids.has(p.id) ? ' on' : '') + '"' +
+          ' data-pick="gallery" data-id="' + p.id + '"' +
+          ' onclick="onPhotoCardClick(event,\'gallery\',\'' + p.id + '\')">' +
+          (picking ? '<span class="tick">✓</span>' : '') +
           (Number(p.is_cover) ? coverMarkHTML() : '') +
           '<img src="' + p.photo_url + '" loading="lazy" alt="" />' +
           '<div class="meta"><h4>' + p._name + '</h4><div class="muted mono">' + p.date + ' · ' + placeLabel(p) + '</div></div></div>'
       ).join('');
+      bindPhotoPickGrid('gallery-grid');
+    }
+
+    const photoPick = { mode: '', ids: new Set(), timer: null, suppress: false, paint: false, paintOn: true, lastId: '' };
+
+    function photoPickScrollEl() {
+      const view = photoPick.mode === 'life' ? 'lifelist' : photoPick.mode === 'gallery' ? 'gallery' : '';
+      const on = document.querySelector('#view-gallery.on, #view-lifelist.on');
+      if (on) return on.querySelector('.scroll');
+      if (view) {
+        const el = document.getElementById('view-' + view);
+        return el && el.querySelector('.scroll');
+      }
+      return null;
+    }
+
+    function withPhotoPickScroll(fn) {
+      const sc = photoPickScrollEl();
+      const y = sc ? sc.scrollTop : 0;
+      fn();
+      const sc2 = photoPickScrollEl() || sc;
+      if (sc2) {
+        sc2.scrollTop = y;
+        requestAnimationFrame(function () { sc2.scrollTop = y; });
+      }
+    }
+
+    function photoPickCard(id) {
+      return document.querySelector('.card[data-pick][data-id="' + id + '"]');
+    }
+
+    function markPhotoPickCard(id) {
+      const card = photoPickCard(id);
+      if (card) card.classList.toggle('on', photoPick.ids.has(id));
+    }
+
+    function bindPhotoPickGrid(id) {
+      const grid = document.getElementById(id);
+      if (!grid) return;
+      grid.querySelectorAll('.card[data-pick]').forEach(card => {
+        card.addEventListener('contextmenu', function (e) {
+          e.preventDefault();
+          photoPick.suppress = true;
+          beginPhotoPick(card, true);
+        });
+        card.addEventListener('pointerdown', function (e) {
+          if (e.pointerType === 'mouse' && e.button !== 0) return;
+          clearTimeout(photoPick.timer);
+          const mode = card.getAttribute('data-pick');
+          const pid = card.getAttribute('data-id');
+          if (photoPick.mode === mode) {
+            e.preventDefault();
+            photoPick.paint = true;
+            photoPick.paintOn = !photoPick.ids.has(pid);
+            photoPick.lastId = pid;
+            applyPhotoPickPaint(pid);
+            try { grid.setPointerCapture(e.pointerId); } catch (err) {}
+            document.body.style.userSelect = 'none';
+            return;
+          }
+          photoPick.timer = setTimeout(function () {
+            photoPick.suppress = true;
+            beginPhotoPick(card, true);
+            photoPick.paint = true;
+            photoPick.paintOn = true;
+            photoPick.lastId = pid;
+            try { grid.setPointerCapture(e.pointerId); } catch (err) {}
+          }, 420);
+        });
+      });
+      grid.onpointermove = function (e) {
+        if (!photoPick.paint || !photoPick.mode) return;
+        e.preventDefault();
+        const hit = document.elementFromPoint(e.clientX, e.clientY);
+        const card = hit && hit.closest && hit.closest('.card[data-pick]');
+        if (!card) return;
+        const pid = card.getAttribute('data-id');
+        if (pid === photoPick.lastId) return;
+        photoPick.lastId = pid;
+        applyPhotoPickPaint(pid);
+      };
+      grid.onpointerup = function () { endPhotoPickPaint(); };
+      grid.onpointercancel = function () { endPhotoPickPaint(); };
+    }
+
+    function beginPhotoPick(card, add) {
+      const mode = card.getAttribute('data-pick');
+      const id = card.getAttribute('data-id');
+      const fresh = photoPick.mode !== mode;
+      if (fresh) photoPick.ids = new Set();
+      photoPick.mode = mode;
+      if (add && id) photoPick.ids.add(id);
+      if (fresh) withPhotoPickScroll(function () {
+        if (mode === 'gallery') renderGallery();
+        else renderLifeList();
+      });
+      else markPhotoPickCard(id);
+      renderPhotoPickBar();
+    }
+
+    function applyPhotoPickPaint(id) {
+      if (!id) return;
+      if (photoPick.paintOn) photoPick.ids.add(id);
+      else photoPick.ids.delete(id);
+      markPhotoPickCard(id);
+      if (!photoPick.ids.size) clearPhotoPick();
+      else renderPhotoPickBar();
+    }
+
+    function endPhotoPickPaint() {
+      clearTimeout(photoPick.timer);
+      photoPick.paint = false;
+      photoPick.lastId = '';
+      document.body.style.userSelect = '';
+    }
+
+    function onPhotoCardClick(ev, mode, id) {
+      if (photoPick.suppress) {
+        photoPick.suppress = false;
+        ev.preventDefault();
+        return;
+      }
+      if (photoPick.mode === mode) {
+        ev.preventDefault();
+        if (photoPick.ids.has(id)) photoPick.ids.delete(id);
+        else photoPick.ids.add(id);
+        if (!photoPick.ids.size) {
+          clearPhotoPick();
+          return;
+        }
+        markPhotoPickCard(id);
+        renderPhotoPickBar();
+        return;
+      }
+      if (mode === 'gallery') openDetailModal(id);
+      else openSpeciesDossier(id);
+    }
+
+    function clearPhotoPick() {
+      const keep = photoPick.mode;
+      photoPick.mode = '';
+      photoPick.ids = new Set();
+      photoPick.paint = false;
+      clearTimeout(photoPick.timer);
+      const bar = document.getElementById('photo-pick-bar');
+      if (bar) bar.classList.remove('on');
+      withPhotoPickScroll(function () {
+        if (keep === 'life') renderLifeList();
+        else if (keep === 'gallery') renderGallery();
+        else {
+          renderLifeList();
+          renderGallery();
+        }
+      });
+    }
+
+    function renderPhotoPickBar() {
+      const bar = document.getElementById('photo-pick-bar');
+      if (!bar) return;
+      if (!photoPick.mode || !photoPick.ids.size) {
+        bar.classList.remove('on');
+        bar.innerHTML = '';
+        return;
+      }
+      const n = photoPick.ids.size;
+      const one = n === 1;
+      const gal = photoPick.mode === 'gallery';
+      bar.classList.add('on');
+      bar.innerHTML =
+        (gal ? '<button type="button" class="ghost"' + (one ? '' : ' disabled') + ' onclick="photoPickCover()">Cover</button>' : '') +
+        '<button type="button" class="ghost"' + (one ? '' : ' disabled') + ' onclick="photoPickEdit()">Edit</button>' +
+        '<button type="button" class="ghost" onclick="photoPickDownload()">Download</button>' +
+        '<button type="button" class="danger" onclick="photoPickAskDelete()">Delete</button>' +
+        '<button type="button" class="ghost" onclick="clearPhotoPick()">Done</button>';
+    }
+
+    function photoPickSightings() {
+      if (photoPick.mode === 'gallery') {
+        return sightings.filter(s => photoPick.ids.has(s.id));
+      }
+      const stateEl = document.getElementById('lifelist-state');
+      const state = stateEl ? stateEl.value : 'all';
+      return sightings.filter(s => {
+        if (!photoPick.ids.has(s.species_code)) return false;
+        if (state && state !== 'all' && (s.state || '') !== state) return false;
+        return true;
+      });
+    }
+
+    function photoPickPrimary() {
+      if (photoPick.mode === 'gallery') {
+        return sightings.find(s => photoPick.ids.has(s.id));
+      }
+      const code = [...photoPick.ids][0];
+      const rows = photoPickSightings().filter(s => s.species_code === code);
+      return rows.find(s => Number(s.is_cover) && s.photo_url) || rows.find(s => s.photo_url) || rows[0];
+    }
+
+    function photoPickCover() {
+      const s = photoPickPrimary();
+      if (!s || photoPick.ids.size !== 1) return;
+      sightings.forEach(x => { if (x.species_code === s.species_code) x.is_cover = 0; });
+      s.is_cover = 1;
+      persistSightings();
+      if (typeof renderMapMarkers === 'function') renderMapMarkers();
+      clearPhotoPick();
+    }
+
+    function photoPickEdit() {
+      const s = photoPickPrimary();
+      if (!s || photoPick.ids.size !== 1) return;
+      currentDetailId = s.id;
+      clearPhotoPick();
+      editCurrentSighting();
+    }
+
+    function photoPickDownload() {
+      const rows = photoPickSightings().filter(s => s.photo_full || s.photo_url);
+      const seen = new Set();
+      rows.forEach((s, i) => {
+        const url = s.photo_full || s.photo_url;
+        if (!url || seen.has(s.id)) return;
+        seen.add(s.id);
+        const name = ((taxName(s.species_code).comName) || 'bird').replace(/\s+/g, '-') + '-' + String(s.date || 'photo') + '.jpg';
+        setTimeout(function () {
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = name;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }, i * 120);
+      });
+    }
+
+    function photoPickAskDelete() {
+      const n = photoPick.mode === 'gallery' ? photoPick.ids.size : photoPick.ids.size;
+      const msg = photoPick.mode === 'gallery'
+        ? (n === 1 ? 'Delete this sighting and its photo?' : 'Delete ' + n + ' sightings and their photos?')
+        : (n === 1 ? 'Delete this species and all of its logs in this list?' : 'Delete ' + n + ' species and all of their logs in this list?');
+      const el = document.getElementById('photo-pick-confirm-msg');
+      if (el) el.textContent = msg;
+      const modal = document.getElementById('photo-pick-confirm');
+      if (modal) modal.classList.add('on');
+    }
+
+    function closePhotoPickConfirm() {
+      const modal = document.getElementById('photo-pick-confirm');
+      if (modal) modal.classList.remove('on');
+    }
+
+    function confirmPhotoPickDelete() {
+      const rows = photoPickSightings();
+      const ids = new Set(rows.map(s => s.id));
+      for (let i = sightings.length - 1; i >= 0; i--) {
+        if (ids.has(sightings[i].id)) sightings.splice(i, 1);
+      }
+      persistSightings();
+      closePhotoPickConfirm();
+      clearPhotoPick();
+      refreshUI({ toast: true });
+      renderRadar();
+    }
+
+    let fieldBookOpenGroup = '';
+    let fieldBookRarity = new Set([1, 2, 3, 4]);
+    let fieldBookPhotoMap = {};
+
+    function rarityFromMonthly(monthly) {
+      const m = monthly || [];
+      if (!m.length) return 3;
+      const now = m[CURRENT_MONTH] || 0;
+      let sum = 0, peak = 0;
+      for (let i = 0; i < m.length; i++) {
+        const v = m[i] || 0;
+        sum += v;
+        if (v > peak) peak = v;
+      }
+      const avg = sum / m.length;
+      if (now >= 0.35 && avg <= 0.22) return 4;
+      if (peak < 0.22 || avg < 0.12) return 3;
+      if (avg >= 0.4) return 1;
+      if (avg >= 0.18) return 2;
+      return 3;
+    }
+
+    function fieldBookComboGradient(rows) {
+      const colors = { 1: '#10b981', 2: '#f97316', 3: '#7c3aed', 4: '#d6d3d1' };
+      const items = [];
+      [1, 2, 3, 4].forEach(rank => {
+        const n = rows.filter(r => r.logged && Number(r.rank) === rank).length;
+        if (n) items.push({ c: colors[rank], n: n });
+      });
+      if (!items.length) return 'transparent';
+      if (items.length === 1) return items[0].c;
+      const total = items.reduce((a, it) => a + it.n, 0);
+      let acc = 0;
+      const stops = [items[0].c + ' 0%'];
+      items.forEach(it => {
+        const mid = ((acc + it.n / 2) / total) * 100;
+        acc += it.n;
+        stops.push(it.c + ' ' + mid.toFixed(1) + '%');
+      });
+      stops.push(items[items.length - 1].c + ' 100%');
+      return 'linear-gradient(90deg, ' + stops.join(', ') + ')';
+    }
+
+    function rarityRankScope(code, stateName) {
+      if (stateName && STATE_CODES[stateName]) return rarityStatic(code, stateName);
+      return rarityStaticUS(code);
+    }
+
+    function fieldBookOfficialList(stateKey) {
+      if (stateKey && stateKey !== 'US' && STATE_CODES[stateKey]) {
+        return officialRows(STATE_CODES[stateKey]);
+      }
+      return (usOfficialList() || []).filter(sp => isRealSpecies(sp.code));
+    }
+
+    function enlargePhotoUrl(url) {
+      const src = String(url || '');
+      if (!src) return '';
+      if (/\/\d+px-/.test(src)) return src.replace(/\/\d+px-/, '/1280px-');
+      return src;
+    }
+
+    function fieldBookCover(code, stateName) {
+      let coverThumb = '', coverFull = '', fallThumb = '', fallFull = '';
+      for (let i = 0; i < sightings.length; i++) {
+        const s = sightings[i];
+        if (s.species_code !== code) continue;
+        if (stateName && (s.state || '') !== stateName) continue;
+        const thumb = s.photo_url || s.photo_full || '';
+        const full = s.photo_full || s.photo_url || '';
+        if (!thumb && !full) continue;
+        if (!fallThumb) { fallThumb = thumb || full; fallFull = full || thumb; }
+        if (s.is_cover) { coverThumb = thumb || full; coverFull = full || thumb; }
+      }
+      const thumb = coverThumb || fallThumb || speciesPhotoCache[code] || '';
+      const full = coverFull || fallFull || enlargePhotoUrl(thumb);
+      return { thumb: thumb, full: full };
+    }
+
+    function populateFieldBookStates() {
+      const el = document.getElementById('fieldbook-state');
+      if (!el) return;
+      const prev = el.value || 'US';
+      const names = Object.keys(STATE_CODES).sort((a, b) => a.localeCompare(b));
+      el.innerHTML = '<option value="US">United States</option>' +
+        names.map(n => '<option value="' + escHtml(n) + '">' + escHtml(n) + '</option>').join('');
+      el.value = (prev === 'US' || STATE_CODES[prev]) ? prev : 'US';
+      if (el.selectedIndex < 0) el.value = 'US';
+    }
+
+    async function openFieldBook() {
+      populateFieldBookStates();
+      fieldBookOpenGroup = '';
+      document.getElementById('fieldbook-modal').classList.add('on');
+      if (!DATA.S || !Object.keys(DATA.S).length) await loadData();
+      renderFieldBook();
+    }
+
+    function closeFieldBook() {
+      const el = document.getElementById('fieldbook-modal');
+      if (el) el.classList.remove('on');
+    }
+
+    function toggleFieldBookGroup(group) {
+      fieldBookOpenGroup = fieldBookOpenGroup === group ? '' : group;
+      renderFieldBook();
+    }
+
+    function fieldBookRarityAll() {
+      return fieldBookRarity.size === 4;
+    }
+
+    function toggleFieldBookRarity(rank) {
+      const n = Number(rank);
+      if (n < 1 || n > 4) return;
+      if (fieldBookRarity.has(n)) fieldBookRarity.delete(n);
+      else fieldBookRarity.add(n);
+      renderFieldBook();
+    }
+
+    function syncFieldBookRarityChips() {
+      document.querySelectorAll('#fieldbook-rarities .fb-rar').forEach((btn, i) => {
+        btn.classList.toggle('on', fieldBookRarity.has(i + 1));
+      });
+    }
+
+    function renderFieldBook() {
+      const body = document.getElementById('fieldbook-body');
+      if (!body) return;
+      syncFieldBookRarityChips();
+      const stateKey = (document.getElementById('fieldbook-state') || {}).value || 'US';
+      const allRarity = fieldBookRarityAll();
+      const isCountry = stateKey === 'US';
+      const stateName = isCountry ? '' : stateKey;
+      const title = document.getElementById('fieldbook-title');
+      if (title) title.textContent = isCountry ? 'United States' : stateKey;
+      if (!fieldBookRarity.size) {
+        const countEl = document.getElementById('fieldbook-count');
+        if (countEl) countEl.textContent = '0 / 0';
+        const setsEl = document.getElementById('fieldbook-sets');
+        if (setsEl) setsEl.textContent = '0 of 0 types complete';
+        body.innerHTML = '<p class="hint">Select a rarity to see the sets.</p>';
+        return;
+      }
+      const official = fieldBookOfficialList(stateKey);
+      const have = loggedCodesFor(isCountry ? activeState : stateKey, isCountry);
+      const groups = {};
+      const order = (typeof ACH_GROUPS !== 'undefined' && ACH_GROUPS.length) ? ACH_GROUPS.slice() : [];
+      fieldBookPhotoMap = {};
+      official.forEach(sp => {
+        const n = taxName(sp.code);
+        const group = birdGroup(n.comName, n.sciName);
+        const rank = rarityRankScope(sp.code, stateName);
+        if (!allRarity && !fieldBookRarity.has(Number(rank))) return;
+        const photo = fieldBookCover(sp.code, stateName);
+        const row = {
+          code: sp.code,
+          comName: n.comName,
+          sciName: n.sciName,
+          rank: rank,
+          logged: have.has(sp.code),
+          cover: photo.thumb,
+          full: photo.full
+        };
+        if (!groups[group]) groups[group] = [];
+        groups[group].push(row);
+        fieldBookPhotoMap[sp.code] = row;
+      });
+      Object.keys(groups).forEach(g => {
+        groups[g].sort((a, b) => a.comName.localeCompare(b.comName));
+        if (order.indexOf(g) < 0) order.push(g);
+      });
+      let haveAll = 0, totalAll = 0, doneTypes = 0, typeN = 0;
+      const cards = [];
+      order.forEach(group => {
+        const rows = groups[group];
+        if (!rows || !rows.length) return;
+        const core = rows.filter(r => Number(r.rank) !== 4);
+        const vag = rows.filter(r => Number(r.rank) === 4);
+        const gotCore = core.filter(r => r.logged).length;
+        const gotVag = vag.filter(r => r.logged).length;
+        haveAll += gotCore + gotVag;
+        totalAll += core.length;
+        if (core.length) {
+          typeN++;
+          if (gotCore === core.length) doneTypes++;
+        }
+        const open = fieldBookOpenGroup === group;
+        const pct = core.length ? Math.round(((gotCore + gotVag) / core.length) * 100) : (gotVag ? 100 : 0);
+        const barRanks = allRarity ? [1, 2, 3, 4] : [1, 2, 3, 4].filter(rank => fieldBookRarity.has(rank));
+        const rarityBars = barRanks.map(rank => {
+          const slice = rows.filter(r => Number(r.rank) === rank);
+          const haveN = slice.filter(r => r.logged).length;
+          const totalN = slice.length;
+          const w = totalN ? Math.round((haveN / totalN) * 100) : 0;
+          const label = rank === 1 ? 'Common' : rank === 2 ? 'Uncommon' : rank === 3 ? 'Rare' : 'Vagrant';
+          return '<div class="fb-rbar r' + rank + '" title="' + label + ' ' + haveN + ' / ' + totalN + '"><i style="width:' + w + '%"></i></div>';
+        }).join('');
+        const loggedSlices = [
+          { n: rows.filter(r => r.rank === 1 && r.logged).length, c: '#34d399' },
+          { n: rows.filter(r => r.rank === 2 && r.logged).length, c: '#f97316' },
+          { n: rows.filter(r => r.rank === 3 && r.logged).length, c: '#7c3aed' },
+          { n: rows.filter(r => r.rank === 4 && r.logged).length, c: '#d6d3d1' }
+        ].filter(s => s.n > 0);
+        const comboInner = loggedSlices.map(s => '<i style="flex:' + s.n + ' 1 0;background:' + s.c + '"></i>').join('');
+        const comboW = Math.max(0, Math.min(100, pct));
+        const barsHtml = allRarity
+          ? '<div class="fb-combo" title="' + pct + '% complete"><div class="fb-combo-fill" style="width:' + comboW + '%">' + comboInner + '</div></div>'
+          : '<div class="fb-rarity-row">' + rarityBars + '</div>';
+        let inner = '';
+        if (open) {
+          const bands = [
+            { rank: 1, label: 'Common' },
+            { rank: 2, label: 'Uncommon' },
+            { rank: 3, label: 'Rare' },
+            { rank: 4, label: 'Vagrant' }
+          ].filter(band => allRarity || fieldBookRarity.has(band.rank));
+          inner = bands.map(band => {
+            const slice = rows.filter(r => Number(r.rank) === band.rank)
+              .sort((a, b) => a.comName.localeCompare(b.comName));
+            if (!slice.length) return '';
+            const haveN = slice.filter(r => r.logged).length;
+            return '<div class="fb-band r' + band.rank + '">' +
+              '<div class="fb-band-h"><b>' + band.label + '</b><span>' + haveN + ' / ' + slice.length + '</span></div>' +
+              '<div class="fb-grid">' + slice.map(r => {
+                const cls = r.logged ? ('got got-' + r.rank) : 'miss';
+                const photo = r.cover || speciesPhotoCache[r.code] || '';
+                const media = '<div class="fb-media">' + (photo
+                  ? '<img data-fbcode="' + r.code + '" src="' + photo + '" alt="" loading="lazy" />'
+                  : '<div class="fb-ph" data-fbph="' + r.code + '">No photo</div>') + '</div>';
+                return '<button type="button" class="fb-card ' + cls + '" onclick="openFieldBookPhoto(\'' + r.code + '\')">' +
+                  media +
+                  '<div class="meta"><h4>' + escHtml(r.comName) + '</h4></div></button>';
+              }).join('') + '</div></div>';
+          }).join('');
+        }
+        cards.push(
+          '<button type="button" class="fb-type' + (open ? ' on' : '') + (core.length && gotCore === core.length ? ' done' : '') +
+            '" onclick="toggleFieldBookGroup(\'' + group.replace(/'/g, '\\\'') + '\')">' +
+            '<div class="fb-type-top"><strong>' + escHtml(group) + '</strong><span>' + gotCore + ' / ' + core.length + (gotVag ? (' · +' + gotVag) : '') + '</span></div>' +
+            barsHtml + '</button>' +
+          inner
+        );
+      });
+      const countEl = document.getElementById('fieldbook-count');
+      if (countEl) countEl.textContent = haveAll + ' / ' + totalAll;
+      const setsEl = document.getElementById('fieldbook-sets');
+      if (setsEl) setsEl.textContent = doneTypes + ' of ' + typeN + ' type' + (typeN === 1 ? '' : 's') + ' complete';
+      body.innerHTML = cards.join('') || '<p class="hint">No species match these filters.</p>';
+      if (fieldBookOpenGroup && groups[fieldBookOpenGroup]) {
+        fillFieldBookPhotos(groups[fieldBookOpenGroup]);
+      }
+    }
+
+    async function fillFieldBookPhotos(rows) {
+      const missing = rows.filter(r => !r.cover && !speciesPhotoCache[r.code]);
+      for (let i = 0; i < missing.length; i++) {
+        const row = missing[i];
+        const url = await resolveSpeciesPhoto(row.code, row.comName);
+        if (!url) continue;
+        row.cover = url;
+        row.full = enlargePhotoUrl(url);
+        if (fieldBookPhotoMap[row.code]) {
+          fieldBookPhotoMap[row.code].cover = url;
+          fieldBookPhotoMap[row.code].full = row.full;
+        }
+        const imgNeed = document.querySelector('#fieldbook-body img[data-fbcode="' + row.code + '"]');
+        if (imgNeed) imgNeed.src = url;
+        const ph = document.querySelector('#fieldbook-body [data-fbph="' + row.code + '"]');
+        if (ph) {
+          const img = document.createElement('img');
+          img.setAttribute('data-fbcode', row.code);
+          img.src = url;
+          img.alt = '';
+          img.loading = 'lazy';
+          ph.replaceWith(img);
+        }
+      }
+    }
+
+    function openFieldBookPhoto(code) {
+      const row = fieldBookPhotoMap[code];
+      if (!row) return;
+      const src = row.full || row.cover || speciesPhotoCache[code] || '';
+      if (!src) return;
+      openLightboxImage(src, row.comName, row.logged ? 'Cover photo' : 'Reference photo');
     }
 
     let reportPickIds = new Set();
@@ -4854,6 +6082,36 @@ function exportLogs() {
       if (Number(s.is_cover)) return 'Cover';
       return '';
     }
+    function canvasDrawCover(ctx, im, x, y, w, h) {
+      ctx.fillStyle = '#eceae6';
+      ctx.fillRect(x, y, w, h);
+      if (!im) return;
+      const iw = im.naturalWidth || im.width || 1;
+      const ih = im.naturalHeight || im.height || 1;
+      const scale = Math.max(w / iw, h / ih);
+      const dw = iw * scale, dh = ih * scale;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x, y, w, h);
+      ctx.clip();
+      ctx.drawImage(im, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+      ctx.restore();
+    }
+
+    function collageCells(n, x, y, w, h, gap) {
+      const cells = [];
+      if (n <= 0) return cells;
+      const cols = n === 1 ? 1 : n === 2 ? 2 : n <= 4 ? 2 : n <= 9 ? 3 : 4;
+      const rows = Math.ceil(n / cols);
+      const cw = (w - gap * (cols - 1)) / cols;
+      const ch = (h - gap * (rows - 1)) / rows;
+      for (let i = 0; i < n; i++) {
+        const r = Math.floor(i / cols), c = i % cols;
+        cells.push({ x: x + c * (cw + gap), y: y + r * (ch + gap), w: cw, h: ch });
+      }
+      return cells;
+    }
+
     async function buildFieldReportJpeg(day, rows) {
       const pretty = day ? new Date(day + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : day;
       const species = [];
@@ -4875,226 +6133,76 @@ function exportLogs() {
       const imgs = [];
       for (let i = 0; i < rows.length; i++) imgs.push(await reportLoadImg(rows[i].photo_url));
 
-      const W = 720;
-      const pad = 38;
+      const W = 1080;
+      const H = 1350;
+      const pad = 36;
       const inner = W - pad * 2;
-      const photoSize = inner;
-      const colW = 118;
-      const perRow = Math.max(1, Math.floor(inner / colW));
-      let y = 56;
-      y += 28 + 44;
-      y += 36;
-      y += 110;
-      y += 36 + Math.ceil(rows.length / perRow) * 156 + 16;
-      y += 36;
-      rows.forEach((s, i) => {
-        const im = imgs[i];
-        const ph = im && im.naturalWidth ? Math.min(photoSize, photoSize * (im.naturalHeight / im.naturalWidth)) : photoSize;
-        y += ph + 96 + (s.notes ? 36 : 0);
-      });
-      y += 36 + species.length * 56 + 40 + notes.length * 40 + 80;
-      const H = Math.min(8192, Math.max(1400, y));
-      let canvas = document.createElement('canvas');
+      const canvas = document.createElement('canvas');
       canvas.width = W;
       canvas.height = H;
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = '#f5f5f4';
       ctx.fillRect(0, 0, W, H);
 
-      let cy = 56;
+      let cy = 42;
       ctx.fillStyle = '#047857';
-      ctx.font = '800 18px system-ui,sans-serif';
-      ctx.letterSpacing = '2px';
+      ctx.font = '800 15px system-ui,sans-serif';
       ctx.fillText('BIRDSEYE FIELD REEL', pad, cy);
-      cy += 42;
+      cy += 34;
       ctx.fillStyle = '#1c1917';
-      ctx.font = '800 32px system-ui,sans-serif';
-      canvasWrap(ctx, pretty, inner).forEach(line => {
-        ctx.fillText(line, pad, cy);
-        cy += 38;
-      });
-      cy += 4;
+      ctx.font = '800 30px system-ui,sans-serif';
+      const dateLines = canvasWrap(ctx, pretty, inner).slice(0, 2);
+      dateLines.forEach(line => { ctx.fillText(line, pad, cy); cy += 34; });
       if (places.length) {
         ctx.fillStyle = '#57534e';
-        ctx.font = '400 22px system-ui,sans-serif';
-        canvasWrap(ctx, places.join('  ·  '), inner).forEach(line => {
-          ctx.fillText(line, pad, cy);
-          cy += 28;
-        });
-      }
-      cy += 12;
-      const stats = [
-        [String(species.length), 'species'],
-        [String(rows.length), 'photos'],
-        [String(lifers.length), lifers.length === 1 ? 'lifer' : 'lifers'],
-        [String(places.length), places.length === 1 ? 'location' : 'locations']
-      ];
-      const boxW = (inner - 36) / 4;
-      stats.forEach((st, i) => {
-        const x = pad + i * (boxW + 12);
-        ctx.fillStyle = '#fff';
-        ctx.strokeStyle = '#e7e5e4';
-        ctx.lineWidth = 2;
-        canvasRoundRect(ctx, x, cy, boxW, 88, 16);
-        ctx.fill();
-        ctx.stroke();
-        ctx.fillStyle = '#1c1917';
-        ctx.font = '800 36px system-ui,sans-serif';
-        ctx.fillText(st[0], x + 16, cy + 42);
-        ctx.fillStyle = '#57534e';
         ctx.font = '500 18px system-ui,sans-serif';
-        ctx.fillText(st[1], x + 16, cy + 68);
-      });
-      cy += 118;
+        const loc = canvasWrap(ctx, places.join(' · '), inner)[0];
+        ctx.fillText(loc, pad, cy);
+        cy += 26;
+      }
+      ctx.fillStyle = '#78716c';
+      ctx.font = '600 16px system-ui,sans-serif';
+      ctx.fillText(
+        species.length + ' species  ·  ' + rows.length + ' photo' + (rows.length === 1 ? '' : 's') +
+        '  ·  ' + lifers.length + ' lifer' + (lifers.length === 1 ? '' : 's') +
+        '  ·  ' + places.length + ' location' + (places.length === 1 ? '' : 's'),
+        pad, cy
+      );
+      cy += 20;
 
-      ctx.fillStyle = '#1c1917';
-      ctx.font = '700 24px system-ui,sans-serif';
-      ctx.fillText('Species', pad, cy);
-      cy += 18;
-      const chit = 72;
-      let cx = pad;
+      const foot = 28;
+      const gridY = cy;
+      const gridH = H - gridY - foot - 8;
+      const cells = collageCells(rows.length, pad, gridY, inner, gridH, 8);
       rows.forEach((s, i) => {
-        if (cx + colW > pad + inner + 1) { cx = pad; cy += chit + 58; }
-        const im = imgs[i];
-        const mid = cx + colW / 2;
+        const cell = cells[i];
+        if (!cell) return;
+        const n = taxName(s.species_code);
         ctx.save();
-        ctx.beginPath();
-        ctx.arc(mid, cy + chit / 2, chit / 2, 0, Math.PI * 2);
-        ctx.fillStyle = '#eceae6';
-        ctx.fill();
+        canvasRoundRect(ctx, cell.x, cell.y, cell.w, cell.h, 14);
         ctx.clip();
-        if (im) ctx.drawImage(im, mid - chit / 2, cy, chit, chit);
-        ctx.restore();
-        ctx.fillStyle = '#44403c';
-        ctx.font = '600 13px system-ui,sans-serif';
-        ctx.textAlign = 'center';
-        const nm = taxName(s.species_code).comName;
-        const lines = canvasWrap(ctx, nm, colW - 8).slice(0, 2);
-        lines.forEach((line, li) => ctx.fillText(line, mid, cy + chit + 16 + li * 15));
+        canvasDrawCover(ctx, imgs[i], cell.x, cell.y, cell.w, cell.h);
+        const fade = ctx.createLinearGradient(0, cell.y + cell.h - 70, 0, cell.y + cell.h);
+        fade.addColorStop(0, 'rgba(12,10,9,0)');
+        fade.addColorStop(1, 'rgba(12,10,9,.72)');
+        ctx.fillStyle = fade;
+        ctx.fillRect(cell.x, cell.y + cell.h - 70, cell.w, 70);
+        ctx.fillStyle = '#fafaf9';
+        ctx.font = '700 18px system-ui,sans-serif';
+        const name = canvasWrap(ctx, n.comName || '', cell.w - 20)[0];
+        ctx.fillText(name, cell.x + 10, cell.y + cell.h - 16);
         const badge = reportBadgeText(s, day);
         if (badge) {
-          ctx.fillStyle = badge === 'Lifer' ? '#047857' : '#b45309';
           ctx.font = '800 11px system-ui,sans-serif';
-          ctx.fillText(badge.toUpperCase(), mid, cy + chit + 16 + lines.length * 15 + 2);
+          ctx.fillStyle = badge === 'Lifer' ? '#6ee7b7' : '#fcd34d';
+          ctx.fillText(badge.toUpperCase(), cell.x + 10, cell.y + cell.h - 36);
         }
-        ctx.textAlign = 'left';
-        cx += colW;
-      });
-      cy += chit + 96;
-
-      ctx.fillStyle = '#1c1917';
-      ctx.font = '700 24px system-ui,sans-serif';
-      ctx.fillText('Photos', pad, cy);
-      cy += 16;
-      for (let i = 0; i < rows.length; i++) {
-        const s = rows[i];
-        const n = taxName(s.species_code);
-        const im = imgs[i];
-        let pw = inner, ph = photoSize;
-        if (im && im.naturalWidth) {
-          ph = Math.min(photoSize, inner * (im.naturalHeight / im.naturalWidth));
-          pw = ph * (im.naturalWidth / im.naturalHeight);
-          if (pw > inner) { pw = inner; ph = pw * (im.naturalHeight / im.naturalWidth); }
-        }
-        if (cy + ph + 120 > H - 40) break;
-        const cardX = pad + (inner - pw) / 2;
-        ctx.fillStyle = '#fff';
-        canvasRoundRect(ctx, cardX, cy, pw, ph + 88, 16);
-        ctx.fill();
-        ctx.save();
-        ctx.beginPath();
-        canvasRoundRect(ctx, cardX, cy, pw, ph, 16);
-        ctx.clip();
-        ctx.fillStyle = '#eceae6';
-        ctx.fillRect(cardX, cy, pw, ph);
-        if (im) ctx.drawImage(im, cardX, cy, pw, ph);
         ctx.restore();
-        let ty = cy + ph + 28;
-        ctx.fillStyle = '#1c1917';
-        ctx.font = '700 24px system-ui,sans-serif';
-        ctx.fillText(n.comName, cardX + 14, ty);
-        const badge = reportBadgeText(s, day);
-        if (badge) canvasBadge(ctx, badge, cardX + 22 + ctx.measureText(n.comName).width, ty - 2);
-        ty += 24;
-        ctx.fillStyle = '#78716c';
-        ctx.font = 'italic 16px system-ui,sans-serif';
-        ctx.fillText(n.sciName || '', cardX + 14, ty);
-        ty += 22;
-        const where = bezelPlace(s) || placeLabel(s) || '';
-        if (where) {
-          ctx.fillStyle = '#57534e';
-          ctx.font = '400 16px system-ui,sans-serif';
-          ctx.fillText(where, cardX + 14, ty);
-        }
-        cy += ph + 100;
-      }
-
-      ctx.fillStyle = '#fff';
-      canvasRoundRect(ctx, pad, cy, inner, Math.max(80, species.length * 52 + 56), 16);
-      ctx.fill();
-      ctx.strokeStyle = '#e7e5e4';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      cy += 36;
-      ctx.fillStyle = '#1c1917';
-      ctx.font = '700 24px system-ui,sans-serif';
-      ctx.fillText('Occurrence', pad + 16, cy);
-      cy += 20;
-      species.forEach(code => {
-        const n = taxName(code);
-        const count = rows.filter(s => s.species_code === code).length;
-        ctx.fillStyle = '#059669';
-        ctx.beginPath();
-        ctx.arc(pad + 28, cy, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#1c1917';
-        ctx.font = '700 20px system-ui,sans-serif';
-        ctx.fillText(n.comName, pad + 42, cy + 6);
-        if (isLiferOnDay(code, day)) canvasBadge(ctx, 'Lifer', pad + 50 + ctx.measureText(n.comName).width, cy + 4);
-        ctx.fillStyle = '#78716c';
-        ctx.font = 'italic 16px system-ui,sans-serif';
-        ctx.fillText((n.sciName || '') + '  ·  ' + count + (count === 1 ? ' photo' : ' photos'), pad + 42, cy + 26);
-        const monthly = (speciesFromState(code) || {}).monthly || [];
-        const sx = pad + inner - 172;
-        monthly.slice(0, 12).forEach((v, mi) => {
-          const h = 4 + (v || 0) * 18;
-          ctx.fillStyle = (v || 0) >= 0.45 ? '#059669' : (v || 0) >= 0.15 ? '#c2410c' : '#a8a29e';
-          ctx.fillRect(sx + mi * 12, cy + 10 - h, 8, h);
-          if (mi === CURRENT_MONTH) {
-            ctx.fillStyle = '#38bdf8';
-            ctx.fillRect(sx + mi * 12, cy + 14, 8, 3);
-          }
-        });
-        cy += 52;
       });
-      cy += 24;
-      if (notes.length) {
-        ctx.fillStyle = '#1c1917';
-        ctx.font = '700 24px system-ui,sans-serif';
-        ctx.fillText('Notes', pad, cy);
-        cy += 28;
-        notes.forEach(s => {
-          ctx.fillStyle = '#44403c';
-          ctx.font = '400 18px system-ui,sans-serif';
-          canvasWrap(ctx, taxName(s.species_code).comName + '. ' + s.notes, inner).forEach(line => {
-            ctx.fillText(line, pad, cy);
-            cy += 24;
-          });
-          cy += 8;
-        });
-      }
-      cy += 8;
-      ctx.fillStyle = '#78716c';
-      ctx.font = '400 16px system-ui,sans-serif';
-      ctx.fillText('Generated from BirdsEye  ·  ' + pretty, pad, cy);
-      const usedH = Math.min(H, Math.ceil(cy + 28));
-      if (usedH < H) {
-        const trimmed = document.createElement('canvas');
-        trimmed.width = W;
-        trimmed.height = usedH;
-        trimmed.getContext('2d').drawImage(canvas, 0, 0);
-        canvas = trimmed;
-      }
+
+      ctx.fillStyle = '#a8a29e';
+      ctx.font = '500 13px system-ui,sans-serif';
+      ctx.fillText('BirdsEye  ·  ' + pretty, pad, H - 12);
 
       return await new Promise((resolve, reject) => {
         const finish = blob => blob ? resolve(blob) : reject(new Error('Could not write image'));
@@ -5179,6 +6287,10 @@ function exportLogs() {
       if (rank === 2) return '<span class="chip s">Uncommon</span>';
       return '<span class="chip y">Common</span>';
     }
+    function targetRarityChip(t) {
+      if (t && t.staticRarity === 4) return '<span class="chip">Vagrant</span>';
+      return rarityChip(t && t.rarity);
+    }
     function reportStamp(when) {
       if (!when) return '';
       const s = String(when);
@@ -5199,7 +6311,7 @@ function exportLogs() {
     function chaseScore(t) {
       const prob = t.prob || 0;
       const r = t.rarity || 1;
-      const rareW = r === 4 ? 2.4 : r === 3 ? 1.75 : r === 2 ? 1.12 : 0.82;
+      const rareW = t.staticRarity === 4 ? 0.55 : r === 4 ? 2.4 : r === 3 ? 1.75 : r === 2 ? 1.12 : 0.82;
       const rec = t.reportN ? Math.min(1, 0.35 + recencyWeight(t.when) + Math.min(0.3, t.reportN / 10)) : 0;
       const peak = peakMonthIndex(t);
       const peakW = peak === CURRENT_MONTH ? 1.22 : (peak === (CURRENT_MONTH + 1) % 12 ? 1.08 : 1);
@@ -5400,13 +6512,14 @@ function exportLogs() {
       const sci = (extra && extra.sciName) || n.sciName;
       return Object.assign({
         code: code,
-        status: sp.status || 'Seasonal',
+        status: statusForSpecies(sp),
         monthly: sp.monthly || [],
         prob: monthProb(sp),
         comName: com,
         sciName: sci,
         group: birdGroup(com, sci),
         rarity: rarityRank(code),
+        staticRarity: rarityStatic(code),
         reportN: reports.length,
         loc: last && last.locName,
         when: last && last.obsDt,
@@ -5466,7 +6579,7 @@ function exportLogs() {
       if (el) el.hidden = !el.hidden;
     }
     function setRadarLens(lens) {
-      radarLens = lens || 'season';
+      radarLens = (lens === 'vagrant') ? 'season' : (lens || 'season');
       ['season', 'nearby', 'pulse', 'leaving', 'all'].forEach(id => {
         const btn = document.getElementById('btn-lens-' + id);
         if (btn) btn.className = id === radarLens ? 'on' : '';
@@ -5482,18 +6595,22 @@ function exportLogs() {
       }
       renderRadar();
     }
-    function targetHotspotNeeds(have) {
+    function targetHotspotNeeds(have, want) {
       const spots = huntCache.hotspots || [];
       if (!spots.length || radarScope === 'state') return [];
       return spots.map(h => {
-        const rows = tallySpecies(obsAtHotspot(h)).filter(r => r.code && !have.has(r.code) && isRealSpecies(r.code));
+        const rows = tallySpecies(obsAtHotspot(h)).filter(r => {
+          if (!r.code || have.has(r.code) || !isRealSpecies(r.code)) return false;
+          if (want && want.size && !want.has(r.code)) return false;
+          return true;
+        });
         return { h: h, need: rows.length, rows: rows };
       }).filter(x => x.need > 0).sort((a, b) => b.need - a.need || (b.h.numSpeciesAllTime || 0) - (a.h.numSpeciesAllTime || 0)).slice(0, 6);
     }
-    function renderTargetPlaces(have) {
+    function renderTargetPlaces(have, want) {
       const box = document.getElementById('radar-places');
       if (!box) return;
-      const rows = targetHotspotNeeds(have);
+      const rows = targetHotspotNeeds(have, want);
       if (!rows.length) { box.innerHTML = ''; return; }
       box.innerHTML = '<div class="hud-label" style="margin-top:10px">Places for your targets</div>' +
         '<div class="tgt-places">' + rows.map(x =>
@@ -5566,19 +6683,17 @@ function exportLogs() {
       const pool = radarLens === 'nearby' ? nearbyTargetPool(have, focusOnce) : stateTargetPool(have, focusOnce);
       fillRadarTypeSelect(pool);
       const typeNow = (document.getElementById('radar-type') || {}).value || type;
-      let likely = 0, possible = 0, pulse = 0, nearN = 0;
-      pool.forEach(t => {
-        const b = seasonBucket(t);
-        if (b.label === 'Likely') likely++;
-        else if (b.label === 'Possible') possible++;
-        if (t.rarity === 4) pulse++;
-        if (t.reportN) nearN++;
-      });
       let targets = pool.filter(t => {
         if (!passesRadarLens(t) && t.code !== focusOnce) return false;
         if (status !== 'all' && t.status !== status) return false;
         if (typeNow !== 'all' && t.group !== typeNow) return false;
-        if (rarity !== 'all' && String(t.rarity) !== String(rarity)) return false;
+        if (rarity !== 'all') {
+          if (rarity === 'v') {
+            if (t.staticRarity !== 4) return false;
+          } else if (rarity === '3') {
+            if (t.rarity !== 3 || t.staticRarity === 4) return false;
+          } else if (String(t.rarity) !== String(rarity)) return false;
+        }
         if (q && !nameMatches(t.comName, q) && !nameMatches(t.sciName, q)) return false;
         return true;
       });
@@ -5614,6 +6729,14 @@ function exportLogs() {
       const scopeLabel = radarScope === 'state' ? activeState : (huntCache.label || radarScope);
       const loggedWhere = isCountry ? 'Unlogged nationally' : ('Unlogged in ' + activeState);
       const lensLabel = radarLens === 'season' ? 'in season' : radarLens === 'nearby' ? 'reported nearby' : radarLens === 'pulse' ? 'pulse' : radarLens === 'leaving' ? 'arriving or leaving' : 'unlogged';
+      let likely = 0, possible = 0, pulse = 0, nearN = 0;
+      targets.forEach(t => {
+        const b = seasonBucket(t);
+        if (b.label === 'Likely') likely++;
+        else if (b.label === 'Possible') possible++;
+        if (t.rarity === 4) pulse++;
+        if (t.reportN) nearN++;
+      });
       const kicker = document.getElementById('radar-kicker');
       if (kicker) kicker.textContent = 'Targets · ' + (isCountry ? 'United States' : activeState);
       const numEl = document.getElementById('radar-count-num');
@@ -5647,7 +6770,7 @@ function exportLogs() {
           : ('0 ' + lensLabel + ' · ' + scopeLabel);
       }
       if (typeof noteAchTargetCodes === 'function') noteAchTargetCodes(stateTargetPool(have).map(t => t.code));
-      renderTargetPlaces(have);
+      renderTargetPlaces(have, new Set(targets.map(t => t.code)));
       const empty = radarLens === 'nearby' && !(huntCache.obs || []).length
         ? '<div class="hint">No live reports in this scope yet. Pick This map, Near me, or This county — or add an eBird key in Settings.</div>'
         : radarLens === 'season'
@@ -5665,7 +6788,7 @@ function exportLogs() {
           '<div class="tgt-row" onclick="toggleTargetCard(\'' + t.code + '\')">' +
           '<img class="tgt-thumb' + (photo ? '' : ' empty') + '" data-tgt="' + t.code + '" src="' + (photo || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7') + '" alt="" />' +
           '<div><div class="tgt-name"><b>' + t.comName + '</b> ' + statusChip(t.status) + targetReasonChip(t) + '</div>' +
-          '<div class="tgt-meta">' + rarityChip(t.rarity) + ' <span class="chip">' + t.group + '</span> ' +
+          '<div class="tgt-meta">' + targetRarityChip(t) + ' <span class="chip">' + t.group + '</span> ' +
           sparkHTML(t.monthly) + ' <span class="mono" style="font-size:10px;color:' + b.color + '">' + MONTH_LABELS[CURRENT_MONTH] + ' ' + seasonScore(t) + '/10</span></div>' +
           (t.loc ? '<div class="muted">' + t.loc + (t.when ? ' · ' + t.when : '') + (t.reportN > 1 ? ' · ' + t.reportN + ' reports' : '') + '</div>' : '') +
           '</div></div><div class="tgt-expand" id="tgt-expand-' + t.code + '"></div></div>';
@@ -5803,13 +6926,808 @@ function exportLogs() {
       document.getElementById('region-species-modal').classList.remove('on');
     }
 
+    let analyzeMap = null;
+    let analyzeLayer = null;
+    let analyzeView = 'newrepeat';
+    let analyzeSlice = 'all';
+    let analyzeShare = 'all';
+    let analyzeBack = 0;
+    let analyzeGrain = 'month';
+    let analyzeSpan = 12;
+    const ANALYZE_SPAN_MIN = 4;
+    const ANALYZE_SPAN_MAX = 36;
+    let analyzeRange = null;
+    let analyzeFocusId = '';
+    let analyzeSoloType = '';
+    let analyzeHiddenTypes = {};
+    let analyzeDrag = null;
+    let analyzeFocusSpecies = '';
+    const ANALYZE_PAL = ['#34d399', '#f97316', '#7c3aed', '#38bdf8', '#f43f5e', '#eab308', '#2dd4bf', '#a78bfa', '#fb7185', '#94a3b8'];
+    const analyzeTypeColorMap = {};
+
+    function analyzeTypeColor(group) {
+      if (analyzeTypeColorMap[group]) return analyzeTypeColorMap[group];
+      const i = Object.keys(analyzeTypeColorMap).length;
+      analyzeTypeColorMap[group] = ANALYZE_PAL[i % ANALYZE_PAL.length];
+      return analyzeTypeColorMap[group];
+    }
+
+    function analyzeIsCountry() {
+      return currentRegionLevel === 'country';
+    }
+
+    function analyzeLogs() {
+      const country = analyzeIsCountry();
+      return sightings.filter(s => {
+        if (country) return s.country === 'United States' || !s.country;
+        return (s.state || '') === activeState;
+      });
+    }
+
+    function analyzeFirstDates(logs) {
+      const map = {};
+      logs.forEach(s => {
+        const d = String(s.date || '');
+        if (!map[s.species_code] || d < map[s.species_code]) map[s.species_code] = d;
+      });
+      return map;
+    }
+
+    function analyzeIsNew(s, firsts) {
+      return firsts[s.species_code] === String(s.date || '');
+    }
+
+    function analyzePinColor(s, firsts) {
+      if (analyzeView === 'typeshare') return analyzeTypeColor(analyzeGroupOf(s.species_code));
+      return analyzeIsNew(s, firsts) ? '#38bdf8' : '#c084fc';
+    }
+
+    function analyzeGroupOf(code) {
+      const n = taxName(code);
+      return birdGroup(n.comName, n.sciName);
+    }
+
+    function analyzeParseDate(s) {
+      const d = String(s.date || '');
+      const y = Number(d.slice(0, 4));
+      const m = Number(d.slice(5, 7));
+      return {
+        year: y || 0,
+        month: (m >= 1 && m <= 12) ? m - 1 : 0,
+        key: d.slice(0, 7)
+      };
+    }
+
+    function analyzeShiftMonth(y, m, delta) {
+      let n = y * 12 + m + delta;
+      const yy = Math.floor(n / 12);
+      const mm = ((n % 12) + 12) % 12;
+      return { y: yy, m: mm };
+    }
+
+    function analyzeMonthKey(y, m) {
+      return y + '-' + String(m + 1).padStart(2, '0');
+    }
+
+    function analyzeNowMonth() {
+      const d = new Date();
+      return { y: d.getFullYear(), m: d.getMonth() };
+    }
+
+    function analyzeMonday(d) {
+      const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const day = x.getDay();
+      const diff = day === 0 ? -6 : 1 - day;
+      x.setDate(x.getDate() + diff);
+      return x;
+    }
+
+    function analyzeSnap(d, grain) {
+      const g = grain || analyzeGrain;
+      if (g === 'day') return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      if (g === 'week') return analyzeMonday(d);
+      if (g === 'year') return new Date(d.getFullYear(), 0, 1);
+      return new Date(d.getFullYear(), d.getMonth(), 1);
+    }
+
+    function analyzeAddGrain(d, n, grain) {
+      const g = grain || analyzeGrain;
+      const x = new Date(d.getTime());
+      if (g === 'day') x.setDate(x.getDate() + n);
+      else if (g === 'week') x.setDate(x.getDate() + n * 7);
+      else if (g === 'year') x.setFullYear(x.getFullYear() + n);
+      else x.setMonth(x.getMonth() + n);
+      return analyzeSnap(x, g);
+    }
+
+    function analyzeKeyFromDate(d, grain) {
+      const g = grain || analyzeGrain;
+      const y = d.getFullYear();
+      const m = d.getMonth();
+      const day = d.getDate();
+      if (g === 'day') return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+      if (g === 'week') {
+        const mon = analyzeMonday(d);
+        return mon.getFullYear() + '-' + String(mon.getMonth() + 1).padStart(2, '0') + '-' + String(mon.getDate()).padStart(2, '0');
+      }
+      if (g === 'year') return String(y);
+      return analyzeMonthKey(y, m);
+    }
+
+    function analyzeLabelFromDate(d, grain) {
+      const g = grain || analyzeGrain;
+      const yy = String(d.getFullYear()).slice(2);
+      if (g === 'day' || g === 'week') return (d.getMonth() + 1) + '/' + d.getDate() + '/' + yy;
+      if (g === 'year') return String(d.getFullYear());
+      return MONTH_LABELS[d.getMonth()].slice(0, 3) + '-' + yy;
+    }
+
+    function analyzeLogKey(s) {
+      const p = analyzeParseDate(s);
+      if (!p.year) return '';
+      const d = new Date(p.year, p.month, Number(String(s.date || '').slice(8, 10) || 1));
+      return analyzeKeyFromDate(d);
+    }
+
+    function analyzeWindow() {
+      const end = analyzeAddGrain(new Date(), -analyzeBack);
+      const out = [];
+      for (let i = analyzeSpan - 1; i >= 0; i--) {
+        const d = analyzeAddGrain(end, -i);
+        out.push({
+          y: d.getFullYear(),
+          m: d.getMonth(),
+          d: d,
+          key: analyzeKeyFromDate(d),
+          label: analyzeLabelFromDate(d)
+        });
+      }
+      return out;
+    }
+
+    function analyzeWindowMonths() { return analyzeWindow(); }
+
+    function analyzeFormatDay(d) {
+      return MONTH_LABELS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+    }
+
+    function analyzeFormatRange(win) {
+      if (!win || !win.length) return '';
+      const a = win[0].d, b = win[win.length - 1].d;
+      if (!a || !b) return '';
+      if (analyzeGrain === 'year') return a.getFullYear() + ' – ' + b.getFullYear();
+      if (analyzeGrain === 'month') {
+        return MONTH_LABELS[a.getMonth()] + ' ' + a.getFullYear() + ' – ' + MONTH_LABELS[b.getMonth()] + ' ' + b.getFullYear();
+      }
+      let end = b;
+      if (analyzeGrain === 'week') {
+        end = new Date(b.getFullYear(), b.getMonth(), b.getDate() + 6);
+      }
+      return analyzeFormatDay(a) + ' – ' + analyzeFormatDay(end);
+    }
+
+    function analyzeLabelStep(win, colW) {
+      let widest = 8;
+      (win || []).forEach(slot => { widest = Math.max(widest, String(slot.label || '').length * 6.2); });
+      const need = widest + 6;
+      let step = 1;
+      while (step < win.length && colW * step < need) step++;
+      return step;
+    }
+
+    function analyzeMaxBack(logs) {
+      let earliest = null;
+      (logs || []).forEach(s => {
+        const p = analyzeParseDate(s);
+        if (!p.year) return;
+        const d = new Date(p.year, p.month, Number(String(s.date || '').slice(8, 10) || 1));
+        if (!earliest || d < earliest) earliest = d;
+      });
+      if (!earliest) return 0;
+      const startNow = analyzeAddGrain(new Date(), -(analyzeSpan - 1));
+      let n = 0;
+      let cursor = analyzeSnap(startNow);
+      const first = analyzeSnap(earliest);
+      while (cursor > first && n < 4000) {
+        cursor = analyzeAddGrain(cursor, -1);
+        n++;
+      }
+      return n;
+    }
+
+    function analyzeInWindow(s, win) {
+      const key = analyzeLogKey(s);
+      return win.some(m => m.key === key);
+    }
+
+    function analyzeMonthIndex(s, win) {
+      const key = analyzeLogKey(s);
+      return win.findIndex(m => m.key === key);
+    }
+
+    function analyzeMatchesSlice(s) {
+      if (analyzeView === 'typeshare') return true;
+      if (analyzeSlice === 'all') return true;
+      if (analyzeSlice.indexOf('type:') === 0) return analyzeGroupOf(s.species_code) === analyzeSlice.slice(5);
+      if (analyzeSlice.indexOf('sp:') === 0) return s.species_code === analyzeSlice.slice(3);
+      return true;
+    }
+
+    function analyzeSelectedMonth(i) {
+      if (analyzeView === 'curve' && analyzeRange) {
+        return i >= analyzeRange.lo && i <= analyzeRange.hi;
+      }
+      if (analyzeRange && analyzeView !== 'typeshare') {
+        return i >= analyzeRange.lo && i <= analyzeRange.hi;
+      }
+      return true;
+    }
+
+    function fillAnalyzeSliceOptions(logs) {
+      const sel = document.getElementById('analyze-slice');
+      if (!sel) return;
+      const types = [];
+      const seenT = new Set();
+      const species = [];
+      const seenS = new Set();
+      logs.forEach(s => {
+        const g = analyzeGroupOf(s.species_code);
+        if (g && !seenT.has(g)) { seenT.add(g); types.push(g); }
+        if (!seenS.has(s.species_code)) {
+          seenS.add(s.species_code);
+          species.push({ code: s.species_code, name: taxName(s.species_code).comName });
+        }
+      });
+      types.sort();
+      species.sort((a, b) => a.name.localeCompare(b.name));
+      const cur = analyzeSlice;
+      let html = '<option value="all">All logs</option>';
+      types.forEach(g => { html += '<option value="type:' + g.replace(/"/g, '') + '">' + g + '</option>'; });
+      species.forEach(sp => { html += '<option value="sp:' + sp.code + '">' + sp.name + '</option>'; });
+      sel.innerHTML = html;
+      if ([].some.call(sel.options, o => o.value === cur)) sel.value = cur;
+      else { sel.value = 'all'; analyzeSlice = 'all'; }
+    }
+
+    function onAnalyzeViewChange() {
+      analyzeView = (document.getElementById('analyze-view') || {}).value || 'newrepeat';
+      analyzeRange = null;
+      analyzeFocusId = '';
+      analyzeSoloType = '';
+      const share = document.getElementById('analyze-share');
+      if (share) share.hidden = analyzeView !== 'typeshare';
+      const slice = document.getElementById('analyze-slice');
+      if (slice) slice.hidden = analyzeView === 'typeshare';
+      renderAnalyze();
+    }
+
+    function onAnalyzeSliceChange() {
+      analyzeSlice = (document.getElementById('analyze-slice') || {}).value || 'all';
+      analyzeRange = null;
+      analyzeFocusId = '';
+      renderAnalyze();
+    }
+
+    function resetAnalyzeAxis() {
+      analyzeBack = 0;
+      analyzeSpan = 12;
+      analyzeRange = null;
+      analyzeFocusId = '';
+      renderAnalyze();
+    }
+
+    function resetAnalyzeAxis() {
+      analyzeBack = 0;
+      analyzeSpan = 12;
+      analyzeRange = null;
+      analyzeFocusId = '';
+      renderAnalyze();
+    }
+
+    function onAnalyzeGrain() {
+      const el = document.getElementById('analyze-grain');
+      analyzeGrain = (el && el.value) || 'month';
+      analyzeBack = 0;
+      analyzeRange = null;
+      renderAnalyze();
+    }
+
+    function shiftAnalyze(dir) {
+      const logs = analyzeLogs();
+      const max = analyzeMaxBack(logs);
+      analyzeBack = Math.max(0, Math.min(max, analyzeBack + (Number(dir) || 0)));
+      analyzeRange = null;
+      renderAnalyze();
+    }
+
+    function setAnalyzeSpan(n) {
+      const next = Math.max(ANALYZE_SPAN_MIN, Math.min(ANALYZE_SPAN_MAX, Math.round(n)));
+      if (next === analyzeSpan) return;
+      analyzeSpan = next;
+      analyzeRange = null;
+      renderAnalyze();
+    }
+
+    function setAnalyzeMonth(i, sid) {
+      const idx = Number(i);
+      if (analyzeRange && analyzeRange.lo === idx && analyzeRange.hi === idx && !sid) analyzeRange = null;
+      else analyzeRange = { lo: idx, hi: idx };
+      analyzeFocusId = sid || '';
+      if (sid) {
+        const s = sightings.find(x => x.id === sid);
+        const lat = s && Number(s.lat), lng = s && Number(s.lng);
+        if (analyzeMap && Number.isFinite(lat) && Number.isFinite(lng)) {
+          analyzeMap.setView([lat, lng], 14);
+        }
+      }
+      renderAnalyze(!!sid);
+    }
+
+    function toggleAnalyzeSoloType(group) {
+      if (!group) return;
+      analyzeSoloType = analyzeSoloType === group ? '' : group;
+      renderAnalyze();
+    }
+
+    function setAnalyzeSpecies(code) {
+      analyzeFocusSpecies = analyzeFocusSpecies === code ? '' : (code || '');
+      analyzeFocusId = '';
+      renderAnalyze();
+      if (analyzeFocusSpecies) {
+        const logs = analyzeLogs().filter(s => s.species_code === analyzeFocusSpecies);
+        if (logs.length === 1) {
+          const s = logs[0];
+          const lat = Number(s.lat), lng = Number(s.lng);
+          if (analyzeMap && Number.isFinite(lat) && Number.isFinite(lng)) analyzeMap.setView([lat, lng], 14);
+        }
+      }
+    }
+
+    function toggleAnalyzeHiddenType(group) {
+      if (!group) return;
+      if (analyzeHiddenTypes[group]) delete analyzeHiddenTypes[group];
+      else analyzeHiddenTypes[group] = true;
+      if (analyzeSoloType === group) analyzeSoloType = '';
+      renderAnalyze();
+    }
+
+    function ensureAnalyzeMap() {
+      const el = document.getElementById('analyze-map');
+      if (!el || typeof L === 'undefined') return null;
+      if (!analyzeMap) {
+        analyzeMap = L.map(el, { zoomControl: false, attributionControl: false });
+        const dark = document.documentElement.getAttribute('data-theme') !== 'light';
+        L.tileLayer(typeof tileUrl === 'function' ? tileUrl() : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 16
+        }).addTo(analyzeMap);
+        analyzeLayer = L.layerGroup().addTo(analyzeMap);
+        el.classList.toggle('be-dark', dark);
+      }
+      setTimeout(function () { if (analyzeMap) analyzeMap.invalidateSize(); }, 80);
+      return analyzeMap;
+    }
+
+    function officialOnMonth(code, month, stateName) {
+      const sp = analyzeIsCountry()
+        ? ((officialRows('US') || []).find(r => r.code === code) || { monthly: [] })
+        : speciesFromState(code, stateName);
+      const v = (sp.monthly && sp.monthly[month]) || 0;
+      return v >= 0.15;
+    }
+
+    function analyzeMonthTone(v) {
+      const pal = themePal();
+      if (v >= 0.45) return pal.em2;
+      if (v >= 0.15) return pal.warn;
+      return pal.muted;
+    }
+
+    function analyzeCurveValues(win) {
+      const stateName = analyzeIsCountry() ? '' : activeState;
+      const focus = analyzeFocusSpecies || (analyzeSlice.indexOf('sp:') === 0 ? analyzeSlice.slice(3) : '');
+      return win.map(slot => {
+        const m = slot.m;
+        if (focus) {
+          const code = focus;
+          const sp = analyzeIsCountry()
+            ? ((officialRows('US') || []).find(r => r.code === code) || { monthly: [] })
+            : speciesFromState(code, stateName);
+          return (sp.monthly && sp.monthly[m]) || 0;
+        }
+        const pool = analyzeIsCountry()
+          ? (officialRows('US') || [])
+          : officialRows(STATE_CODES[activeState] || 'US-NC');
+        let n = 0, d = 0;
+        pool.forEach(sp => {
+          if (analyzeSlice.indexOf('type:') === 0 && analyzeGroupOf(sp.code) !== analyzeSlice.slice(5)) return;
+          d++;
+          if (((sp.monthly || [])[m] || 0) >= 0.15) n++;
+        });
+        return d ? n / d : 0;
+      });
+    }
+
+    function analyzeIndexFromEvent(e, box) {
+      const rect = box.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / Math.max(1, rect.width));
+      const n = Math.max(1, (analyzeWindow() || []).length);
+      return Math.max(0, Math.min(n - 1, Math.floor(x * n)));
+    }
+
+    let analyzePinchDist = 0;
+
+    function bindAnalyzeChartNav(box) {
+      box.style.cursor = 'grab';
+      box.onwheel = function (e) {
+        e.preventDefault();
+        setAnalyzeSpan(analyzeSpan + (e.deltaY > 0 ? 1 : -1));
+      };
+      box.onpointerdown = function (e) {
+        if (e.pointerType === 'touch') {
+          box._azTouches = box._azTouches || {};
+          box._azTouches[e.pointerId] = e;
+          const ids = Object.keys(box._azTouches);
+          if (ids.length === 2) {
+            const a = box._azTouches[ids[0]], b = box._azTouches[ids[1]];
+            analyzePinchDist = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+            analyzeDrag = null;
+            return;
+          }
+        }
+        e.preventDefault();
+        analyzeDrag = { x: e.clientX, back: analyzeBack, moved: false };
+        try { box.setPointerCapture(e.pointerId); } catch (err) {}
+        box.style.cursor = 'grabbing';
+        document.body.style.userSelect = 'none';
+      };
+      box.onpointermove = function (e) {
+        if (box._azTouches && box._azTouches[e.pointerId]) box._azTouches[e.pointerId] = e;
+        const ids = box._azTouches ? Object.keys(box._azTouches) : [];
+        if (ids.length === 2) {
+          const a = box._azTouches[ids[0]], b = box._azTouches[ids[1]];
+          const dist = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+          if (analyzePinchDist) {
+            const delta = dist - analyzePinchDist;
+            if (Math.abs(delta) > 24) {
+              setAnalyzeSpan(analyzeSpan + (delta < 0 ? 1 : -1));
+              analyzePinchDist = dist;
+            }
+          }
+          return;
+        }
+        if (!analyzeDrag || analyzeDrag.x == null) return;
+        const dx = e.clientX - analyzeDrag.x;
+        if (Math.abs(dx) < 10) return;
+        analyzeDrag.moved = true;
+        const col = Math.max(16, box.clientWidth / Math.max(1, analyzeSpan));
+        const steps = Math.round(dx / col);
+        const logs = analyzeLogs();
+        const max = analyzeMaxBack(logs);
+        const next = Math.max(0, Math.min(max, analyzeDrag.back + steps));
+        if (next !== analyzeBack) {
+          analyzeBack = next;
+          renderAnalyze(true);
+        }
+      };
+      box.onpointerup = function (e) {
+        if (box._azTouches) delete box._azTouches[e.pointerId];
+        box.style.cursor = 'grab';
+        if (analyzeDrag && !analyzeDrag.moved) {
+          const hit = document.elementFromPoint(e.clientX, e.clientY);
+          const type = hit && hit.getAttribute && hit.getAttribute('data-az-type');
+          if (type) toggleAnalyzeSoloType(decodeURIComponent(type));
+          else if (analyzeView === 'curve') setAnalyzeMonth(analyzeIndexFromEvent(e, box));
+        }
+        analyzeDrag = null;
+        document.body.style.userSelect = '';
+      };
+      box.onpointercancel = function (e) {
+        if (box._azTouches) delete box._azTouches[e.pointerId];
+        analyzeDrag = null;
+        box.style.cursor = 'grab';
+        document.body.style.userSelect = '';
+      };
+    }
+
+    function bindAnalyzeCurveDrag(box) {
+      box.onpointerdown = function (e) {
+        if (analyzeView !== 'curve') return;
+        const i = analyzeIndexFromEvent(e, box);
+        analyzeDrag = { a: i };
+        analyzeRange = { lo: i, hi: i };
+        analyzeFocusId = '';
+        try { box.setPointerCapture(e.pointerId); } catch (err) {}
+        renderAnalyze(true);
+      };
+      box.onpointermove = function (e) {
+        if (!analyzeDrag || analyzeView !== 'curve') return;
+        const i = analyzeIndexFromEvent(e, box);
+        analyzeRange = { lo: Math.min(analyzeDrag.a, i), hi: Math.max(analyzeDrag.a, i) };
+        renderAnalyze(true);
+      };
+      box.onpointerup = function () { analyzeDrag = null; };
+      box.onpointercancel = function () { analyzeDrag = null; };
+    }
+
+    function renderAnalyzeChart(rows, firsts, win) {
+      const box = document.getElementById('analyze-chart');
+      const legend = document.getElementById('analyze-legend');
+      const hint = document.getElementById('analyze-hint');
+      if (!box) return;
+      const w = Math.max(280, box.clientWidth || 320);
+      const h = 128;
+      const padL = 18, padR = 8, padT = 10, padB = 22;
+      const innerW = w - padL - padR;
+      const innerH = h - padT - padB;
+      const n = Math.max(1, win.length);
+      const colW = innerW / n;
+      const tick = analyzeLabelStep(win, colW);
+
+      function xPos(i) { return padL + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW); }
+
+      if (analyzeView === 'curve') {
+        const curve = analyzeCurveValues(win);
+        const byMonth = win.map(() => []);
+        rows.forEach(s => {
+          const i = analyzeMonthIndex(s, win);
+          if (i >= 0) byMonth[i].push(s);
+        });
+        const maxC = Math.max(0.2, ...curve);
+        let svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '">';
+        curve.forEach((v, i) => {
+          const x = padL + i * colW + 1;
+          const bh = (v / maxC) * innerH;
+          const on = analyzeSelectedMonth(i);
+          svg += '<rect data-az="' + i + '" x="' + x + '" y="' + (padT + innerH - bh) + '" width="' + Math.max(2, colW - 3) + '" height="' + Math.max(1, bh) + '" fill="' + analyzeMonthTone(v) + '" opacity="' + (on ? 0.92 : 0.22) + '" />';
+        });
+        byMonth.forEach((list, i) => {
+          const cx = padL + (i + 0.5) * colW;
+          list.forEach((s, k) => {
+            const cy = padT + innerH - 6 - (k % 5) * 7;
+            const focus = analyzeFocusId === s.id || analyzeSelectedMonth(i);
+            svg += '<circle class="az-dot' + (focus ? ' on' : '') + '" cx="' + cx + '" cy="' + cy + '" r="' + (analyzeFocusId === s.id ? 4.2 : 3) + '" fill="' + analyzePinColor(s, firsts) + '" onclick="setAnalyzeMonth(' + i + ',\'' + s.id + '\')"></circle>';
+          });
+        });
+        win.forEach((slot, i) => {
+          if (i % tick !== 0) return;
+          svg += '<text class="az-axis" x="' + (padL + (i + 0.5) * colW) + '" y="' + (h - 6) + '" text-anchor="middle">' + slot.label + '</text>';
+        });
+        svg += '</svg>';
+        box.innerHTML = svg;
+        bindAnalyzeChartNav(box);
+        if (legend) legend.innerHTML = '<span><i style="background:#38bdf8"></i>New tick</span><span><i style="background:#c084fc"></i>Repeat</span>';
+        if (hint) hint.textContent = 'Drag across months to select a range. Pins follow the selection.';
+        return;
+      }
+
+      if (analyzeView === 'newrepeat') {
+        const neu = win.map(slot => rows.filter(s => analyzeLogKey(s) === slot.key && analyzeIsNew(s, firsts)).length);
+        const rep = win.map(slot => rows.filter(s => analyzeLogKey(s) === slot.key && !analyzeIsNew(s, firsts)).length);
+        const maxV = Math.max(1, ...neu, ...rep);
+        let svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '">';
+        function path(arr, color) {
+          const pts = arr.map((v, i) => xPos(i) + ',' + (padT + innerH - (v / maxV) * innerH)).join(' ');
+          return '<polyline fill="none" stroke="' + color + '" stroke-width="2" points="' + pts + '" />';
+        }
+        svg += path(neu, '#38bdf8') + path(rep, '#c084fc');
+        win.forEach((slot, i) => {
+          const on = analyzeRange && i >= analyzeRange.lo && i <= analyzeRange.hi;
+          svg += '<rect x="' + (padL + i * colW) + '" y="' + padT + '" width="' + colW + '" height="' + innerH + '" fill="transparent" onclick="setAnalyzeMonth(' + i + ')"></rect>';
+          if (i % tick === 0) svg += '<text class="az-axis" x="' + (padL + (i + 0.5) * colW) + '" y="' + (h - 6) + '" text-anchor="middle" fill="' + (on ? '#fff' : 'var(--muted)') + '">' + slot.label + '</text>';
+        });
+        svg += '</svg>';
+        box.innerHTML = svg;
+        bindAnalyzeChartNav(box);
+        if (legend) legend.innerHTML = '<span><i style="background:#38bdf8"></i>New to this list</span><span><i style="background:#c084fc"></i>Repeats</span>';
+        if (hint) hint.textContent = 'Green is first time on this State/Country list. Blue is seeing it again. Tap a month to filter the map.';
+        return;
+      }
+
+      const useNew = analyzeShare === 'new';
+      const counted = (useNew ? rows.filter(s => analyzeIsNew(s, firsts)) : rows)
+        .filter(s => !analyzeHiddenTypes[analyzeGroupOf(s.species_code)]);
+      const typeSet = [];
+      counted.forEach(s => {
+        const g = analyzeGroupOf(s.species_code);
+        if (typeSet.indexOf(g) < 0) typeSet.push(g);
+      });
+      Object.keys(analyzeHiddenTypes).forEach(g => {
+        if (typeSet.indexOf(g) < 0) typeSet.push(g);
+      });
+      typeSet.sort((a, b) => {
+        const na = counted.filter(s => analyzeGroupOf(s.species_code) === a).length;
+        const nb = counted.filter(s => analyzeGroupOf(s.species_code) === b).length;
+        return nb - na;
+      });
+      const keys = typeSet.slice(0, 10);
+      const stacks = win.map(slot => {
+        const part = counted.filter(s => analyzeLogKey(s) === slot.key);
+        const row = { total: 0 };
+        keys.forEach(g => {
+          row[g] = part.filter(s => analyzeGroupOf(s.species_code) === g).length;
+          row.total += row[g];
+        });
+        return row;
+      });
+      const maxT = Math.max(1, ...stacks.map(r => r.total));
+      let svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '">';
+      win.forEach((slot, i) => {
+        const x = padL + i * colW + 1;
+        const bw = Math.max(3, colW - 3);
+        let y0 = padT + innerH;
+        keys.forEach(k => {
+          if (analyzeHiddenTypes[k]) return;
+          const v = stacks[i][k] || 0;
+          const bh = (v / maxT) * innerH;
+          y0 -= bh;
+          const dim = analyzeSoloType && analyzeSoloType !== k;
+          const col = analyzeTypeColor(k);
+          svg += '<rect data-az-type="' + encodeURIComponent(k) + '" x="' + x + '" y="' + y0 + '" width="' + bw + '" height="' + Math.max(0, bh) + '" fill="' + col + '" opacity="' + (dim ? 0.18 : 1) + '" onclick="toggleAnalyzeSoloType(decodeURIComponent(this.getAttribute(\'data-az-type\')))"></rect>';
+        });
+        if (i % tick === 0) svg += '<text class="az-axis" x="' + (padL + (i + 0.5) * colW) + '" y="' + (h - 6) + '" text-anchor="middle">' + slot.label + '</text>';
+      });
+      svg += '</svg>';
+      box.innerHTML = svg;
+      bindAnalyzeChartNav(box);
+      const shownKeys = keys.concat(Object.keys(analyzeHiddenTypes).filter(g => keys.indexOf(g) < 0));
+      if (legend) {
+        legend.innerHTML = shownKeys.map(k => {
+          const off = analyzeHiddenTypes[k] ? ' off' : '';
+          return '<span class="' + off + '" onclick="toggleAnalyzeHiddenType(\'' + k.replace(/'/g, '\\\'') + '\')"><i style="background:' + analyzeTypeColor(k) + '"></i>' + k + '</span>';
+        }).join('');
+      }
+      if (hint) hint.textContent = 'Tap a color to isolate it on the map. Tap a legend name to drop that type from the chart and map.';
+    }
+
+    function renderAnalyzeMap(rows, firsts, win, skipFit) {
+      const map = ensureAnalyzeMap();
+      if (!map || !analyzeLayer) return;
+      analyzeLayer.clearLayers();
+      const pts = [];
+      rows.forEach(s => {
+        const lat = Number(s.lat), lng = Number(s.lng);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+        const i = analyzeMonthIndex(s, win);
+        if (i < 0) return;
+        if (analyzeView !== 'typeshare' && analyzeRange && !analyzeSelectedMonth(i)) return;
+        const g = analyzeGroupOf(s.species_code);
+        if (analyzeView === 'typeshare') {
+          if (analyzeHiddenTypes[g]) return;
+          if (analyzeSoloType && analyzeSoloType !== g) return;
+        }
+        if (analyzeFocusSpecies && s.species_code !== analyzeFocusSpecies) return;
+        pts.push([lat, lng]);
+        const color = analyzePinColor(s, firsts);
+        const focus = analyzeFocusId === s.id;
+        const mk = L.circleMarker([lat, lng], {
+          radius: focus ? 7 : 5,
+          color: 'rgba(12,10,9,.35)',
+          weight: focus ? 1.4 : 0.8,
+          fillColor: color,
+          fillOpacity: 0.92
+        });
+        mk.on('click', function () { setAnalyzeMonth(i, s.id); });
+        mk.bindTooltip((taxName(s.species_code).comName || s.species_code) + ' · ' + String(s.date || '').slice(0, 10), { direction: 'top' });
+        analyzeLayer.addLayer(mk);
+      });
+      if (skipFit) return;
+      if (pts.length === 1) map.setView(pts[0], 10);
+      else if (pts.length) map.fitBounds(pts, { padding: [18, 18], maxZoom: 11 });
+      else if (!analyzeIsCountry() && STATE_BOUNDS[activeState]) {
+        const b = STATE_BOUNDS[activeState];
+        map.fitBounds([[b[1], b[0]], [b[3], b[2]]], { padding: [12, 12] });
+      }
+    }
+
+    function renderAnalyze(fromDrag) {
+      const modal = document.getElementById('analyze-modal');
+      if (!modal || !modal.classList.contains('on')) return;
+      analyzeShare = (document.getElementById('analyze-share') || {}).value || analyzeShare;
+      const title = document.getElementById('analyze-title');
+      if (title) title.textContent = analyzeIsCountry() ? 'United States' : activeState;
+      const all = analyzeLogs();
+      const win = analyzeWindow();
+      const maxBack = analyzeMaxBack(all);
+      if (analyzeBack > maxBack) analyzeBack = maxBack;
+      const grainEl = document.getElementById('analyze-grain');
+      if (grainEl) grainEl.value = analyzeGrain;
+      const rangeEl = document.getElementById('analyze-range-label');
+      if (rangeEl) rangeEl.innerHTML = analyzeFormatRange(win);
+      const slice = document.getElementById('analyze-slice');
+      if (slice) slice.hidden = analyzeView === 'typeshare';
+      if (analyzeView !== 'typeshare') fillAnalyzeSliceOptions(all);
+      const rows = all.filter(s => analyzeMatchesSlice(s) && analyzeInWindow(s, win));
+      const firsts = analyzeFirstDates(all);
+      const viewRows = rows.filter(s => !analyzeFocusSpecies || s.species_code === analyzeFocusSpecies);
+      renderAnalyzeChart(viewRows, firsts, win);
+      renderAnalyzeMap(viewRows, firsts, win, !!fromDrag);
+      renderAnalyzeList(rows, firsts, win);
+    }
+
+    function renderAnalyzeList(rows, firsts, win) {
+      const box = document.getElementById('analyze-list');
+      if (!box) return;
+      const visible = rows.filter(s => {
+        const i = analyzeMonthIndex(s, win);
+        if (i < 0) return false;
+        if (analyzeView !== 'typeshare' && analyzeRange && !analyzeSelectedMonth(i)) return false;
+        const g = analyzeGroupOf(s.species_code);
+        if (analyzeView === 'typeshare') {
+          if (analyzeHiddenTypes[g]) return false;
+          if (analyzeSoloType && analyzeSoloType !== g) return false;
+        }
+        return Number.isFinite(Number(s.lat)) && Number.isFinite(Number(s.lng));
+      });
+      const groups = {};
+      visible.forEach(s => {
+        if (!groups[s.species_code]) groups[s.species_code] = [];
+        groups[s.species_code].push(s);
+      });
+      const codes = Object.keys(groups).sort((a, b) => taxName(a).comName.localeCompare(taxName(b).comName));
+      if (!codes.length) {
+        box.innerHTML = '<p class="hint">Nothing on the map in this window.</p>';
+        return;
+      }
+      const grid = codes.map(code => {
+        const logs = groups[code].slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+        const n = taxName(code);
+        const color = analyzePinColor(logs[0], firsts);
+        const on = analyzeFocusSpecies === code ? ' on' : '';
+        const marks = Math.max(1, Math.min(8, logs.length));
+        const segs = Array.from({ length: marks }, () => '<i style="background:' + color + '"></i>').join('');
+        let html = '<button type="button" class="az-card' + on + '" onclick="setAnalyzeSpecies(\'' + code + '\')">' +
+          '<em>' + segs + '</em>' +
+          '<b>' + (n.comName || code) + '</b></button>';
+        if (analyzeFocusSpecies === code) {
+          html += '<div class="az-logs">' + logs.map(s => {
+            const i = analyzeMonthIndex(s, win);
+            const c = analyzePinColor(s, firsts);
+            const hit = analyzeFocusId === s.id ? ' on' : '';
+            const where = s.location || s.county || s.state || '';
+            return '<button type="button" class="az-log' + hit + '" onclick="event.stopPropagation();setAnalyzeMonth(' + i + ',\'' + s.id + '\')">' +
+              '<i style="background:' + c + '"></i>' +
+              '<b>' + String(s.date || '').slice(0, 10) + '</b><span>' + where + '</span></button>';
+          }).join('') + '</div>';
+        }
+        return html;
+      }).join('');
+      box.innerHTML = '<div class="az-grid">' + grid + '</div>';
+    }
+
+    function openAnalyzeSheet() {
+      const modal = document.getElementById('analyze-modal');
+      if (modal) modal.classList.add('on');
+      const view = document.getElementById('analyze-view');
+      if (view) view.value = analyzeView;
+      const share = document.getElementById('analyze-share');
+      if (share) {
+        share.value = analyzeShare;
+        share.hidden = analyzeView !== 'typeshare';
+      }
+      const slice = document.getElementById('analyze-slice');
+      if (slice) slice.hidden = analyzeView === 'typeshare';
+      renderAnalyze();
+    }
+
+    function closeAnalyzeSheet() {
+      const modal = document.getElementById('analyze-modal');
+      if (modal) modal.classList.remove('on');
+      analyzeRange = null;
+      analyzeFocusId = '';
+      analyzeFocusSpecies = '';
+      analyzeDrag = null;
+    }
+
     async function openRegionSpeciesModal() {
       const isCountry = currentRegionLevel === 'country';
       document.getElementById('modal-region-title').textContent = isCountry ? 'United States' : activeState;
       const cmpTab = document.getElementById('tab-btn-compare');
       if (cmpTab) cmpTab.style.display = isCountry ? 'none' : '';
       if (isCountry && modalTab === 'compare') modalTab = 'discovered';
-      document.getElementById('region-species-modal').classList.add('on');
+      const modal = document.getElementById('region-species-modal');
+      const fresh = modal && !modal.classList.contains('on');
+      if (modal) modal.classList.add('on');
+      if (fresh) checklistAnimateBars = true;
       switchRegionModalTab(modalTab || 'discovered');
       if (!DATA.S || !Object.keys(DATA.S).length) await loadData();
       renderChecklistViews();
@@ -5846,31 +7764,53 @@ function exportLogs() {
       renderChecklistViews();
     }
 
-    function rarityBucket(code) {
-      const r = rarityRank(code);
+    function rarityForRegion(code, isCountry, stateName) {
+      if (isCountry) return rarityStaticUS(code);
+      return rarityStatic(code, stateName || activeState);
+    }
+
+    function rarityBucket(code, isCountry, stateName) {
+      const r = rarityForRegion(code, isCountry, stateName);
       if (r <= 1) return 'common';
       if (r === 2) return 'uncommon';
+      if (r === 4) return 'vagrant';
       return 'rare';
     }
 
-    function ringSVG(id, pct, color, label, have, total) {
-      const r = 42, c = 2 * Math.PI * r, p = Math.max(0, Math.min(1, pct || 0));
+    function ringSVG(id, pct, color, label, have, total, slices) {
+      const p = Math.max(0, pct || 0);
+      const shown = Math.round(p * 100);
+      const w = Math.max(0, Math.min(100, shown));
       const on = checklistRarity === id ? ' on' : '';
-      const pal = themePal();
-      return '<button type="button" class="ring-wrap' + on + '" onclick="setChecklistRarity(\'' + id + '\')"><svg viewBox="0 0 108 108" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">' +
-        '<circle cx="54" cy="54" r="' + r + '" fill="none" stroke="' + pal.track + '" stroke-width="10"/>' +
-        '<circle class="ring-fill" data-ring="' + id + '" data-pct="' + p + '" cx="54" cy="54" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + c.toFixed(2) + '" stroke-dashoffset="' + c.toFixed(2) + '" transform="rotate(-90 54 54)"/>' +
-        '<text x="54" y="61" text-anchor="middle" fill="' + pal.text + '" font-size="22" font-weight="800">' + Math.round(p * 100) + '%</text></svg>' +
-        '<div class="ring-label">' + label + '</div>' +
-        '<div class="muted">' + have + ' of ' + total + '</div></button>';
+      const right = id === 'all' ? (have + ' / ' + total) : (shown + '%');
+      const start = checklistAnimateBars ? '0' : String(w);
+      let bar;
+      if (id === 'all') {
+        const parts = (slices || []).filter(s => s.n > 0);
+        const segs = parts.map(s => '<i style="flex:' + s.n + ' 1 0;background:' + s.c + '"></i>').join('');
+        bar = '<div class="check-rar-bar"><div class="check-all-fill" data-pct="' + w + '" style="width:' + start + '%">' + segs + '</div></div>';
+      } else {
+        bar = '<div class="check-rar-bar"><i data-ring="' + id + '" data-pct="' + w + '" style="width:' + start + '%"></i></div>';
+      }
+      return '<button type="button" class="check-rar ' + id + on + '" onclick="setChecklistRarity(\'' + id + '\')">' +
+        '<div class="check-rar-top"><b>' + label + '</b><span>' + right + '</span></div>' +
+        (id === 'all' ? ('<strong>' + shown + '%</strong>') : '') +
+        bar +
+        '</button>';
     }
 
     function animateChecklistRings() {
-      const circ = 2 * Math.PI * 42;
+      const play = checklistAnimateBars;
+      checklistAnimateBars = false;
+      const bars = document.querySelectorAll('#checklist-rings .check-rar-bar i[data-pct], #checklist-rings .check-all-fill');
+      if (!play) {
+        bars.forEach(el => { el.style.width = (el.getAttribute('data-pct') || '0') + '%'; });
+        return;
+      }
+      bars.forEach(el => { el.style.width = '0%'; el.classList.add('anim'); });
       requestAnimationFrame(() => {
-        document.querySelectorAll('#checklist-rings .ring-fill').forEach(el => {
-          const p = Number(el.getAttribute('data-pct') || 0);
-          el.style.strokeDashoffset = String(circ * (1 - p));
+        requestAnimationFrame(() => {
+          bars.forEach(el => { el.style.width = (el.getAttribute('data-pct') || '0') + '%'; });
         });
       });
     }
@@ -5926,7 +7866,7 @@ function exportLogs() {
         const group = birdGroup(n.comName, n.sciName);
         const logged = have.has(sp.code);
         const firstRec = logged ? firstStateRecordInWindow(sp.code, activeState, isCountry) : null;
-        allRows.push({ ...sp, ...n, group, logged, firstRec });
+        allRows.push({ ...sp, ...n, group, logged, firstRec, status: statusForSpecies(sp) });
       }
 
       const scoped = allRows.filter(row => {
@@ -5934,22 +7874,31 @@ function exportLogs() {
         if (groupF !== 'all' && row.group !== groupF) return false;
         return true;
       });
-      const total = scoped.length;
+      const common = scoped.filter(r => rarityForRegion(r.code, isCountry, stateName) <= 1);
+      const uncommon = scoped.filter(r => rarityForRegion(r.code, isCountry, stateName) === 2);
+      const rare = scoped.filter(r => rarityForRegion(r.code, isCountry, stateName) === 3);
+      const vagrant = scoped.filter(r => rarityForRegion(r.code, isCountry, stateName) === 4);
+      const total = common.length + uncommon.length + rare.length;
       const haveN = scoped.filter(r => r.logged).length;
       const pct = total ? (haveN / total) : 0;
-
-      const common = scoped.filter(r => rarityRank(r.code) <= 1);
-      const uncommon = scoped.filter(r => rarityRank(r.code) === 2);
-      const rare = scoped.filter(r => rarityRank(r.code) >= 3);
       const comHave = common.filter(r => r.logged).length;
       const uncHave = uncommon.filter(r => r.logged).length;
       const rareHave = rare.filter(r => r.logged).length;
+      const vagHave = vagrant.filter(r => r.logged).length;
       const pal = themePal();
       document.getElementById('checklist-rings').innerHTML =
-        ringSVG('all', pct, pal.em, 'All', haveN, total) +
+        ringSVG('all', pct, pal.em, 'All', haveN, total, [
+          { n: comHave, c: '#34d399' },
+          { n: uncHave, c: '#f97316' },
+          { n: rareHave, c: '#7c3aed' },
+          { n: vagHave, c: '#d6d3d1' }
+        ]) +
+        '<div class="check-rar-grid">' +
         ringSVG('common', common.length ? comHave / common.length : 0, pal.gold, 'Common', comHave, common.length) +
         ringSVG('uncommon', uncommon.length ? uncHave / uncommon.length : 0, pal.unc, 'Uncommon', uncHave, uncommon.length) +
-        ringSVG('rare', rare.length ? rareHave / rare.length : 0, pal.rare, 'Rare', rareHave, rare.length);
+        ringSVG('rare', rare.length ? rareHave / rare.length : 0, pal.rare, 'Rare', rareHave, rare.length) +
+        ringSVG('vagrant', vagrant.length ? vagHave / vagrant.length : 0, pal.vag, 'Vagrant', vagHave, vagrant.length) +
+        '</div>';
       animateChecklistRings();
 
       const statusOrder = [
@@ -5957,7 +7906,8 @@ function exportLogs() {
         ['Migrant', 'Spring/Fall Migrant'],
         ['Summer', 'Summer Breeding'],
         ['Winter', 'Winter Visitor'],
-        ['Seasonal', 'Seasonal']
+        ['Seasonal', 'Seasonal'],
+        ['Vagrant', 'Vagrant']
       ];
       fillingChecklistFilters = true;
       const statusSel = document.getElementById('checklist-status-break');
@@ -5995,7 +7945,7 @@ function exportLogs() {
       allRows.forEach(row => {
         if (statusF !== 'all' && row.status !== statusF && !(statusF === 'Year-round Resident' && row.status === 'Resident')) return;
         if (groupF !== 'all' && row.group !== groupF) return;
-        if (checklistRarity !== 'all' && rarityBucket(row.code) !== checklistRarity) return;
+        if (checklistRarity !== 'all' && rarityBucket(row.code, isCountry, stateName) !== checklistRarity) return;
         if (q && !nameMatches(row.comName, q) && !nameMatches(row.sciName, q) && !nameMatches(row.status, q) && !nameMatches(row.group, q)) return;
         if (row.logged) disc.push(row);
         else miss.push(row);
@@ -6580,24 +8530,31 @@ function exportLogs() {
       });
     }
 
+    function openLightboxImage(src, name, meta) {
+      if (!src) return;
+      const box = document.getElementById('photo-lightbox');
+      const img = document.getElementById('lightbox-img');
+      if (!box || !img) return;
+      img.src = src;
+      img.alt = name || '';
+      const nameEl = document.getElementById('lightbox-name');
+      const metaEl = document.getElementById('lightbox-meta');
+      if (nameEl) nameEl.textContent = name || '';
+      if (metaEl) metaEl.textContent = meta || '';
+      resetLightboxZoom();
+      bindLightboxGestures();
+      box.classList.add('on');
+    }
+
     function openPhotoLightbox() {
       const s = sightings.find(x => x.id === currentDetailId);
       if (!s) return;
       const src = s.photo_full || s.photo_url;
       if (!src) return;
-      const box = document.getElementById('photo-lightbox');
-      const img = document.getElementById('lightbox-img');
-      if (!box || !img) return;
       const n = taxName(s.species_code);
-      img.src = src;
-      img.alt = n.comName || '';
-      document.getElementById('lightbox-name').textContent = n.comName || 'Sighting';
       const when = s.date ? fmtShortDate(s.date) : '';
-      const where = bezelPlace(s);
-      document.getElementById('lightbox-meta').textContent = [when, where].filter(Boolean).join('  ·  ');
-      resetLightboxZoom();
-      bindLightboxGestures();
-      box.classList.add('on');
+      const where = typeof bezelPlace === 'function' ? bezelPlace(s) : (placeLabel(s) || '');
+      openLightboxImage(src, n.comName || 'Sighting', [when, where].filter(Boolean).join('  ·  '));
     }
 
     function closePhotoLightbox() {
@@ -7392,6 +9349,7 @@ function exportLogs() {
     }
 
     function switchTab(tab) {
+      if (photoPick.mode) clearPhotoPick();
       ['map','lifelist','gallery','radar'].forEach(t => {
         document.getElementById('view-' + t).classList.toggle('on', t === tab);
         document.getElementById('nav-btn-' + t).classList.toggle('on', t === tab);
@@ -7402,6 +9360,7 @@ function exportLogs() {
           if (pendingStateFit) fitActiveStateOnMap();
         }, 60);
       }
+      if (tab !== 'lifelist' && tab !== 'gallery') clearPhotoPick();
       if (tab === 'lifelist') renderLifeList();
       if (tab === 'gallery') renderGallery();
       if (tab === 'radar') renderRadar();
@@ -7416,6 +9375,7 @@ function exportLogs() {
       );
       const el = document.getElementById('gallery-species-filter');
       if (el) el.innerHTML = opts.join('');
+      populateLifeListStates();
     }
 
     const ACH_PCT = [10, 25, 50, 75, 90, 100];
@@ -7423,11 +9383,12 @@ function exportLogs() {
     const ACH_BIGMONTH = [25, 50, 75, 100, 125, 150, 200];
     const ACH_MOY = [25, 50, 75, 100, 150];
     const ACH_GROUPS = [
-      'Warbler','Raptor','Owl','Waterfowl','Wading','Shorebird','Gull / Tern','Woodpecker',
-      'Sparrow','Finch','Blackbird','Thrush','Flycatcher','Vireo','Swallow','Wren','Hummingbird',
-      'Dove','Cardinal / Tanager','Corvid','Chickadee','Nuthatch','Kinglet','Mimic','Loon / Grebe',
-      'Pelican / Cormorant','Tubenoose','Rail','Crane','Upland game','Nightjar','Swift','Kingfisher',
-      'Vulture','Other passerine','Other'
+      'Waterfowl','Landfowl','Loon / Grebe','Tubenose','Pelican / Cormorant','Wading','Crane','Rail',
+      'Shorebird','Gull / Tern','Alcid','Dove','Cuckoo','Nightjar','Swift','Hummingbird','Trogon',
+      'Kingfisher','Woodpecker','Parrot','Vulture','Raptor','Owl','Flycatcher','Vireo','Shrike',
+      'Corvid','Chickadee','Swallow','Lark / Pipit','Wren','Kinglet','Nuthatch','Mimic','Starling',
+      'Thrush','Waxwing','Warbler','Sparrow','Cardinal / Tanager','Blackbird','Finch','Hawaiian',
+      'Weaver / Munia','Other passerine','Other'
     ];
     const PACIFIC_STATES = { Washington:1, Oregon:1, California:1, Alaska:1, Hawaii:1 };
     const ATLANTIC_STATES = {
@@ -7522,6 +9483,7 @@ function exportLogs() {
       ACH_GROUPS.forEach(g => { pools[g] = new Set(); });
       usOfficialList().forEach(sp => {
         if (!isRealSpecies(sp.code)) return;
+        if (rarityStaticUS(sp.code) === 4) return;
         const g = groupOfCode(sp.code);
         if (!pools[g]) pools[g] = new Set();
         pools[g].add(sp.code);
@@ -7532,11 +9494,30 @@ function exportLogs() {
     function typePoolState(stateName) {
       const pools = {};
       officialRows(STATE_CODES[stateName] || 'US-NC').forEach(sp => {
+        if (rarityStaticFromMonthly(sp.monthly) === 4) return;
         const g = groupOfCode(sp.code);
         if (!pools[g]) pools[g] = new Set();
         pools[g].add(sp.code);
       });
       return pools;
+    }
+
+    function typePoolFor(ctx, isCountry, stateName) {
+      if (isCountry) return ctx.usPool || typePoolUS();
+      const name = stateName || activeState;
+      if (!ctx.statePools) ctx.statePools = {};
+      if (!ctx.statePools[name]) ctx.statePools[name] = typePoolState(name);
+      return ctx.statePools[name];
+    }
+
+    function typeLoggedFor(ctx, isCountry, stateName) {
+      if (isCountry) return ctx.us.codes;
+      const name = stateName || activeState;
+      return (ctx.byState[name] && ctx.byState[name].codes) || new Set();
+    }
+
+    function liveTypeGroups(pools) {
+      return ACH_GROUPS.filter(g => ((pools[g] || new Set()).size > 0));
     }
 
     function filterPctSteps(total, steps) {
@@ -7592,6 +9573,8 @@ function exportLogs() {
         photoCountByCode: {},
         logsByDate: {},
         rarityCounts: { 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() },
+        vagrants: new Set(),
+        vagrantsUS: new Set(),
         rarityCountsState: {},
         statusHits: new Set(),
         statusSets: { resident: new Set(), winter: new Set(), summer: new Set(), migrant: new Set() },
@@ -7677,6 +9660,8 @@ function exportLogs() {
         if (!us.rarityCountsState[st]) us.rarityCountsState[st] = { 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() };
         if (us.rarityCountsState[st][rank]) us.rarityCountsState[st][rank].add(code);
         if (rank === 4) us.pulse.add(code);
+        if (rarityStatic(code, st) === 4) us.vagrants.add(code);
+        if (rarityStaticUS(code) === 4) us.vagrantsUS.add(code);
 
         const sp = speciesFromState(code, st);
         const bar = (sp.monthly && mi >= 0) ? (sp.monthly[mi] || 0) : 1;
@@ -7811,24 +9796,25 @@ function exportLogs() {
     function statePctHave(ctx, stateName) {
       const official = officialRows(STATE_CODES[stateName] || '');
       const haveSet = ctx.byState[stateName] ? ctx.byState[stateName].codes : new Set();
-      let have = 0;
-      official.forEach(sp => { if (haveSet.has(sp.code)) have++; });
-      return { have: have, total: official.length };
+      let have = 0, total = 0;
+      official.forEach(sp => {
+        const vag = rarityStaticFromMonthly(sp.monthly) === 4;
+        if (!vag) total++;
+        if (haveSet.has(sp.code)) have++;
+      });
+      return { have: have, total: total };
     }
 
     const rarSplitCache = {};
     function raritySplit(regionCode) {
       if (rarSplitCache[regionCode]) return rarSplitCache[regionCode];
       const rows = officialRows(regionCode);
-      const buckets = { 1: [], 2: [], 3: [] };
+      const buckets = { 1: [], 2: [], 3: [], 4: [] };
+      const us = regionCode === 'US';
       rows.forEach(sp => {
-        const peak = yearPeak(sp);
-        const avg = yearAvg(sp);
-        let r = 3;
-        if (peak < 0.22 || avg < 0.12) r = 3;
-        else if (avg >= 0.4) r = 1;
-        else if (avg >= 0.18) r = 2;
-        buckets[r].push(sp.code);
+        const r = us ? rarityStaticUS(sp.code) : rarityStaticFromMonthly(sp.monthly);
+        if (buckets[r]) buckets[r].push(sp.code);
+        else buckets[3].push(sp.code);
       });
       rarSplitCache[regionCode] = buckets;
       return buckets;
@@ -7913,26 +9899,27 @@ function exportLogs() {
         pushDef(defs, { id: 'co.breadth.frontiers', mode: 'country', cat: 'breadth', title: 'Both frontiers', hint: 'Alaska and Hawaii', kind: 'frontiers' });
       }
 
+      const typeScope = isCountry ? 'the US list' : ((activeState || 'this state') + ' list');
       ACH_GROUPS.forEach(g => {
         const slug = g.replace(/[^A-Za-z]+/g, '');
         ACH_PCT.forEach(p => {
           pushDef(defs, {
             id: pfx + '.type.' + slug + '.' + p, mode: mode, cat: 'types',
-            title: g + ' ' + p + '%', hint: 'US pool for ' + g,
+            title: g + ' ' + p + '%', hint: typeScope + ' · ' + g,
             kind: 'typepct', group: g, pct: p,
             family: pfx + '.type.' + slug, familyTitle: g, tierLabel: p + '%'
           });
         });
       });
-      pushDef(defs, { id: pfx + '.type.collector', mode: mode, cat: 'types', title: 'Type collector', hint: 'At least one species in every type', kind: 'typecol' });
-      pushDef(defs, { id: pfx + '.type.specialist', mode: mode, cat: 'types', title: 'Type specialist', hint: 'Any one type at 100% of the US pool', kind: 'typespec' });
-      pushDef(defs, { id: pfx + '.type.atlas', mode: mode, cat: 'types', title: 'Type atlas', hint: 'Ten types at 50% or more', kind: 'typeatlas' });
-      pushDef(defs, { id: pfx + '.type.noleftovers', mode: mode, cat: 'types', title: 'No leftovers', hint: '100% of every type with 10+ US species', kind: 'typenoleft' });
+      pushDef(defs, { id: pfx + '.type.collector', mode: mode, cat: 'types', title: 'Type collector', hint: 'At least one species in every type on ' + typeScope, kind: 'typecol' });
+      pushDef(defs, { id: pfx + '.type.specialist', mode: mode, cat: 'types', title: 'Type specialist', hint: 'Any one type at 100% on ' + typeScope, kind: 'typespec' });
+      pushDef(defs, { id: pfx + '.type.atlas', mode: mode, cat: 'types', title: 'Type atlas', hint: 'Ten types at 50% or more on ' + typeScope, kind: 'typeatlas' });
+      pushDef(defs, { id: pfx + '.type.noleftovers', mode: mode, cat: 'types', title: 'No leftovers', hint: '100% of every type with 10+ species on ' + typeScope, kind: 'typenoleft' });
 
       const rarCount = isCountry
-        ? { common: [25, 50, 100, 200, 300], uncommon: [15, 25, 50, 100, 150], rare: [5, 10, 25, 50, 75], pulse: [1, 5, 10, 25, 50] }
-        : { common: [25, 50, 100, 150, 200], uncommon: [10, 25, 50, 75, 100], rare: [5, 10, 25, 50], pulse: [1, 5, 10, 25] };
-      const rarKey = { common: 1, uncommon: 2, rare: 3, pulse: 4 };
+        ? { common: [25, 50, 100, 200, 300], uncommon: [15, 25, 50, 100, 150], rare: [5, 10, 25, 50, 75], pulse: [1, 5, 10, 25, 50], vagrant: [1, 5, 10, 25] }
+        : { common: [25, 50, 100, 150, 200], uncommon: [10, 25, 50, 75, 100], rare: [5, 10, 25, 50], pulse: [1, 5, 10, 25], vagrant: [1, 5, 10] };
+      const rarKey = { common: 1, uncommon: 2, rare: 3, pulse: 4, vagrant: 5 };
       Object.keys(rarCount).forEach(name => {
         rarCount[name].forEach(n => {
           pushDef(defs, {
@@ -8054,7 +10041,7 @@ function exportLogs() {
 
     function evalDef(def, ctx) {
       const isCountry = def.mode === 'country';
-      const codes = isCountry ? ctx.us.codes : ctx.us.codes;
+      const codes = typeLoggedFor(ctx, isCountry, def.state || activeState);
       const empty = { have: 0, total: 1, earned: false, detail: '' };
       const done = (have, total, extra, pool) => {
         const t = Math.max(1, total || 0);
@@ -8101,7 +10088,8 @@ function exportLogs() {
       }
       if (kind === 'uspct') {
         const rows = officialRows('US');
-        const total = rows.length;
+        const core = rows.filter(sp => rarityStaticUS(sp.code) !== 4);
+        const total = core.length;
         if (!total) return empty;
         let have = 0;
         rows.forEach(sp => { if (ctx.us.codes.has(sp.code)) have++; });
@@ -8135,61 +10123,72 @@ function exportLogs() {
         return done(have, 2);
       }
       if (kind === 'typepct') {
-        const pool = ctx.usPool[def.group] || new Set();
+        const pools = typePoolFor(ctx, isCountry, activeState);
+        const pool = pools[def.group] || new Set();
         const total = pool.size;
         if (!total) return { have: 0, total: 1, earned: false, skip: true };
         const steps = filterPctSteps(total, ACH_PCT);
         if (steps.indexOf(def.pct) < 0) return { have: 0, total: total, earned: false, skip: true };
         let have = 0;
-        const src = isCountry ? ctx.us.codes : ctx.us.codes;
-        pool.forEach(c => { if (src.has(c)) have++; });
+        pool.forEach(c => { if (codes.has(c)) have++; });
         const need = Math.max(1, Math.ceil(total * def.pct / 100));
         return done(have, need, have + ' / ' + total, total);
       }
       if (kind === 'typecol') {
+        const pools = typePoolFor(ctx, isCountry, activeState);
+        const groups = liveTypeGroups(pools);
         let have = 0;
-        ACH_GROUPS.forEach(g => {
-          const pool = ctx.usPool[g] || new Set();
+        groups.forEach(g => {
+          const pool = pools[g] || new Set();
           let ok = false;
-          pool.forEach(c => { if (ctx.us.codes.has(c)) ok = true; });
-          if (ok || pool.size === 0) have++;
+          pool.forEach(c => { if (codes.has(c)) ok = true; });
+          if (ok) have++;
         });
-        return done(have, ACH_GROUPS.length);
+        return done(have, Math.max(1, groups.length), have + ' / ' + groups.length);
       }
       if (kind === 'typespec') {
+        const pools = typePoolFor(ctx, isCountry, activeState);
         let ok = false, detail = '';
-        ACH_GROUPS.forEach(g => {
-          const pool = ctx.usPool[g] || new Set();
+        liveTypeGroups(pools).forEach(g => {
+          const pool = pools[g] || new Set();
           if (pool.size <= 0) return;
           let h = 0;
-          pool.forEach(c => { if (ctx.us.codes.has(c)) h++; });
+          pool.forEach(c => { if (codes.has(c)) h++; });
           if (h === pool.size) { ok = true; detail = g; }
         });
         return { have: ok ? 1 : 0, total: 1, earned: ok, detail: detail || 'None complete' };
       }
       if (kind === 'typeatlas') {
+        const pools = typePoolFor(ctx, isCountry, activeState);
         let have = 0;
-        ACH_GROUPS.forEach(g => {
-          const pool = ctx.usPool[g] || new Set();
+        liveTypeGroups(pools).forEach(g => {
+          const pool = pools[g] || new Set();
           if (pool.size <= 0) return;
           let h = 0;
-          pool.forEach(c => { if (ctx.us.codes.has(c)) h++; });
+          pool.forEach(c => { if (codes.has(c)) h++; });
           if (h / pool.size >= 0.5) have++;
         });
         return done(have, 10);
       }
       if (kind === 'typenoleft') {
-        const big = ACH_GROUPS.filter(g => (ctx.usPool[g] || new Set()).size >= 10);
+        const pools = typePoolFor(ctx, isCountry, activeState);
+        const big = liveTypeGroups(pools).filter(g => (pools[g] || new Set()).size >= 10);
         let have = 0;
         big.forEach(g => {
-          const pool = ctx.usPool[g];
+          const pool = pools[g];
           let h = 0;
-          pool.forEach(c => { if (ctx.us.codes.has(c)) h++; });
+          pool.forEach(c => { if (codes.has(c)) h++; });
           if (h === pool.size) have++;
         });
         return done(have, Math.max(1, big.length), have + ' / ' + big.length);
       }
       if (kind === 'rarcount') {
+        if (def.bucket === 5) {
+          const set = isCountry ? (ctx.us.vagrantsUS || new Set()) : (ctx.us.vagrants || new Set());
+          const split = raritySplit(isCountry ? 'US' : (STATE_CODES[activeState] || 'US'));
+          const poolN = (split[4] || []).length;
+          return done(set.size, def.need, '', poolN);
+        }
         const set = ctx.us.rarityCounts[def.bucket] || new Set();
         const split = raritySplit(isCountry ? 'US' : (STATE_CODES[activeState] || 'US'));
         const poolN = (split[def.bucket] || []).length;
@@ -8360,7 +10359,7 @@ function exportLogs() {
         case 'staterar': xp = Math.round((pctMap[def.pct] || 20) * (def.bucket === 3 ? 1.6 : def.bucket === 2 ? 1.25 : 0.9)); break;
         case 'usrar': xp = Math.round((pctMap[def.pct] || 20) * (def.bucket === 3 ? 1.8 : def.bucket === 2 ? 1.3 : 1)); break;
         case 'typepct': xp = pctMap[def.pct] || 20; break;
-        case 'rarcount': xp = Math.round(Math.max(8, need) * (def.bucket === 4 ? 4 : def.bucket === 3 ? 2.5 : def.bucket === 2 ? 1.4 : 0.8)); break;
+        case 'rarcount': xp = Math.round(Math.max(8, need) * (def.bucket === 5 ? 3.5 : def.bucket === 4 ? 4 : def.bucket === 3 ? 2.5 : def.bucket === 2 ? 1.4 : 0.8)); break;
         case 'moy': xp = Math.max(15, Math.round(need * 0.5)); break;
         case 'season': xp = Math.max(20, Math.round(need * 0.35)); break;
         case 'everymonth': xp = 80; break;
@@ -8591,6 +10590,7 @@ function exportLogs() {
       if (!def) return '';
       const name = def.state || '';
       const g = def.group || '';
+      const isCountry = def.mode === 'country';
       switch (def.kind) {
         case 'ink': return 'Log any species in ' + name + '.';
         case 'statepct': return 'Percent of the official ' + name + ' checklist you have logged.';
@@ -8602,11 +10602,21 @@ function exportLogs() {
         case 'coast': return 'Log a bird on both the Pacific and Atlantic coasts.';
         case 'corners': return 'Log in Arizona, Colorado, New Mexico, and Utah.';
         case 'frontiers': return 'Log in both Alaska and Hawaii.';
-        case 'typepct': return 'Percent of US ' + g.toLowerCase() + ' species you have logged.';
-        case 'typecol': return 'Log at least one species from every bird type.';
-        case 'typespec': return 'Finish 100% of any one type in the US pool.';
-        case 'typeatlas': return 'Reach 50% in ten different US type pools.';
-        case 'typenoleft': return 'Complete every US type that has 10 or more species.';
+        case 'typepct': return isCountry
+          ? ('Percent of US ' + g.toLowerCase() + ' species you have logged.')
+          : ('Percent of ' + (activeState || 'this state') + '’s ' + g.toLowerCase() + ' list you have logged there.');
+        case 'typecol': return isCountry
+          ? 'Log at least one species from every type on the US list.'
+          : ('Log at least one species from every type on the ' + (activeState || 'state') + ' list.');
+        case 'typespec': return isCountry
+          ? 'Finish 100% of any one type on the US list.'
+          : ('Finish 100% of any one type on the ' + (activeState || 'state') + ' list.');
+        case 'typeatlas': return isCountry
+          ? 'Reach 50% in ten different US type pools.'
+          : ('Reach 50% in ten different types on the ' + (activeState || 'state') + ' list.');
+        case 'typenoleft': return isCountry
+          ? 'Complete every US type that has 10 or more species.'
+          : ('Complete every ' + (activeState || 'state') + ' type that has 10 or more species.');
         case 'rarcount': return 'Species logged in a state and month when they ranked this rarity.';
         case 'usrar': return 'Percent of the US list that sits in this rarity band.';
         case 'moy': return 'Unique species you have ever logged during this month of the year.';
@@ -8977,7 +10987,7 @@ function exportLogs() {
 
     function regionSp(code, regionCode) {
       const entry = decodeState(regionCode || 'US');
-      return ((entry && entry.list) || []).find(sp => sp.code === code) || { code: code, monthly: [], status: 'Seasonal' };
+      return ((entry && entry.list) || []).find(sp => sp.code === code) || { code: code, monthly: [], status: 'Vagrant' };
     }
     function birdAvail(code, regionCode, monthIdx) {
       const sp = regionSp(code, regionCode);
@@ -9001,7 +11011,7 @@ function exportLogs() {
       const empty = { counted: [], rec: [], region: 'US', month: CURRENT_MONTH };
       if (!def || !ctx) return empty;
       const isCountry = def.mode === 'country';
-      const logged = ctx.us.codes;
+      const logged = typeLoggedFor(ctx, isCountry, def.state || activeState);
       let region = 'US';
       let month = CURRENT_MONTH;
       let counted = [];
@@ -9035,10 +11045,17 @@ function exportLogs() {
       } else if (kind === 'uspct' || kind === 'uscount') {
         pool = officialCodeList('US');
         counted = pool.filter(c => logged.has(c));
-      } else if (kind === 'typepct') {
-        pool = Array.from(ctx.usPool[def.group] || []);
-        counted = pool.filter(c => logged.has(c));
+      } else if (kind === 'typepct' || kind === 'typecol' || kind === 'typespec' || kind === 'typeatlas' || kind === 'typenoleft') {
+        const pools = typePoolFor(ctx, isCountry, activeState);
         region = isCountry ? 'US' : (STATE_CODES[activeState] || 'US');
+        if (kind === 'typepct') {
+          pool = Array.from(pools[def.group] || []);
+        } else {
+          const groups = liveTypeGroups(pools).filter(g => kind !== 'typenoleft' || (pools[g] || new Set()).size >= 10);
+          pool = [];
+          groups.forEach(g => { pool = pool.concat(Array.from(pools[g] || [])); });
+        }
+        counted = pool.filter(c => logged.has(c));
       } else if (kind === 'usrar') {
         pool = raritySplit('US')[def.bucket] || [];
         counted = pool.filter(c => logged.has(c));
@@ -9447,6 +11464,7 @@ function exportLogs() {
         DATA.T = json.T || {};
         DATA.S = json.S || {};
         stateCache.clear();
+        try { resetUsStatic(); } catch (e) { usStaticIndex = null; usStaticCache = {}; }
         try { for (const k in rarSplitCache) delete rarSplitCache[k]; } catch (e) {}
       } catch (e) {}
     }
@@ -9462,6 +11480,7 @@ function exportLogs() {
           closePhotoLightbox();
           if (typeof closeTargetBrief === 'function') closeTargetBrief();
           if (typeof closeAchModal === 'function') closeAchModal();
+          if (typeof closeFieldBook === 'function') closeFieldBook();
         }
       });
       document.addEventListener('click', (e) => {
