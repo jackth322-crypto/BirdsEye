@@ -1105,7 +1105,7 @@
     .tgt-spark-wide span { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
     .tgt-spark-wide i { width: 100%; max-width: 10px; border-radius: 2px; display: block; }
     .tgt-spark-wide em { font-size: 9px; font-style: normal; color: var(--muted-2); font-weight: 700; }
-    .tgt-spark-wide span.now em { color: var(--cool); }
+    .tgt-spark-wide span.now em { font-weight: 800; }
     .tgt-brief-actions { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 4px; }
     .tgt-brief-actions a, .tgt-brief-actions button {
       display: flex; align-items: center; justify-content: center;
@@ -1429,6 +1429,140 @@
     html[data-theme="light"] .seg { background: var(--panel-2); border-color: var(--line-2); }
     html[data-theme="light"] .check-pill { background: var(--input); color: var(--text-2); border-color: var(--line-2); }
     html[data-theme="light"] .marker-cluster div { color: #fff; }
+    .nav-btn { min-width: 0; padding: 7px 2px; }
+    #view-search { background: var(--bg); }
+    #search-catalog, #search-dossier { height: 100%; }
+    #search-dossier[hidden], #search-catalog[hidden] { display: none !important; }
+    .search-tools { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .search-tools input[type=text] { width: 100%; }
+    .search-count { font-size: 11px; color: var(--muted); margin: 8px 0 0; }
+    .search-type-h {
+      position: sticky; top: 0; z-index: 3;
+      font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--muted-2); background: var(--bg); padding: 10px 2px 6px; margin-top: 4px;
+      border-bottom: 1px solid var(--line);
+    }
+    .search-row {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      text-align: left; background: var(--photo); border: 1px solid var(--line);
+      border-radius: 10px; padding: 7px 8px; margin-top: 6px; color: inherit; cursor: pointer;
+    }
+    .search-row:hover { border-color: var(--em-dim); }
+    .search-row.on { border-color: var(--em3); box-shadow: 0 0 0 1px var(--hl); }
+    .search-row img, .search-ph {
+      width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex: none;
+      background: var(--panel-2); border: 1px solid var(--line-2);
+    }
+    .search-ph {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--lock); font-size: 12px; font-weight: 800;
+    }
+    .search-row b { display: block; font-size: 13px; line-height: 1.2; }
+    .search-row .sci { font-size: 10px; color: var(--muted); font-style: italic; }
+    .search-row .search-meta { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 3px; }
+    .search-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--em2); flex: none;
+    }
+    .search-dot.off { background: var(--line-2); }
+    .search-back {
+      background: none; border: 0; color: var(--em3); font-size: 12px; font-weight: 750;
+      padding: 0 0 8px; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .search-hero {
+      width: 100%; aspect-ratio: 16/10; max-height: 220px; object-fit: contain;
+      background: var(--photo); border-radius: 12px; border: 1px solid var(--line);
+    }
+    .search-hero.ph {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 42px; font-weight: 800; color: var(--lock); aspect-ratio: 16/10;
+    }
+    #search-hero[hidden], #search-hero-ph[hidden] { display: none !important; }
+    .search-title { margin-top: 10px; }
+    .search-title b { display: block; font-size: 20px; line-height: 1.15; }
+    .search-kicker { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+    .search-links { display: flex; gap: 12px; align-items: center; margin-top: 8px; }
+    .search-logged {
+      margin-top: 10px; padding: 8px 10px; border-radius: 10px;
+      background: var(--panel-2); border: 1px solid var(--line);
+      font-size: 12px; font-weight: 650; color: var(--text-2);
+    }
+    .search-logged .muted { font-weight: 600; }
+    #search-spark-wrap { margin-top: 10px; }
+    .search-map-box {
+      position: relative; margin-top: 10px; border-radius: 12px; overflow: hidden;
+      border: 1px solid var(--line); height: 240px;
+    }
+    #search-map { height: 100%; width: 100%; background: var(--map-paper); }
+    #search-map-tip {
+      display: none; position: absolute; left: 8px; top: 8px; z-index: 500;
+      max-width: calc(100% - 16px);
+      background: var(--glass-96); border: 1px solid var(--line-2); border-radius: 8px;
+      padding: 5px 8px; font-size: 11px; font-weight: 700; pointer-events: none;
+    }
+    #search-map-tip.on { display: block; }
+    #search-map-back {
+      display: none; position: absolute; right: 8px; top: 8px; z-index: 500;
+      background: var(--panel); border: 1px solid var(--line-2); border-radius: 8px;
+      padding: 4px 8px; font-size: 11px; font-weight: 750; color: var(--text);
+    }
+    #search-map-back.on { display: block; }
+    .search-map-float {
+      display: none; position: absolute; right: 8px; bottom: 8px; z-index: 500;
+    }
+    .search-map-float.on { display: block; }
+    .search-map-float .seg {
+      background: var(--glass-96); box-shadow: var(--shadow);
+      padding: 1px; gap: 1px; border-radius: 7px;
+    }
+    .search-map-float .seg button { font-size: 9px; font-weight: 750; padding: 3px 6px; border-radius: 5px; }
+    #search-map path.search-vagrant {
+      fill: url(#search-vag-pat) !important;
+    }
+    .search-legend {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      margin-top: 6px; font-size: 10px; color: var(--muted); font-weight: 650;
+    }
+    .search-legend i {
+      display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 3px; vertical-align: -1px;
+    }
+    .search-legend .note { width: 100%; color: var(--muted-2); font-weight: 600; }
+    #search-scrub { display: none; margin: 10px -12px 0; padding: 10px 12px 8px; width: calc(100% + 24px); box-sizing: border-box; background: var(--panel-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    #search-scrub.on { display: block; }
+    #search-scrub .heat-months { grid-template-columns: repeat(13, minmax(0, 1fr)); }
+    #search-scrub .heat-scrub-top { gap: 8px; }
+    #search-scrub #search-scrub-label { flex: 1; min-width: 0; }
+    #search-photos { margin-top: 6px; }
+    #search-photos-empty { margin-top: 8px; }
+    .search-bio {
+      margin: 10px 0 0; font-size: 12px; line-height: 1.45; color: var(--text-2);
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden;
+    }
+    .search-bio.empty { color: var(--muted); }
+    .search-sim-h {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin: 16px 0 8px; font-size: 12px; font-weight: 750; color: var(--text);
+    }
+    .search-shuffle {
+      background: var(--panel-2); border: 1px solid var(--line-2); color: var(--text-2);
+      border-radius: 999px; padding: 4px 10px; font-size: 11px; font-weight: 750;
+    }
+    .search-sim-row {
+      display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 10px;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    }
+    .search-sim-card {
+      flex: none; width: 92px; text-align: left; background: var(--photo);
+      border: 1px solid var(--line); border-radius: 10px; padding: 0 0 6px; color: inherit;
+      scroll-snap-align: start;
+    }
+    .search-sim-card img, .search-sim-card .search-ph {
+      width: 100%; height: 72px; object-fit: cover; border-radius: 10px 10px 0 0;
+      background: var(--panel-2); display: block;
+    }
+    .search-sim-card b {
+      display: block; font-size: 11px; line-height: 1.25; padding: 6px 7px 0;
+    }
+    .search-status { font-size: 11px; color: var(--muted); margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -1739,6 +1873,100 @@
         <button type="button" class="to-top" aria-label="Back to top">↑</button>
       </div>
     </section>
+    <section id="view-search" class="view">
+      <div class="scroll" id="search-catalog">
+        <div class="list-head">
+          <div class="ribbon gallery-ribbon">
+            <div class="gallery-id">
+              <div class="ribbon-kicker">Search</div>
+              <div class="gallery-counts">
+                <div class="ribbon-num" id="search-count-num">0</div>
+                <div class="ribbon-meta" id="search-scoreline">Countable species</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="search-tools">
+          <input type="text" id="search-q" placeholder="Search species…" autocomplete="off" oninput="onSearchQuery()" />
+          <div class="seg" id="search-filter-seg">
+            <button type="button" id="btn-search-all" class="on" onclick="setSearchFilter('all')">All</button>
+            <button type="button" id="btn-search-logged" onclick="setSearchFilter('logged')">Logged</button>
+            <button type="button" id="btn-search-missing" onclick="setSearchFilter('missing')">Missing</button>
+          </div>
+        </div>
+        <p class="search-count" id="search-count"></p>
+        <div id="search-list"></div>
+        <button type="button" class="to-top" aria-label="Back to top">↑</button>
+      </div>
+      <div class="scroll" id="search-dossier" hidden>
+        <button type="button" class="search-back" onclick="closeSearchDossier()">← All species</button>
+        <img id="search-hero" class="search-hero" alt="" />
+        <div id="search-hero-ph" class="search-hero ph" hidden></div>
+        <div class="search-title">
+          <strong id="search-common"></strong>
+          <div class="muted" id="search-sci" style="font-style:italic;margin-top:2px"></div>
+        </div>
+        <div class="search-kicker" id="search-kicker"></div>
+        <div class="search-links">
+          <a class="merlin-link" id="search-merlin" href="#" target="_blank" rel="noopener">Merlin ↗</a>
+          <a class="merlin-link" id="search-ebird" href="#" target="_blank" rel="noopener">eBird ↗</a>
+        </div>
+        <p class="search-bio" id="search-bio">Loading description…</p>
+        <div id="search-spark-wrap"></div>
+        <div class="search-logged" id="search-logged"></div>
+        <div class="tgt-lenses" style="margin-top:12px">
+          <div class="seg" id="search-map-modes">
+            <button type="button" id="btn-smap-season" class="on" onclick="setSearchMapMode('season')">Season</button>
+            <button type="button" id="btn-smap-week" onclick="setSearchMapMode('week')">Reports</button>
+            <button type="button" id="btn-smap-logs" onclick="setSearchMapMode('logs')">My logs</button>
+          </div>
+        </div>
+        <div class="search-map-box">
+          <div id="search-map"></div>
+          <div id="search-map-tip"></div>
+          <button type="button" id="search-map-back" onclick="searchResetWeekZoom()">US view</button>
+          <div id="search-all-mode" class="search-map-float">
+            <div class="seg">
+              <button type="button" id="btn-sall-freq" class="on" onclick="setSearchAllLens('freq')">Frequency</button>
+              <button type="button" id="btn-sall-rar" onclick="setSearchAllLens('rarity')">Rarity</button>
+            </div>
+          </div>
+          <div id="search-report-back" class="search-map-float">
+            <div class="seg">
+              <button type="button" id="btn-srep-3" onclick="setSearchReportBack(3)">3D</button>
+              <button type="button" id="btn-srep-7" class="on" onclick="setSearchReportBack(7)">7D</button>
+              <button type="button" id="btn-srep-30" onclick="setSearchReportBack(30)">30D</button>
+            </div>
+          </div>
+        </div>
+        <div class="search-legend" id="search-legend"></div>
+        <div id="search-scrub">
+          <div class="heat-scrub-top">
+            <button type="button" class="heat-play" id="search-play" onclick="toggleSearchPlay()" title="Play months" aria-label="Play months">
+              <svg id="search-play-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.6v8.8L10.2 6z"/></svg>
+            </button>
+            <span id="search-scrub-label">September</span>
+            <div class="seg heat-speeds" id="search-speeds">
+              <button type="button" id="btn-search-1x" class="on" onclick="setSearchSpeed(1)">1x</button>
+              <button type="button" id="btn-search-2x" onclick="setSearchSpeed(2)">2x</button>
+              <button type="button" id="btn-search-4x" onclick="setSearchSpeed(4)">4x</button>
+            </div>
+          </div>
+          <input id="search-range" type="range" min="0" max="12" value="8" oninput="onSearchMonthScrub(this.value)" />
+          <div class="heat-months" id="search-months"></div>
+        </div>
+        <p class="search-status" id="search-map-status"></p>
+        <div class="muted" style="margin:14px 0 0">Your photos</div>
+        <div id="search-photos" class="grid"></div>
+        <p class="hint" id="search-photos-empty" hidden>No photos logged for this species yet.</p>
+        <div class="search-sim-h">
+          <span>Similar birds</span>
+          <button type="button" class="search-shuffle" onclick="shuffleSearchSimilar()">Shuffle</button>
+        </div>
+        <div class="search-sim-row" id="search-similar"></div>
+        <button type="button" class="to-top" aria-label="Back to top">↑</button>
+      </div>
+    </section>
   </main>
 
   <nav>
@@ -1757,6 +1985,10 @@
     <button class="nav-btn" id="nav-btn-radar" onclick="switchTab('radar')">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2.8" x2="12" y2="5.2"/><line x1="12" y1="18.8" x2="12" y2="21.2"/><line x1="2.8" y1="12" x2="5.2" y2="12"/><line x1="18.8" y1="12" x2="21.2" y2="12"/></svg>
       Targets
+    </button>
+    <button class="nav-btn" id="nav-btn-search" onclick="switchTab('search')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.2"/><line x1="16.2" y1="16.2" x2="21" y2="21"/></svg>
+      Search
     </button>
   </nav>
 
@@ -2299,6 +2531,7 @@
     let hotspotSpeciesCache = {};
     let hotspotPhotoCache = {};
     let speciesPhotoCache = {};
+    let wikiExtractCache = {};
     let hotspotMetaCache = {};
     let hotspotRegionCache = {};
     let hotspotFeaturedCode = '';
@@ -2707,6 +2940,7 @@ function exportLogs() {
       const dark = document.getElementById('btn-tiles-dark');
       if (light) light.className = darkTiles ? '' : 'on';
       if (dark) dark.className = darkTiles ? 'on' : '';
+      if (typeof searchApplyTiles === 'function') searchApplyTiles();
     }
 
 
@@ -2778,6 +3012,8 @@ function exportLogs() {
       if (dark) dark.className = uiTheme === 'dark' ? 'on' : '';
       const wm = document.getElementById('header-wordmark');
       if (wm) wm.src = (uiTheme === 'light' ? 'wordmark-light.png' : 'wordmark-dark.png') + '?v=aa4';
+      const searchView = document.getElementById('view-search');
+      if (searchView && searchView.classList.contains('on') && searchCode && typeof paintSearchMap === 'function') paintSearchMap();
     }
     function setUiTheme(mode) {
       uiTheme = (mode === 'light') ? 'light' : 'dark';
@@ -2931,6 +3167,8 @@ function exportLogs() {
       if (typeof updateAchBadge === 'function') updateAchBadge();
       const ach = document.getElementById('ach-modal');
       if (ach && ach.classList.contains('on') && typeof syncAchievements === 'function') syncAchievements({ toast: false });
+      const searchView = document.getElementById('view-search');
+      if (searchView && searchView.classList.contains('on') && typeof showSearchTab === 'function') showSearchTab();
     }
 
     function toggleStateLock() {
@@ -3160,16 +3398,19 @@ function exportLogs() {
       const avg = sum / n;
       const top = vals.slice().sort((a, b) => b - a).slice(0, 3);
       const season = top.length ? (top[0] + (top[1] || 0) + (top[2] || 0)) / top.length : 0;
-      let monthsOn = 0;
-      for (let i = 0; i < vals.length; i++) if (vals[i] >= 0.15) monthsOn++;
-      return { peak: peak, avg: avg, season: season, monthsOn: monthsOn };
+      let monthsOn = 0, monthsHot = 0;
+      for (let i = 0; i < vals.length; i++) {
+        if (vals[i] >= 0.15) monthsOn++;
+        if (vals[i] >= 0.40) monthsHot++;
+      }
+      return { peak: peak, avg: avg, season: season, monthsOn: monthsOn, monthsHot: monthsHot };
     }
 
     function rarityStaticFromMonthly(monthly) {
       const s = monthlyStats(monthly);
       if (!monthly || !monthly.length || s.peak <= 0) return 4;
       if (s.season < 0.18 || s.peak < 0.18) return 3;
-      if (s.avg >= 0.40 || (s.season >= 0.40 && s.monthsOn >= 3)) return 1;
+      if ((s.avg >= 0.50 && s.monthsHot >= 8) || (s.peak >= 1 && s.monthsHot >= 5)) return 1;
       if (s.season >= 0.22 || s.avg >= 0.16 || s.monthsOn >= 3) return 2;
       return 3;
     }
@@ -3189,12 +3430,32 @@ function exportLogs() {
       return rank;
     }
 
+    const COASTAL_STATES = {
+      'Alabama': 1, 'Alaska': 1, 'California': 1, 'Connecticut': 1, 'Delaware': 1,
+      'Florida': 1, 'Georgia': 1, 'Hawaii': 1, 'Louisiana': 1, 'Maine': 1,
+      'Maryland': 1, 'Massachusetts': 1, 'Mississippi': 1, 'New Hampshire': 1,
+      'New Jersey': 1, 'New York': 1, 'North Carolina': 1, 'Oregon': 1,
+      'Rhode Island': 1, 'South Carolina': 1, 'Texas': 1, 'Virginia': 1, 'Washington': 1
+    };
+
+    function isCoastalStateForSpecies(stateName, code) {
+      if (stateName === 'District of Columbia') {
+        const n = taxName(code);
+        const g = birdGroup(n.comName, n.sciName);
+        if (g === 'Shorebird' || g === 'Gull / Tern' || g === 'Alcid' || g === 'Tubenose') return false;
+        return true;
+      }
+      return !!COASTAL_STATES[stateName];
+    }
+
     function rarityStaticKind(code, stateName) {
       const name = stateName && STATE_CODES[stateName] ? stateName : activeState;
       const raw = rarityStaticRaw(code, name);
       if (raw !== 4) return raw === 1 ? 'common' : raw === 2 ? 'uncommon' : 'rare';
+      const inland = !isCoastalStateForSpecies(name, code);
       const nbrs = STATE_NEIGHBORS[name] || [];
       for (let i = 0; i < nbrs.length; i++) {
+        if (inland && isCoastalStateForSpecies(nbrs[i], code)) continue;
         if (rarityStaticRaw(code, nbrs[i]) < 4) return 'neighbor-rare';
       }
       return 'vagrant';
@@ -3252,22 +3513,26 @@ function exportLogs() {
       const rec = ensureUsStaticIndex()[code];
       let rank = 4;
       if (rec) {
-        const listedN = rec.l48.length + (rec.akhiRanks || []).length;
-        const established = function (ranks) {
-          return (ranks || []).some(r => r === 1 || r === 2);
-        };
-        if (!rec.l48.length) {
-          rank = established(rec.akhiRanks) ? 3 : 4;
-        } else if (listedN <= 2) {
-          rank = established(rec.l48.concat(rec.akhiRanks || [])) ? 3 : 4;
+        const l48 = rec.l48 || [];
+        const akhi = rec.akhiRanks || [];
+        let nC = 0, nU = 0, nR = 0;
+        for (let i = 0; i < l48.length; i++) {
+          if (l48[i] === 1) nC++;
+          else if (l48[i] === 2) nU++;
+          else if (l48[i] === 3) nR++;
+        }
+        const score = nC + 0.5 * nU + 0.15 * nR;
+        const established = (nC + nU > 0) || akhi.some(r => r === 1 || r === 2);
+        if (!l48.length) {
+          rank = established ? 3 : 4;
+        } else if (score >= 5) {
+          rank = 1;
+        } else if (score >= 2) {
+          rank = 2;
+        } else if (nC + nU > 0 || l48.length >= 3) {
+          rank = 3;
         } else {
-          const folded = rec.l48.map(r => r === 4 ? 3 : r);
-          const quality = medianNum(folded);
-          const q = quality < 1.5 ? 1 : quality < 2.5 ? 2 : 3;
-          const coverage = rec.l48.length / Math.max(1, CONTIG_UNITS.length);
-          if (q === 1 && coverage >= 0.40) rank = 1;
-          else if (q <= 2 && coverage >= 0.15) rank = 2;
-          else rank = 3;
+          rank = established ? 3 : 4;
         }
       }
       usStaticCache[code] = rank;
@@ -3894,6 +4159,9 @@ function exportLogs() {
         const res = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(wikiPage));
         if (res.ok) {
           const data = await res.json();
+          if (data && data.extract && !/disambiguation/i.test(data.title || '')) {
+            wikiExtractCache[code] = data.extract;
+          }
           const url = data && data.thumbnail && data.thumbnail.source;
           if (url && !/disambiguation/i.test(data.title || '')) {
             speciesPhotoCache[code] = url;
@@ -5691,7 +5959,6 @@ function exportLogs() {
       const official = fieldBookOfficialList(stateKey);
       const have = loggedCodesFor(isCountry ? activeState : stateKey, isCountry);
       const groups = {};
-      const order = (typeof ACH_GROUPS !== 'undefined' && ACH_GROUPS.length) ? ACH_GROUPS.slice() : [];
       fieldBookPhotoMap = {};
       official.forEach(sp => {
         const n = taxName(sp.code);
@@ -5714,8 +5981,8 @@ function exportLogs() {
       });
       Object.keys(groups).forEach(g => {
         groups[g].sort((a, b) => a.comName.localeCompare(b.comName));
-        if (order.indexOf(g) < 0) order.push(g);
       });
+      const order = Object.keys(groups).sort((a, b) => a.localeCompare(b));
       let haveAll = 0, totalAll = 0, doneTypes = 0, typeN = 0;
       const cards = [];
       order.forEach(group => {
@@ -5825,11 +6092,10 @@ function exportLogs() {
     }
 
     function openFieldBookPhoto(code) {
-      const row = fieldBookPhotoMap[code];
-      if (!row) return;
-      const src = row.full || row.cover || speciesPhotoCache[code] || '';
-      if (!src) return;
-      openLightboxImage(src, row.comName, row.logged ? 'Cover photo' : 'Reference photo');
+      if (!code) return;
+      closeFieldBook();
+      switchTab('search');
+      openSearchDossier(code);
     }
 
     let reportPickIds = new Set();
@@ -6626,15 +6892,18 @@ function exportLogs() {
       if (typeof setMapMode === 'function') setMapMode('hunt');
       flyHuntTarget(lat, lng, 'hotspots');
     }
-    function sparkMonthsHTML(monthly) {
+    function sparkMonthsHTML(monthly, markMonth) {
       const m = monthly || [];
+      const mark = (markMonth === 'all' || markMonth === 12) ? -1 : (markMonth == null ? CURRENT_MONTH : Number(markMonth));
       let html = '<div class="tgt-spark-wide">';
       for (let i = 0; i < 12; i++) {
         const v = m[i] || 0;
         const h = Math.max(4, Math.min(36, Math.round(v * 36)));
         const pal = themePal();
         const col = v >= 0.45 ? pal.em2 : v >= 0.15 ? pal.warn : pal.muted;
-        html += '<span class="' + (i === CURRENT_MONTH ? 'now' : '') + '"><i style="height:' + h + 'px;background:' + col + '"></i><em>' + MONTH_LABELS[i].charAt(0) + '</em></span>';
+        const ring = searchMix(col.charAt(0) === '#' ? col : '#78716c', '#ffffff', 0.35);
+        const marked = i === mark;
+        html += '<span class="' + (marked ? 'now' : '') + '"' + (marked ? ' style="color:' + col + '"' : '') + '><i style="height:' + h + 'px;background:' + col + (marked ? ';box-shadow:0 0 0 2px ' + ring : '') + '"></i><em>' + MONTH_LABELS[i].charAt(0) + '</em></span>';
       }
       return html + '</div>';
     }
@@ -9350,9 +9619,11 @@ function exportLogs() {
 
     function switchTab(tab) {
       if (photoPick.mode) clearPhotoPick();
-      ['map','lifelist','gallery','radar'].forEach(t => {
-        document.getElementById('view-' + t).classList.toggle('on', t === tab);
-        document.getElementById('nav-btn-' + t).classList.toggle('on', t === tab);
+      ['map','lifelist','gallery','radar','search'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('nav-btn-' + t);
+        if (view) view.classList.toggle('on', t === tab);
+        if (btn) btn.classList.toggle('on', t === tab);
       });
       if (tab === 'map' && mapInstance) {
         setTimeout(() => {
@@ -9364,6 +9635,7 @@ function exportLogs() {
       if (tab === 'lifelist') renderLifeList();
       if (tab === 'gallery') renderGallery();
       if (tab === 'radar') renderRadar();
+      if (tab === 'search') showSearchTab();
     }
 
     function populateFilterDropdowns() {
@@ -11453,6 +11725,9 @@ function exportLogs() {
       persistSightings();
       refreshExportStamp();
       if (typeof syncAchievements === 'function') syncAchievements({ toast: !!(opts && opts.toast) });
+      searchCatalog = null;
+      const searchView = document.getElementById('view-search');
+      if (searchView && searchView.classList.contains('on') && typeof showSearchTab === 'function') showSearchTab();
     }
 
     async function loadData() {
@@ -11466,7 +11741,1058 @@ function exportLogs() {
         stateCache.clear();
         try { resetUsStatic(); } catch (e) { usStaticIndex = null; usStaticCache = {}; }
         try { for (const k in rarSplitCache) delete rarSplitCache[k]; } catch (e) {}
+        searchCatalog = null;
       } catch (e) {}
+    }
+
+    let searchCode = '';
+    let searchMapMode = 'season';
+    let searchFilter = 'all';
+    let searchMonth = CURRENT_MONTH;
+    let searchQuery = '';
+    let searchListScroll = 0;
+    let searchMap = null;
+    let searchBaseLayer = null;
+    let searchPolyLayer = null;
+    let searchPinLayer = null;
+    let searchWeekCache = {};
+    let searchWeekPending = {};
+    let searchZoomState = '';
+    let searchCatalog = null;
+    let searchThumbObs = null;
+    let searchSimilarFor = '';
+    let searchSimilarHistory = [];
+    let searchPlaying = false;
+    let searchPlayTimer = null;
+    let searchSpeed = 1;
+    let searchPaintToken = 0;
+    let searchAllLens = 'freq';
+    let searchReportBack = 7;
+    try {
+      const spd = Number(localStorage.getItem('avian_search_speed') || 1);
+      searchSpeed = spd === 4 || spd === 2 ? spd : 1;
+      if (localStorage.getItem('avian_search_all_lens') === 'rarity') searchAllLens = 'rarity';
+      const rb = Number(localStorage.getItem('avian_search_report_back') || 7);
+      searchReportBack = rb === 3 || rb === 30 ? rb : 7;
+    } catch (e) {}
+    const SEARCH_US_BOX = [[24.4, -124.9], [49.4, -66.9]];
+    try {
+      searchCode = localStorage.getItem('avian_search_code') || '';
+      const mm = localStorage.getItem('avian_search_map');
+      if (mm === 'season' || mm === 'week' || mm === 'logs') searchMapMode = mm;
+      const ff = localStorage.getItem('avian_search_filter');
+      if (ff === 'all' || ff === 'logged' || ff === 'missing') searchFilter = ff;
+      const sm = localStorage.getItem('avian_search_month');
+      if (sm === 'all') searchMonth = 'all';
+      else if (sm != null && sm !== '' && !isNaN(Number(sm))) searchMonth = Math.max(0, Math.min(11, Number(sm)));
+    } catch (e) {}
+
+    function persistSearchState() {
+      try {
+        if (searchCode) localStorage.setItem('avian_search_code', searchCode);
+        else localStorage.removeItem('avian_search_code');
+        localStorage.setItem('avian_search_map', searchMapMode);
+        localStorage.setItem('avian_search_filter', searchFilter);
+        localStorage.setItem('avian_search_month', searchMonth === 'all' ? 'all' : String(searchMonth));
+        localStorage.setItem('avian_search_all_lens', searchAllLens);
+        localStorage.setItem('avian_search_report_back', String(searchReportBack));
+      } catch (e) {}
+    }
+
+    function searchCountableCatalog() {
+      const rows = [];
+      const T = DATA.T || {};
+      Object.keys(T).forEach(code => {
+        if (!isRealSpecies(code)) return;
+        const n = taxName(code);
+        rows.push({
+          code: code,
+          comName: n.comName,
+          sciName: n.sciName,
+          group: birdGroup(n.comName, n.sciName)
+        });
+      });
+      rows.sort((a, b) => {
+        const g = String(a.group || '').localeCompare(String(b.group || ''));
+        if (g) return g;
+        return a.comName.localeCompare(b.comName);
+      });
+      return rows;
+    }
+
+    function searchLoggedSet() {
+      return loggedCodesFor(activeState, statsMode === 'country');
+    }
+
+    function searchShelfChip(code) {
+      const kind = rarityStaticKind(code, activeState);
+      if (kind === 'vagrant') return '<span class="chip">Vgr</span>';
+      const r = rarityStatic(code, activeState);
+      if (r === 3) return '<span class="chip rare">Rare</span>';
+      if (r === 2) return '<span class="chip s">Unc</span>';
+      return '<span class="chip y">Com</span>';
+    }
+
+    function setSearchFilter(mode) {
+      searchFilter = mode === 'logged' || mode === 'missing' ? mode : 'all';
+      persistSearchState();
+      const ids = { all: 'btn-search-all', logged: 'btn-search-logged', missing: 'btn-search-missing' };
+      Object.keys(ids).forEach(k => {
+        const el = document.getElementById(ids[k]);
+        if (el) el.className = searchFilter === k ? 'on' : '';
+      });
+      renderSearchList();
+    }
+
+    function onSearchQuery() {
+      const el = document.getElementById('search-q');
+      searchQuery = el ? el.value : '';
+      renderSearchList();
+    }
+
+    function bindSearchThumbs(root, eager) {
+      const applyTo = (img, url) => {
+        if (!url || !img) return;
+        img.src = url;
+        img.classList.remove('empty');
+      };
+      const fill = img => {
+        const code = img.getAttribute('data-search-thumb');
+        if (!code) return;
+        if (speciesPhotoCache[code]) applyTo(img, speciesPhotoCache[code]);
+        else resolveSpeciesPhoto(code, taxName(code).comName).then(url => applyTo(img, url));
+      };
+      if (eager) {
+        (root || document).querySelectorAll('img[data-search-thumb]').forEach(fill);
+        return;
+      }
+      if (!searchThumbObs) {
+        searchThumbObs = new IntersectionObserver(entries => {
+          entries.forEach(en => {
+            if (!en.isIntersecting) return;
+            const img = en.target;
+            searchThumbObs.unobserve(img);
+            fill(img);
+          });
+        }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
+      }
+      (root || document).querySelectorAll('img[data-search-thumb]').forEach(img => {
+        if (img.getAttribute('data-bound') === '1') return;
+        img.setAttribute('data-bound', '1');
+        searchThumbObs.observe(img);
+      });
+    }
+
+    function renderSearchList() {
+      const box = document.getElementById('search-list');
+      if (!box) return;
+      if (!searchCatalog) searchCatalog = searchCountableCatalog();
+      const have = searchLoggedSet();
+      const q = searchQuery || '';
+      const rows = searchCatalog.filter(r => {
+        if (searchFilter === 'logged' && !have.has(r.code)) return false;
+        if (searchFilter === 'missing' && have.has(r.code)) return false;
+        if (!q) return true;
+        return nameMatches(r.comName, q) || nameMatches(r.sciName, q) || nameMatches(r.code, q);
+      });
+      const num = document.getElementById('search-count-num');
+      const line = document.getElementById('search-scoreline');
+      const count = document.getElementById('search-count');
+      if (num) num.textContent = String(rows.length);
+      if (line) {
+        line.textContent = searchFilter === 'logged' ? 'Logged' : searchFilter === 'missing' ? 'Not yet logged' : 'Countable species';
+      }
+      if (count) {
+        count.textContent = rows.length + ' species' + (q ? ' matching “' + q + '”' : '') +
+          (searchFilter === 'all' ? '' : ' · ' + searchFilter);
+      }
+      const showHeads = !q;
+      let html = '';
+      let lastG = '';
+      const ph = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      rows.forEach(r => {
+        if (showHeads && r.group !== lastG) {
+          lastG = r.group;
+          html += '<div class="search-type-h">' + escHtml(r.group || 'Other') + '</div>';
+        }
+        const logged = have.has(r.code);
+        const photo = speciesPhotoCache[r.code] || '';
+        html += '<button type="button" class="search-row' + (searchCode === r.code ? ' on' : '') + '" onclick="openSearchDossier(\'' + r.code + '\')">' +
+          (photo
+            ? '<img src="' + photo.replace(/"/g, '&quot;') + '" alt="" />'
+            : '<img class="empty" data-search-thumb="' + r.code + '" src="' + ph + '" alt="" />') +
+          '<div><b>' + escHtml(r.comName) + '</b>' +
+          (r.sciName ? '<div class="sci">' + escHtml(r.sciName) + '</div>' : '') +
+          '<div class="search-meta"><i class="search-dot' + (logged ? '' : ' off') + '"></i>' +
+          searchShelfChip(r.code) +
+          (logged ? '<span class="chip y">Logged</span>' : '') +
+          '</div></div></button>';
+      });
+      box.innerHTML = html || '<p class="hint">No countable species match.</p>';
+      bindSearchThumbs(document.getElementById('search-catalog'));
+    }
+
+    function openSearchDossier(code) {
+      if (!code) return;
+      searchCode = code;
+      searchZoomState = '';
+      persistSearchState();
+      const cat = document.getElementById('search-catalog');
+      const dos = document.getElementById('search-dossier');
+      if (cat) {
+        searchListScroll = cat.scrollTop || 0;
+        cat.hidden = true;
+      }
+      if (dos) {
+        dos.hidden = false;
+        dos.scrollTop = 0;
+      }
+      paintSearchDossier();
+    }
+
+    function closeSearchDossier() {
+      const cat = document.getElementById('search-catalog');
+      const dos = document.getElementById('search-dossier');
+      if (dos) dos.hidden = true;
+      if (cat) {
+        cat.hidden = false;
+        renderSearchList();
+        setTimeout(() => { cat.scrollTop = searchListScroll || 0; }, 0);
+      }
+    }
+
+    function searchHeroLetter(name) {
+      const t = String(name || '?').trim();
+      return (t.charAt(0) || '?').toUpperCase();
+    }
+
+    function paintSearchDossier() {
+      const code = searchCode;
+      if (!code) return;
+      const n = taxName(code);
+      const common = document.getElementById('search-common');
+      const sci = document.getElementById('search-sci');
+      if (common) common.textContent = n.comName || code;
+      if (sci) sci.textContent = n.sciName || '';
+      const merlin = document.getElementById('search-merlin');
+      const ebird = document.getElementById('search-ebird');
+      if (merlin) merlin.href = 'https://merlinbirds.org/species/' + encodeURIComponent(code);
+      if (ebird) ebird.href = 'https://ebird.org/species/' + encodeURIComponent(code);
+      const kick = document.getElementById('search-kicker');
+      if (kick) {
+        const group = birdGroup(n.comName, n.sciName);
+        const st = statusForSpecies({ code: code, status: speciesFromState(code).status }, activeState);
+        kick.innerHTML = '<span class="chip">' + escHtml(group) + '</span>' +
+          statusChip(st) +
+          searchShelfChip(code) +
+          '<span class="chip">US ' + (rarityStaticUS(code) === 1 ? 'Common' : rarityStaticUS(code) === 2 ? 'Uncommon' : rarityStaticUS(code) === 4 ? 'Vagrant' : 'Rare') + '</span>';
+      }
+      const hero = document.getElementById('search-hero');
+      const ph = document.getElementById('search-hero-ph');
+      const applyHero = url => {
+        if (url && hero) {
+          hero.src = url;
+          hero.alt = n.comName || '';
+          hero.hidden = false;
+          if (ph) ph.hidden = true;
+        } else {
+          if (hero) hero.hidden = true;
+          if (ph) { ph.hidden = false; ph.textContent = searchHeroLetter(n.comName); }
+        }
+      };
+      if (speciesPhotoCache[code]) applyHero(speciesPhotoCache[code]);
+      else {
+        applyHero('');
+        resolveSpeciesPhoto(code, n.comName).then(applyHero);
+      }
+      paintSearchBio(code, n.comName);
+      paintSearchSpark(code, searchZoomState || '');
+      paintSearchLogged(code);
+      paintSearchPhotos(code);
+      paintSearchSimilar(code);
+      syncSearchMapModeBtns();
+      buildSearchMonthScrub();
+      paintSearchMap();
+    }
+
+    function paintSearchLogged(code) {
+      const el = document.getElementById('search-logged');
+      if (!el) return;
+      const rows = sightings.filter(s => s.species_code === code).slice().sort((a, b) => String(a.date).localeCompare(String(b.date)));
+      if (!rows.length) {
+        el.innerHTML = '<span class="muted">Not logged yet.</span>';
+        return;
+      }
+      const first = rows[0].date;
+      const last = rows[rows.length - 1].date;
+      const states = Array.from(new Set(rows.map(s => s.state).filter(Boolean)));
+      const photos = rows.filter(s => s.photo_url || s.photo_full).length;
+      el.innerHTML = '<b>' + rows.length + '</b> log' + (rows.length === 1 ? '' : 's') +
+        ' · first ' + escHtml(first) + ' · last ' + escHtml(last) +
+        ' · ' + states.length + ' state' + (states.length === 1 ? '' : 's') +
+        (states.length && states.length <= 4 ? ' (' + states.map(escHtml).join(', ') + ')' : '') +
+        ' · ' + photos + ' photo' + (photos === 1 ? '' : 's');
+    }
+
+    function paintSearchPhotos(code) {
+      const grid = document.getElementById('search-photos');
+      const empty = document.getElementById('search-photos-empty');
+      if (!grid) return;
+      const rows = sightings.filter(s => s.species_code === code && (s.photo_url || s.photo_full))
+        .slice()
+        .sort((a, b) => (Number(b.is_cover) - Number(a.is_cover)) || String(b.date).localeCompare(String(a.date)));
+      if (!rows.length) {
+        grid.innerHTML = '';
+        if (empty) empty.hidden = false;
+        return;
+      }
+      if (empty) empty.hidden = true;
+      grid.innerHTML = rows.map(s => {
+        const src = s.photo_url || s.photo_full;
+        return '<div class="card" onclick="openDetailModal(\'' + s.id + '\')">' +
+          (Number(s.is_cover) ? coverMarkHTML() : '') +
+          '<img src="' + String(src).replace(/"/g, '&quot;') + '" alt="" />' +
+          '<div class="meta"><h4>' + escHtml(s.date) + '</h4><div class="muted">' + escHtml(placeLabel(s)) + '</div></div></div>';
+      }).join('');
+    }
+
+    async function paintSearchBio(code, comName) {
+      const el = document.getElementById('search-bio');
+      if (!el) return;
+      const apply = text => {
+        if (!el || searchCode !== code) return;
+        if (text) {
+          el.textContent = text;
+          el.classList.remove('empty');
+        } else {
+          el.textContent = 'No short description available.';
+          el.classList.add('empty');
+        }
+      };
+      if (wikiExtractCache[code]) { apply(wikiExtractCache[code]); return; }
+      el.textContent = 'Loading description…';
+      el.classList.add('empty');
+      const name = comName || taxName(code).comName;
+      const wikiPage = SPECIES_PHOTO_PAGE[code] || name;
+      try {
+        const res = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(wikiPage));
+        if (res.ok) {
+          const data = await res.json();
+          const extract = (data && data.extract && !/disambiguation/i.test(data.title || '')) ? data.extract : '';
+          if (extract) wikiExtractCache[code] = extract;
+          const url = data && data.thumbnail && data.thumbnail.source;
+          if (url && !speciesPhotoCache[code]) speciesPhotoCache[code] = url;
+          apply(extract);
+          return;
+        }
+      } catch (e) {}
+      apply('');
+    }
+
+    function searchSimilarPool(code) {
+      if (!searchCatalog) searchCatalog = searchCountableCatalog();
+      const n = taxName(code);
+      const group = birdGroup(n.comName, n.sciName);
+      return searchCatalog.filter(r => r.code !== code && r.group === group);
+    }
+
+    function shuffleSearchSimilar() {
+      if (searchCode) paintSearchSimilar(searchCode, true);
+    }
+
+    function paintSearchSimilar(code, reshuffle) {
+      const row = document.getElementById('search-similar');
+      if (!row) return;
+      if (searchSimilarFor !== code) {
+        searchSimilarFor = code;
+        searchSimilarHistory = [];
+      }
+      const all = searchSimilarPool(code);
+      const blocked = new Set();
+      searchSimilarHistory.slice(-2).forEach(arr => arr.forEach(c => blocked.add(c)));
+      let pool = all.filter(r => !blocked.has(r.code));
+      if (pool.length < 4 && searchSimilarHistory.length) {
+        searchSimilarHistory = searchSimilarHistory.slice(-1);
+        blocked.clear();
+        searchSimilarHistory.forEach(arr => arr.forEach(c => blocked.add(c)));
+        pool = all.filter(r => !blocked.has(r.code));
+      }
+      if (!pool.length) pool = all.slice();
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+      }
+      const pick = pool.slice(0, 12);
+      if (!pick.length) {
+        row.innerHTML = '<p class="hint">No close relatives in the countable list.</p>';
+        return;
+      }
+      searchSimilarHistory.push(pick.map(r => r.code));
+      if (searchSimilarHistory.length > 2) searchSimilarHistory = searchSimilarHistory.slice(-2);
+      const ph = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      row.innerHTML = pick.map(r => {
+        const photo = speciesPhotoCache[r.code] || '';
+        return '<button type="button" class="search-sim-card" onclick="openSearchDossier(\'' + r.code + '\')">' +
+          (photo
+            ? '<img src="' + photo.replace(/"/g, '&quot;') + '" alt="" />'
+            : '<img class="empty" data-search-thumb="' + r.code + '" src="' + ph + '" alt="" />') +
+          '<b>' + escHtml(r.comName) + '</b></button>';
+      }).join('');
+      bindSearchThumbs(row, true);
+    }
+
+    function setSearchMapMode(mode) {
+      searchMapMode = mode === 'week' || mode === 'logs' ? mode : 'season';
+      if (searchMapMode === 'logs' || searchMapMode === 'week') {
+        if (searchMapMode === 'logs') searchZoomState = '';
+        stopSearchPlay();
+      }
+      persistSearchState();
+      syncSearchMapModeBtns();
+      paintSearchSpark(searchCode, searchZoomState || '');
+      paintSearchMap();
+    }
+
+    function syncSearchMapModeBtns() {
+      const map = { season: 'btn-smap-season', week: 'btn-smap-week', logs: 'btn-smap-logs' };
+      Object.keys(map).forEach(k => {
+        const el = document.getElementById(map[k]);
+        if (el) el.className = searchMapMode === k ? 'on' : '';
+      });
+    }
+
+    function buildSearchMonthScrub() {
+      const wrap = document.getElementById('search-months');
+      if (!wrap) return;
+      const labels = MONTH_LABELS.map((m, i) =>
+        '<button type="button" class="' + (searchMonth === i ? 'on' : '') + '" onclick="onSearchMonthScrub(' + i + ')">' + m.charAt(0) + '</button>'
+      ).join('') +
+        '<button type="button" class="' + (searchMonth === 'all' ? 'on' : '') + '" onclick="onSearchMonthScrub(12)">ALL</button>';
+      wrap.innerHTML = labels;
+      const range = document.getElementById('search-range');
+      if (range) range.value = String(searchMonth === 'all' ? 12 : searchMonth);
+      const lab = document.getElementById('search-scrub-label');
+      if (lab) lab.textContent = searchMonth === 'all' ? 'Year average' : (MONTH_LABELS[searchMonth] || '');
+      syncSearchPlayUi();
+    }
+
+    function onSearchMonthScrub(v) {
+      const n = Number(v);
+      searchMonth = n >= 12 ? 'all' : Math.max(0, Math.min(11, n));
+      persistSearchState();
+      buildSearchMonthScrub();
+      if (searchMapMode === 'season') paintSearchMap({ fit: false });
+      if (searchCode) paintSearchSpark(searchCode, searchZoomState || '');
+      searchSetTip(searchSeasonTip(searchCode, searchZoomState || ''));
+      syncSearchMapFloats();
+    }
+
+    function searchPlayInterval() {
+      if (searchSpeed >= 4) return 280;
+      if (searchSpeed >= 2) return 520;
+      return 900;
+    }
+
+    function syncSearchPlayUi() {
+      const btn = document.getElementById('search-play');
+      const icon = document.getElementById('search-play-icon');
+      if (btn) btn.classList.toggle('on', !!searchPlaying);
+      if (icon) icon.innerHTML = searchPlaying ? '<rect x="2.2" y="2" width="2.6" height="8" rx="0.4"/><rect x="7.2" y="2" width="2.6" height="8" rx="0.4"/>' : '<path d="M3 1.6v8.8L10.2 6z"/>';
+      const map = { 1: 'btn-search-1x', 2: 'btn-search-2x', 4: 'btn-search-4x' };
+      Object.keys(map).forEach(k => {
+        const el = document.getElementById(map[k]);
+        if (el) el.className = Number(k) === searchSpeed ? 'on' : '';
+      });
+    }
+
+    function setSearchSpeed(n) {
+      searchSpeed = n === 4 || n === 2 ? n : 1;
+      try { localStorage.setItem('avian_search_speed', String(searchSpeed)); } catch (e) {}
+      syncSearchPlayUi();
+    }
+
+    function toggleSearchPlay() {
+      searchPlaying = !searchPlaying;
+      clearTimeout(searchPlayTimer);
+      searchPlayTimer = null;
+      if (searchPlaying && searchMonth === 'all') onSearchMonthScrub(CURRENT_MONTH);
+      syncSearchPlayUi();
+      if (searchPlaying) tickSearchPlay();
+    }
+
+    function tickSearchPlay() {
+      if (!searchPlaying) return;
+      const cur = searchMonth === 'all' ? CURRENT_MONTH : Number(searchMonth);
+      onSearchMonthScrub((cur + 1) % 12);
+      searchPlayTimer = setTimeout(tickSearchPlay, searchPlayInterval());
+    }
+
+    function stopSearchPlay() {
+      searchPlaying = false;
+      clearTimeout(searchPlayTimer);
+      searchPlayTimer = null;
+      syncSearchPlayUi();
+    }
+
+    function searchUsMonthly(code) {
+      const rows = officialRows('US');
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i].code === code) return rows[i].monthly || [];
+      }
+      return [];
+    }
+
+    function searchMonthlyFor(code, stateName) {
+      if (!stateName || stateName === 'US' || stateName === 'United States') return searchUsMonthly(code);
+      return speciesFromState(code, stateName).monthly || [];
+    }
+
+    function searchFreqValue(code, stateName) {
+      const m = searchMonthlyFor(code, stateName);
+      if (!m.length) return 0;
+      if (searchMonth === 'all') {
+        let s = 0;
+        for (let i = 0; i < m.length; i++) s += m[i] || 0;
+        return s / m.length;
+      }
+      return m[searchMonth] || 0;
+    }
+
+    function searchNoneFill() {
+      return uiTheme === 'light' ? '#d6d3d1' : '#a8a29e';
+    }
+
+    function searchListedInState(code, stateName) {
+      const raw = DATA.S[STATE_CODES[stateName] || ''];
+      if (!raw || !raw.p) return false;
+      const prefix = code + ':';
+      for (let i = 0; i < raw.p.length; i++) {
+        if (raw.p[i].slice(0, prefix.length) === prefix) return true;
+      }
+      return false;
+    }
+
+    function searchIsVagrantListed(code, stateName) {
+      return searchListedInState(code, stateName) && rarityStatic(code, stateName) === 4;
+    }
+
+    function searchRarityFill(code, stateName) {
+      if (!searchListedInState(code, stateName)) return searchNoneFill();
+      const r = rarityStatic(code, stateName);
+      if (r === 1) return '#10b981';
+      if (r === 2) return '#f97316';
+      if (r === 3) return '#7c3aed';
+      return uiTheme === 'light' ? '#d4cce0' : '#6b6178';
+    }
+
+    function searchRarityLabel(code, stateName) {
+      if (!stateName || !STATE_CODES[stateName]) return '';
+      if (!searchListedInState(code, stateName)) return 'Absent';
+      const r = rarityStatic(code, stateName);
+      return r === 1 ? 'Common' : r === 2 ? 'Uncommon' : r === 3 ? 'Rare' : 'Vagrant';
+    }
+
+    function searchRawMonthValue(code, stateName, monthIdx) {
+      const raw = DATA.S[STATE_CODES[stateName] || ''];
+      if (!raw || !raw.p) return 0;
+      const prefix = code + ':';
+      for (let i = 0; i < raw.p.length; i++) {
+        if (raw.p[i].slice(0, prefix.length) !== prefix) continue;
+        const pack = raw.p[i].split(':')[2] || '';
+        const ch = pack.charAt(monthIdx);
+        if (!ch) return 0;
+        const idx = ALPH.indexOf(ch);
+        return idx < 0 ? 0 : idx / 35;
+      }
+      return 0;
+    }
+
+    function searchStateStyle(code, name, opts) {
+      const selected = !!searchZoomState && searchZoomState === name;
+      const vagrant = searchIsVagrantListed(code, name);
+      const rarityAll = searchMapMode === 'season' && searchMonth === 'all' && searchAllLens === 'rarity';
+      const binary = opts && opts.binary;
+      const monthly = searchMonthlyFor(code, name);
+      const v = (searchMonth === 'all' && !binary)
+        ? searchFreqValue(code, name)
+        : (monthly[binary ? CURRENT_MONTH : searchMonth] || 0);
+      let fill;
+      let opacity;
+      let className = '';
+      if (rarityAll) {
+        fill = vagrant ? 'url(#search-vag-pat)' : searchRarityFill(code, name);
+        opacity = vagrant ? 0.9 : 0.62;
+        if (vagrant) className = 'search-vagrant';
+      } else if (binary) {
+        const rawV = searchRawMonthValue(code, name, CURRENT_MONTH);
+        fill = rawV > 0 ? '#6ee7b7' : searchNoneFill();
+        opacity = rawV > 0 ? 0.38 : 0.34;
+      } else {
+        fill = v > 0 ? searchFreqColor(v) : searchNoneFill();
+        opacity = v > 0 ? 0.62 : 0.34;
+      }
+      return {
+        color: selected ? '#fbbf24' : 'rgba(28,25,23,.28)',
+        weight: selected ? 2.6 : 0.7,
+        fillColor: fill,
+        fillOpacity: opacity,
+        className: className
+      };
+    }
+
+    function ensureSearchHatch() {
+      if (!searchMap) return;
+      const svg = searchMap.getPanes() && searchMap.getPanes().overlayPane && searchMap.getPanes().overlayPane.querySelector('svg');
+      if (!svg) return;
+      const old = svg.querySelector('#search-vag-pat');
+      if (old && old.getAttribute('data-ok') === 'p2') return;
+      if (old) {
+        const parent = old.parentNode;
+        if (parent && parent.tagName.toLowerCase() === 'defs' && parent.childNodes.length === 1) parent.remove();
+        else old.remove();
+      }
+      const ns = 'http://www.w3.org/2000/svg';
+      const defs = document.createElementNS(ns, 'defs');
+      const pat = document.createElementNS(ns, 'pattern');
+      pat.setAttribute('id', 'search-vag-pat');
+      pat.setAttribute('data-ok', 'p2');
+      pat.setAttribute('patternUnits', 'userSpaceOnUse');
+      pat.setAttribute('width', '8');
+      pat.setAttribute('height', '8');
+      const bg = document.createElementNS(ns, 'rect');
+      bg.setAttribute('width', '8');
+      bg.setAttribute('height', '8');
+      bg.setAttribute('fill', uiTheme === 'light' ? '#e7e0f0' : '#3f3a46');
+      bg.setAttribute('fill-opacity', '0.55');
+      const line = document.createElementNS(ns, 'path');
+      line.setAttribute('d', 'M-1,1 l2,-2 M0,8 l8,-8 M7,9 l2,-2');
+      line.setAttribute('stroke', uiTheme === 'light' ? '#c4b5fd' : '#a78bfa');
+      line.setAttribute('stroke-width', '1');
+      line.setAttribute('stroke-opacity', '0.45');
+      pat.appendChild(bg);
+      pat.appendChild(line);
+      defs.appendChild(pat);
+      svg.insertBefore(defs, svg.firstChild);
+    }
+
+    function setSearchAllLens(mode) {
+      searchAllLens = mode === 'rarity' ? 'rarity' : 'freq';
+      persistSearchState();
+      syncSearchMapFloats();
+      if (searchMapMode === 'season') paintSearchMap({ fit: false });
+    }
+
+    function setSearchReportBack(n) {
+      searchReportBack = n === 3 || n === 30 ? n : 7;
+      persistSearchState();
+      syncSearchMapFloats();
+      if (searchZoomState) {
+        if (searchPinLayer) searchPinLayer.clearLayers();
+        if (searchCode) searchShowStatePins(searchCode, searchZoomState);
+      }
+    }
+
+    function syncSearchMapFloats() {
+      const all = document.getElementById('search-all-mode');
+      const rep = document.getElementById('search-report-back');
+      const showAll = searchMapMode === 'season' && searchMonth === 'all';
+      const showRep = searchMapMode === 'week';
+      if (all) all.classList.toggle('on', showAll);
+      if (rep) rep.classList.toggle('on', showRep);
+      const freq = document.getElementById('btn-sall-freq');
+      const rar = document.getElementById('btn-sall-rar');
+      if (freq) freq.className = searchAllLens === 'freq' ? 'on' : '';
+      if (rar) rar.className = searchAllLens === 'rarity' ? 'on' : '';
+      const map = { 3: 'btn-srep-3', 7: 'btn-srep-7', 30: 'btn-srep-30' };
+      Object.keys(map).forEach(k => {
+        const el = document.getElementById(map[k]);
+        if (el) el.className = Number(k) === searchReportBack ? 'on' : '';
+      });
+    }
+
+    function searchMix(a, b, t) {
+      t = Math.max(0, Math.min(1, t));
+      const pa = parseInt(a.slice(1), 16);
+      const pb = parseInt(b.slice(1), 16);
+      const ra = (pa >> 16) & 255, ga = (pa >> 8) & 255, ba = pa & 255;
+      const rb = (pb >> 16) & 255, gb = (pb >> 8) & 255, bb = pb & 255;
+      const r = Math.round(ra + (rb - ra) * t);
+      const g = Math.round(ga + (gb - ga) * t);
+      const bl = Math.round(ba + (bb - ba) * t);
+      return '#' + [r, g, bl].map(x => x.toString(16).padStart(2, '0')).join('');
+    }
+
+    function searchFreqColor(v) {
+      if (!(v > 0)) return uiTheme === 'light' ? '#d6d3d1' : '#44403c';
+      const stops = [
+        [0.02, '#a8a29e'],
+        [0.08, '#fdba74'],
+        [0.15, '#f97316'],
+        [0.24, '#fbbf24'],
+        [0.34, '#84cc16'],
+        [0.45, '#10b981'],
+        [0.62, '#059669'],
+        [1.00, '#047857']
+      ];
+      if (v <= stops[0][0]) return searchMix(uiTheme === 'light' ? '#d6d3d1' : '#57534e', stops[0][1], v / stops[0][0]);
+      for (let i = 1; i < stops.length; i++) {
+        if (v <= stops[i][0]) {
+          const span = stops[i][0] - stops[i - 1][0];
+          return searchMix(stops[i - 1][1], stops[i][1], span ? (v - stops[i - 1][0]) / span : 1);
+        }
+      }
+      return stops[stops.length - 1][1];
+    }
+
+    function searchWeekColor(n, max) {
+      if (!n) return uiTheme === 'light' ? '#d6d3d1' : '#44403c';
+      const t = max > 0 ? n / max : 0;
+      return searchFreqColor(0.08 + t * 0.7);
+    }
+
+    function searchApplyTiles() {
+      if (!searchMap || typeof L === 'undefined') return;
+      const opts = darkTiles
+        ? { maxZoom: 16, attribution: 'Tiles &copy; Esri' }
+        : { maxZoom: 19, attribution: '&copy; OSM' };
+      if (searchBaseLayer) searchMap.removeLayer(searchBaseLayer);
+      searchBaseLayer = L.tileLayer(tileUrl(), opts).addTo(searchMap);
+      searchBaseLayer.bringToBack();
+      searchMap.getContainer().classList.toggle('be-dark', !!darkTiles);
+      searchMap.getContainer().style.background = darkTiles ? '#2a2a2a' : '#d7d2c8';
+    }
+
+    function ensureSearchMap() {
+      const el = document.getElementById('search-map');
+      if (!el || typeof L === 'undefined') return null;
+      if (searchMap) {
+        setTimeout(() => { try { searchMap.invalidateSize({ animate: false }); } catch (e) {} }, 80);
+        return searchMap;
+      }
+      searchMap = L.map(el, {
+        zoomControl: false,
+        attributionControl: false,
+        fadeAnimation: false,
+        markerZoomAnimation: false
+      }).fitBounds(SEARCH_US_BOX);
+      searchApplyTiles();
+      searchPolyLayer = L.layerGroup().addTo(searchMap);
+      searchPinLayer = L.layerGroup().addTo(searchMap);
+      return searchMap;
+    }
+
+    function searchFitUS() {
+      if (!searchMap) return;
+      try { searchMap.fitBounds(SEARCH_US_BOX, { padding: [8, 8], animate: false }); } catch (e) {}
+    }
+
+    function searchSetTip(html) {
+      const tip = document.getElementById('search-map-tip');
+      if (!tip) return;
+      if (!html) { tip.classList.remove('on'); tip.textContent = ''; return; }
+      tip.innerHTML = html;
+      tip.classList.add('on');
+    }
+
+    function searchSetStatus(msg) {
+      const el = document.getElementById('search-map-status');
+      if (el) el.textContent = msg || '';
+    }
+
+    function paintSearchLegend() {
+      const el = document.getElementById('search-legend');
+      if (!el) return;
+      if (searchMapMode === 'season') {
+        el.innerHTML =
+          '<span><i style="background:#78716c"></i>None</span>' +
+          '<span><i style="background:#f97316"></i>Few</span>' +
+          '<span><i style="background:#fbbf24"></i>Seasonal</span>' +
+          '<span><i style="background:#10b981"></i>Common</span>' +
+          '<span><i style="background:#047857"></i>Peak</span>' +
+          '<span class="note">Fill is that state’s sampled-day share' +
+          (searchMonth === 'all' && searchAllLens === 'rarity'
+            ? '. Rarity shelf: green Common, orange Uncommon, purple Rare, hatched Vagrant.'
+            : ' for the selected month (same units as the spark). Gray = none that month.') +
+          '</span>';
+      } else if (searchMapMode === 'week') {
+        el.innerHTML =
+          '<span><i style="background:#a8a29e"></i>None this month</span>' +
+          '<span><i style="background:#10b981"></i>Present this month</span>' +
+          '<span class="note">Green = any historic sampled-day presence in this calendar month. Gray = none. Pins use that state’s rarity.</span>';
+      } else {
+        el.innerHTML = '<span class="note">Your logs for this species. Photo chits where you saved a picture.</span>';
+      }
+    }
+
+    async function paintSearchMap(opts) {
+      const code = searchCode;
+      if (!code) return;
+      const scrub = document.getElementById('search-scrub');
+      if (scrub) scrub.classList.toggle('on', searchMapMode === 'season');
+      const back = document.getElementById('search-map-back');
+      if (back) back.classList.toggle('on', searchMapMode === 'week' && !!searchZoomState);
+      syncSearchMapFloats();
+      paintSearchLegend();
+      ensureSearchMap();
+      if (!searchMap) return;
+      if (searchPolyLayer) searchPolyLayer.clearLayers();
+      if (searchPinLayer) searchPinLayer.clearLayers();
+      syncSearchPlayUi();
+      if (searchMapMode === 'logs') {
+        searchSetTip('');
+        paintSearchLogPins(code);
+        return;
+      }
+      if (searchMapMode === 'week') {
+        await paintSearchWeek(code, opts);
+        return;
+      }
+      await paintSearchSeason(code, opts);
+    }
+
+    async function paintSearchSeason(code, opts) {
+      const token = ++searchPaintToken;
+      if (searchPolyLayer) searchPolyLayer.clearLayers();
+      searchSetStatus('');
+      await loadStateShapes();
+      if (token !== searchPaintToken) return;
+      if (!stateShapes.length) {
+        searchSetStatus('Could not load state outlines.');
+        return;
+      }
+      const layer = L.geoJSON(stateShapes, {
+        style: function (feat) {
+          const name = (feat.properties && (feat.properties.name || feat.properties.NAME)) || '';
+          return searchStateStyle(code, name);
+        },
+        onEachFeature: function (feat, lyr) {
+          const name = (feat.properties && (feat.properties.name || feat.properties.NAME)) || '';
+          lyr.on('click', function () { searchOnSeasonState(code, name); });
+        }
+      });
+      if (searchPolyLayer) {
+        searchPolyLayer.clearLayers();
+        searchPolyLayer.addLayer(layer);
+      }
+      layer.eachLayer(function (lyr) {
+        const feat = lyr.feature;
+        const name = feat && feat.properties && (feat.properties.name || feat.properties.NAME);
+        if (name && name === searchZoomState) lyr.bringToFront();
+      });
+      ensureSearchHatch();
+      if (!opts || opts.fit !== false) searchFitUS();
+      searchSetTip(searchSeasonTip(code, searchZoomState || ''));
+    }
+
+    function searchSeasonTip(code, name) {
+      const label = (name && STATE_CODES[name]) ? name : 'United States';
+      const when = searchMonth === 'all' ? 'year avg' : (MONTH_LABELS[searchMonth] || '');
+      if (searchMapMode === 'season' && searchMonth === 'all' && searchAllLens === 'rarity' && name && STATE_CODES[name]) {
+        return '<b>' + escHtml(label) + '</b> · ' + when + ' · ' + searchRarityLabel(code, name);
+      }
+      const v = searchFreqValue(code, (name && STATE_CODES[name]) ? name : 'US');
+      const pct = Math.round(v * 100);
+      return '<b>' + escHtml(label) + '</b> · ' + when + ' · ' + pct + '% sampled-day share';
+    }
+
+    function paintSearchSpark(code, stateName) {
+      const named = stateName && STATE_CODES[stateName] ? stateName : '';
+      const label = named || 'United States';
+      const monthly = named ? searchMonthlyFor(code, named) : searchUsMonthly(code);
+      const sparkWrap = document.getElementById('search-spark-wrap');
+      if (!sparkWrap) return;
+      sparkWrap.innerHTML = sparkMonthsHTML(monthly, searchMonth) +
+        '<div class="muted" style="margin-top:4px">' + escHtml(label) + (named ? ' season shape' : ' · US mean of states') + ' · sampled-day share</div>';
+    }
+
+    function searchOnSeasonState(code, name) {
+      if (searchZoomState === name) searchZoomState = '';
+      else searchZoomState = name;
+      persistSearchState();
+      searchSetTip(searchSeasonTip(code, searchZoomState || ''));
+      paintSearchSpark(code, searchZoomState || '');
+      paintSearchSeason(code, { fit: false });
+    }
+
+    async function paintSearchWeek(code, opts) {
+      const token = ++searchPaintToken;
+      if (searchPolyLayer) searchPolyLayer.clearLayers();
+      await loadStateShapes();
+      if (token !== searchPaintToken) return;
+      paintSearchWeekPolys(code);
+      if (searchZoomState) {
+        searchSetTip('<b>' + escHtml(searchZoomState) + '</b>');
+        if (getEbirdKey()) await searchShowStatePins(code, searchZoomState);
+        else searchSetStatus('Add an eBird key in Settings to load report pins.');
+      } else {
+        if (!opts || opts.fit !== false) searchFitUS();
+        searchSetTip('');
+        if (!getEbirdKey()) searchSetStatus('Add an eBird key in Settings to load report pins.');
+        else searchSetStatus('Tap a state for report pins.');
+      }
+    }
+
+    function paintSearchWeekPolys(code) {
+      if (searchPolyLayer) searchPolyLayer.clearLayers();
+      if (!stateShapes.length) return;
+      const layer = L.geoJSON(stateShapes, {
+        style: function (feat) {
+          const name = (feat.properties && (feat.properties.name || feat.properties.NAME)) || '';
+          return searchStateStyle(code, name, { binary: true });
+        },
+        onEachFeature: function (feat, lyr) {
+          const name = (feat.properties && (feat.properties.name || feat.properties.NAME)) || '';
+          lyr.on('click', function () { searchOnWeekState(code, name); });
+        }
+      });
+      if (searchPolyLayer) searchPolyLayer.addLayer(layer);
+      layer.eachLayer(function (lyr) {
+        const feat = lyr.feature;
+        const name = feat && feat.properties && (feat.properties.name || feat.properties.NAME);
+        if (name && name === searchZoomState) lyr.bringToFront();
+      });
+      ensureSearchHatch();
+    }
+
+    function searchWeekKey(code) {
+      return code + ':' + searchReportBack;
+    }
+
+    async function searchEnsureWeek(code) {
+      const key = searchWeekKey(code);
+      if (searchWeekCache[key]) return searchWeekCache[key];
+      if (searchWeekPending[key]) return searchWeekPending[key];
+      const run = (async () => {
+        try {
+          const obs = await ebirdGet('/data/obs/US/recent/' + code, { back: String(searchReportBack), maxResults: '200' }) || [];
+          const byState = {};
+          obs.forEach(o => {
+            const name = obsStateName(o);
+            if (!name || !STATE_CODES[name]) return;
+            (byState[name] = byState[name] || []).push(o);
+          });
+          const pack = { obs: obs, byState: byState };
+          searchWeekCache[key] = pack;
+          return pack;
+        } catch (e) {
+          return null;
+        } finally {
+          delete searchWeekPending[key];
+        }
+      })();
+      searchWeekPending[key] = run;
+      return run;
+    }
+
+    async function searchOnWeekState(code, name) {
+      if (searchZoomState === name) {
+        searchResetWeekZoom();
+        return;
+      }
+      searchZoomState = name;
+      persistSearchState();
+      const back = document.getElementById('search-map-back');
+      if (back) back.classList.add('on');
+      paintSearchSpark(code, name);
+      paintSearchWeekPolys(code);
+      searchSetTip('<b>' + escHtml(name) + '</b>');
+      if (getEbirdKey()) await searchShowStatePins(code, name);
+      else searchSetStatus('Add an eBird key in Settings to load report pins.');
+    }
+
+    async function searchShowStatePins(code, name) {
+      if (searchPinLayer) searchPinLayer.clearLayers();
+      const b = stateLatLngBounds(name);
+      if (b && searchMap) {
+        try { searchMap.fitBounds(b, { padding: [16, 16], animate: false }); } catch (e) {}
+      }
+      if (!getEbirdKey()) return;
+      searchSetStatus('Loading ' + name + ' reports…');
+      let obs = [];
+      try {
+        obs = await ebirdGet('/data/obs/' + STATE_CODES[name] + '/recent/' + code, { back: String(searchReportBack), maxResults: '200' }) || [];
+      } catch (e) {
+        searchSetStatus('eBird error loading ' + name + '.');
+        return;
+      }
+      const pinColor = searchRarityFill(code, name);
+      obs.forEach(o => {
+        const lat = Number(o.lat), lng = Number(o.lng);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+        const mk = L.circleMarker([lat, lng], {
+          radius: 6, fillColor: pinColor, color: '#fff', weight: 1.5, fillOpacity: 0.92
+        });
+        mk.bindPopup(
+          '<b>' + escHtml(o.locName || name) + '</b><div class="muted">' +
+          escHtml(o.obsDt || '') + (o.howMany ? ' · ' + o.howMany : '') + '</div>'
+        );
+        if (searchPinLayer) searchPinLayer.addLayer(mk);
+      });
+      searchSetTip('<b>' + escHtml(name) + '</b> · ' + obs.length + ' report' + (obs.length === 1 ? '' : 's') + ' in ' + searchReportBack + ' days');
+      searchSetStatus(obs.length ? '' : 'No reports in ' + name + ' in the last ' + searchReportBack + ' days.');
+    }
+
+    function searchResetWeekZoom() {
+      searchZoomState = '';
+      const back = document.getElementById('search-map-back');
+      if (back) back.classList.remove('on');
+      if (searchPinLayer) searchPinLayer.clearLayers();
+      if (searchCode) paintSearchSpark(searchCode, '');
+      searchFitUS();
+      paintSearchMap();
+    }
+
+    function paintSearchLogPins(code) {
+      searchSetStatus('');
+      const rows = sightings.filter(s => s.species_code === code);
+      let n = 0;
+      const bounds = [];
+      rows.forEach(s => {
+        const lat = Number(s.lat), lng = Number(s.lng);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+        n++;
+        bounds.push([lat, lng]);
+        const src = s.photo_url || s.photo_full || '';
+        let mk;
+        if (src) {
+          mk = L.marker([lat, lng], {
+            icon: L.divIcon({
+              className: 'bird-chit',
+              html: '<img src="' + String(src).replace(/"/g, '&quot;') + '" alt="" style="border:3px solid ' + themePal().em2 + '" />',
+              iconSize: [40, 40],
+              iconAnchor: [20, 20]
+            })
+          });
+        } else {
+          mk = L.circleMarker([lat, lng], {
+            radius: 7, fillColor: themePal().em2, color: '#fff', weight: 2, fillOpacity: 0.95
+          });
+        }
+        mk.on('click', function () { openDetailModal(s.id); });
+        if (searchPinLayer) searchPinLayer.addLayer(mk);
+      });
+      if (n && searchMap) {
+        try { searchMap.fitBounds(bounds, { padding: [24, 24], maxZoom: 8, animate: false }); } catch (e) { searchFitUS(); }
+      } else {
+        searchFitUS();
+        searchSetStatus('No logs for this species yet.');
+      }
+      searchSetTip(n ? (n + ' of your logs') : '');
+    }
+
+    function showSearchTab() {
+      setSearchFilter(searchFilter);
+      const q = document.getElementById('search-q');
+      if (q && q.value !== searchQuery) q.value = searchQuery || '';
+      const dos = document.getElementById('search-dossier');
+      if (searchCode && dos) {
+        openSearchDossier(searchCode);
+      } else {
+        const cat = document.getElementById('search-catalog');
+        if (cat) cat.hidden = false;
+        if (dos) dos.hidden = true;
+        renderSearchList();
+      }
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
