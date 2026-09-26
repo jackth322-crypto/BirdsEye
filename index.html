@@ -1280,6 +1280,13 @@
     .tabs button { flex: 1; background: none; border: 0; color: var(--muted); padding: 8px 4px; border-radius: 8px; font-size: 11px; font-weight: 600; }
     .tabs button.on { background: var(--em); color: #fff; }
     .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .export-parts { margin-top: 10px; display: grid; gap: 6px; }
+    .export-part {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px;
+    }
+    .export-part b { display: block; font-size: 12px; }
+    .export-part span { font-size: 11px; color: var(--muted); }
     .loc-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
     .loc-actions button { font-size: 11px; padding: 8px 6px; line-height: 1.2; }
     .species-input-wrap { position: relative; }
@@ -1601,7 +1608,7 @@
           <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.2a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1z"/>
         </svg>
       </button>
-      <input id="import-logs" type="file" accept="application/json" style="display:none" onchange="importLogs(event)" />
+      <input id="import-logs" type="file" accept="application/json" multiple style="display:none" onchange="importLogs(event)" />
       <div class="log-wrap">
         <button class="btn-em btn-log" type="button" onclick="event.stopPropagation();openLogChoice()">+ Log</button>
         <div id="log-choice" class="log-pop">
@@ -2367,7 +2374,9 @@
           <button class="ghost" type="button" onclick="exportLogs()">Export logs</button>
           <button class="ghost" type="button" onclick="document.getElementById('import-logs').click()">Import logs</button>
         </div>
+        <button class="ghost" type="button" style="width:100%;margin-top:8px" onclick="exportLogsSlim()">Export list only (no full photos)</button>
         <p class="hint" id="last-export-stamp" style="margin-top:8px">No export yet</p>
+        <div id="export-parts" class="export-parts" hidden></div>
       </div>
       <div class="sheet-f">
         <button class="btn-em" style="width:100%" onclick="saveEbirdKey()">Save key</button>
@@ -2721,79 +2730,287 @@
       return n;
     }
 
-function exportLogs() {
-  const when = new Date().toISOString();
-  const exportedIds = JSON.stringify(sightings.map(s => s.id));
-  
-  // 1. Try to save the markers, clearing the temporary heatmap cache if space is needed
-  try {
-    localStorage.setItem('avian_last_export', when);
-    localStorage.setItem('avian_exported_ids', exportedIds);
-  } catch (err) {
-    localStorage.removeItem('avian_heat_cache_v3');
-    try {
-      localStorage.setItem('avian_last_export', when);
-      localStorage.setItem('avian_exported_ids', exportedIds);
-    } catch (err2) {
-      console.warn("Storage deadlocked. Proceeding with export anyway.");
+    const EXPORT_CHUNK_BYTES = 50 * 1024 * 1024;
+    const EXPORT_CHUNK_HERMIT = 12 * 1024 * 1024;
+    let exportPartFiles = [];
+
+    function exportIsConstrained() {
+      const ua = navigator.userAgent || '';
+      return /Hermit|Android|iPhone|iPad/i.test(ua) || window.matchMedia('(display-mode: standalone)').matches;
     }
-  }
-  
-  refreshExportStamp();
 
-  // 2. Force the UI to show "0 logs" for this session if storage is completely blocked
-  const el = document.getElementById('last-export-stamp');
-  if (el && !el.textContent.includes('0 logs')) {
-    el.textContent = 'Last export: ' + new Date(when).toLocaleString() + ' · 0 logs since last export';
-  }
+    function exportChunkLimit() {
+      return exportIsConstrained() ? EXPORT_CHUNK_HERMIT : EXPORT_CHUNK_BYTES;
+    }
 
-  // 3. Package the data and force the download
-  const fileData = JSON.stringify({ version: 2, saved: when, sightings, places: savedPlaces || [] }, null, 2);
-  const blob = new Blob([fileData], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  
-  const a = document.createElement('a');
-  a.style.display = 'none';
-  a.href = url;
-  a.download = 'birdseye-logs.json';
-  
-  document.body.appendChild(a);
-  a.click();
-  
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 3000);
-}
+    function exportPayloadBytes(str) {
+      try { return new Blob([str]).size; } catch (e) { return str.length; }
+    }
+
+    function downloadExportBlob(blob, filename, delay) {
+      setTimeout(function () {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 4000);
+      }, delay || 0);
+    }
+
+    function chunkSightingsForExport(rows, places, when) {
+      const limit = exportChunkLimit();
+      const headerPad = 2048 + exportPayloadBytes(JSON.stringify(places || []));
+      const chunks = [];
+      let cur = [];
+      let used = headerPad;
+      for (let i = 0; i < rows.length; i++) {
+        const piece = JSON.stringify(rows[i]);
+        const sz = exportPayloadBytes(piece) + 2;
+        if (cur.length && used + sz > limit) {
+          chunks.push(cur);
+          cur = [];
+          used = headerPad;
+        }
+        cur.push(rows[i]);
+        used += sz;
+      }
+      if (cur.length) chunks.push(cur);
+      if (!chunks.length) chunks.push([]);
+      const stamp = String(when).slice(0, 10);
+      return chunks.map(function (partRows, idx) {
+        const text = JSON.stringify({
+          version: 3,
+          saved: when,
+          part: idx + 1,
+          parts: chunks.length,
+          sightings: partRows,
+          places: idx === 0 ? (places || []) : []
+        });
+        const blob = new Blob([text], { type: 'application/json' });
+        const name = chunks.length === 1
+          ? 'birdseye-logs.json'
+          : 'birdseye-logs-' + stamp + '-' + (idx + 1) + '-of-' + chunks.length + '.json';
+        return {
+          name: name,
+          blob: blob,
+          bytes: blob.size,
+          count: partRows.length,
+          file: new File([blob], name, { type: 'application/json' })
+        };
+      });
+    }
+
+    function markExportDone() {
+      const when = new Date().toISOString();
+      const exportedIds = JSON.stringify(sightings.map(s => s.id));
+      try {
+        localStorage.setItem('avian_last_export', when);
+        localStorage.setItem('avian_exported_ids', exportedIds);
+      } catch (err) {
+        localStorage.removeItem('avian_heat_cache_v3');
+        try {
+          localStorage.setItem('avian_last_export', when);
+          localStorage.setItem('avian_exported_ids', exportedIds);
+        } catch (err2) {}
+      }
+      refreshExportStamp();
+      const el = document.getElementById('last-export-stamp');
+      if (el) el.textContent = 'Last export: ' + new Date(when).toLocaleString() + ' · 0 logs since last export';
+    }
+
+    function formatExportMb(bytes) {
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function renderExportParts() {
+      const box = document.getElementById('export-parts');
+      if (!box) return;
+      if (!exportPartFiles.length) { box.hidden = true; box.innerHTML = ''; return; }
+      box.hidden = false;
+      const shareOk = !!(navigator.share && navigator.canShare);
+      box.innerHTML = '<p class="hint" style="margin:0 0 4px">Hermit blocks silent downloads. Share each part to Drive, Files, or email, then import those files later. They merge.</p>' +
+        exportPartFiles.map(function (part, idx) {
+          return '<div class="export-part"><div><b>' + part.name + '</b><span>' +
+            part.count + ' log' + (part.count === 1 ? '' : 's') + ' · ' + formatExportMb(part.bytes) +
+            '</span></div><button type="button" class="ghost" onclick="shareExportPart(' + idx + ')">' +
+            (shareOk ? 'Share' : 'Save') + '</button></div>';
+        }).join('');
+    }
+
+    async function shareExportPart(idx) {
+      const part = exportPartFiles[idx];
+      if (!part) return;
+      const file = part.file || new File([part.blob], part.name, { type: 'application/json' });
+      try {
+        if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+          await navigator.share({
+            files: [file],
+            title: part.name,
+            text: 'BirdsEye backup ' + part.name
+          });
+          return;
+        }
+      } catch (e) {
+        if (e && e.name === 'AbortError') return;
+      }
+      try {
+        downloadExportBlob(part.blob, part.name, 0);
+        return;
+      } catch (e2) {}
+      const url = URL.createObjectURL(part.blob);
+      const opened = window.open(url, '_blank');
+      if (!opened) alert('Could not share or download. Long-press this export button and try Open in browser, or use Export list only.');
+      setTimeout(function () { URL.revokeObjectURL(url); }, 20000);
+    }
+
+    function exportLogs() {
+      try {
+        exportPartFiles = chunkSightingsForExport(sightings, savedPlaces || [], new Date().toISOString());
+      } catch (e) {
+        alert('Could not build the full photo backup in memory. Use Export list only, or export from Chrome/Firefox.');
+        return;
+      }
+      markExportDone();
+      renderExportParts();
+      if (!exportPartFiles.length) return;
+      if (exportIsConstrained()) {
+        if (exportPartFiles.length === 1) shareExportPart(0);
+        return;
+      }
+      exportPartFiles.forEach(function (part, idx) {
+        downloadExportBlob(part.blob, part.name, idx * 500);
+      });
+    }
+
+    function exportLogsSlim() {
+      const slim = sightings.map(function (s) {
+        const row = Object.assign({}, s);
+        if (row.photo_full && row.photo_url && row.photo_full !== row.photo_url) row.photo_full = row.photo_url;
+        return row;
+      });
+      try {
+        exportPartFiles = chunkSightingsForExport(slim, savedPlaces || [], new Date().toISOString());
+      } catch (e) {
+        alert('Could not build the list backup.');
+        return;
+      }
+      exportPartFiles.forEach(function (part) {
+        part.name = part.name.replace('birdseye-logs', 'birdseye-logs-lite');
+        part.file = new File([part.blob], part.name, { type: 'application/json' });
+      });
+      markExportDone();
+      renderExportParts();
+      if (exportIsConstrained() && exportPartFiles.length === 1) shareExportPart(0);
+      else if (!exportIsConstrained()) {
+        exportPartFiles.forEach(function (part, idx) {
+          downloadExportBlob(part.blob, part.name, idx * 400);
+        });
+      }
+    }
+
+    function mergeImportedPlaces(list) {
+      if (!Array.isArray(list) || !list.length) return;
+      const have = new Set((savedPlaces || []).map(p => p && p.id));
+      list.forEach(function (p) {
+        if (!p || !p.id || p.lat == null || p.lng == null) return;
+        if (have.has(p.id)) return;
+        savedPlaces.push(p);
+        have.add(p.id);
+      });
+      try { localStorage.setItem('avian_saved_places', JSON.stringify(savedPlaces.slice(0, 20))); } catch (e) {}
+      if (typeof loadSavedPlaces === 'function') loadSavedPlaces();
+    }
+
+    function mergeImportedSightings(rows) {
+      const byId = {};
+      for (let i = 0; i < sightings.length; i++) byId[sightings[i].id] = sightings[i];
+      let added = 0;
+      let filled = 0;
+      rows.forEach(function (s) {
+        if (!s || typeof s !== 'object') return;
+        if (!s.id) s.id = 'imp-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+        const prev = byId[s.id];
+        if (!prev) {
+          sightings.push(s);
+          byId[s.id] = s;
+          added++;
+          return;
+        }
+        let changed = false;
+        Object.keys(s).forEach(function (k) {
+          if (s[k] == null || s[k] === '') return;
+          if (prev[k] == null || prev[k] === '') {
+            prev[k] = s[k];
+            changed = true;
+          }
+        });
+        if (changed) filled++;
+      });
+      return { added: added, filled: filled };
+    }
+
+    function applyImportedBackup(dataList) {
+      const rows = [];
+      const places = [];
+      dataList.forEach(function (data) {
+        const part = Array.isArray(data) ? data : (data && data.sightings);
+        if (Array.isArray(part)) rows.push.apply(rows, part);
+        if (data && Array.isArray(data.places)) places.push.apply(places, data.places);
+      });
+      if (!rows.length && !places.length) {
+        alert('No sightings found in that file.');
+        return;
+      }
+      const stats = mergeImportedSightings(rows);
+      mergeImportedPlaces(places);
+      persistSightings();
+      refreshUI({ toast: true });
+      renderLifeList();
+      renderGallery();
+      renderRadar();
+      alert('Merged ' + stats.added + ' new log' + (stats.added === 1 ? '' : 's') +
+        (stats.filled ? ' and filled ' + stats.filled + ' existing' : '') +
+        '. Total now ' + sightings.length + '.');
+    }
 
     function importLogs(ev) {
-      const file = ev.target.files && ev.target.files[0];
+      const files = ev.target.files ? Array.from(ev.target.files) : [];
       ev.target.value = '';
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function () {
-        try {
-          const data = JSON.parse(reader.result);
-          const rows = Array.isArray(data) ? data : data.sightings;
-          if (!Array.isArray(rows) || !rows.length) { alert('No sightings found in that file.'); return; }
-          if (!confirm('Replace current logs with ' + rows.length + ' imported sightings?')) return;
-          sightings.length = 0;
-          rows.forEach(s => sightings.push(s));
-          persistSightings();
-          if (data && Array.isArray(data.places)) {
-            savedPlaces = data.places.filter(p => p && p.id && p.lat != null && p.lng != null);
-            try { localStorage.setItem('avian_saved_places', JSON.stringify(savedPlaces.slice(0, 20))); } catch (e) {}
-            loadSavedPlaces();
+      if (!files.length) return;
+      const parsed = [];
+      let pending = files.length;
+      let failed = 0;
+      files.forEach(function (file) {
+        const reader = new FileReader();
+        reader.onload = function () {
+          try {
+            parsed.push(JSON.parse(reader.result));
+          } catch (e) {
+            failed++;
           }
-          refreshUI({ toast: true });
-          renderLifeList();
-          renderGallery();
-          renderRadar();
-        } catch (e) {
-          alert('Could not read that file.');
-        }
-      };
-      reader.readAsText(file);
+          pending--;
+          if (pending) return;
+          if (!parsed.length) {
+            alert('Could not read that file.');
+            return;
+          }
+          const n = parsed.reduce(function (sum, data) {
+            const part = Array.isArray(data) ? data : ((data && data.sightings) || []);
+            return sum + part.length;
+          }, 0);
+          if (!confirm('Merge ' + n + ' sighting' + (n === 1 ? '' : 's') + ' from ' + files.length +
+              ' file' + (files.length === 1 ? '' : 's') + ' into your current log? Existing logs stay.')) return;
+          applyImportedBackup(parsed);
+          if (failed) alert(failed + ' file' + (failed === 1 ? '' : 's') + ' could not be read.');
+        };
+        reader.readAsText(file);
+      });
     }
 
     function unpackMonth(pack) {
