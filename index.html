@@ -935,7 +935,30 @@
     .sheet { background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; width: 100%; max-width: 32rem; max-height: 96vh; height: min(96vh, 860px); display: flex; flex-direction: column; overflow: hidden; }
     #analyze-modal { z-index: 5200; }
     .analyze-sheet { max-width: 40rem; height: min(96vh, 920px); }
-    .analyze-tools { display: flex; flex-wrap: nowrap; gap: 5px; padding: 0 12px 8px; align-items: center; }
+    .analyze-tools { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 6px; align-items: center; }
+    .analyze-tools .seg { width: 100%; }
+    .analyze-tools .seg button { flex: 1; font-size: 11px; padding: 6px 4px; }
+    .analyze-sub { display: flex; align-items: center; gap: 6px; padding: 0 12px 8px; min-height: 0; flex-wrap: wrap; }
+    .az-dates { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; }
+    .az-dates input[type="date"] {
+      flex: 1; min-width: 0; background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--line-2); border-radius: 8px; font-size: 11px; padding: 4px 4px;
+      color-scheme: dark;
+    }
+    html[data-theme="light"] .az-dates input[type="date"] { color-scheme: light; }
+    .analyze-sub .seg { flex: 1; }
+    .analyze-sub .seg button { flex: 1; font-size: 10px; padding: 4px 6px; }
+    .az-step {
+      width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--line-2);
+      background: var(--panel-2); color: var(--text); font-size: 16px; line-height: 1; cursor: pointer;
+    }
+    .az-step:disabled { opacity: .35; cursor: default; }
+    .az-year { font-size: 13px; font-weight: 800; min-width: 3.2rem; text-align: center; }
+    .az-headline { padding: 0 14px 8px; font-size: 12px; color: var(--text-2); line-height: 1.35; }
+    .az-headline b { color: var(--text); font-size: 16px; font-weight: 800; letter-spacing: -.03em; }
+    .az-share { display: flex; height: 8px; border-radius: 99px; overflow: hidden; gap: 2px; margin: 0 14px 8px; background: var(--line); }
+    .az-share i { display: block; min-width: 2px; height: 100%; }
+    .analyze-map-wrap[hidden], #analyze-chart[hidden], #analyze-legend:empty { display: none !important; }
     .analyze-tools .mini {
       flex: 1; min-width: 0; height: 30px; padding: 0 22px 0 9px;
       font-size: 11px; font-weight: 650; border-radius: 8px;
@@ -959,7 +982,7 @@
     .analyze-time { display: none; }
     #analyze-legend span { cursor: pointer; user-select: none; }
     #analyze-legend span.off { text-decoration: line-through; opacity: .4; }
-    #analyze-map { height: 28vh; min-height: 140px; margin: 0; border: 0; border-radius: 0; }
+    #analyze-map { height: 22vh; min-height: 120px; margin: 0; border: 0; border-radius: 0; }
     .analyze-range {
       position: absolute; left: 8px; bottom: 8px; z-index: 400;
       max-width: calc(100% - 16px);
@@ -976,12 +999,58 @@
       pointer-events: none; user-select: none;
     }
     #analyze-chart {
-      padding: 8px 12px 4px; min-height: 120px;
+      padding: 4px 12px 2px; min-height: 0;
       user-select: none; -webkit-user-select: none;
     }
+    #analyze-chart.az-slim { padding: 0 14px 2px; }
     #analyze-legend { padding: 0 14px 8px; display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 10px; color: var(--muted); }
     #analyze-list { padding: 0 12px 16px; overflow: auto; flex: 1; min-height: 0; }
-    .az-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 5px; }
+    .az-stack { display: flex; flex-direction: column; gap: 5px; }
+    .az-bird, .az-gap {
+      width: 100%; text-align: left; background: var(--photo); border: 1px solid var(--line);
+      border-radius: 10px; padding: 8px 10px; color: inherit; cursor: pointer;
+    }
+    .az-bird.on, .az-gap.on { border-color: var(--em3); }
+    .az-bird b, .az-gap b { font-size: 13px; }
+    .az-bird-top, .az-gap-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .az-meta { font-size: 10px; color: var(--muted); white-space: nowrap; }
+    .az-gap-bar { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 6px; }
+    .az-gap-bar i { display: block; height: 100%; background: var(--em); border-radius: 99px; }
+    .az-miss { display: flex; flex-direction: column; gap: 3px; margin: 4px 0 6px; }
+    .az-miss button {
+      width: 100%; text-align: left; background: var(--panel); border: 1px solid var(--line);
+      border-radius: 8px; padding: 6px 8px; color: inherit; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .az-rar { font-size: 9px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+    .az-strip { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; margin-top: 6px; overflow: visible; }
+    .az-strip i { display: block; height: 8px; border-radius: 2px; background: #44403c; position: relative; }
+    .az-strip i.common { background: #34d399; }
+    .az-strip i.uncommon { background: #fb923c; }
+    .az-strip i.rare { background: #a78bfa; }
+    .az-strip i.logged { box-shadow: inset 0 0 0 1.5px #fff; }
+    .az-strip i.lifer::after {
+      content: ''; position: absolute; left: 50%; top: 50%; width: 3px; height: 3px;
+      margin: -1.5px 0 0 -1.5px; border-radius: 50%; background: #fff;
+    }
+    .az-spark i { position: relative; }
+    .az-spark span.lifer i::after {
+      content: ''; position: absolute; left: 50%; top: 2px; width: 4px; height: 4px;
+      margin-left: -2px; border-radius: 50%; background: #fff;
+    }
+    .az-months { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; margin: 6px 0 4px; }
+    .az-months button {
+      padding: 4px 0; border-radius: 6px; border: 1px solid var(--line); background: var(--panel);
+      color: var(--muted); font-size: 9px; font-weight: 700; cursor: pointer;
+    }
+    .az-months button.been { color: var(--text); }
+    .az-months button.on { background: var(--em); border-color: var(--em); color: #fff; }
+    .az-gap-ico { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; background: var(--line); flex: none; }
+    .az-gap-note { margin: 2px 2px 6px; }
+    .az-strip i.focus { outline: 1px solid var(--text); outline-offset: 1px; }
+    .az-spark { margin: 8px 0 0; height: 48px; }
+    .az-col-on { fill: color-mix(in srgb, var(--em) 22%, transparent); }
+    .az-col-soft { fill: color-mix(in srgb, #38bdf8 16%, transparent); }
     .az-card {
       text-align: left; background: var(--photo); border: 1px solid var(--line);
       border-radius: 8px; padding: 6px 6px 6px 9px; cursor: pointer; color: inherit;
@@ -1188,8 +1257,47 @@
     #region-species-modal .tabs { padding: 6px 10px; }
     #region-species-modal .check-tools { padding: 8px 12px; }
     #region-species-modal .sheet-b { padding: 8px 12px 20px; }
+    #region-species-modal.compare-on .sheet-b {
+      display: flex; flex-direction: column; overflow: hidden; padding-bottom: 8px;
+    }
+    #region-species-modal.compare-on #modal-compare-view {
+      display: flex; flex-direction: column; flex: 1; min-height: 0;
+    }
+    #region-species-modal.compare-on .cmp-bar { flex: none; }
+    #region-species-modal.compare-on .cmp-cols { flex: 1; min-height: 0; height: auto; }
     #compare-modal .sheet { max-width: 44rem; height: min(96vh, 920px); }
-    .cmp-bar { padding: 8px 12px 10px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+    .cmp-bar { padding: 2px 0 8px; border-bottom: 0; display: flex; flex-direction: column; gap: 8px; }
+    .cmp-line { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .cmp-line .cmp-pick { flex: 1; }
+    .cmp-line .seg { flex: none; }
+    #btn-compare-unlogged {
+      flex: none; background: var(--panel-2); border: 1px solid var(--line-2); color: var(--muted);
+      border-radius: 999px; padding: 4px 8px; font-size: 10px; font-weight: 700; white-space: nowrap;
+    }
+    #btn-compare-unlogged.on { color: var(--em3); border-color: var(--em); background: var(--em-bg); }
+    #compare-mode-seg { flex: 1 1 auto; min-width: 0; }
+    #compare-mode-seg button { padding: 4px 6px; font-size: 10px; }
+    .cmp-viz { display: flex; flex-direction: column; gap: 4px; }
+    .cmp-viz-label { font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); margin-top: 2px; }
+    .cmp-split, .cmp-balance { display: flex; height: 8px; border-radius: 99px; overflow: hidden; background: var(--line); gap: 2px; }
+    .cmp-balance { height: 6px; }
+    .cmp-split i, .cmp-balance i { display: block; min-width: 2px; height: 100%; }
+    .cmp-split i.a, .cmp-balance i.a { background: var(--em); }
+    .cmp-split i.s { background: color-mix(in srgb, var(--text) 35%, var(--line-2)); }
+    .cmp-split i.b, .cmp-balance i.b { background: var(--cool); }
+    .cmp-balance i.e { background: var(--line-2); }
+    .cmp-viz.mode-diff .cmp-split i.s,
+    .cmp-viz.mode-common .cmp-split i.a,
+    .cmp-viz.mode-common .cmp-split i.b { opacity: .35; }
+    .cmp-viz-caps { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; font-size: 10px; color: var(--muted); line-height: 1.2; }
+    .cmp-viz-caps span:nth-child(2) { text-align: center; }
+    .cmp-viz-caps span:nth-child(3) { text-align: right; }
+    .cmp-viz-caps b { color: var(--text); font-weight: 800; }
+    .checklist-back {
+      background: var(--panel-2); border: 1px solid var(--line-2); color: var(--text-2);
+      border-radius: 999px; padding: 6px 10px; font-size: 11px; font-weight: 700; white-space: nowrap;
+    }
+    .checklist-back[hidden] { display: none !important; }
     .cmp-pick { display: flex; align-items: center; gap: 6px; min-width: 0; }
     .cmp-pick label { font-size: 11px; color: var(--muted); flex: none; }
     .cmp-pick select { flex: 1; min-width: 0; font-size: 12px; padding: 4px 6px; border-radius: 6px; }
@@ -1230,29 +1338,56 @@
     .cmp-stat .cap { font-size: 10px; color: var(--muted); margin-top: 3px; line-height: 1.25; }
     .cmp-stat-mid { text-align: center; color: var(--muted-2); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
     .cmp-lean { font-size: 11px; color: var(--muted); text-align: center; margin-top: 2px; }
-    .cmp-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px 12px 16px; overflow: hidden; flex: 1; min-height: 0; }
+    .cmp-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0; overflow: hidden; flex: 1; min-height: 0; }
     .cmp-col { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--photo); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
     .cmp-col h3 { margin: 0; padding: 8px 10px 6px; font-size: 12px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
     .cmp-col h3 span { font-size: 10px; font-weight: 600; color: var(--muted); }
     .cmp-list { overflow: auto; flex: 1; min-height: 0; padding: 6px; }
     .cmp-row {
-      width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
-      padding: 8px 8px 7px; margin-bottom: 5px; text-align: left; cursor: pointer;
-      display: flex; flex-direction: column; gap: 5px; align-items: stretch;
+      position: relative; width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+      padding: 8px 22px 8px 8px; margin-bottom: 5px; text-align: left;
     }
     .cmp-row:hover { border-color: var(--line-2); }
-    .cmp-row-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-    .cmp-row b { display: block; font-size: 12px; font-weight: 700; line-height: 1.25; color: var(--text); min-width: 0; }
+    .cmp-main { display: flex; flex-direction: column; gap: 5px; min-width: 0; width: 100%; background: none; border: 0; padding: 0; color: inherit; text-align: left; cursor: pointer; }
+    .cmp-head { display: grid; grid-template-columns: 8px minmax(0, 1fr); gap: 6px; align-items: center; }
+    .cmp-logdot { width: 8px; height: 8px; border-radius: 50%; background: var(--em2); }
+    .cmp-logdot.off { background: var(--line-2); }
+    .cmp-row b {
+      display: block; font-size: 12px; font-weight: 700; line-height: 1.25; color: var(--text);
+      min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
     .cmp-row:hover b { color: var(--em3); }
     .cmp-bars { display: flex; flex-direction: column; gap: 4px; margin: 0; min-width: 0; width: 100%; }
     .cmp-barline { display: grid; grid-template-columns: 18px minmax(0, 1fr) 28px; gap: 5px; align-items: center; font-size: 9px; color: var(--muted); }
     .cmp-barline.solo { grid-template-columns: minmax(0, 1fr) 28px; }
     .cmp-barline i { display: block; height: 5px; background: var(--line); border-radius: 99px; overflow: hidden; min-width: 0; }
     .cmp-barline i em { display: block; height: 100%; border-radius: 99px; }
-    .cmp-delta { margin: 0; padding: 0; border: 0; background: none; font-size: 10px; font-weight: 700; white-space: nowrap; flex: none; }
-    .cmp-delta.up { color: var(--em3); }
-    .cmp-delta.down { color: var(--cool); }
-    .cmp-delta.even { color: var(--muted); }
+    .cmp-delta, .cmp-delta.up, .cmp-delta.down, .cmp-delta.even {
+      display: block; margin: 1px 0 0; padding: 0; border: 0; background: none;
+      font-size: 10px; font-weight: 600; font-style: italic; color: var(--muted);
+      text-align: right; white-space: nowrap;
+    }
+    .cmp-more {
+      position: absolute; top: 4px; right: 2px; width: 18px; height: 18px; padding: 0; margin: 0;
+      background: none; border: 0; color: var(--muted); cursor: pointer; opacity: .72;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cmp-more svg { width: 12px; height: 12px; display: block; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s ease; }
+    .cmp-row.open .cmp-more { opacity: 1; color: var(--text-2); }
+    .cmp-row.open .cmp-more svg { transform: rotate(180deg); }
+    .cmp-extra { display: none; }
+    .cmp-row.open .cmp-extra {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+      margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--line);
+    }
+    .cmp-act {
+      height: 26px; padding: 0 6px; border-radius: 7px; box-sizing: border-box;
+      background: var(--panel-2); border: 1px solid var(--line); color: var(--text-2);
+      font-size: 10px; font-weight: 700; line-height: 1;
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer;
+    }
+    .cmp-act svg { width: 12px; height: 12px; display: block; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .cmp-act.tgt { color: var(--em3); border-color: color-mix(in srgb, var(--em) 45%, var(--line)); }
     @media (max-width: 420px) {
       .check-rar strong { font-size: 16px; }
       .ring-label { font-size: 11px; }
@@ -1262,7 +1397,41 @@
     .trend-card { background: var(--photo); border: 1px solid var(--line); border-radius: 10px; padding: 8px; margin-top: 6px; }
     .trend-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
     .trend-num { font-size: 16px; font-weight: 800; color: var(--em3); }
-    .check-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: contain; background: var(--photo); flex: none; border: 1px solid var(--line-2); }
+    .check-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: contain; background: var(--photo); flex: none; border: 1px solid var(--line-2); cursor: pointer; }
+    .check-open { display: block; width: 100%; background: none; border: 0; padding: 0; color: inherit; text-align: left; cursor: pointer; }
+    .check-log {
+      display: block; width: 100%; margin-top: 2px; padding: 0; background: none; border: 0;
+      color: var(--muted); font-family: ui-monospace, monospace; font-size: 11px; text-align: left; cursor: pointer;
+      text-decoration: none;
+    }
+    .check-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+    .check-open b { display: block; line-height: 1.25; }
+    #modal-discovered-view .row-card,
+    #modal-missing-view .row-card { align-items: center; }
+    #modal-discovered-view .disc-line,
+    #modal-missing-view .disc-line { display: flex; align-items: center; gap: 5px; min-width: 0; }
+    #modal-discovered-view .disc-line b,
+    #modal-missing-view .disc-line b {
+      display: block; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2;
+    }
+    #modal-discovered-view .check-tags,
+    #modal-missing-view .check-tags { display: inline-flex; flex: none; flex-wrap: nowrap; margin: 0; gap: 3px; }
+    #modal-discovered-view .check-open .muted,
+    #modal-missing-view .check-open .muted { margin-top: 1px; line-height: 1.15; }
+    #modal-discovered-view .check-log { margin-top: 1px; line-height: 1.15; font-size: 10px; }
+    .row-card > .check-actions { flex: none; align-self: center; }
+    .check-actions { display: flex; align-items: center; gap: 6px; }
+    .check-map { white-space: nowrap; padding: 7px 8px; }
+    .check-tgt, .cmp-tgt {
+      width: 32px; height: 32px; min-width: 32px; padding: 0; margin: 0; box-sizing: border-box;
+      display: inline-flex; align-items: center; justify-content: center; flex: none;
+      border-radius: 8px; background: var(--em); border: 1px solid var(--em); color: #fff;
+      line-height: 0; cursor: pointer;
+    }
+    .check-tgt svg, .cmp-tgt svg {
+      width: 16px; height: 16px; display: block; stroke: currentColor; fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; margin: 0;
+    }
     .like { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px; }
     .like i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
     #hunt-panel { position: relative; }
@@ -1287,6 +1456,12 @@
     }
     .export-part b { display: block; font-size: 12px; }
     .export-part span { font-size: 11px; color: var(--muted); }
+    .export-part.new { border-color: var(--em3); }
+    .export-fresh {
+      display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px;
+      background: var(--em3); color: #042f2e; font-size: 10px; font-weight: 800;
+    }
+    .export-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
     .loc-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
     .loc-actions button { font-size: 11px; padding: 8px 6px; line-height: 1.2; }
     .species-input-wrap { position: relative; }
@@ -1475,13 +1650,47 @@
       background: none; border: 0; color: var(--em3); font-size: 12px; font-weight: 750;
       padding: 0 0 8px; display: inline-flex; align-items: center; gap: 4px;
     }
-    .search-hero {
-      width: 100%; aspect-ratio: 16/10; max-height: 220px; object-fit: contain;
-      background: var(--photo); border-radius: 12px; border: 1px solid var(--line);
+    .search-hero-frame { position: relative; }
+    .search-hero-row {
+      display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+      height: min(220px, 56vw); border-radius: 12px; border: 1px solid var(--line);
+      background: var(--photo); -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
+    .search-hero-row::-webkit-scrollbar { display: none; }
+    .search-hero-row[hidden] { display: none !important; }
+    .search-hero-slide {
+      flex: 0 0 100%; height: 100%; margin: 0; position: relative; scroll-snap-align: start;
+    }
+    .search-hero-slide img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .search-hero-slide figcaption {
+      position: absolute; left: 8px; bottom: 8px; font-size: 10px; font-weight: 750; color: #fff;
+      background: rgba(12, 10, 9, .72); border-radius: 999px; padding: 2px 8px;
+    }
+    .search-hero-dots {
+      display: flex; justify-content: center; gap: 6px; margin-top: 8px;
+    }
+    .search-hero-dots[hidden] { display: none !important; }
+    .search-hero-dots button {
+      width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%;
+      background: #78716c; cursor: pointer;
+    }
+    .search-hero-nav {
+      position: absolute; top: calc(min(220px, 56vw) / 2); transform: translateY(-50%);
+      z-index: 2; width: 30px; height: 30px; border: 0; border-radius: 50%;
+      background: rgba(12, 10, 9, .55); color: #fff; font-size: 20px; line-height: 1;
+      display: flex; align-items: center; justify-content: center; padding: 0 0 2px;
+    }
+    .search-hero-nav.prev { left: 8px; }
+    .search-hero-nav.next { right: 8px; }
+    .search-hero-nav[hidden] { display: none !important; }
+    .search-hero-dots button.on { background: #fff; }
+    html[data-theme="light"] .search-hero-dots button { background: #d6d3d1; }
+    html[data-theme="light"] .search-hero-dots button.on { background: #1c1917; }
     .search-hero.ph {
       display: flex; align-items: center; justify-content: center;
-      font-size: 42px; font-weight: 800; color: var(--lock); aspect-ratio: 16/10;
+      font-size: 42px; font-weight: 800; color: var(--lock);
+      height: min(220px, 56vw); border-radius: 12px; border: 1px solid var(--line); background: var(--photo);
     }
     #search-hero[hidden], #search-hero-ph[hidden] { display: none !important; }
     .search-title { margin-top: 10px; }
@@ -1540,11 +1749,33 @@
     #search-scrub #search-scrub-label { flex: 1; min-width: 0; }
     #search-photos { margin-top: 6px; }
     #search-photos-empty { margin-top: 8px; }
-    .search-bio {
-      margin: 10px 0 0; font-size: 12px; line-height: 1.45; color: var(--text-2);
-      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden;
+    .search-bio-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 10px 0 0; }
+    .search-bio-tabs button {
+      border: 1px solid var(--line-2); background: var(--panel-2); color: var(--muted);
+      border-radius: 999px; padding: 3px 8px; font-size: 10px; font-weight: 750; cursor: pointer;
     }
-    .search-bio.empty { color: var(--muted); }
+    .search-bio-tabs button.on { color: var(--text); border-color: var(--em); background: var(--hl); }
+    .search-bio {
+      margin: 8px 0 0; font-size: 12px; line-height: 1.45; color: var(--text-2);
+      white-space: pre-line;
+    }
+    .search-bio-more {
+      display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 750; color: var(--em3);
+    }
+    .search-bio-more[hidden] { display: none !important; }
+    .search-sim-actions { display: flex; gap: 6px; }
+    .search-scrub-line {
+      position: relative; height: 22px; margin: 0 0 2px; touch-action: none; cursor: pointer;
+    }
+    .search-scrub-line::before {
+      content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px;
+      background: var(--line-2); transform: translateY(-50%); border-radius: 99px;
+    }
+    #search-scrub-thumb {
+      position: absolute; top: 50%; width: 14px; height: 14px; border-radius: 50%;
+      background: var(--em); transform: translate(-50%, -50%); left: 4%;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--em) 28%, transparent);
+    }
     .search-sim-h {
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
       margin: 16px 0 8px; font-size: 12px; font-weight: 750; color: var(--text);
@@ -1558,13 +1789,17 @@
       scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
     }
     .search-sim-card {
-      flex: none; width: 92px; text-align: left; background: var(--photo);
+      flex: none; width: 92px; display: flex; flex-direction: column; text-align: left; background: var(--photo);
       border: 1px solid var(--line); border-radius: 10px; padding: 0 0 6px; color: inherit;
-      scroll-snap-align: start;
+      scroll-snap-align: start; overflow: hidden;
+    }
+    .search-sim-media {
+      display: block; position: relative; width: 100%; height: 92px; flex: none;
+      overflow: hidden; background: var(--panel-2);
     }
     .search-sim-card img, .search-sim-card .search-ph {
-      width: 100%; height: 72px; object-fit: cover; border-radius: 10px 10px 0 0;
-      background: var(--panel-2); display: block;
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center; display: block;
     }
     .search-sim-card b {
       display: block; font-size: 11px; line-height: 1.25; padding: 6px 7px 0;
@@ -1592,6 +1827,7 @@
       </div>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
+      <button type="button" id="checklist-back" class="checklist-back" hidden onclick="returnToChecklist()">← Checklist</button>
       <button class="icon-btn ach-btn" type="button" onclick="openAchModal()" title="Achievements" aria-label="Achievements">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M8 4h8v3a4 4 0 0 1-8 0V4z"/>
@@ -1907,8 +2143,13 @@
       </div>
       <div class="scroll" id="search-dossier" hidden>
         <button type="button" class="search-back" onclick="closeSearchDossier()">← All species</button>
-        <img id="search-hero" class="search-hero" alt="" />
-        <div id="search-hero-ph" class="search-hero ph" hidden></div>
+        <div class="search-hero-frame">
+          <div class="search-hero-row" id="search-hero-row" hidden></div>
+          <button type="button" class="search-hero-nav prev" id="search-hero-prev" hidden onclick="searchHeroStep(-1)" aria-label="Previous photo">‹</button>
+          <button type="button" class="search-hero-nav next" id="search-hero-next" hidden onclick="searchHeroStep(1)" aria-label="Next photo">›</button>
+          <div class="search-hero-dots" id="search-hero-dots" hidden></div>
+          <div id="search-hero-ph" class="search-hero ph" hidden></div>
+        </div>
         <div class="search-title">
           <strong id="search-common"></strong>
           <div class="muted" id="search-sci" style="font-style:italic;margin-top:2px"></div>
@@ -1918,7 +2159,9 @@
           <a class="merlin-link" id="search-merlin" href="#" target="_blank" rel="noopener">Merlin ↗</a>
           <a class="merlin-link" id="search-ebird" href="#" target="_blank" rel="noopener">eBird ↗</a>
         </div>
+        <div class="search-bio-tabs" id="search-bio-tabs" hidden></div>
         <p class="search-bio" id="search-bio">Loading description…</p>
+        <a class="search-bio-more" id="search-bio-more" hidden target="_blank" rel="noopener">Read more</a>
         <div id="search-spark-wrap"></div>
         <div class="search-logged" id="search-logged"></div>
         <div class="tgt-lenses" style="margin-top:12px">
@@ -1959,7 +2202,9 @@
               <button type="button" id="btn-search-4x" onclick="setSearchSpeed(4)">4x</button>
             </div>
           </div>
-          <input id="search-range" type="range" min="0" max="12" value="8" oninput="onSearchMonthScrub(this.value)" />
+          <div class="search-scrub-line" id="search-scrub-line">
+            <i id="search-scrub-thumb"></i>
+          </div>
           <div class="heat-months" id="search-months"></div>
         </div>
         <p class="search-status" id="search-map-status"></p>
@@ -1968,7 +2213,10 @@
         <p class="hint" id="search-photos-empty" hidden>No photos logged for this species yet.</p>
         <div class="search-sim-h">
           <span>Similar birds</span>
-          <button type="button" class="search-shuffle" onclick="shuffleSearchSimilar()">Shuffle</button>
+          <div class="search-sim-actions">
+            <button type="button" class="search-shuffle" onclick="shuffleSearchSimilar()">Shuffle</button>
+            <button type="button" class="search-shuffle" onclick="openRandomBird()">Random</button>
+          </div>
         </div>
         <div class="search-sim-row" id="search-similar"></div>
         <button type="button" class="to-top" aria-label="Back to top">↑</button>
@@ -2065,10 +2313,16 @@
         <div id="modal-discovered-view"></div>
         <div id="modal-missing-view" style="display:none"></div>
         <div id="modal-compare-view" style="display:none">
-          <div class="cmp-bar" style="border-bottom:0;padding:0 0 10px">
-            <div class="cmp-pick">
-              <label for="compare-state-b">Compare with</label>
-              <select id="compare-state-b" onchange="onCompareStateChange()"></select>
+          <div class="cmp-bar">
+            <div class="cmp-line">
+              <div class="cmp-pick">
+                <label for="compare-state-b">Compare with</label>
+                <select id="compare-state-b" onchange="onCompareStateChange()"></select>
+              </div>
+              <div class="seg" id="compare-sort-seg">
+                <button type="button" id="btn-cmp-az" class="on" onclick="setCompareSort('az')">A–Z</button>
+                <button type="button" id="btn-cmp-freq" onclick="setCompareSort('freq')">Frequency</button>
+              </div>
             </div>
             <div class="cmp-scrub-row">
               <div class="seg" id="compare-all-seg">
@@ -2081,23 +2335,17 @@
               </div>
               <div class="cmp-month-lab" id="compare-month-label">Jan–Dec</div>
             </div>
-            <div class="cmp-toggles">
-              <div class="seg" id="compare-logged-seg">
-                <button type="button" id="btn-compare-unlogged" onclick="toggleCompareUnlogged()">Unlogged only</button>
-              </div>
+            <div class="cmp-line">
               <div class="seg" id="compare-mode-seg">
                 <button type="button" id="btn-cmp-all" class="on" onclick="setCompareMode('all')">All birds</button>
                 <button type="button" id="btn-cmp-diff" onclick="setCompareMode('diff')">Different</button>
                 <button type="button" id="btn-cmp-common" onclick="setCompareMode('common')">In common</button>
               </div>
-              <div class="seg" id="compare-sort-seg">
-                <button type="button" id="btn-cmp-az" class="on" onclick="setCompareSort('az')">A–Z</button>
-                <button type="button" id="btn-cmp-freq" onclick="setCompareSort('freq')">Frequency</button>
-              </div>
+              <button type="button" id="btn-compare-unlogged" onclick="toggleCompareUnlogged()">Unlogged</button>
             </div>
-            <div class="cmp-stats" id="compare-stats"></div>
+            <div class="cmp-viz" id="compare-stats"></div>
           </div>
-          <div class="cmp-cols" style="padding:0;flex:none;min-height:420px;height:min(52vh,520px)">
+          <div class="cmp-cols">
             <div class="cmp-col">
               <h3 id="compare-col-a-title">State A <span id="compare-col-a-count"></span></h3>
               <div class="cmp-list" id="compare-list-a"></div>
@@ -2172,32 +2420,21 @@
         <button class="x" type="button" onclick="closeAnalyzeSheet()" aria-label="Close analyze">✕</button>
       </div>
       <div class="analyze-tools">
-        <select id="analyze-view" class="mini" onchange="onAnalyzeViewChange()">
-          <option value="newrepeat">New vs repeat</option>
-          <option value="curve">Finds vs curve</option>
-          <option value="typeshare">Type share</option>
-        </select>
-        <select id="analyze-slice" class="mini" onchange="onAnalyzeSliceChange()">
-          <option value="all">All logs</option>
-        </select>
-        <select id="analyze-share" class="mini" onchange="renderAnalyze()" hidden>
-          <option value="all">Types · every log</option>
-          <option value="new">Types · new ticks only</option>
-        </select>
-        <select id="analyze-grain" class="mini" onchange="onAnalyzeGrain()">
-          <option value="day">Days</option>
-          <option value="week">Weeks</option>
-          <option value="month" selected>Months</option>
-          <option value="year">Years</option>
-        </select>
-        <button type="button" class="ghost" id="analyze-reset" onclick="resetAnalyzeAxis()">Reset</button>
+        <div class="seg" id="analyze-lenses">
+          <button type="button" id="az-lens-year" class="on" onclick="setAnalyzeLens('year')">Dates</button>
+          <button type="button" id="az-lens-gaps" onclick="setAnalyzeLens('gaps')">Gaps</button>
+          <button type="button" id="az-lens-places" onclick="setAnalyzeLens('places')">Places</button>
+          <button type="button" id="az-lens-season" onclick="setAnalyzeLens('season')">Season</button>
+        </div>
       </div>
-      <div class="analyze-map-wrap">
+      <div class="analyze-sub" id="analyze-sub"></div>
+      <div class="az-headline" id="analyze-head"></div>
+      <div id="analyze-chart"></div>
+      <div id="analyze-legend"></div>
+      <div class="analyze-map-wrap" id="analyze-map-wrap">
         <div id="analyze-map"></div>
         <div class="analyze-range" id="analyze-range-label"></div>
       </div>
-      <div id="analyze-chart"></div>
-      <div id="analyze-legend"></div>
       <div id="analyze-list"></div>
     </div>
   </div>
@@ -2378,9 +2615,6 @@
         <p class="hint" id="last-export-stamp" style="margin-top:8px">No export yet</p>
         <div id="export-parts" class="export-parts" hidden></div>
       </div>
-      <div class="sheet-f">
-        <button class="btn-em" style="width:100%" onclick="saveEbirdKey()">Save key</button>
-      </div>
     </div>
   </div>
 
@@ -2540,7 +2774,10 @@
     let hotspotSpeciesCache = {};
     let hotspotPhotoCache = {};
     let speciesPhotoCache = {};
+    let speciesGalleryCache = {};
     let wikiExtractCache = {};
+    let wikiBioCache = {};
+    let searchBioTab = 'general';
     let hotspotMetaCache = {};
     let hotspotRegionCache = {};
     let hotspotFeaturedCode = '';
@@ -2763,9 +3000,10 @@
       }, delay || 0);
     }
 
-    function chunkSightingsForExport(rows, places, when) {
+    function chunkSightingsForExport(rows, places, when, namePrefix) {
       const limit = exportChunkLimit();
       const headerPad = 2048 + exportPayloadBytes(JSON.stringify(places || []));
+      const already = exportedSightingIds();
       const chunks = [];
       let cur = [];
       let used = headerPad;
@@ -2783,6 +3021,7 @@
       if (cur.length) chunks.push(cur);
       if (!chunks.length) chunks.push([]);
       const stamp = String(when).slice(0, 10);
+      const prefix = namePrefix || 'birdseye-logs';
       return chunks.map(function (partRows, idx) {
         const text = JSON.stringify({
           version: 3,
@@ -2794,38 +3033,49 @@
         });
         const blob = new Blob([text], { type: 'application/json' });
         const name = chunks.length === 1
-          ? 'birdseye-logs.json'
-          : 'birdseye-logs-' + stamp + '-' + (idx + 1) + '-of-' + chunks.length + '.json';
+          ? prefix + '.json'
+          : prefix + '-' + stamp + '-' + (idx + 1) + '-of-' + chunks.length + '.json';
         return {
           name: name,
           blob: blob,
           bytes: blob.size,
           count: partRows.length,
+          fresh: partRows.filter(function (s) { return !already.has(s.id); }).length,
+          ids: partRows.map(function (s) { return s.id; }),
           file: new File([blob], name, { type: 'application/json' })
         };
       });
     }
 
-    function markExportDone() {
+    function rememberExportedIds(ids) {
+      const set = exportedSightingIds();
+      (ids || []).forEach(function (id) { if (id) set.add(id); });
       const when = new Date().toISOString();
-      const exportedIds = JSON.stringify(sightings.map(s => s.id));
       try {
         localStorage.setItem('avian_last_export', when);
-        localStorage.setItem('avian_exported_ids', exportedIds);
+        localStorage.setItem('avian_exported_ids', JSON.stringify(Array.from(set)));
       } catch (err) {
         localStorage.removeItem('avian_heat_cache_v3');
         try {
           localStorage.setItem('avian_last_export', when);
-          localStorage.setItem('avian_exported_ids', exportedIds);
+          localStorage.setItem('avian_exported_ids', JSON.stringify(Array.from(set)));
         } catch (err2) {}
       }
       refreshExportStamp();
-      const el = document.getElementById('last-export-stamp');
-      if (el) el.textContent = 'Last export: ' + new Date(when).toLocaleString() + ' · 0 logs since last export';
+    }
+
+    function markExportDone() {
+      rememberExportedIds(sightings.map(function (s) { return s.id; }));
     }
 
     function formatExportMb(bytes) {
       return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function clearExportParts() {
+      exportPartFiles = [];
+      const box = document.getElementById('export-parts');
+      if (box) { box.hidden = true; box.innerHTML = ''; }
     }
 
     function renderExportParts() {
@@ -2834,13 +3084,62 @@
       if (!exportPartFiles.length) { box.hidden = true; box.innerHTML = ''; return; }
       box.hidden = false;
       const shareOk = !!(navigator.share && navigator.canShare);
-      box.innerHTML = '<p class="hint" style="margin:0 0 4px">Hermit blocks silent downloads. Share each part to Drive, Files, or email, then import those files later. They merge.</p>' +
+      const freshParts = exportPartFiles.filter(function (part) { return part.fresh > 0; }).length;
+      const freshLogs = exportPartFiles.reduce(function (n, part) { return n + (part.fresh || 0); }, 0);
+      box.innerHTML =
+        '<div class="export-actions">' +
+          '<button type="button" class="ghost" onclick="saveAllExportParts()">Save all</button>' +
+          '<button type="button" class="ghost" onclick="saveUnexportedLogs()"' + (freshLogs ? '' : ' disabled') + '>Save new only' +
+            (freshLogs ? ' (' + freshLogs + ')' : '') + '</button>' +
+        '</div>' +
+        '<p class="hint" style="margin:0 0 4px">' +
+          (freshParts
+            ? freshParts + ' file' + (freshParts === 1 ? '' : 's') + ' include logs since the last export.'
+            : 'Every listed file is already in the last export.') +
+          ' Save downloads the files. On Hermit, use Share if the download is swallowed.</p>' +
         exportPartFiles.map(function (part, idx) {
-          return '<div class="export-part"><div><b>' + part.name + '</b><span>' +
-            part.count + ' log' + (part.count === 1 ? '' : 's') + ' · ' + formatExportMb(part.bytes) +
+          const fresh = part.fresh > 0;
+          return '<div class="export-part' + (fresh ? ' new' : '') + '"><div><b>' + part.name +
+            (fresh ? '<i class="export-fresh">' + part.fresh + ' new</i>' : '') +
+            '</b><span>' + part.count + ' log' + (part.count === 1 ? '' : 's') + ' · ' + formatExportMb(part.bytes) +
             '</span></div><button type="button" class="ghost" onclick="shareExportPart(' + idx + ')">' +
             (shareOk ? 'Share' : 'Save') + '</button></div>';
         }).join('');
+    }
+
+    function saveAllExportParts() {
+      if (!exportPartFiles.length) return;
+      exportPartFiles.forEach(function (part, idx) {
+        downloadExportBlob(part.blob, part.name, idx * 500);
+      });
+      const ids = [];
+      exportPartFiles.forEach(function (part) { (part.ids || []).forEach(function (id) { ids.push(id); }); });
+      rememberExportedIds(ids.length ? ids : sightings.map(function (s) { return s.id; }));
+      clearExportParts();
+    }
+
+    function saveUnexportedLogs() {
+      const already = exportedSightingIds();
+      const never = !already.size && !localStorage.getItem('avian_last_export');
+      const rows = sightings.filter(function (s) { return never || !already.has(s.id); });
+      if (!rows.length) {
+        alert('No new logs since the last export.');
+        return;
+      }
+      let parts;
+      try {
+        parts = chunkSightingsForExport(rows, savedPlaces || [], new Date().toISOString(), 'birdseye-logs-new');
+      } catch (e) {
+        alert('Could not build the new-log backup. Try Export list only.');
+        return;
+      }
+      parts.forEach(function (part, idx) {
+        downloadExportBlob(part.blob, part.name, idx * 500);
+      });
+      const ids = [];
+      parts.forEach(function (part) { (part.ids || []).forEach(function (id) { ids.push(id); }); });
+      rememberExportedIds(ids);
+      clearExportParts();
     }
 
     async function shareExportPart(idx) {
@@ -2854,6 +3153,9 @@
             title: part.name,
             text: 'BirdsEye backup ' + part.name
           });
+          rememberExportedIds(part.ids || []);
+          part.fresh = 0;
+          renderExportParts();
           return;
         }
       } catch (e) {
@@ -2861,6 +3163,9 @@
       }
       try {
         downloadExportBlob(part.blob, part.name, 0);
+        rememberExportedIds(part.ids || []);
+        part.fresh = 0;
+        renderExportParts();
         return;
       } catch (e2) {}
       const url = URL.createObjectURL(part.blob);
@@ -2876,16 +3181,7 @@
         alert('Could not build the full photo backup in memory. Use Export list only, or export from Chrome/Firefox.');
         return;
       }
-      markExportDone();
       renderExportParts();
-      if (!exportPartFiles.length) return;
-      if (exportIsConstrained()) {
-        if (exportPartFiles.length === 1) shareExportPart(0);
-        return;
-      }
-      exportPartFiles.forEach(function (part, idx) {
-        downloadExportBlob(part.blob, part.name, idx * 500);
-      });
     }
 
     function exportLogsSlim() {
@@ -2904,14 +3200,7 @@
         part.name = part.name.replace('birdseye-logs', 'birdseye-logs-lite');
         part.file = new File([part.blob], part.name, { type: 'application/json' });
       });
-      markExportDone();
       renderExportParts();
-      if (exportIsConstrained() && exportPartFiles.length === 1) shareExportPart(0);
-      else if (!exportIsConstrained()) {
-        exportPartFiles.forEach(function (part, idx) {
-          downloadExportBlob(part.blob, part.name, idx * 400);
-        });
-      }
     }
 
     function mergeImportedPlaces(list) {
@@ -3331,15 +3620,22 @@
       applyUiTheme();
       document.getElementById('key-modal').classList.add('on');
     }
-    function closeKeyModal() { document.getElementById('key-modal').classList.remove('on'); }
-    function saveEbirdKey() {
-      const key = (document.getElementById('form-ebird-key').value || '').trim();
-      if (key) localStorage.setItem('avian_ebird_key', key);
-      else localStorage.removeItem('avian_ebird_key');
-      closeKeyModal();
-      if (mapMode === 'hunt') scheduleHunt();
-      if (radarScope !== 'state') renderRadar();
+    function closeKeyModal() {
+      const input = document.getElementById('form-ebird-key');
+      if (input) {
+        const key = (input.value || '').trim();
+        const prev = getEbirdKey();
+        if (key) localStorage.setItem('avian_ebird_key', key);
+        else localStorage.removeItem('avian_ebird_key');
+        if (key !== prev) {
+          if (mapMode === 'hunt') scheduleHunt();
+          if (typeof radarScope !== 'undefined' && radarScope !== 'state' && typeof renderRadar === 'function') renderRadar();
+        }
+      }
+      clearExportParts();
+      document.getElementById('key-modal').classList.remove('on');
     }
+    function saveEbirdKey() { closeKeyModal(); }
     function requireEbirdKey() {
       if (getEbirdKey()) return true;
       setHuntStatus('Add an eBird key to use Radar / local targets');
@@ -4403,6 +4699,143 @@
       return '';
     }
 
+    function classifyBirdFile(name) {
+      const n = String(name || '').toLowerCase().replace(/[_-]/g, ' ');
+      if (/range|distribution|locator|\bmap\b|song|call|spectr|egg|nest|stamp|logo|icon|diagram|skeleton|skull|taxo|flag|coin|book|cover|painting|artwork|engraving|illustration|drawing|folk|habitat|landscape|postcard|postage|museum/.test(n)) return 'skip';
+      if (/\b(juvenile|immature|fledgling|1st winter|first winter|subadult)\b/.test(n)) return 'juvenile';
+      if (/\bfemale\b|♀/.test(n) && !/\bmale\b|♂/.test(n)) return 'female';
+      if (/\bmale\b|♂/.test(n) && !/\bfemale\b|♀/.test(n)) return 'male';
+      return '';
+    }
+
+    function fileMatchesSpecies(file, name, sci) {
+      const n = String(file || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+      const bits = String(sci || '').toLowerCase().split(/\s+/).map(function (w) { return w.replace(/[^a-z]/g, ''); }).filter(function (w) { return w.length >= 4; });
+      if (bits.length >= 2 && bits.every(function (w) { return n.includes(w); })) return true;
+      const stop = { bird: 1, birds: 1, common: 1, american: 1, northern: 1, southern: 1, greater: 1, lesser: 1, western: 1, eastern: 1 };
+      const tokens = String(name || '').toLowerCase().split(/[^a-z0-9]+/).filter(function (w) { return w.length >= 5 && !stop[w]; });
+      return tokens.length > 0 && tokens.every(function (w) { return n.includes(w); });
+    }
+
+    function photoFileKey(url) {
+      let s = String(url || '');
+      try { s = decodeURIComponent(s); } catch (e) {}
+      s = s.split('?')[0].toLowerCase();
+      const parts = s.split('/');
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const p = parts[i].replace(/^\d+px-/, '');
+        if (/\.(jpe?g|png|webp|gif)$/.test(p)) return p;
+      }
+      return s;
+    }
+
+    function ageLabel(kind) {
+      if (kind === 'male' || kind === 'female' || kind === 'juvenile') return kind.charAt(0).toUpperCase() + kind.slice(1);
+      return 'Typical';
+    }
+
+    async function resolveSpeciesGallery(code, comName) {
+      if (speciesGalleryCache[code]) return speciesGalleryCache[code];
+      const name = comName || taxName(code).comName;
+      const sci = taxName(code).sciName || '';
+      const title = (SPECIES_PHOTO_PAGE[code] || name || '').replace(/_/g, ' ');
+      const primary = await resolveSpeciesPhoto(code, name);
+      const slides = [];
+      const seen = {};
+      function push(url, label) {
+        if (!url) return;
+        const key = photoFileKey(url);
+        if (!key || seen[key]) return;
+        seen[key] = 1;
+        slides.push({ url: url, label: label });
+      }
+      const primaryKind = classifyBirdFile(photoFileKey(primary));
+      if (primary) push(primary, ageLabel(primaryKind));
+      const picked = { male: '', female: '', juvenile: '' };
+      if (primaryKind === 'male' || primaryKind === 'female' || primaryKind === 'juvenile') picked[primaryKind] = primary;
+      try {
+        const res = await fetch('https://en.wikipedia.org/w/api.php?action=query&redirects=1&titles=' + encodeURIComponent(title) + '&generator=images&gimlimit=30&prop=imageinfo&iiprop=url&iiurlwidth=640&format=json&origin=*');
+        const pages = Object.values((((await res.json()) || {}).query || {}).pages || {});
+        pages.forEach(function (p) {
+          const kind = classifyBirdFile(p.title);
+          if (!picked.hasOwnProperty(kind) || picked[kind]) return;
+          if (!fileMatchesSpecies(p.title, name, sci)) return;
+          const info = (p.imageinfo || [])[0];
+          const url = info && (info.thumburl || info.url);
+          if (!url || seen[photoFileKey(url)]) return;
+          picked[kind] = url;
+        });
+        ['male', 'female', 'juvenile'].forEach(function (k) {
+          if (picked[k] && picked[k] !== primary) push(picked[k], ageLabel(k));
+        });
+      } catch (e) {}
+      speciesGalleryCache[code] = slides.slice(0, 4);
+      return speciesGalleryCache[code];
+    }
+
+    function searchHeroGo(i) {
+      const row = document.getElementById('search-hero-row');
+      if (!row) return;
+      const n = row.children.length;
+      if (!n) return;
+      const next = ((i % n) + n) % n;
+      row.scrollTo({ left: next * row.clientWidth, behavior: 'smooth' });
+    }
+
+    function searchHeroStep(dir) {
+      const row = document.getElementById('search-hero-row');
+      if (!row || row.children.length < 2) return;
+      const i = Math.round(row.scrollLeft / Math.max(1, row.clientWidth));
+      searchHeroGo(i + dir);
+    }
+
+    function syncSearchHeroDots() {
+      const row = document.getElementById('search-hero-row');
+      const dots = document.getElementById('search-hero-dots');
+      if (!row || !dots) return;
+      const i = Math.round(row.scrollLeft / Math.max(1, row.clientWidth));
+      Array.prototype.forEach.call(dots.children, function (btn, n) { btn.classList.toggle('on', n === i); });
+    }
+
+    function paintSearchHeroSlides(slides, letter) {
+      const row = document.getElementById('search-hero-row');
+      const dots = document.getElementById('search-hero-dots');
+      const ph = document.getElementById('search-hero-ph');
+      if (!row) return;
+      if (!slides || !slides.length) {
+        row.hidden = true;
+        row.innerHTML = '';
+        if (dots) { dots.hidden = true; dots.innerHTML = ''; }
+        ['search-hero-prev', 'search-hero-next'].forEach(function (id) {
+          const b = document.getElementById(id);
+          if (b) b.hidden = true;
+        });
+        if (ph) { ph.hidden = false; ph.textContent = letter || ''; }
+        return;
+      }
+      if (ph) ph.hidden = true;
+      row.hidden = false;
+      const multi = slides.length > 1;
+      ['search-hero-prev', 'search-hero-next'].forEach(function (id) {
+        const b = document.getElementById(id);
+        if (b) b.hidden = !multi;
+      });
+      row.innerHTML = slides.map(function (s) {
+        const cap = s.label ? '<figcaption>' + azText(s.label) + '</figcaption>' : '';
+        return '<figure class="search-hero-slide"><img src="' + String(s.url).replace(/"/g, '"') + '" alt="' + azText(s.label || '') + '">' + cap + '</figure>';
+      }).join('');
+      if (dots) {
+        if (slides.length < 2) { dots.hidden = true; dots.innerHTML = ''; }
+        else {
+          dots.hidden = false;
+          dots.innerHTML = slides.map(function (_, i) {
+            return '<button type="button" class="' + (i ? '' : 'on') + '" aria-label="Photo ' + (i + 1) + '" onclick="searchHeroGo(' + i + ')"></button>';
+          }).join('');
+        }
+      }
+      row.onscroll = syncSearchHeroDots;
+    }
+
     function hotspotMapThumb(h) {
       if (h.lat == null || h.lng == null) return '';
       const z = 15;
@@ -5404,10 +5837,11 @@
       switchTab('map');
       setMapMode('hunt');
       setMapSpeciesFilter(code);
-      requestFitActiveState();
+      requestFitFillScreen();
     }
 
     function showMissingOnMap(code) {
+      markChecklistExit();
       closeRegionSpeciesModal();
       jumpSpeciesToRadarMap(code);
     }
@@ -7414,11 +7848,21 @@
 
     let analyzeMap = null;
     let analyzeLayer = null;
-    let analyzeView = 'newrepeat';
+    let analyzeLens = 'year';
+    let analyzeYear = new Date().getFullYear();
+    let analyzeBucketKey = '';
+    let analyzeGrain = 'month';
+    let analyzeRangeFrom = '';
+    let analyzeRangeTo = '';
+    let analyzeGapType = '';
+    let analyzePlaceKey = '';
+    let analyzeGapMonth = null;
+    let gapCountyCache = {};
+    let analyzePlaceMetric = 'lifers';
+    let analyzeSeasonFilter = 'all';
     let analyzeSlice = 'all';
     let analyzeShare = 'all';
     let analyzeBack = 0;
-    let analyzeGrain = 'month';
     let analyzeSpan = 12;
     const ANALYZE_SPAN_MIN = 4;
     const ANALYZE_SPAN_MAX = 36;
@@ -8105,102 +8549,862 @@
       }
     }
 
-    function renderAnalyze(fromDrag) {
-      const modal = document.getElementById('analyze-modal');
-      if (!modal || !modal.classList.contains('on')) return;
-      analyzeShare = (document.getElementById('analyze-share') || {}).value || analyzeShare;
-      const title = document.getElementById('analyze-title');
-      if (title) title.textContent = analyzeIsCountry() ? 'United States' : activeState;
-      const all = analyzeLogs();
-      const win = analyzeWindow();
-      const maxBack = analyzeMaxBack(all);
-      if (analyzeBack > maxBack) analyzeBack = maxBack;
-      const grainEl = document.getElementById('analyze-grain');
-      if (grainEl) grainEl.value = analyzeGrain;
-      const rangeEl = document.getElementById('analyze-range-label');
-      if (rangeEl) rangeEl.innerHTML = analyzeFormatRange(win);
-      const slice = document.getElementById('analyze-slice');
-      if (slice) slice.hidden = analyzeView === 'typeshare';
-      if (analyzeView !== 'typeshare') fillAnalyzeSliceOptions(all);
-      const rows = all.filter(s => analyzeMatchesSlice(s) && analyzeInWindow(s, win));
-      const firsts = analyzeFirstDates(all);
-      const viewRows = rows.filter(s => !analyzeFocusSpecies || s.species_code === analyzeFocusSpecies);
-      renderAnalyzeChart(viewRows, firsts, win);
-      renderAnalyzeMap(viewRows, firsts, win, !!fromDrag);
-      renderAnalyzeList(rows, firsts, win);
-    }
+    const AZ_COL = { common: '#34d399', uncommon: '#fb923c', rare: '#a78bfa', out: '#78716c', neu: '#38bdf8', rep: '#c084fc' };
 
-    function renderAnalyzeList(rows, firsts, win) {
-      const box = document.getElementById('analyze-list');
-      if (!box) return;
-      const visible = rows.filter(s => {
-        const i = analyzeMonthIndex(s, win);
-        if (i < 0) return false;
-        if (analyzeView !== 'typeshare' && analyzeRange && !analyzeSelectedMonth(i)) return false;
-        const g = analyzeGroupOf(s.species_code);
-        if (analyzeView === 'typeshare') {
-          if (analyzeHiddenTypes[g]) return false;
-          if (analyzeSoloType && analyzeSoloType !== g) return false;
+    function azEsc(s) { return encodeURIComponent(String(s == null ? '' : s)); }
+    function azText(s) {
+      return String(s == null ? '' : s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>');
+    }
+    function azMonth(s) {
+      const m = Number(String(s && s.date || '').slice(5, 7));
+      return m >= 1 && m <= 12 ? m - 1 : -1;
+    }
+    function analyzeWindowKind(v) {
+      if (v >= 0.45) return 'common';
+      if (v >= 0.15) return 'uncommon';
+      if (v > 0) return 'rare';
+      return 'out';
+    }
+    function analyzeKindLabel(kind) {
+      if (kind === 'common') return 'common window';
+      if (kind === 'uncommon') return 'uncommon window';
+      if (kind === 'rare') return 'rare window';
+      return 'outside the usual season';
+    }
+    function analyzeMonthlyMap() {
+      const rows = analyzeIsCountry() ? (officialRows('US') || []) : officialRows((STATE_CODES[activeState] || ''));
+      const map = {};
+      (rows || []).forEach(sp => { map[sp.code] = sp.monthly || []; });
+      return map;
+    }
+    function analyzePlaceName(s) {
+      const c = String(s.county || '').trim();
+      if (c) return /county$/i.test(c) ? c : (c + ' County');
+      const loc = String(s.location || '').trim();
+      return loc || 'Unplaced';
+    }
+    function setAnalyzeLens(lens) {
+      analyzeLens = lens || 'year';
+      analyzeFocusSpecies = '';
+      analyzeFocusId = '';
+      analyzeMonthPick = null;
+      analyzeGapType = '';
+      analyzePlaceKey = '';
+      analyzeBucketKey = '';
+      renderAnalyze();
+    }
+    function shiftAnalyzeYear(dir) {
+      const next = analyzeYear + (Number(dir) || 0);
+      const cap = new Date().getFullYear();
+      if (next > cap || next < 1990) return;
+      analyzeYear = next;
+      analyzeMonthPick = null;
+      analyzeFocusId = '';
+      analyzeFocusSpecies = '';
+      renderAnalyze();
+    }
+    function setAnalyzeYearMonth(i) {
+      const n = Number(i);
+      analyzeMonthPick = analyzeMonthPick === n ? null : n;
+      analyzeFocusId = '';
+      analyzeFocusSpecies = '';
+      renderAnalyze();
+    }
+    function setAnalyzeSpecies(code) {
+      code = code ? decodeURIComponent(code) : '';
+      if (analyzeFocusSpecies === code) {
+        analyzeFocusSpecies = '';
+        analyzeFocusId = '';
+      } else {
+        analyzeFocusSpecies = code;
+        analyzeFocusId = '';
+      }
+      renderAnalyze();
+    }
+    function setAnalyzeGap(g) {
+      g = decodeURIComponent(g || '');
+      analyzeGapType = analyzeGapType === g ? '' : g;
+      renderAnalyze();
+    }
+    function setAnalyzePlace(key) {
+      key = decodeURIComponent(key || '');
+      const next = analyzePlaceKey === key ? '' : key;
+      if (next !== analyzePlaceKey) analyzeGapMonth = null;
+      analyzePlaceKey = next;
+      analyzeFocusSpecies = '';
+      analyzeFocusId = '';
+      renderAnalyze();
+    }
+    function setAnalyzePlaceMetric(metric) {
+      analyzePlaceMetric = metric || 'lifers';
+      renderAnalyze();
+    }
+    function setAnalyzeSeasonFilter(f) {
+      analyzeSeasonFilter = f || 'all';
+      analyzeFocusSpecies = '';
+      analyzeFocusId = '';
+      renderAnalyze();
+    }
+    function openGapSpecies(code) {
+      closeAnalyzeSheet();
+      openSearchFromChecklist(decodeURIComponent(code || ''));
+    }
+    function zoomAnalyzeLog(s) {
+      if (!s) return;
+      const lat = Number(s.lat), lng = Number(s.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+      setTimeout(function () {
+        if (analyzeMap) analyzeMap.setView([lat, lng], 13);
+      }, 140);
+    }
+    function setAnalyzeLog(id) {
+      id = decodeURIComponent(id || '');
+      const s = sightings.find(x => x.id === id);
+      if (!s) return;
+      analyzeFocusId = id;
+      analyzeFocusSpecies = s.species_code;
+      renderAnalyze();
+      zoomAnalyzeLog(s);
+    }
+    function analyzeLogButtons(logs, colorOf) {
+      return '<div class="az-logs">' + logs.map(function (s) {
+        const hit = analyzeFocusId === s.id ? ' on' : '';
+        const where = azText(s.location || s.county || s.state || '');
+        const c = colorOf ? colorOf(s) : AZ_COL.neu;
+        return '<button type="button" class="az-log' + hit + '" onclick="setAnalyzeLog(\'' + azEsc(s.id) + '\')">' +
+          '<i style="background:' + c + '"></i><b>' + azText(String(s.date || '').slice(0, 10)) + '</b><span>' + where + '</span></button>';
+      }).join('') + '</div>';
+    }
+    function renderAnalyzePins(pins, doFit) {
+      const map = ensureAnalyzeMap();
+      if (!map || !analyzeLayer) return;
+      analyzeLayer.clearLayers();
+      const pts = [];
+      (pins || []).forEach(function (p) {
+        if (!Number.isFinite(p.lat) || !Number.isFinite(p.lng)) return;
+        pts.push([p.lat, p.lng]);
+        const focus = p.id && p.id === analyzeFocusId;
+        const mk = L.circleMarker([p.lat, p.lng], {
+          radius: p.radius || (focus ? 8 : (p.dim ? 3 : 5)),
+          color: focus ? '#fff' : 'rgba(12,10,9,.45)',
+          weight: focus ? 2 : 0.6,
+          fillColor: p.color || AZ_COL.neu,
+          fillOpacity: p.opacity != null ? p.opacity : (p.dim ? 0.22 : 0.92)
+        });
+        if (p.onClick) mk.on('click', p.onClick);
+        if (p.tip) mk.bindTooltip(p.tip, { direction: 'top' });
+        analyzeLayer.addLayer(mk);
+      });
+      if (!doFit) return;
+      if (pts.length === 1) map.setView(pts[0], 10);
+      else if (pts.length) map.fitBounds(pts, { padding: [18, 18], maxZoom: 11 });
+      else if (!analyzeIsCountry() && STATE_BOUNDS[activeState]) {
+        const b = STATE_BOUNDS[activeState];
+        map.fitBounds([[b[1], b[0]], [b[3], b[2]]], { padding: [12, 12] });
+      }
+    }
+    function analyzeBestDay(logs, firsts) {
+      const days = {};
+      logs.forEach(function (s) {
+        const d = String(s.date || '').slice(0, 10);
+        if (!d) return;
+        if (!days[d]) days[d] = { n: 0, neu: 0 };
+        days[d].n++;
+        if (analyzeIsNew(s, firsts)) days[d].neu++;
+      });
+      let best = '', score = -1;
+      Object.keys(days).forEach(function (d) {
+        const v = days[d].neu * 100 + days[d].n;
+        if (v > score) { score = v; best = d; }
+      });
+      if (!best) return '';
+      const dt = new Date(best + 'T12:00:00');
+      if (isNaN(dt.getTime())) return best;
+      return MONTH_LABELS[dt.getMonth()].slice(0, 3) + ' ' + dt.getDate();
+    }
+    function paintAnalyzeLenses() {
+      ['year', 'gaps', 'places', 'season'].forEach(function (id) {
+        const el = document.getElementById('az-lens-' + id);
+        if (el) el.className = id === analyzeLens ? 'on' : '';
+      });
+    }
+    function azISO(d) {
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    function azParseDay(s) {
+      const d = new Date(String(s || '').slice(0, 10) + 'T12:00:00');
+      return isNaN(d.getTime()) ? null : d;
+    }
+    function ensureAnalyzeRange() {
+      if (!analyzeRangeFrom || !analyzeRangeTo) {
+        analyzeRangeFrom = analyzeYear + '-01-01';
+        analyzeRangeTo = analyzeYear + '-12-31';
+      }
+    }
+    function setAnalyzeGrain(g) {
+      ensureAnalyzeRange();
+      analyzeGrain = g || 'month';
+      if (analyzeGrain === 'month') {
+        const y = Number(String(analyzeRangeFrom).slice(0, 4)) || analyzeYear;
+        analyzeYear = y;
+        analyzeRangeFrom = y + '-01-01';
+        analyzeRangeTo = y + '-12-31';
+      } else if (analyzeGrain === 'day') {
+        const start = azParseDay(analyzeRangeFrom), end = azParseDay(analyzeRangeTo);
+        const span = start && end ? Math.round((end - start) / 86400000) : 400;
+        if (span > 41) {
+          const today = new Date();
+          const anchor = (start && end && today >= start && today <= end) ? today : (end || today);
+          analyzeRangeFrom = azISO(new Date(anchor.getFullYear(), anchor.getMonth(), 1));
+          analyzeRangeTo = azISO(new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0));
         }
-        return Number.isFinite(Number(s.lat)) && Number.isFinite(Number(s.lng));
+      }
+      analyzeBucketKey = '';
+      analyzeFocusSpecies = '';
+      analyzeFocusId = '';
+      renderAnalyze();
+    }
+    function setAnalyzeRange(which, value) {
+      if (!value) return;
+      if (which === 'from') analyzeRangeFrom = value;
+      else analyzeRangeTo = value;
+      if (analyzeRangeFrom > analyzeRangeTo) {
+        const t = analyzeRangeFrom;
+        analyzeRangeFrom = analyzeRangeTo;
+        analyzeRangeTo = t;
+      }
+      analyzeYear = Number(String(analyzeRangeFrom).slice(0, 4)) || analyzeYear;
+      analyzeBucketKey = '';
+      renderAnalyze();
+    }
+    function shiftAnalyzeWindow(dir) {
+      ensureAnalyzeRange();
+      const a = azParseDay(analyzeRangeFrom);
+      const b = azParseDay(analyzeRangeTo);
+      if (!a || !b) return;
+      const step = Number(dir) || 0;
+      if (analyzeGrain === 'month') {
+        a.setFullYear(a.getFullYear() + step);
+        b.setFullYear(b.getFullYear() + step);
+      } else {
+        const days = Math.max(1, Math.round((b - a) / 86400000) + 1);
+        a.setDate(a.getDate() + step * days);
+        b.setDate(b.getDate() + step * days);
+      }
+      const cap = new Date();
+      if (a > cap) return;
+      analyzeRangeFrom = azISO(a);
+      analyzeRangeTo = azISO(b);
+      analyzeYear = a.getFullYear();
+      analyzeBucketKey = '';
+      analyzeFocusId = '';
+      analyzeFocusSpecies = '';
+      renderAnalyze();
+    }
+    function setAnalyzeBucket(key) {
+      key = decodeURIComponent(key || '');
+      analyzeBucketKey = analyzeBucketKey === key ? '' : key;
+      analyzeFocusId = '';
+      analyzeFocusSpecies = '';
+      renderAnalyze();
+    }
+    function azBuckets(from, to, grain) {
+      const start = azParseDay(from), end = azParseDay(to);
+      if (!start || !end || end < start) return [];
+      const out = [];
+      if (grain === 'week') {
+        let d = analyzeMonday(start);
+        while (d <= end && out.length < 54) {
+          const e = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 6);
+          out.push({
+            key: azISO(d),
+            label: (d.getMonth() + 1) + '/' + d.getDate(),
+            start: azISO(d < start ? start : d),
+            end: azISO(e > end ? end : e)
+          });
+          d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7);
+        }
+      } else if (grain === 'day') {
+        let d = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+        while (d <= end && out.length < 42) {
+          const iso = azISO(d);
+          out.push({ key: iso, label: String(d.getDate()), start: iso, end: iso });
+          d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+        }
+      } else {
+        let y = start.getFullYear(), m = start.getMonth();
+        const endKey = end.getFullYear() * 12 + end.getMonth();
+        while (y * 12 + m <= endKey && out.length < 24) {
+          const d0 = new Date(y, m, 1);
+          const d1 = new Date(y, m + 1, 0);
+          out.push({
+            key: y + '-' + m,
+            label: MONTH_LABELS[m].slice(0, 1),
+            start: azISO(d0 < start ? start : d0),
+            end: azISO(d1 > end ? end : d1)
+          });
+          m++;
+          if (m > 11) { m = 0; y++; }
+        }
+      }
+      return out;
+    }
+    function azBucketOf(buckets, dateStr) {
+      const d = String(dateStr || '').slice(0, 10);
+      for (let i = 0; i < buckets.length; i++) {
+        if (d >= buckets[i].start && d <= buckets[i].end) return buckets[i];
+      }
+      return null;
+    }
+    function azSparkHTML(monthly, logged, lifer, focus) {
+      const m = monthly || [];
+      let html = '<div class="tgt-spark-wide az-spark">';
+      for (let i = 0; i < 12; i++) {
+        const v = m[i] || 0;
+        const h = Math.max(4, Math.min(32, Math.round(v * 32)));
+        const col = v >= 0.45 ? AZ_COL.common : v >= 0.15 ? AZ_COL.uncommon : '#57534e';
+        const cls = ((i === lifer ? 'lifer ' : '') + (i === focus ? 'now' : '')).trim();
+        const parts = ['height:' + h + 'px', 'background:' + col];
+        if (logged && logged[i] && i !== lifer) parts.push('box-shadow:0 0 0 1.5px #fff');
+        html += '<span class="' + cls + '"><i style="' + parts.join(';') + '"></i><em>' + MONTH_LABELS[i].charAt(0) + '</em></span>';
+      }
+      return html + '</div>';
+    }
+    function renderAnalyzeYear(all, firsts) {
+      const sub = document.getElementById('analyze-sub');
+      const head = document.getElementById('analyze-head');
+      const box = document.getElementById('analyze-chart');
+      const legend = document.getElementById('analyze-legend');
+      ensureAnalyzeRange();
+      const grains = [['month', 'Months'], ['week', 'Weeks'], ['day', 'Days']];
+      if (sub) sub.innerHTML =
+        '<div class="seg">' + grains.map(function (g) {
+          return '<button type="button" class="' + (analyzeGrain === g[0] ? 'on' : '') + '" onclick="setAnalyzeGrain(\'' + g[0] + '\')">' + g[1] + '</button>';
+        }).join('') + '</div>' +
+        '<button type="button" class="az-step" onclick="shiftAnalyzeWindow(-1)" aria-label="Previous range">‹</button>' +
+        '<div class="az-dates"><input type="date" value="' + analyzeRangeFrom + '" onchange="setAnalyzeRange(\'from\', this.value)" aria-label="From">' +
+        '<span class="az-meta">–</span>' +
+        '<input type="date" value="' + analyzeRangeTo + '" onchange="setAnalyzeRange(\'to\', this.value)" aria-label="To"></div>' +
+        '<button type="button" class="az-step" onclick="shiftAnalyzeWindow(1)" aria-label="Next range">›</button>';
+      const buckets = azBuckets(analyzeRangeFrom, analyzeRangeTo, analyzeGrain);
+      const logs = all.filter(function (s) {
+        const d = String(s.date || '').slice(0, 10);
+        return d >= analyzeRangeFrom && d <= analyzeRangeTo && azBucketOf(buckets, d);
       });
+      const neu = buckets.map(function () { return 0; });
+      const rep = buckets.map(function () { return 0; });
+      let newN = 0, repN = 0;
+      logs.forEach(function (s) {
+        const b = azBucketOf(buckets, s.date);
+        if (!b) return;
+        const i = buckets.indexOf(b);
+        if (analyzeIsNew(s, firsts)) { neu[i]++; newN++; }
+        else { rep[i]++; repN++; }
+      });
+      const best = analyzeBestDay(logs, firsts);
+      const where = analyzeIsCountry() ? 'the United States' : activeState;
+      const picked = buckets.filter(function (b) { return b.key === analyzeBucketKey; })[0];
+      const endDay = azParseDay(analyzeRangeTo);
+      const clipped = buckets.length && endDay && buckets[buckets.length - 1].end < azISO(endDay);
+      if (head) head.innerHTML = logs.length
+        ? ('<b>' + newN + '</b> new · <b>' + repN + '</b> repeats' + (best ? (' · best day ' + best) : '') + (picked ? (' · ' + picked.label) : '') +
+          '<div class="az-meta" style="margin-top:2px">in ' + azText(where) + (clipped ? ' · chart shows the first part of this range' : '') + '</div>')
+        : ('No logs in this range.');
+      const soft = {};
+      if (analyzeFocusSpecies) {
+        logs.forEach(function (s) {
+          if (s.species_code !== analyzeFocusSpecies) return;
+          const b = azBucketOf(buckets, s.date);
+          if (b) soft[b.key] = 1;
+        });
+      }
+      let focusBucket = '';
+      if (analyzeFocusId) {
+        const hit = logs.find(function (s) { return s.id === analyzeFocusId; }) || sightings.find(function (s) { return s.id === analyzeFocusId; });
+        const b = hit && azBucketOf(buckets, hit.date);
+        if (b) focusBucket = b.key;
+      }
+      if (box) {
+        const w = Math.max(280, box.clientWidth || 320);
+        const h = 132, padL = 8, padR = 8, padT = 8, padB = 18;
+        const n = Math.max(1, buckets.length);
+        const innerW = w - padL - padR, innerH = h - padT - padB, colW = innerW / n;
+        const maxV = Math.max(1, ...neu, ...rep);
+        const tick = n > 16 ? Math.ceil(n / 12) : 1;
+        let svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '">';
+        buckets.forEach(function (slot, i) {
+          const x = padL + i * colW;
+          if (analyzeBucketKey === slot.key || focusBucket === slot.key) svg += '<rect class="az-col-on" x="' + x + '" y="' + padT + '" width="' + colW + '" height="' + innerH + '"></rect>';
+          else if (soft[slot.key]) svg += '<rect class="az-col-soft" x="' + x + '" y="' + padT + '" width="' + colW + '" height="' + innerH + '"></rect>';
+          const nh = (neu[i] / maxV) * innerH;
+          const rh = (rep[i] / maxV) * innerH;
+          const bw = Math.max(2, colW - (n > 24 ? 2 : 6));
+          const bx = x + (colW - bw) / 2;
+          const base = padT + innerH;
+          if (rh) svg += '<rect x="' + bx + '" y="' + (base - nh - rh) + '" width="' + bw + '" height="' + rh + '" fill="' + AZ_COL.rep + '" rx="1"></rect>';
+          if (nh) svg += '<rect x="' + bx + '" y="' + (base - nh) + '" width="' + bw + '" height="' + nh + '" fill="' + AZ_COL.neu + '" rx="1"></rect>';
+          svg += '<rect x="' + x + '" y="' + padT + '" width="' + colW + '" height="' + innerH + '" fill="transparent" onclick="setAnalyzeBucket(\'' + azEsc(slot.key) + '\')"></rect>';
+          if (i % tick === 0) svg += '<text class="az-axis" x="' + (x + colW / 2) + '" y="' + (h - 4) + '" text-anchor="middle">' + slot.label + '</text>';
+        });
+        svg += '</svg>';
+        box.innerHTML = svg;
+        box.classList.remove('az-slim');
+        box.hidden = false;
+      }
+      if (legend) legend.innerHTML = '<span><i style="background:' + AZ_COL.neu + '"></i>New</span><span><i style="background:' + AZ_COL.rep + '"></i>Repeat</span>';
+      const rangeEl = document.getElementById('analyze-range-label');
+      if (rangeEl) rangeEl.textContent = analyzeRangeFrom + ' – ' + analyzeRangeTo;
+      const pins = logs.map(function (s) {
+        const inBucket = !analyzeBucketKey || (azBucketOf(buckets, s.date) || {}).key === analyzeBucketKey;
+        const dim = !inBucket || (analyzeFocusSpecies && s.species_code !== analyzeFocusSpecies);
+        return {
+          id: s.id, lat: Number(s.lat), lng: Number(s.lng), dim: dim,
+          opacity: dim ? 0.07 : 0.95,
+          color: analyzeIsNew(s, firsts) ? AZ_COL.neu : AZ_COL.rep,
+          tip: (taxName(s.species_code).comName || '') + ' · ' + String(s.date || '').slice(0, 10),
+          onClick: function () { setAnalyzeLog(azEsc(s.id)); }
+        };
+      });
+      renderAnalyzePins(pins, !analyzeFocusId);
+      const pickedBucket = buckets.filter(function (b) { return b.key === analyzeBucketKey; })[0];
+      const pool = pickedBucket ? logs.filter(function (s) { return azBucketOf(buckets, s.date) === pickedBucket; }) : logs;
       const groups = {};
-      visible.forEach(s => {
-        if (!groups[s.species_code]) groups[s.species_code] = [];
-        groups[s.species_code].push(s);
+      pool.forEach(function (s) { (groups[s.species_code] = groups[s.species_code] || []).push(s); });
+      const codes = Object.keys(groups).sort(function (a, b) { return taxName(a).comName.localeCompare(taxName(b).comName); });
+      const list = document.getElementById('analyze-list');
+      if (!list) return;
+      if (!codes.length) { list.innerHTML = '<p class="hint">Nothing logged in this range.</p>'; return; }
+      list.innerHTML = '<div class="az-stack">' + codes.map(function (code) {
+        const rows = groups[code].slice().sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
+        const isNew = rows.some(function (s) { return analyzeIsNew(s, firsts); });
+        const on = analyzeFocusSpecies === code ? ' on' : '';
+        let html = '<button type="button" class="az-bird' + on + '" onclick="setAnalyzeSpecies(\'' + azEsc(code) + '\')">' +
+          '<span class="az-bird-top"><b>' + azText(taxName(code).comName || code) + '</b><span class="az-meta">' + rows.length + (isNew ? ' · new' : ' · repeat') + '</span></span></button>';
+        if (analyzeFocusSpecies === code) html += analyzeLogButtons(rows, function (s) { return analyzeIsNew(s, firsts) ? AZ_COL.neu : AZ_COL.rep; });
+        return html;
+      }).join('') + '</div>';
+    }
+    function setAnalyzeGapMonth(m) {
+      analyzeGapMonth = Number(m);
+      renderAnalyze();
+    }
+    function monthlyForState(stateName) {
+      const region = STATE_CODES[stateName];
+      if (!region) return analyzeMonthlyMap();
+      const map = {};
+      officialRows(region).forEach(function (sp) { map[sp.code] = sp.monthly || []; });
+      return map;
+    }
+    function gapDefaultMonth(p) {
+      let best = new Date().getMonth(), n = -1;
+      for (let i = 0; i < 12; i++) {
+        if ((p.monthN[i] || 0) > n) { n = p.monthN[i]; best = i; }
+      }
+      return best;
+    }
+    function ensureGapCounty(stateName, countyName) {
+      const id = (stateName || '') + '|' + String(countyName || '').toLowerCase();
+      if (gapCountyCache[id]) return gapCountyCache[id];
+      const rec = { pending: true, done: false, codes: null, fallback: false };
+      gapCountyCache[id] = rec;
+      const stateCode = STATE_CODES[stateName];
+      if (!stateCode || typeof getEbirdKey !== 'function' || !getEbirdKey()) {
+        rec.pending = false; rec.done = true; rec.fallback = true;
+        return rec;
+      }
+      (async function () {
+        try {
+          if (!countyCache[stateCode]) countyCache[stateCode] = await ebirdGet('/ref/region/list/subnational2/' + stateCode);
+          const want = String(countyName || '').toLowerCase().replace(/\s+(county|parish|borough)$/g, '').trim();
+          const row = (countyCache[stateCode] || []).find(function (r) {
+            return String(r.name || '').toLowerCase().replace(/\s+(county|parish|borough)$/g, '').trim() === want;
+          });
+          if (!row || !row.code) {
+            rec.pending = false; rec.done = true; rec.fallback = true;
+          } else {
+            const list = await ebirdGet('/product/spplist/' + row.code);
+            rec.codes = new Set(Array.isArray(list) ? list : []);
+            rec.pending = false; rec.done = true;
+            if (!rec.codes.size) rec.fallback = true;
+          }
+        } catch (e) {
+          rec.pending = false; rec.done = true; rec.fallback = true;
+        }
+        const modal = document.getElementById('analyze-modal');
+        if (modal && modal.classList.contains('on') && analyzeLens === 'gaps') renderAnalyze();
+      })();
+      return rec;
+    }
+    function fillGapThumbs(codes) {
+      (codes || []).forEach(function (code) {
+        const apply = function (url) {
+          if (!url) return;
+          document.querySelectorAll('img[data-gap="' + code + '"]').forEach(function (img) { img.src = url; });
+        };
+        if (speciesPhotoCache[code]) { apply(speciesPhotoCache[code]); return; }
+        resolveSpeciesPhoto(code, taxName(code).comName).then(apply);
       });
-      const codes = Object.keys(groups).sort((a, b) => taxName(a).comName.localeCompare(taxName(b).comName));
-      if (!codes.length) {
-        box.innerHTML = '<p class="hint">Nothing on the map in this window.</p>';
+    }
+    function renderAnalyzeGaps(all) {
+      const sub = document.getElementById('analyze-sub');
+      const head = document.getElementById('analyze-head');
+      const box = document.getElementById('analyze-chart');
+      const legend = document.getElementById('analyze-legend');
+      if (sub) sub.innerHTML = '';
+      if (box) box.classList.remove('az-slim');
+      const logged = {};
+      all.forEach(function (s) { logged[s.species_code] = true; });
+      const monthly = analyzeMonthlyMap();
+      const places = {};
+      all.forEach(function (s) {
+        const key = analyzePlaceName(s);
+        if (!places[key]) places[key] = { key: key, months: {}, monthN: Array(12).fill(0), lats: [], lngs: [], states: {} };
+        const p = places[key];
+        const m = azMonth(s);
+        if (m >= 0) { p.months[m] = 1; p.monthN[m]++; }
+        const st = s.state || activeState;
+        if (st) p.states[st] = (p.states[st] || 0) + 1;
+        const lat = Number(s.lat), lng = Number(s.lng);
+        if (Number.isFinite(lat) && Number.isFinite(lng)) { p.lats.push(lat); p.lngs.push(lng); }
+      });
+      const list = Object.keys(places).map(function (k) {
+        const p = places[k];
+        let state = activeState, sn = -1;
+        Object.keys(p.states).forEach(function (st) { if (p.states[st] > sn) { sn = p.states[st]; state = st; } });
+        p.state = state;
+        const monthMap = monthlyForState(state);
+        const months = Object.keys(p.months).map(Number);
+        let missed = 0;
+        Object.keys(monthMap).forEach(function (code) {
+          if (logged[code]) return;
+          if (typeof isRealSpecies === 'function' && !isRealSpecies(code)) return;
+          const arr = monthMap[code] || [];
+          for (let i = 0; i < months.length; i++) {
+            if ((arr[months[i]] || 0) >= 0.15) { missed++; break; }
+          }
+        });
+        p.value = missed;
+        p.lat = p.lats.length ? p.lats.reduce(function (a, b) { return a + b; }, 0) / p.lats.length : NaN;
+        p.lng = p.lngs.length ? p.lngs.reduce(function (a, b) { return a + b; }, 0) / p.lngs.length : NaN;
+        return p;
+      }).filter(function (p) { return p.lats.length || p.value; }).sort(function (a, b) { return b.value - a.value || a.key.localeCompare(b.key); });
+      if (head) head.innerHTML = list.length
+        ? ('<b>' + list.length + '</b> places · open one for the most common birds that month')
+        : 'No placed logs yet.';
+      const top = list.slice(0, 8);
+      if (box) {
+        box.hidden = !top.length;
+        if (top.length) {
+          const w = Math.max(280, box.clientWidth || 320);
+          const rowH = 18, h = top.length * rowH + 2, labelW = 116;
+          const maxBar = Math.max(1, top[0].value);
+          let svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '">';
+          top.forEach(function (p, i) {
+            const y = i * rowH;
+            const bw = Math.max(2, ((w - labelW - 28) * p.value) / maxBar);
+            const on = !analyzePlaceKey || analyzePlaceKey === p.key;
+            svg += '<text class="az-axis" x="0" y="' + (y + 12) + '">' + azText(p.key).slice(0, 18) + '</text>';
+            svg += '<rect x="' + labelW + '" y="' + (y + 4) + '" width="' + bw + '" height="10" rx="2" fill="' + AZ_COL.uncommon + '" opacity="' + (on ? 1 : 0.3) + '"></rect>';
+            svg += '<text class="az-axis" x="' + (w - 2) + '" y="' + (y + 12) + '" text-anchor="end">' + p.value + '</text>';
+            svg += '<rect x="0" y="' + y + '" width="' + w + '" height="' + rowH + '" fill="transparent" onclick="setAnalyzePlace(\'' + azEsc(p.key) + '\')"></rect>';
+          });
+          svg += '</svg>';
+          box.innerHTML = svg;
+        }
+      }
+      if (legend) legend.innerHTML = '<span><i style="background:' + AZ_COL.uncommon + '"></i>Birds in season while you were there, still unlogged</span>';
+      const rangeEl = document.getElementById('analyze-range-label');
+      if (rangeEl) rangeEl.textContent = analyzePlaceKey || (analyzeIsCountry() ? 'United States' : activeState);
+      const maxV = Math.max(1, ...list.map(function (p) { return p.value; }));
+      renderAnalyzePins(list.filter(function (p) { return Number.isFinite(p.lat); }).map(function (p) {
+        const dim = analyzePlaceKey && analyzePlaceKey !== p.key;
+        return {
+          lat: p.lat, lng: p.lng, dim: dim, color: AZ_COL.uncommon,
+          opacity: dim ? 0.12 : 0.9,
+          radius: 6 + 12 * (p.value / maxV),
+          tip: p.key + ' · ' + p.value + ' still open',
+          onClick: function () { setAnalyzePlace(azEsc(p.key)); }
+        };
+      }), true);
+      const boxList = document.getElementById('analyze-list');
+      if (!boxList) return;
+      if (!list.length) { boxList.innerHTML = '<p class="hint">Log a few places first.</p>'; return; }
+      const thumbCodes = [];
+      boxList.innerHTML = '<div class="az-stack">' + list.map(function (p) {
+        const on = analyzePlaceKey === p.key ? ' on' : '';
+        let html = '<button type="button" class="az-gap' + on + '" onclick="setAnalyzePlace(\'' + azEsc(p.key) + '\')">' +
+          '<span class="az-gap-top"><b>' + azText(p.key) + '</b><span class="az-meta">' + p.value + ' still open</span></span></button>';
+        if (analyzePlaceKey !== p.key) return html;
+        const month = analyzeGapMonth == null ? gapDefaultMonth(p) : analyzeGapMonth;
+        const info = ensureGapCounty(p.state, p.key);
+        const monthMap = monthlyForState(p.state);
+        let pool = Object.keys(monthMap);
+        if (info.codes && info.codes.size) pool = pool.filter(function (code) { return info.codes.has(code); });
+        let ranked = pool.map(function (code) {
+          return { code: code, v: (monthMap[code] || [])[month] || 0, name: taxName(code).comName || code };
+        }).filter(function (x) {
+          return x.v > 0 && (typeof isRealSpecies !== 'function' || isRealSpecies(x.code));
+        }).sort(function (a, b) { return b.v - a.v || a.name.localeCompare(b.name); });
+        if (info.codes && info.codes.size && ranked.length < 5) {
+          ranked = Object.keys(monthMap).map(function (code) {
+            return { code: code, v: (monthMap[code] || [])[month] || 0, name: taxName(code).comName || code };
+          }).filter(function (x) { return x.v > 0; }).sort(function (a, b) { return b.v - a.v || a.name.localeCompare(b.name); });
+        }
+        ranked = ranked.slice(0, 20);
+        let monthsHtml = '<div class="az-months">';
+        for (let i = 0; i < 12; i++) {
+          monthsHtml += '<button type="button" class="' + (i === month ? 'on' : '') + (p.months[i] ? ' been' : '') + '" onclick="setAnalyzeGapMonth(' + i + ')">' + MONTH_LABELS[i].slice(0, 1) + '</button>';
+        }
+        monthsHtml += '</div>';
+        let note = 'Percent of statewide checklists. ';
+        if (info.pending) note = 'Loading birds eBird lists for this county…';
+        else if (info.codes && info.codes.size) note += 'Limited to species recorded in this county. County checklist shares aren’t in the eBird API.';
+        else note += 'County checklist shares aren’t in the eBird API, so this is the state figure.';
+        html += monthsHtml + '<p class="hint az-gap-note">' + note + '</p><div class="az-miss">' + ranked.map(function (sp) {
+          thumbCodes.push(sp.code);
+          const pct = Math.round(sp.v * 100);
+          const seen = logged[sp.code] ? ' · logged' : '';
+          return '<button type="button" onclick="openGapSpecies(\'' + azEsc(sp.code) + '\')"><img class="az-gap-ico" data-gap="' + azText(sp.code) + '" alt=""><b>' + azText(sp.name) + '</b><span class="az-meta">' + MONTH_LABELS[month].slice(0, 3) + ' · ' + pct + '%' + seen + '</span></button>';
+        }).join('') + (ranked.length ? '' : '<p class="hint">Nothing common here this month.</p>') + '</div>';
+        return html;
+      }).join('') + '</div>';
+      fillGapThumbs(thumbCodes);
+    }
+    function renderAnalyzePlaces(all, firsts) {
+      const sub = document.getElementById('analyze-sub');
+      const head = document.getElementById('analyze-head');
+      const legend = document.getElementById('analyze-legend');
+      if (sub) {
+        sub.innerHTML = '<div class="seg">' +
+          '<button type="button" class="' + (analyzePlaceMetric === 'lifers' ? 'on' : '') + '" onclick="setAnalyzePlaceMetric(\'lifers\')">Lifers</button>' +
+          '<button type="button" class="' + (analyzePlaceMetric === 'species' ? 'on' : '') + '" onclick="setAnalyzePlaceMetric(\'species\')">Species</button>' +
+          '<button type="button" class="' + (analyzePlaceMetric === 'logs' ? 'on' : '') + '" onclick="setAnalyzePlaceMetric(\'logs\')">Logs</button></div>';
+      }
+      const places = {};
+      all.forEach(function (s) {
+        const key = analyzePlaceName(s);
+        if (!places[key]) places[key] = { key: key, logs: [], species: {}, lifers: {}, lats: [], lngs: [] };
+        const p = places[key];
+        p.logs.push(s);
+        p.species[s.species_code] = 1;
+        if (firsts[s.species_code] === String(s.date || '')) p.lifers[s.species_code] = 1;
+        const lat = Number(s.lat), lng = Number(s.lng);
+        if (Number.isFinite(lat) && Number.isFinite(lng)) { p.lats.push(lat); p.lngs.push(lng); }
+      });
+      const list = Object.keys(places).map(function (k) {
+        const p = places[k];
+        p.speciesN = Object.keys(p.species).length;
+        p.liferN = Object.keys(p.lifers).length;
+        p.value = analyzePlaceMetric === 'species' ? p.speciesN : (analyzePlaceMetric === 'logs' ? p.logs.length : p.liferN);
+        p.lat = p.lats.length ? p.lats.reduce(function (a, b) { return a + b; }, 0) / p.lats.length : NaN;
+        p.lng = p.lngs.length ? p.lngs.reduce(function (a, b) { return a + b; }, 0) / p.lngs.length : NaN;
+        return p;
+      }).sort(function (a, b) { return b.value - a.value || a.key.localeCompare(b.key); });
+      const color = analyzePlaceMetric === 'species' ? AZ_COL.neu : (analyzePlaceMetric === 'logs' ? AZ_COL.rep : AZ_COL.common);
+      const label = analyzePlaceMetric === 'species' ? 'species' : (analyzePlaceMetric === 'logs' ? 'logs' : 'lifers');
+      if (head) head.innerHTML = list.length
+        ? ('<b>' + list.length + '</b> places · sized by ' + label)
+        : 'Log a sighting with a place to see it here.';
+      const chart = document.getElementById('analyze-chart');
+      const top = list.filter(function (p) { return p.value > 0; }).slice(0, 8);
+      if (chart) {
+        chart.classList.remove('az-slim');
+        chart.hidden = !top.length;
+        if (top.length) {
+          const w = Math.max(280, chart.clientWidth || 320);
+          const rowH = 18, h = top.length * rowH + 2, labelW = 116;
+          const maxV = Math.max(1, top[0].value);
+          let svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '">';
+          top.forEach(function (p, i) {
+            const y = i * rowH;
+            const bw = Math.max(2, ((w - labelW - 28) * p.value) / maxV);
+            const on = !analyzePlaceKey || analyzePlaceKey === p.key;
+            svg += '<text class="az-axis" x="0" y="' + (y + 12) + '">' + azText(p.key).slice(0, 18) + '</text>';
+            svg += '<rect x="' + labelW + '" y="' + (y + 4) + '" width="' + bw + '" height="10" rx="2" fill="' + color + '" opacity="' + (on ? 1 : 0.3) + '"></rect>';
+            svg += '<text class="az-axis" x="' + (w - 2) + '" y="' + (y + 12) + '" text-anchor="end">' + p.value + '</text>';
+            svg += '<rect x="0" y="' + y + '" width="' + w + '" height="' + rowH + '" fill="transparent" onclick="setAnalyzePlace(\'' + azEsc(p.key) + '\')"></rect>';
+          });
+          svg += '</svg>';
+          chart.innerHTML = svg;
+        }
+      }
+      if (legend) legend.innerHTML = '<span><i style="background:' + color + '"></i>' + label.charAt(0).toUpperCase() + label.slice(1) + '</span>';
+      const rangeEl = document.getElementById('analyze-range-label');
+      if (rangeEl) rangeEl.textContent = analyzePlaceKey || (analyzeIsCountry() ? 'United States' : activeState);
+      const maxV = Math.max(1, ...list.map(function (p) { return p.value; }));
+      const pins = [];
+      list.forEach(function (p) {
+        if (!Number.isFinite(p.lat)) return;
+        const dim = analyzePlaceKey && analyzePlaceKey !== p.key;
+        pins.push({
+          lat: p.lat, lng: p.lng, dim: dim, color: color,
+          radius: 6 + 12 * (p.value / maxV),
+          tip: p.key + ' · ' + p.value + ' ' + label,
+          onClick: function () { setAnalyzePlace(azEsc(p.key)); }
+        });
+      });
+      if (analyzePlaceKey && analyzeFocusSpecies) {
+        const place = places[analyzePlaceKey];
+        if (place) {
+          place.logs.forEach(function (s) {
+            if (s.species_code !== analyzeFocusSpecies) return;
+            pins.push({
+              id: s.id, lat: Number(s.lat), lng: Number(s.lng), color: '#fff',
+              radius: analyzeFocusId === s.id ? 8 : 5,
+              tip: taxName(s.species_code).comName + ' · ' + String(s.date || '').slice(0, 10),
+              onClick: function () { setAnalyzeLog(azEsc(s.id)); }
+            });
+          });
+        }
+      }
+      renderAnalyzePins(pins, !analyzeFocusId);
+      const listEl = document.getElementById('analyze-list');
+      if (!listEl) return;
+      if (analyzePlaceKey && places[analyzePlaceKey]) {
+        const place = places[analyzePlaceKey];
+        const by = {};
+        place.logs.forEach(function (s) { (by[s.species_code] = by[s.species_code] || []).push(s); });
+        const codes = Object.keys(by).sort(function (a, b) { return taxName(a).comName.localeCompare(taxName(b).comName); });
+        listEl.innerHTML = '<div class="az-stack">' + codes.map(function (code) {
+          const rows = by[code].slice().sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
+          const lifer = !!place.lifers[code];
+          const on = analyzeFocusSpecies === code ? ' on' : '';
+          let html = '<button type="button" class="az-bird' + on + '" onclick="setAnalyzeSpecies(\'' + azEsc(code) + '\')">' +
+            '<span class="az-bird-top"><b>' + azText(taxName(code).comName || code) + '</b><span class="az-meta">' + (lifer ? 'lifer here' : (rows.length + ' logs')) + '</span></span></button>';
+          if (analyzeFocusSpecies === code) html += analyzeLogButtons(rows, function () { return lifer ? AZ_COL.common : AZ_COL.rep; });
+          return html;
+        }).join('') + '</div>';
         return;
       }
-      const grid = codes.map(code => {
-        const logs = groups[code].slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
-        const n = taxName(code);
-        const color = analyzePinColor(logs[0], firsts);
-        const on = analyzeFocusSpecies === code ? ' on' : '';
-        const marks = Math.max(1, Math.min(8, logs.length));
-        const segs = Array.from({ length: marks }, () => '<i style="background:' + color + '"></i>').join('');
-        let html = '<button type="button" class="az-card' + on + '" onclick="setAnalyzeSpecies(\'' + code + '\')">' +
-          '<em>' + segs + '</em>' +
-          '<b>' + (n.comName || code) + '</b></button>';
-        if (analyzeFocusSpecies === code) {
-          html += '<div class="az-logs">' + logs.map(s => {
-            const i = analyzeMonthIndex(s, win);
-            const c = analyzePinColor(s, firsts);
-            const hit = analyzeFocusId === s.id ? ' on' : '';
-            const where = s.location || s.county || s.state || '';
-            return '<button type="button" class="az-log' + hit + '" onclick="event.stopPropagation();setAnalyzeMonth(' + i + ',\'' + s.id + '\')">' +
-              '<i style="background:' + c + '"></i>' +
-              '<b>' + String(s.date || '').slice(0, 10) + '</b><span>' + where + '</span></button>';
-          }).join('') + '</div>';
+      if (!list.length) { listEl.innerHTML = '<p class="hint">No placed logs yet.</p>'; return; }
+      listEl.innerHTML = '<div class="az-stack">' + list.map(function (p) {
+        const on = analyzePlaceKey === p.key ? ' on' : '';
+        return '<button type="button" class="az-gap' + on + '" onclick="setAnalyzePlace(\'' + azEsc(p.key) + '\')">' +
+          '<span class="az-gap-top"><b>' + azText(p.key) + '</b><span class="az-meta">' + p.liferN + ' lifers · ' + p.speciesN + ' species</span></span></button>';
+      }).join('') + '</div>';
+    }
+    function renderAnalyzeSeason(all, firsts) {
+      const sub = document.getElementById('analyze-sub');
+      const head = document.getElementById('analyze-head');
+      const chart = document.getElementById('analyze-chart');
+      const legend = document.getElementById('analyze-legend');
+      const filters = ['all', 'common', 'uncommon', 'rare', 'out'];
+      const names = { all: 'All', common: 'Common', uncommon: 'Uncommon', rare: 'Rare', out: 'Outside' };
+      if (sub) sub.innerHTML = '<div class="seg">' + filters.map(function (f) {
+        return '<button type="button" class="' + (analyzeSeasonFilter === f ? 'on' : '') + '" onclick="setAnalyzeSeasonFilter(\'' + f + '\')">' + names[f] + '</button>';
+      }).join('') + '</div>';
+      const monthly = analyzeMonthlyMap();
+      const by = {};
+      all.forEach(function (s) { (by[s.species_code] = by[s.species_code] || []).push(s); });
+      const birds = Object.keys(by).map(function (code) {
+        const rows = by[code].slice().sort(function (a, b) { return String(a.date || '').localeCompare(String(b.date || '')); });
+        const m = azMonth(rows[0]);
+        const freq = m >= 0 ? ((monthly[code] || [])[m] || 0) : 0;
+        return { code: code, logs: rows, month: m, kind: analyzeWindowKind(freq), name: taxName(code).comName || code };
+      }).sort(function (a, b) { return a.name.localeCompare(b.name); });
+      const counts = { common: 0, uncommon: 0, rare: 0, out: 0 };
+      birds.forEach(function (b) { counts[b.kind]++; });
+      if (head) head.innerHTML = birds.length
+        ? ('<b>' + counts.common + '</b> common window · <b>' + counts.uncommon + '</b> uncommon · <b>' + counts.rare + '</b> rare · <b>' + counts.out + '</b> outside')
+        : 'Log a bird to see whether it landed in season.';
+      if (chart) {
+        const t = Math.max(1, birds.length);
+        chart.classList.add('az-slim');
+        chart.hidden = !birds.length;
+        chart.innerHTML = birds.length ? ('<div class="az-share" style="margin:0">' +
+          '<i style="flex:' + Math.max(counts.common, 0.001) + ';background:' + AZ_COL.common + '"></i>' +
+          '<i style="flex:' + Math.max(counts.uncommon, 0.001) + ';background:' + AZ_COL.uncommon + '"></i>' +
+          '<i style="flex:' + Math.max(counts.rare, 0.001) + ';background:' + AZ_COL.rare + '"></i>' +
+          '<i style="flex:' + Math.max(counts.out, 0.001) + ';background:' + AZ_COL.out + '"></i></div>') : '';
+        void t;
+      }
+      if (legend) legend.innerHTML = '<span><i style="background:' + AZ_COL.common + '"></i>Common</span><span><i style="background:' + AZ_COL.uncommon + '"></i>Uncommon</span><span><i style="background:' + AZ_COL.rare + '"></i>Rare</span><span><i style="background:' + AZ_COL.out + '"></i>Outside</span><span>White edge = logged · dot = first time</span>';
+      const rangeEl = document.getElementById('analyze-range-label');
+      if (rangeEl) rangeEl.textContent = 'Colored by the month of that sighting';
+      const shown = analyzeSeasonFilter === 'all' ? birds : birds.filter(function (b) { return b.kind === analyzeSeasonFilter; });
+      const focusCode = analyzeFocusSpecies;
+      const pins = [];
+      all.forEach(function (s) {
+        if (focusCode && s.species_code !== focusCode) return;
+        const m = azMonth(s);
+        const freq = m >= 0 ? ((monthly[s.species_code] || [])[m] || 0) : 0;
+        const kind = analyzeWindowKind(freq);
+        if (!focusCode && analyzeSeasonFilter !== 'all' && kind !== analyzeSeasonFilter) return;
+        pins.push({
+          id: s.id, lat: Number(s.lat), lng: Number(s.lng), color: AZ_COL[kind] || AZ_COL.out,
+          tip: (taxName(s.species_code).comName || '') + ' · ' + analyzeKindLabel(kind),
+          onClick: function () { setAnalyzeLog(azEsc(s.id)); }
+        });
+      });
+      renderAnalyzePins(pins, !analyzeFocusId);
+      const listEl = document.getElementById('analyze-list');
+      if (!listEl) return;
+      if (!shown.length) { listEl.innerHTML = '<p class="hint">Nothing in this window.</p>'; return; }
+      listEl.innerHTML = '<div class="az-stack">' + shown.map(function (b) {
+        const on = analyzeFocusSpecies === b.code ? ' on' : '';
+        const loggedMonths = {};
+        b.logs.forEach(function (s) { const m = azMonth(s); if (m >= 0) loggedMonths[m] = 1; });
+        let focusM = -1;
+        if (analyzeFocusId) {
+          const hit = b.logs.find(function (s) { return s.id === analyzeFocusId; });
+          if (hit) focusM = azMonth(hit);
+        }
+        const monthArr = monthly[b.code] || [];
+        const cells = [];
+        for (let m = 0; m < 12; m++) {
+          const kind = analyzeWindowKind(monthArr[m] || 0);
+          const cls = kind + (loggedMonths[m] && m !== b.month ? ' logged' : '') + (m === b.month ? ' lifer' : '') + (m === focusM ? ' focus' : '');
+          cells.push('<i class="' + cls + '"></i>');
+        }
+        const graph = on ? azSparkHTML(monthArr, loggedMonths, b.month, focusM) : ('<span class="az-strip">' + cells.join('') + '</span>');
+        let html = '<button type="button" class="az-bird' + on + '" onclick="setAnalyzeSpecies(\'' + azEsc(b.code) + '\')">' +
+          '<span class="az-bird-top"><b>' + azText(b.name) + '</b></span>' +
+          graph + '</button>';
+        if (analyzeFocusSpecies === b.code) {
+          html += analyzeLogButtons(b.logs.slice().sort(function (a, c) { return String(c.date || '').localeCompare(String(a.date || '')); }), function (s) {
+            const m = azMonth(s);
+            const freq = m >= 0 ? ((monthArr[m]) || 0) : 0;
+            return AZ_COL[analyzeWindowKind(freq)] || AZ_COL.out;
+          });
         }
         return html;
-      }).join('');
-      box.innerHTML = '<div class="az-grid">' + grid + '</div>';
+      }).join('') + '</div>';
+    }
+
+    function renderAnalyze() {
+      const modal = document.getElementById('analyze-modal');
+      if (!modal || !modal.classList.contains('on')) return;
+      const title = document.getElementById('analyze-title');
+      if (title) title.textContent = analyzeIsCountry() ? 'United States' : activeState;
+      paintAnalyzeLenses();
+      const wrap = document.getElementById('analyze-map-wrap');
+      if (wrap) wrap.hidden = false;
+      const all = analyzeLogs();
+      const firsts = analyzeFirstDates(all);
+      if (analyzeLens === 'gaps') renderAnalyzeGaps(all);
+      else if (analyzeLens === 'places') renderAnalyzePlaces(all, firsts);
+      else if (analyzeLens === 'season') renderAnalyzeSeason(all, firsts);
+      else renderAnalyzeYear(all, firsts);
+      if (analyzeFocusId) {
+        const s = sightings.find(function (x) { return x.id === analyzeFocusId; });
+        zoomAnalyzeLog(s);
+      }
     }
 
     function openAnalyzeSheet() {
       const modal = document.getElementById('analyze-modal');
       if (modal) modal.classList.add('on');
-      const view = document.getElementById('analyze-view');
-      if (view) view.value = analyzeView;
-      const share = document.getElementById('analyze-share');
-      if (share) {
-        share.value = analyzeShare;
-        share.hidden = analyzeView !== 'typeshare';
-      }
-      const slice = document.getElementById('analyze-slice');
-      if (slice) slice.hidden = analyzeView === 'typeshare';
-      renderAnalyze();
+      const go = function () { renderAnalyze(); };
+      if (!DATA.S || !Object.keys(DATA.S).length) loadData().then(go);
+      else go();
     }
 
     function closeAnalyzeSheet() {
       const modal = document.getElementById('analyze-modal');
       if (modal) modal.classList.remove('on');
-      analyzeRange = null;
       analyzeFocusId = '';
       analyzeFocusSpecies = '';
+      analyzeMonthPick = null;
       analyzeDrag = null;
     }
 
@@ -8227,7 +9431,9 @@
       document.getElementById('modal-discovered-view').style.display = tab === 'discovered' ? 'block' : 'none';
       document.getElementById('modal-missing-view').style.display = tab === 'missing' ? 'block' : 'none';
       const cmpView = document.getElementById('modal-compare-view');
-      if (cmpView) cmpView.style.display = isCompare ? 'block' : 'none';
+      if (cmpView) cmpView.style.display = isCompare ? 'flex' : 'none';
+      const regionModal = document.getElementById('region-species-modal');
+      if (regionModal) regionModal.classList.toggle('compare-on', isCompare);
       document.getElementById('tab-btn-discovered').className = tab === 'discovered' ? 'on' : '';
       document.getElementById('tab-btn-missing').className = tab === 'missing' ? 'on' : '';
       const cmpTab = document.getElementById('tab-btn-compare');
@@ -8445,31 +9651,175 @@
       document.getElementById('modal-discovered-view').innerHTML = disc.map(item => {
         const rec = item.firstRec;
         const photo = rec && (rec.photo_url || '');
+        const fullId = rec && rec.id ? String(rec.id).replace(/\\/g, '').replace(/'/g, '') : '';
         const when = rec ? fmtShortDate(rec.date) : '';
         const where = rec ? placeLabel(rec) : '';
-        return '<div class="row-card" onclick="openDiscoveredFromChecklist(\'' + item.code + '\')">' +
-          (photo ? '<img class="check-thumb" src="' + photo + '" alt="" />' : '') +
-          '<div><b>' + item.comName + '</b> ' + statusChip(item.status) + ' <span class="chip">' + item.group + '</span>' +
-          '<div class="muted" style="font-style:italic">' + item.sciName + '</div>' +
-          '<div class="muted mono">' + (when ? ('First: ' + when) : 'Logged') + (where ? (' · ' + where) : '') + '</div></div></div>';
+        const code = String(item.code || '').replace(/\\/g, '').replace(/'/g, '');
+        return '<div class="row-card">' +
+          (photo && fullId ? '<img class="check-thumb" src="' + photo + '" alt="" onclick="event.stopPropagation();openDiscoveredPhoto(\'' + fullId + '\')" />' : '') +
+          '<div><button type="button" class="check-open" onclick="openSearchFromChecklist(\'' + code + '\')">' +
+          '<span class="disc-line"><b>' + item.comName + '</b>' +
+          '<span class="check-tags">' + statusChip(item.status) + '<span class="chip">' + item.group + '</span></span></span>' +
+          '<div class="muted" style="font-style:italic">' + item.sciName + '</div></button>' +
+          (fullId
+            ? '<button type="button" class="check-log" onclick="openDiscoveredLog(\'' + fullId + '\')">' + (when ? ('First: ' + when) : 'Logged') + (where ? (' · ' + where) : '') + '</button>'
+            : '<div class="muted mono">Logged</div>') +
+          '</div></div>';
       }).join('') || '<div class="hint">No matching discovered species.</div>';
 
-      document.getElementById('modal-missing-view').innerHTML = miss.map(item =>
-        '<div class="row-card" onclick="openTargetFromChecklist(\'' + item.code + '\')"><div><b>' + item.comName + '</b> ' + statusChip(item.status) + ' <span class="chip">' + item.group + '</span>' +
-        '<div class="muted" style="font-style:italic">' + item.sciName + '</div></div>' +
-        '<button class="ghost" type="button" onclick="event.stopPropagation();showMissingOnMap(\'' + item.code + '\')">Show on map</button></div>'
-      ).join('') || '<div class="hint">No matching missing species.</div>';
+      document.getElementById('modal-missing-view').innerHTML = miss.map(item => {
+        const code = String(item.code || '').replace(/\\/g, '').replace(/'/g, '');
+        return '<div class="row-card miss-row"><div><button type="button" class="check-open" onclick="openSearchFromChecklist(\'' + code + '\')">' +
+          '<span class="disc-line"><b>' + item.comName + '</b>' +
+          '<span class="check-tags">' + statusChip(item.status) + '<span class="chip">' + item.group + '</span></span></span>' +
+          '<div class="muted" style="font-style:italic">' + item.sciName + '</div></button></div>' +
+          '<div class="check-actions">' +
+          '<button type="button" class="cmp-act" onclick="event.stopPropagation();showMissingOnMap(\'' + code + '\')">' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="3 6.5 9 4 15 6.5 21 4 21 17.5 15 20 9 17.5 3 20"/><line x1="9" y1="4" x2="9" y2="17.5"/><line x1="15" y1="6.5" x2="15" y2="20"/></svg>Map</button>' +
+          '<button type="button" class="cmp-act tgt" onclick="event.stopPropagation();openTargetFromChecklist(\'' + code + '\')">' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2.8" x2="12" y2="5.2"/><line x1="12" y1="18.8" x2="12" y2="21.2"/><line x1="2.8" y1="12" x2="5.2" y2="12"/><line x1="18.8" y1="12" x2="21.2" y2="12"/></svg>Targets</button>' +
+          '</div></div>';
+      }).join('') || '<div class="hint">No matching missing species.</div>';
+    }
+
+    function targetsIconButton(handler) {
+      return '<button type="button" class="check-tgt" title="Targets" aria-label="Targets" onclick="event.stopPropagation();' + handler + '">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="3"/>' +
+        '<line x1="12" y1="2.8" x2="12" y2="5.2"/><line x1="12" y1="18.8" x2="12" y2="21.2"/>' +
+        '<line x1="2.8" y1="12" x2="5.2" y2="12"/><line x1="18.8" y1="12" x2="21.2" y2="12"/></svg></button>';
+    }
+
+    let checklistReturn = null;
+
+    function syncChecklistBack() {
+      const btn = document.getElementById('checklist-back');
+      if (btn) btn.hidden = !checklistReturn;
+    }
+
+    function snapshotChecklist() {
+      const body = document.querySelector('#region-species-modal .sheet-b');
+      const listA = document.getElementById('compare-list-a');
+      const listB = document.getElementById('compare-list-b');
+      return {
+        tab: modalTab,
+        scroll: body ? body.scrollTop : 0,
+        listScrollA: listA ? listA.scrollTop : 0,
+        listScrollB: listB ? listB.scrollTop : 0,
+        window: checklistWindow,
+        rarity: checklistRarity,
+        status: checklistStatus,
+        group: checklistGroup,
+        search: (document.getElementById('checklist-search') || {}).value || '',
+        sort: (document.getElementById('checklist-sort') || {}).value || 'az',
+        compareStateB: compareStateB,
+        compareAllMonths: compareAllMonths,
+        compareMonthA: compareMonthA,
+        compareMonthB: compareMonthB,
+        compareUnlogged: compareUnlogged,
+        compareMode: compareMode,
+        compareSort: compareSort,
+        activeState: activeState
+      };
+    }
+
+    function markChecklistExit() {
+      if (checklistReturn) return;
+      checklistReturn = snapshotChecklist();
+      try { history.pushState({ avianChecklistBack: 1 }, ''); } catch (e) {}
+      syncChecklistBack();
+    }
+
+    function restoreChecklistFromSnapshot() {
+      const snap = checklistReturn;
+      if (!snap) return;
+      checklistReturn = null;
+      syncChecklistBack();
+      checklistWindow = snap.window || 'all';
+      checklistRarity = snap.rarity || 'all';
+      checklistStatus = snap.status || 'all';
+      checklistGroup = snap.group || 'all';
+      checklistScroll = snap.scroll || 0;
+      compareStateB = snap.compareStateB || compareStateB;
+      compareAllMonths = !!snap.compareAllMonths;
+      compareMonthA = snap.compareMonthA || 0;
+      compareMonthB = snap.compareMonthB == null ? 11 : snap.compareMonthB;
+      compareUnlogged = !!snap.compareUnlogged;
+      compareMode = snap.compareMode || 'all';
+      compareSort = snap.compareSort || 'az';
+      modalTab = snap.tab || 'discovered';
+      if (snap.activeState && STATE_CODES[snap.activeState]) activeState = snap.activeState;
+      const search = document.getElementById('checklist-search');
+      if (search) search.value = snap.search || '';
+      const sort = document.getElementById('checklist-sort');
+      if (sort) sort.value = snap.sort || 'az';
+      ['30d', '1y', 'all'].forEach(x => {
+        const el = document.getElementById('btn-check-' + x);
+        if (el) el.className = x === checklistWindow ? 'on' : '';
+      });
+      checklistScrollPending = snap;
+      openRegionSpeciesModal();
+    }
+
+    function returnToChecklist() {
+      if (checklistReturn && history.state && history.state.avianChecklistBack) {
+        history.back();
+        return;
+      }
+      restoreChecklistFromSnapshot();
+    }
+
+    window.addEventListener('popstate', function () {
+      if (!checklistReturn) return;
+      restoreChecklistFromSnapshot();
+    });
+
+    let checklistScrollPending = null;
+
+    function applyChecklistScrollPending() {
+      const snap = checklistScrollPending;
+      if (!snap) return;
+      const body = document.querySelector('#region-species-modal .sheet-b');
+      if (body) body.scrollTop = snap.scroll || 0;
+      if (snap.tab === 'compare') {
+        const a = document.getElementById('compare-list-a');
+        const b = document.getElementById('compare-list-b');
+        if (a) a.scrollTop = snap.listScrollA || 0;
+        if (b) b.scrollTop = snap.listScrollB || 0;
+      }
+      checklistScrollPending = null;
+    }
+
+    function openSearchFromChecklist(code) {
+      if (!code) return;
+      markChecklistExit();
+      checklistResume = false;
+      closeRegionSpeciesModal();
+      switchTab('search');
+      openSearchDossier(code);
+    }
+
+    function openDiscoveredPhoto(id) {
+      const s = sightings.find(x => x.id === id);
+      if (!s) return;
+      const src = s.photo_full || s.photo_url;
+      if (!src) return;
+      const n = taxName(s.species_code);
+      const when = s.date ? fmtShortDate(s.date) : '';
+      const where = typeof placeLabel === 'function' ? placeLabel(s) : '';
+      openLightboxImage(src, n.comName || 'Sighting', [when, where].filter(Boolean).join(' · '));
+    }
+
+    function openDiscoveredLog(id) {
+      if (!id) return;
+      openDetailModal(id);
     }
 
     function openDiscoveredFromChecklist(code) {
-      const body = document.querySelector('#region-species-modal .sheet-b');
-      checklistScroll = body ? body.scrollTop : 0;
-      checklistResume = true;
-      closeRegionSpeciesModal();
-      openSpeciesDossier(code);
+      openSearchFromChecklist(code);
     }
 
     function openTargetFromChecklist(code) {
+      markChecklistExit();
       checklistResume = false;
       closeRegionSpeciesModal();
       radarLens = 'all';
@@ -8677,11 +10027,6 @@
       const bW = Math.max(0, Math.min(100, row.freqB * 100));
       const both = !!(row.inA && row.inB);
       const stacked = showBoth || both;
-      let delta = '';
-      if (both) {
-        const rel = relFreqDelta(homeAbbr, otherAbbr, row.freqA, row.freqB);
-        delta = '<span class="cmp-delta ' + rel.cls + '">' + rel.text + '</span>';
-      }
       const bars = stacked
         ? ('<div class="cmp-bars">' +
             '<div class="cmp-barline"><span>' + homeAbbr + '</span><i><em style="width:' + aW.toFixed(1) + '%;background:' + themePal().em + '"></em></i><span>' + pctLabel(row.freqA) + '</span></div>' +
@@ -8690,7 +10035,18 @@
         : ('<div class="cmp-bars"><div class="cmp-barline solo"><i><em style="width:' + (row.side === 'b' ? bW : aW).toFixed(1) + '%;background:' + (row.side === 'b' ? themePal().cool : themePal().em) + '"></em></i><span>' + pctLabel(row.side === 'b' ? row.freqB : row.freqA) + '</span></div></div>');
       const code = String(row.code || '').replace(/\\/g, '').replace(/'/g, '');
       const st = String(stateName || '').replace(/\\/g, '').replace(/'/g, '');
-      return '<div class="cmp-row" data-cmp-nav="' + code + '" data-cmp-state="' + st + '" onclick="openCompareSpecies(\'' + code + '\',\'' + st + '\')"><div class="cmp-row-top"><b>' + row.comName + '</b>' + delta + '</div>' + bars + '</div>';
+      const dot = '<i class="cmp-logdot' + (row.logged ? '' : ' off') + '" title="' + (row.logged ? 'Logged' : 'Not logged') + '"></i>';
+      return '<div class="cmp-row">' +
+        '<button type="button" class="cmp-more" aria-label="More" onclick="event.stopPropagation();toggleCompareCard(this)">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+        '<button type="button" class="cmp-main" onclick="openSearchFromChecklist(\'' + code + '\')">' +
+        '<div class="cmp-head">' + dot + '<b>' + row.comName + '</b></div>' + bars + '</button>' +
+        '<div class="cmp-extra">' +
+        '<button type="button" class="cmp-act" onclick="showCompareOnMap(\'' + code + '\',\'' + st + '\')">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="3 6.5 9 4 15 6.5 21 4 21 17.5 15 20 9 17.5 3 20"/><line x1="9" y1="4" x2="9" y2="17.5"/><line x1="15" y1="6.5" x2="15" y2="20"/></svg>Map</button>' +
+        '<button type="button" class="cmp-act tgt" onclick="openCompareSpecies(\'' + code + '\',\'' + st + '\')">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2.8" x2="12" y2="5.2"/><line x1="12" y1="18.8" x2="12" y2="21.2"/><line x1="2.8" y1="12" x2="5.2" y2="12"/><line x1="18.8" y1="12" x2="21.2" y2="12"/></svg>Targets</button>' +
+        '</div></div>';
     }
 
     function renderCompareViews() {
@@ -8712,7 +10068,8 @@
           inA: !!a,
           inB: !!b,
           freqA: a ? a.freq : 0,
-          freqB: b ? b.freq : 0
+          freqB: b ? b.freq : 0,
+          logged: logged.has(code)
         });
       });
       const onlyA = rows.filter(r => r.inA && !r.inB);
@@ -8755,19 +10112,97 @@
       document.getElementById('compare-col-a-title').innerHTML = home + ' <span id="compare-col-a-count">' + listA.length + '</span>';
       document.getElementById('compare-col-b-title').innerHTML = other + ' <span id="compare-col-b-count">' + listB.length + '</span>';
       const stats = document.getElementById('compare-stats');
-      if (compareMode === 'common') {
-        stats.innerHTML =
-          '<div class="cmp-stat"><div class="num em">' + both.length + '</div><div class="cap">species in common</div></div>' +
-          '<div class="cmp-stat-mid">relative<br>frequency</div>' +
-          '<div class="cmp-stat"><div class="num">' + aHigher + ' / ' + bHigher + '</div><div class="cap">' + aAb + ' higher · ' + bAb + ' higher</div><div class="cmp-lean">' + even + ' about even</div></div>';
-      } else {
-        stats.innerHTML =
-          '<div class="cmp-stat"><div class="num em">' + onlyA.length + '</div><div class="cap">only in ' + home + '</div></div>' +
-          '<div class="cmp-stat-mid">' + both.length + '<br>shared</div>' +
-          '<div class="cmp-stat"><div class="num cool">' + onlyB.length + '</div><div class="cap">only in ' + other + '</div></div>';
-      }
+      if (stats) stats.className = 'cmp-viz mode-' + compareMode;
+      const relTotal = aHigher + bHigher + even;
+      if (stats) stats.innerHTML =
+        '<div class="cmp-viz-label">Where they occur</div>' +
+        '<div class="cmp-split"><i class="a" style="flex:' + Math.max(onlyA.length, 0.001) + '"></i>' +
+        '<i class="s" style="flex:' + Math.max(both.length, 0.001) + '"></i>' +
+        '<i class="b" style="flex:' + Math.max(onlyB.length, 0.001) + '"></i></div>' +
+        '<div class="cmp-viz-caps"><span><b>' + onlyA.length + '</b> only ' + aAb + '</span>' +
+        '<span><b>' + both.length + '</b> shared</span>' +
+        '<span><b>' + onlyB.length + '</b> only ' + bAb + '</span></div>' +
+        (relTotal
+          ? ('<div class="cmp-viz-label">Relative frequency</div>' +
+            '<div class="cmp-balance"><i class="a" style="flex:' + Math.max(aHigher, 0.001) + '"></i>' +
+            '<i class="e" style="flex:' + Math.max(even, 0.001) + '"></i>' +
+            '<i class="b" style="flex:' + Math.max(bHigher, 0.001) + '"></i></div>' +
+            '<div class="cmp-viz-caps"><span>' + aHigher + ' ' + aAb + ' higher</span>' +
+            '<span>' + even + ' even</span><span>' + bHigher + ' ' + bAb + ' higher</span></div>')
+          : '');
       document.getElementById('compare-list-a').innerHTML = listA.map(r => compareRowHtml(r, aAb, bAb, showBoth, home)).join('') || '<div class="hint">No species on this side.</div>';
       document.getElementById('compare-list-b').innerHTML = listB.map(r => compareRowHtml(r, aAb, bAb, showBoth, other)).join('') || '<div class="hint">No species on this side.</div>';
+      if (checklistScrollPending && checklistScrollPending.tab === 'compare') applyChecklistScrollPending();
+    }
+
+    function toggleCompareCard(btn) {
+      const row = btn && btn.closest ? btn.closest('.cmp-row') : null;
+      if (!row) return;
+      const willOpen = !row.classList.contains('open');
+      document.querySelectorAll('#modal-compare-view .cmp-row.open').forEach(el => el.classList.remove('open'));
+      if (willOpen) row.classList.add('open');
+    }
+
+    function fitStateFillScreen(name) {
+      if (!mapInstance || typeof L === 'undefined') return false;
+      const bounds = stateLatLngBounds(name || activeState);
+      if (!bounds || !bounds.isValid || !bounds.isValid()) return false;
+      try { mapInstance.invalidateSize({ animate: false, pan: false }); } catch (e) {}
+      const size = mapInstance.getSize();
+      if (!size || size.x < 40 || size.y < 40) return false;
+      skipHuntMove = 4;
+      const padX = Math.round(Math.max(48, size.x * 0.1));
+      const padTop = Math.round(Math.max(96, size.y * 0.18));
+      const padBottom = Math.round(Math.max(128, size.y * 0.24));
+      const padY = Math.round((padTop + padBottom) / 2);
+      let zoom = 6;
+      try { zoom = mapInstance.getBoundsZoom(bounds, false, L.point(padX, padY)); } catch (e) { zoom = 6; }
+      if (!isFinite(zoom)) zoom = 6;
+      zoom = Math.max(3, Math.min(11, zoom));
+      const center = bounds.getCenter();
+      try { mapInstance.setView(center, zoom, { animate: false }); }
+      catch (e) { return false; }
+      try {
+        const pt = mapInstance.project(center, zoom);
+        const shiftY = (padBottom - padTop) / 2;
+        mapInstance.setView(mapInstance.unproject(pt.add([0, shiftY]), zoom), zoom, { animate: false });
+      } catch (e2) {}
+      return true;
+    }
+
+    function requestFitFillScreen(name) {
+      const target = name || activeState;
+      const attempt = (n) => {
+        if (fitStateFillScreen(target)) return;
+        if (n < 10) setTimeout(() => attempt(n + 1), 80);
+      };
+      requestAnimationFrame(() => requestAnimationFrame(() => attempt(0)));
+    }
+
+    function focusCompareState(stateName) {
+      if (!stateName || !STATE_CODES[stateName]) return;
+      activeState = stateName;
+      localStorage.setItem('avian_focus_state', stateName);
+      currentRegionLevel = 'state';
+      const stateBtn = document.getElementById('btn-level-state');
+      const countryBtn = document.getElementById('btn-level-country');
+      if (stateBtn) stateBtn.className = 'on';
+      if (countryBtn) countryBtn.className = '';
+      stateLocked = true;
+      localStorage.setItem('avian_state_lock', '1');
+      if (typeof syncStateLockBtn === 'function') syncStateLockBtn();
+      const st = document.getElementById('form-state');
+      if (st) st.value = stateName;
+      try { updateRegionalHUD(); } catch (e) {}
+    }
+
+    function showCompareOnMap(code, stateName) {
+      if (!code) return;
+      markChecklistExit();
+      focusCompareState(stateName);
+      checklistResume = false;
+      closeRegionSpeciesModal();
+      jumpSpeciesToRadarMap(code);
     }
 
     function focusStateOnMap(name) {
@@ -12204,23 +13639,15 @@
           searchShelfChip(code) +
           '<span class="chip">US ' + (rarityStaticUS(code) === 1 ? 'Common' : rarityStaticUS(code) === 2 ? 'Uncommon' : rarityStaticUS(code) === 4 ? 'Vagrant' : 'Rare') + '</span>';
       }
-      const hero = document.getElementById('search-hero');
-      const ph = document.getElementById('search-hero-ph');
-      const applyHero = url => {
-        if (url && hero) {
-          hero.src = url;
-          hero.alt = n.comName || '';
-          hero.hidden = false;
-          if (ph) ph.hidden = true;
-        } else {
-          if (hero) hero.hidden = true;
-          if (ph) { ph.hidden = false; ph.textContent = searchHeroLetter(n.comName); }
-        }
-      };
-      if (speciesPhotoCache[code]) applyHero(speciesPhotoCache[code]);
+      const heroLetter = searchHeroLetter(n.comName);
+      const cachedSlides = speciesGalleryCache[code];
+      if (cachedSlides) paintSearchHeroSlides(cachedSlides, heroLetter);
       else {
-        applyHero('');
-        resolveSpeciesPhoto(code, n.comName).then(applyHero);
+        const primary = speciesPhotoCache[code];
+        paintSearchHeroSlides(primary ? [{ url: primary, label: 'Typical' }] : [], heroLetter);
+        resolveSpeciesGallery(code, n.comName).then(function (slides) {
+          if (searchCode === code) paintSearchHeroSlides(slides, heroLetter);
+        });
       }
       paintSearchBio(code, n.comName);
       paintSearchSpark(code, searchZoomState || '');
@@ -12273,37 +13700,148 @@
       }).join('');
     }
 
-    async function paintSearchBio(code, comName) {
-      const el = document.getElementById('search-bio');
-      if (!el) return;
-      const apply = text => {
-        if (!el || searchCode !== code) return;
-        if (text) {
-          el.textContent = text;
-          el.classList.remove('empty');
-        } else {
-          el.textContent = 'No short description available.';
-          el.classList.add('empty');
-        }
-      };
-      if (wikiExtractCache[code]) { apply(wikiExtractCache[code]); return; }
-      el.textContent = 'Loading description…';
-      el.classList.add('empty');
-      const name = comName || taxName(code).comName;
-      const wikiPage = SPECIES_PHOTO_PAGE[code] || name;
-      try {
-        const res = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(wikiPage));
-        if (res.ok) {
-          const data = await res.json();
-          const extract = (data && data.extract && !/disambiguation/i.test(data.title || '')) ? data.extract : '';
-          if (extract) wikiExtractCache[code] = extract;
-          const url = data && data.thumbnail && data.thumbnail.source;
-          if (url && !speciesPhotoCache[code]) speciesPhotoCache[code] = url;
-          apply(extract);
+    const BIO_GROUPS = [
+      { id: 'id', label: 'Identification', re: /description|identification|plumage|similar species|appearance|field mark|vocal|song|calls?/i },
+      { id: 'where', label: 'Where', re: /distribution|habitat|range|migration|geograph/i },
+      { id: 'life', label: 'Life', re: /behaviou?r|diet|feeding|breeding|nest|reproduc|ecolog|life history/i },
+      { id: 'status', label: 'Status', re: /conservation|population/i }
+    ];
+    const BIO_SKIP = /taxonomy|etymolog|reference|external link|see also|notes?$|further reading|gallery|bibliography|citation|sources?$|in culture|works cited|literature/i;
+
+    function trimBio(text, max) {
+      let t = String(text || '').replace(/\[[^\]]{0,24}\]/g, '').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+      if (t.length <= max) return t;
+      const cut = t.slice(0, max);
+      const dot = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('.\n'));
+      return (dot > 240 ? cut.slice(0, dot + 1) : cut).trim();
+    }
+
+    function wikiSectionUrl(title, section) {
+      const page = encodeURIComponent(String(title || '').replace(/ /g, '_'));
+      if (!page) return 'https://en.wikipedia.org/';
+      const base = 'https://en.wikipedia.org/wiki/' + page;
+      if (!section) return base;
+      return base + '#' + encodeURIComponent(String(section).replace(/ /g, '_'));
+    }
+
+    function wikiBioFromExtract(extract, pageTitle) {
+      const raw = String(extract || '').trim();
+      if (!raw || /may refer to:/i.test(raw.slice(0, 400))) return null;
+      const parts = raw.split(/\n(?===+)/);
+      const tabs = { general: { text: parts[0].replace(/^==+.*?==+\s*/, '').trim(), anchor: '' } };
+      const anchors = { general: '' };
+      let parent = '';
+      parts.slice(1).forEach(function (block) {
+        const hm = block.match(/^(==+)\s*(.*?)\s*==+/);
+        if (!hm) return;
+        const depth = hm[1].length;
+        const title = hm[2].replace(/\[.*?\]/g, '').trim();
+        const body = block.replace(/^==+.*?==+\s*/, '').trim();
+        if (BIO_SKIP.test(title)) {
+          if (depth <= 2) parent = '';
           return;
         }
-      } catch (e) {}
-      apply('');
+        let id = '';
+        for (let i = 0; i < BIO_GROUPS.length; i++) {
+          if (BIO_GROUPS[i].re.test(title)) { id = BIO_GROUPS[i].id; break; }
+        }
+        if (!id && depth > 2 && parent) id = parent;
+        if (depth <= 2) parent = id;
+        if (!id || body.length < 40) return;
+        if (!anchors[id]) anchors[id] = title;
+        const prev = tabs[id] && tabs[id].text ? tabs[id].text + '\n\n' : '';
+        tabs[id] = { text: prev + body, anchor: anchors[id] };
+      });
+      const order = [{ id: 'general', label: 'General' }].concat(BIO_GROUPS);
+      const page = String(pageTitle || '').trim();
+      const out = order.filter(function (g) { return tabs[g.id] && tabs[g.id].text && tabs[g.id].text.length > 60; }).map(function (g) {
+        return {
+          id: g.id,
+          label: g.label,
+          text: trimBio(tabs[g.id].text, g.id === 'general' ? 1400 : 1100),
+          href: wikiSectionUrl(page, g.id === 'general' ? '' : tabs[g.id].anchor)
+        };
+      });
+      return out.length ? out : null;
+    }
+
+    async function fetchWikiExtract(title) {
+      const res = await fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&exsectionformat=wiki&redirects=1&titles=' + encodeURIComponent(title) + '&format=json&origin=*');
+      if (!res.ok) return '';
+      const data = await res.json();
+      const page = Object.values((data.query && data.query.pages) || {})[0];
+      if (!page || page.missing != null || /disambiguation/i.test(page.title || '')) return null;
+      return { title: page.title || title, extract: page.extract || '' };
+    }
+
+    function renderSearchBio(code) {
+      const el = document.getElementById('search-bio');
+      const tabsEl = document.getElementById('search-bio-tabs');
+      const tabs = (wikiBioCache[code] || []).slice();
+      if (!el) return;
+      if (!tabs.length) {
+        if (tabsEl) { tabsEl.hidden = true; tabsEl.innerHTML = ''; }
+        const more = document.getElementById('search-bio-more');
+        if (more) more.hidden = true;
+        el.textContent = 'No short description available.';
+        el.classList.add('empty');
+        return;
+      }
+      if (!tabs.some(function (t) { return t.id === searchBioTab; })) searchBioTab = tabs[0].id;
+      if (tabsEl) {
+        tabsEl.hidden = tabs.length < 2;
+        tabsEl.innerHTML = tabs.length < 2 ? '' : tabs.map(function (t) {
+          return '<button type="button" class="' + (t.id === searchBioTab ? 'on' : '') + '" onclick="setSearchBioTab(\'' + t.id + '\')">' + t.label + '</button>';
+        }).join('');
+      }
+      const more = document.getElementById('search-bio-more');
+      const cur = tabs.find(function (t) { return t.id === searchBioTab; }) || tabs[0];
+      el.textContent = cur.text;
+      el.classList.remove('empty');
+      if (more) {
+        if (cur.href) {
+          more.hidden = false;
+          more.href = cur.href;
+        } else more.hidden = true;
+      }
+    }
+
+    function setSearchBioTab(id) {
+      searchBioTab = id || 'general';
+      if (searchCode) renderSearchBio(searchCode);
+    }
+
+    async function paintSearchBio(code, comName) {
+      const el = document.getElementById('search-bio');
+      const tabsEl = document.getElementById('search-bio-tabs');
+      if (!el) return;
+      searchBioTab = 'general';
+      if (wikiBioCache[code]) { renderSearchBio(code); return; }
+      el.textContent = 'Loading description…';
+      el.classList.add('empty');
+      if (tabsEl) { tabsEl.hidden = true; tabsEl.innerHTML = ''; }
+      const more = document.getElementById('search-bio-more');
+      if (more) more.hidden = true;
+      const name = comName || taxName(code).comName;
+      const wikiPage = (typeof SPECIES_PHOTO_PAGE !== 'undefined' && SPECIES_PHOTO_PAGE[code]) || name;
+      try {
+        let page = await fetchWikiExtract(wikiPage);
+        if ((!page || !page.extract) && name) {
+          const sres = await fetch('https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(name + ' bird') + '&srlimit=4&format=json&origin=*');
+          if (sres.ok) {
+            const sdata = await sres.json();
+            const hits = (sdata.query && sdata.query.search) || [];
+            const hit = hits.find(function (h) { return /\(bird\)/i.test(h.title); }) || hits[0];
+            if (hit) page = await fetchWikiExtract(hit.title);
+          }
+        }
+        if (searchCode !== code) return;
+        const tabs = page && wikiBioFromExtract(page.extract, page.title);
+        if (tabs) wikiBioCache[code] = tabs;
+        renderSearchBio(code);
+      } catch (e) {
+        if (searchCode === code) renderSearchBio(code);
+      }
     }
 
     function searchSimilarPool(code) {
@@ -12311,6 +13849,14 @@
       const n = taxName(code);
       const group = birdGroup(n.comName, n.sciName);
       return searchCatalog.filter(r => r.code !== code && r.group === group);
+    }
+
+    function openRandomBird() {
+      if (!searchCatalog) searchCatalog = searchCountableCatalog();
+      const list = (searchCatalog || []).filter(function (r) { return r.code && r.code !== searchCode; });
+      if (!list.length) return;
+      const pick = list[Math.floor(Math.random() * list.length)];
+      openSearchDossier(pick.code);
     }
 
     function shuffleSearchSimilar() {
@@ -12350,10 +13896,11 @@
       row.innerHTML = pick.map(r => {
         const photo = speciesPhotoCache[r.code] || '';
         return '<button type="button" class="search-sim-card" onclick="openSearchDossier(\'' + r.code + '\')">' +
+          '<span class="search-sim-media">' +
           (photo
-            ? '<img src="' + photo.replace(/"/g, '&quot;') + '" alt="" />'
+            ? '<img src="' + photo.replace(/"/g, '"') + '" alt="" />'
             : '<img class="empty" data-search-thumb="' + r.code + '" src="' + ph + '" alt="" />') +
-          '<b>' + escHtml(r.comName) + '</b></button>';
+          '</span><b>' + escHtml(r.comName) + '</b></button>';
       }).join('');
       bindSearchThumbs(row, true);
     }
@@ -12386,11 +13933,50 @@
       ).join('') +
         '<button type="button" class="' + (searchMonth === 'all' ? 'on' : '') + '" onclick="onSearchMonthScrub(12)">ALL</button>';
       wrap.innerHTML = labels;
-      const range = document.getElementById('search-range');
-      if (range) range.value = String(searchMonth === 'all' ? 12 : searchMonth);
+      const thumb = document.getElementById('search-scrub-thumb');
+      const line = document.getElementById('search-scrub-line');
+      const n = searchMonth === 'all' ? 12 : Number(searchMonth);
+      const btn = wrap.children[n];
+      if (thumb && line && btn) {
+        const place = function () {
+          const lr = line.getBoundingClientRect();
+          const br = btn.getBoundingClientRect();
+          if (!lr.width) return;
+          thumb.style.left = (br.left + br.width / 2 - lr.left) + 'px';
+        };
+        place();
+        requestAnimationFrame(place);
+      }
+      bindSearchScrub();
       const lab = document.getElementById('search-scrub-label');
       if (lab) lab.textContent = searchMonth === 'all' ? 'Year average' : (MONTH_LABELS[searchMonth] || '');
       syncSearchPlayUi();
+    }
+
+    function bindSearchScrub() {
+      const line = document.getElementById('search-scrub-line');
+      if (!line || line._bound) return;
+      line._bound = true;
+      const pick = function (e) {
+        const months = document.getElementById('search-months');
+        if (!months || !months.children.length) return;
+        const x = e.clientX;
+        let best = 0, dist = 1e9;
+        for (let i = 0; i < months.children.length; i++) {
+          const r = months.children[i].getBoundingClientRect();
+          const d = Math.abs(x - (r.left + r.width / 2));
+          if (d < dist) { dist = d; best = i; }
+        }
+        onSearchMonthScrub(best);
+      };
+      line.addEventListener('pointerdown', function (e) {
+        try { line.setPointerCapture(e.pointerId); } catch (err) {}
+        pick(e);
+      });
+      line.addEventListener('pointermove', function (e) {
+        if (!line.hasPointerCapture || !line.hasPointerCapture(e.pointerId)) return;
+        pick(e);
+      });
     }
 
     function onSearchMonthScrub(v) {
@@ -12746,6 +14332,7 @@
       if (!code) return;
       const scrub = document.getElementById('search-scrub');
       if (scrub) scrub.classList.toggle('on', searchMapMode === 'season');
+      buildSearchMonthScrub();
       const back = document.getElementById('search-map-back');
       if (back) back.classList.toggle('on', searchMapMode === 'week' && !!searchZoomState);
       syncSearchMapFloats();
