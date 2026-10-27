@@ -793,30 +793,75 @@
     .ratings-tools[hidden] { display: none !important; }
     .ratings-tools .mini { flex: 1 1 120px; max-width: none; width: auto; }
     .ratings-tools .seg { flex: none; }
-    #ratings-status { flex: 1 1 100%; margin: 0; }
     #gallery-grid[hidden], #ratings-list[hidden] { display: none !important; }
     #ratings-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-    .ratings-progress {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
-      gap: 6px; margin-bottom: 2px;
+    #gallery-scoreline.is-count { color: var(--text); font-variant-numeric: tabular-nums; }
+    .rate-board { display: flex; flex-direction: column; gap: 8px; }
+    .rate-stats { display: grid; gap: 5px; }
+    .rate-stat {
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 6px;
+      background: var(--ribbon); border: 1px solid var(--line-3); border-radius: 12px;
+      box-shadow: var(--inset); padding: 7px 9px 6px; min-width: 0;
     }
-    .ratings-progress div {
-      background: var(--photo); border: 1px solid var(--line); border-radius: 10px;
-      padding: 8px 8px 7px; min-width: 0;
+    .rate-stat i {
+      flex: 1 1 auto; min-width: 0;
+      font-style: normal; font-size: 9px; font-weight: 700;
+      letter-spacing: .04em; text-transform: uppercase; line-height: 1;
+      margin: 0 0 2px; color: var(--em3); white-space: nowrap;
     }
-    .ratings-progress b {
-      display: block; font-size: 20px; letter-spacing: -.04em; line-height: 1;
+    .rate-stat b {
+      flex: none; margin: 0 0 0 auto; color: var(--text); font-size: 22px; font-weight: 800;
+      letter-spacing: -.04em; line-height: .85; font-variant-numeric: tabular-nums;
     }
-    .ratings-progress b.up { color: var(--em3); }
-    .ratings-progress b.down { color: var(--warn); }
-    .ratings-progress span {
-      display: block; margin-top: 3px; font-size: 10px; font-weight: 700;
-      letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
+    .tone-r1 { --tone: #d6d3d1; }
+    .tone-r2 { --tone: #34d399; }
+    .tone-r3 { --tone: #fb923c; }
+    .tone-r4 { --tone: #c084fc; }
+    html[data-theme="light"] .tone-r1 { --tone: #a8a29e; }
+    html[data-theme="light"] .tone-r2 { --tone: #059669; }
+    html[data-theme="light"] .tone-r3 { --tone: #ea580c; }
+    html[data-theme="light"] .tone-r4 { --tone: #7c3aed; }
+    .rate-read {
+      position: absolute; top: 10px; left: 12px; z-index: 2; margin: 0;
+      display: flex; align-items: baseline; gap: 5px; pointer-events: none;
+      padding: 4px 8px; border-radius: 8px;
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
+      color: var(--muted); font-size: 12px; line-height: 1;
+    }
+    .rate-read b { color: var(--text); font-size: 15px; font-weight: 800; letter-spacing: -.03em; }
+    .rate-chart {
+      display: grid; grid-template-columns: 22px minmax(0, 1fr);
+      grid-template-rows: 132px auto; column-gap: 6px;
+    }
+    .rate-y {
+      position: relative; font-size: 9px; line-height: 1; font-weight: 650;
+      color: var(--muted-2); font-variant-numeric: tabular-nums;
+    }
+    .rate-y span { position: absolute; right: 0; transform: translateY(-50%); }
+    .rate-plot { position: relative; min-width: 0; height: 132px; }
+    .rate-plot svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .rate-scrub {
+      position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
+      opacity: 0; cursor: ew-resize;
+    }
+    .rate-x {
+      grid-column: 2; display: flex; justify-content: space-between;
+      padding-top: 5px; font-size: 9px; line-height: 1; font-weight: 650;
+      color: var(--muted-2); font-variant-numeric: tabular-nums;
     }
     .rating-row {
       display: flex; gap: 10px; align-items: flex-start; text-align: left;
       width: 100%; background: var(--photo); border: 1px solid var(--line);
       border-radius: 12px; padding: 8px; cursor: pointer; color: inherit;
+    }
+    .rating-row.tone-r1, .rating-row.tone-r2, .rating-row.tone-r3, .rating-row.tone-r4 {
+      background:
+        radial-gradient(120% 150% at 0% 40%, color-mix(in srgb, var(--tone) 20%, transparent), transparent 62%),
+        var(--photo);
+      border-color: color-mix(in srgb, var(--tone) 40%, var(--line));
+      box-shadow:
+        inset 0 0 32px color-mix(in srgb, var(--tone) 12%, transparent),
+        0 0 18px color-mix(in srgb, var(--tone) 14%, transparent);
     }
     .rating-row img {
       width: 72px; height: 72px; object-fit: cover; border-radius: 8px; flex: none;
@@ -828,29 +873,44 @@
     .photo-rating { margin-top: 12px; }
     .photo-rating[hidden] { display: none !important; }
     .pr-override { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; align-items: center; }
-    .pr-override-form { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; align-items: flex-end; }
+    .pr-override-form { display: flex; flex-direction: column; gap: 8px; width: 100%; align-items: stretch; }
     .pr-override-form[hidden] { display: none !important; }
-    .pr-override-form label { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 72px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-    .pr-override-form input { width: 100%; }
+    .pr-slide { display: grid; grid-template-columns: 84px 1fr 42px; gap: 8px; align-items: center; width: 100%; min-width: 0; font-size: 11px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+    .pr-slide input[type="range"] { width: 100%; margin: 0; accent-color: var(--em); }
+    .pr-num, .pr-num-input { width: 42px; margin: 0; padding: 0; text-align: right; background: none; border: 0; border-radius: 0; color: var(--text); font-size: 15px; font-weight: 800; letter-spacing: -.03em; text-transform: none; }
+    .pr-num-input { border-bottom: 1px solid var(--line-2); }
+    .pr-ov-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .pr-ov-comp { flex: none; min-width: 72px; }
-    .pr-ov-comp b { display: block; font-size: 22px; letter-spacing: -.04em; line-height: 1; color: var(--text); text-transform: none; letter-spacing: -.04em; }
-    .pr-ov-comp span { display: block; margin-top: 3px; }
-    .pr-you { margin: 6px 0 0; font-size: 10px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-    .ai-key-row .seg { flex: none; align-self: stretch; }
-    .ai-key-row .seg button { padding: 0 10px; }
+    .pr-ov-comp b { display: flex; align-items: center; gap: 6px; font-size: 22px; line-height: 1; letter-spacing: -.04em; text-transform: none; color: var(--text); }
+    .pr-ov-comp span { display: block; margin-top: 3px; font-size: 10px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .score-pip {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex: none;
+      background: var(--tone, var(--muted-2));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone, transparent) 28%, transparent), 0 0 8px var(--tone, transparent);
+    }
+    .pr-bits > span.pr-custom { color: var(--em); }
     .pr-top { display: flex; gap: 12px; align-items: flex-start; }
-    .pr-score { flex: none; min-width: 64px; }
-    .pr-score b { display: block; font-size: 32px; letter-spacing: -.05em; line-height: .9; }
+    .pr-score { flex: none; min-width: 72px; }
+    .pr-score b {
+      display: flex; align-items: center; gap: 6px; color: var(--text);
+      font-size: 32px; letter-spacing: -.05em; line-height: 1;
+    }
     .pr-score span {
       display: block; margin-top: 3px; font-size: 10px; font-weight: 750;
       letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
     }
     .pr-bits { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-width: 0; }
     .pr-bits > span {
-      font-size: 11px; font-weight: 700; background: var(--panel-2);
-      border: 1px solid var(--line); border-radius: 999px; padding: 3px 7px;
+      font-size: 11px; font-weight: 700; color: var(--text);
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--tone, var(--line-2)) 62%, transparent);
+      box-shadow:
+        0 0 10px color-mix(in srgb, var(--tone, transparent) 32%, transparent),
+        inset 0 0 8px color-mix(in srgb, var(--tone, transparent) 14%, transparent);
+      border-radius: 999px; padding: 3px 8px;
     }
     .pr-bits i { font-style: normal; color: var(--muted); font-weight: 650; margin-right: 4px; }
+    .pr-bits b { color: var(--text); font-weight: 800; letter-spacing: -.02em; }
     .pr-rar.r1 { color: #047857; border-color: #6ee7b7; background: #ecfdf5; }
     .pr-rar.r2 { color: #c2410c; border-color: #fdba74; background: #fff7ed; }
     .pr-rar.r3 { color: #6d28d9; border-color: #c4b5fd; background: #f5f3ff; }
@@ -1216,9 +1276,11 @@
     input[type=text], input[type=password], input[type=date], textarea, select {
       width: 100%; background: var(--input); border: 1px solid var(--line-2); border-radius: 8px; padding: 8px; color: var(--text);
     }
-    .ai-key-row { display: flex; gap: 8px; align-items: stretch; }
-    .ai-key-row input { flex: 1; min-width: 0; width: auto; }
-    .ai-key-row button { flex: none; white-space: nowrap; align-self: stretch; }
+    .weight-box { margin-top: 10px; }
+    .weight-k { display: block; font-size: 10px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .weight-row { display: grid; grid-template-columns: 84px 1fr 40px; gap: 8px; align-items: center; margin-top: 6px; font-size: 11px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+    .weight-row input[type="range"] { width: 100%; margin: 0; accent-color: var(--em); }
+    .weight-row b { text-align: right; color: var(--text); font-size: 12px; font-weight: 800; letter-spacing: 0; text-transform: none; }
     .results { position: absolute; left: 0; right: 0; top: 100%; max-height: 180px; overflow: auto; background: var(--panel); border: 1px solid var(--line-2); border-radius: 8px; z-index: 30; display: none; }
     .results.on { display: block; }
     .results button { display: block; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 8px 12px; }
@@ -2183,9 +2245,9 @@
             <option value="composite">Composite</option>
             <option value="technical">Technical</option>
             <option value="aesthetic">Aesthetic</option>
+            <option value="vibes">Vibes</option>
             <option value="newest">Newest</option>
           </select>
-          <p class="hint" id="ratings-status"></p>
         </div>
         <div id="ratings-list" hidden></div>
         <div id="gallery-grid" class="grid"></div>
@@ -2739,26 +2801,28 @@
         </div>
         <p class="hint">Get a key at ebird.org/api/keygen</p>
         <div class="field" style="margin-top:14px">
-          <label for="form-ai-provider">Photo rating</label>
-          <select id="form-ai-provider">
-            <option value="xai">xAI</option>
-            <option value="gemini">Gemini</option>
-            <option value="openai">OpenAI</option>
-            <option value="anthropic">Anthropic</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="form-ai-key">API key</label>
-          <div class="ai-key-row">
-            <input type="password" id="form-ai-key" placeholder="Paste the key for the provider above" autocomplete="off" spellcheck="false" />
-            <div class="seg" role="group" aria-label="Show ratings">
-              <button type="button" id="btn-ratings-on" class="on" onclick="setRatingsDisplay(true)">On</button>
-              <button type="button" id="btn-ratings-off" onclick="setRatingsDisplay(false)">Off</button>
-            </div>
-            <button type="button" class="ghost" onclick="resetPhotoRatings()">Reset ratings</button>
+          <label>Photo ratings</label>
+          <div class="seg" role="group" aria-label="Show ratings">
+            <button type="button" id="btn-ratings-on" class="on" onclick="setRatingsDisplay(true)">On</button>
+            <button type="button" id="btn-ratings-off" onclick="setRatingsDisplay(false)">Off</button>
           </div>
+          <div class="weight-box" id="rating-weights">
+            <span class="weight-k">Weights</span>
+            <label class="weight-row">Technical
+              <input type="range" id="w-tech" min="0" max="100" step="1" value="34" oninput="onRatingWeightInput()" />
+              <b id="w-tech-pct">34%</b>
+            </label>
+            <label class="weight-row">Aesthetic
+              <input type="range" id="w-aes" min="0" max="100" step="1" value="33" oninput="onRatingWeightInput()" />
+              <b id="w-aes-pct">33%</b>
+            </label>
+            <label class="weight-row">Vibes
+              <input type="range" id="w-vibes" min="0" max="100" step="1" value="33" oninput="onRatingWeightInput()" />
+              <b id="w-vibes-pct">33%</b>
+            </label>
+          </div>
+          <p class="hint">Each score is 0 to 5, in half steps. Composite is the weighted mix of Technical, Aesthetic, and Vibes. Off hides every score and the Display Ratings button. Ratings stay on the photos.</p>
         </div>
-        <p class="hint">Optional. Leave the key blank to keep on-device scores. With a key, the aesthetic score and written note come from that provider. Sharpness and exposure stay on this device. The key is saved only in this browser. A finished rating is stored on the photo and is not calculated again unless the photo changes, you switch provider, or you tap Reset ratings. Off hides every score and the Display Ratings button. Stored ratings stay on the photos.</p>
         <div class="field" style="margin-top:14px">
           <label>Stats mode</label>
           <div class="seg">
@@ -3598,53 +3662,6 @@
     function getEbirdKey() {
       return localStorage.getItem('avian_ebird_key') || '';
     }
-    function getAiProvider() {
-      const v = localStorage.getItem('avian_ai_provider') || 'xai';
-      if (v === 'gemini' || v === 'openai' || v === 'anthropic' || v === 'xai') return v;
-      return 'xai';
-    }
-    function getAiKey() {
-      return (localStorage.getItem('avian_ai_key') || '').trim();
-    }
-    function aiProviderLabel(id) {
-      if (id === 'gemini') return 'Gemini';
-      if (id === 'openai') return 'OpenAI';
-      if (id === 'anthropic') return 'Anthropic';
-      return 'xAI';
-    }
-    function saveAiSettingsFromForm() {
-      const sel = document.getElementById('form-ai-provider');
-      const input = document.getElementById('form-ai-key');
-      if (!sel || !input) return false;
-      const provider = sel.value || 'xai';
-      const key = (input.value || '').trim();
-      const changed = provider !== getAiProvider() || key !== getAiKey();
-      try { localStorage.setItem('avian_ai_provider', provider); } catch (e) {}
-      try {
-        if (key) localStorage.setItem('avian_ai_key', key);
-        else localStorage.removeItem('avian_ai_key');
-      } catch (e) {}
-      if (changed && typeof clearGeminiModel === 'function') clearGeminiModel();
-      if (changed) ratingAiHold = '';
-      return changed;
-    }
-    function resetPhotoRatings() {
-      const n = sightings.filter(function (s) { return s && s.ai_rating; }).length;
-      if (!n) { alert('No stored ratings to clear.'); return; }
-      if (!confirm('Clear ' + n + ' stored rating' + (n === 1 ? '' : 's') + '? Open a photo or Display Ratings to calculate them again.')) return;
-      ratingAiHold = '';
-      ratingQueue.length = 0;
-      ratingQueued.clear();
-      ratingFailed.clear();
-      sightings.forEach(function (s) { if (s) delete s.ai_rating; });
-      persistSightings();
-      const modal = document.getElementById('detail-modal');
-      if (modal && modal.classList.contains('on') && currentDetailId) {
-        const s = sightings.find(function (x) { return x.id === currentDetailId; });
-        if (s) { paintDetailRating(s); ensurePhotoRating(s.id); }
-      }
-      if (typeof ratingsViewOn !== 'undefined' && ratingsViewOn && typeof renderGallery === 'function') renderGallery();
-    }
     function tileUrl() {
       return darkTiles
         ? 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'
@@ -3838,11 +3855,8 @@
 
     function openKeyModal() {
       document.getElementById('form-ebird-key').value = getEbirdKey();
-      const aiProvider = document.getElementById('form-ai-provider');
-      const aiKey = document.getElementById('form-ai-key');
-      if (aiProvider) aiProvider.value = getAiProvider();
-      if (aiKey) aiKey.value = getAiKey();
       paintRatingsDisplayToggle();
+      paintRatingWeights();
       refreshExportStamp();
       setStatsMode(statsMode);
       applyMapTiles();
@@ -3861,8 +3875,7 @@
           if (typeof radarScope !== 'undefined' && radarScope !== 'state' && typeof renderRadar === 'function') renderRadar();
         }
       }
-      const aiChanged = saveAiSettingsFromForm();
-      if (aiChanged && ratingsViewOn && typeof renderGallery === 'function') renderGallery();
+      if (typeof onRatingWeightInput === 'function') onRatingWeightInput();
       clearExportParts();
       document.getElementById('key-modal').classList.remove('on');
     }
@@ -6423,48 +6436,10 @@
         .toLowerCase();
     }
 
-    const RATING_V = 7;
     let ratingsViewOn = false;
     let ratingsScope = 'all';
-    const ratingQueue = [];
-    const ratingQueued = new Set();
-    const ratingFailed = new Set();
-    const ratingWaits = {};
-    let ratingBusy = false;
-    let ratingPersistTimer = 0;
-    let ratingAiHold = '';
 
     function clampNum(n, a, b) { return Math.max(a, Math.min(b, n)); }
-
-    function photoSig(s) {
-      const u = (s && (s.photo_url || s.photo_full)) || '';
-      return u.length + ':' + u.slice(0, 40) + ':' + u.slice(-24);
-    }
-
-    function ratingStored(s) {
-      const r = s && s.ai_rating;
-      return !!(r && r.v === RATING_V && r.sig === photoSig(s) && !r.blocked);
-    }
-
-    function ratingFresh(s) {
-      if (!ratingStored(s)) return false;
-      if (!getAiKey()) return true;
-      const want = getAiProvider();
-      const r = s.ai_rating;
-      if (r.model === 1 && r.source === want) return true;
-      return r.aiTried === want;
-    }
-
-    function rarityNameFromRank(rank) {
-      if (rank === 1) return 'Common';
-      if (rank === 2) return 'Uncommon';
-      if (rank === 3) return 'Rare';
-      return 'Vagrant';
-    }
-
-    function ratingDataReady() {
-      return !!(DATA && DATA.S && Object.keys(DATA.S).length);
-    }
 
     function liferPhotoIdSet() {
       const first = {};
@@ -6481,853 +6456,17 @@
       return ids;
     }
 
-    function measurePhoto(img) {
-      const W = 280;
-      const nw = img.naturalWidth || img.width || W;
-      const nh = img.naturalHeight || img.height || W;
-      const H = Math.max(12, Math.round(W * nh / Math.max(1, nw)));
-      const canvas = document.createElement('canvas');
-      canvas.width = W;
-      canvas.height = H;
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      ctx.drawImage(img, 0, 0, W, H);
-      let px;
-      try { px = ctx.getImageData(0, 0, W, H).data; }
-      catch (e) { throw new Error('tainted'); }
-      const n = W * H;
-      const y = new Float32Array(n);
-      const yb = new Float32Array(n);
-      const yWide = new Float32Array(n);
-      const mag = new Float32Array(n);
-      const magW = new Float32Array(n);
-      const rA = new Uint8Array(n);
-      const gA = new Uint8Array(n);
-      const bA = new Uint8Array(n);
-      for (let i = 0, p = 0; i < px.length; i += 4, p++) {
-        rA[p] = px[i];
-        gA[p] = px[i + 1];
-        bA[p] = px[i + 2];
-        y[p] = 0.2126 * px[i] + 0.7152 * px[i + 1] + 0.0722 * px[i + 2];
-        yb[p] = y[p];
-        yWide[p] = y[p];
-      }
-      for (let yy = 1; yy < H - 1; yy++) {
-        for (let xx = 1; xx < W - 1; xx++) {
-          const i = yy * W + xx;
-          let s = 0;
-          for (let dy = -1; dy <= 1; dy++) {
-            for (let dx = -1; dx <= 1; dx++) s += y[i + dy * W + dx];
-          }
-          yb[i] = s / 9;
-        }
-      }
-      for (let yy = 2; yy < H - 2; yy++) {
-        for (let xx = 2; xx < W - 2; xx++) {
-          const i = yy * W + xx;
-          let s = 0;
-          for (let dy = -2; dy <= 2; dy++) {
-            for (let dx = -2; dx <= 2; dx++) s += y[i + dy * W + dx];
-          }
-          yWide[i] = s / 25;
-        }
-      }
-      for (let yy = 1; yy < H - 1; yy++) {
-        for (let xx = 1; xx < W - 1; xx++) {
-          const i = yy * W + xx;
-          const gx = -y[i - W - 1] + y[i - W + 1] - 2 * y[i - 1] + 2 * y[i + 1] - y[i + W - 1] + y[i + W + 1];
-          const gy = -y[i - W - 1] - 2 * y[i - W] - y[i - W + 1] + y[i + W - 1] + 2 * y[i + W] + y[i + W + 1];
-          mag[i] = Math.hypot(gx, gy);
-          const gx2 = -yWide[i - W - 1] + yWide[i - W + 1] - 2 * yWide[i - 1] + 2 * yWide[i + 1] - yWide[i + W - 1] + yWide[i + W + 1];
-          const gy2 = -yWide[i - W - 1] - 2 * yWide[i - W] - yWide[i - W + 1] + yWide[i + W - 1] + 2 * yWide[i + W] + yWide[i + W + 1];
-          magW[i] = Math.hypot(gx2, gy2);
-        }
-      }
-      const sky = new Uint8Array(n);
-      const bright = new Uint8Array(n);
-      let skyN = 0;
-      for (let i = 0; i < n; i++) {
-        const chroma = Math.max(rA[i], gA[i], bA[i]) - Math.min(rA[i], gA[i], bA[i]);
-        const residual = Math.abs(y[i] - yb[i]);
-        const blue = bA[i] > rA[i] + 8 && bA[i] + 2 >= gA[i] && y[i] > 65 && residual < 18 && chroma > 12;
-        if (blue) { sky[i] = 1; skyN++; }
-        else if (y[i] > 188 && residual < 14 && chroma < 42) bright[i] = 1;
-      }
-      const skyStack = [];
-      for (let x = 0; x < W; x++) {
-        for (let yy = 0; yy < Math.min(3, H); yy++) {
-          const i = yy * W + x;
-          if (bright[i] && !sky[i]) { sky[i] = 1; skyN++; skyStack.push(i); }
-        }
-      }
-      while (skyStack.length) {
-        const p = skyStack.pop();
-        const x = p % W;
-        const yy = (p / W) | 0;
-        if (x > 0 && bright[p - 1] && !sky[p - 1]) { sky[p - 1] = 1; skyN++; skyStack.push(p - 1); }
-        if (x + 1 < W && bright[p + 1] && !sky[p + 1]) { sky[p + 1] = 1; skyN++; skyStack.push(p + 1); }
-        if (yy > 0 && bright[p - W] && !sky[p - W]) { sky[p - W] = 1; skyN++; skyStack.push(p - W); }
-        if (yy + 1 < H && bright[p + W] && !sky[p + W]) { sky[p + W] = 1; skyN++; skyStack.push(p + W); }
-      }
-      const skyFrac = skyN / n;
-      const samples = [];
-      for (let i = 0; i < n; i += 3) samples.push(Math.abs(y[i] - yb[i]));
-      samples.sort(function (a, b) { return a - b; });
-      const resCut = samples[Math.floor(samples.length * 0.4)] || 4;
-      let br = 0, bgc = 0, bb = 0, bn = 0;
-      for (let i = 0; i < n; i++) {
-        const use = skyFrac > 0.12 ? sky[i] : (Math.abs(y[i] - yb[i]) <= resCut + 0.5 && mag[i] < 22);
-        if (!use) continue;
-        br += rA[i]; bgc += gA[i]; bb += bA[i]; bn++;
-      }
-      if (!bn) { br = 128 * n; bgc = 128 * n; bb = 128 * n; bn = n; }
-      br /= bn; bgc /= bn; bb /= bn;
-      const cand = new Uint8Array(n);
-      for (let i = 0; i < n; i++) {
-        if (sky[i]) continue;
-        const dist = Math.abs(rA[i] - br) + Math.abs(gA[i] - bgc) + Math.abs(bA[i] - bb);
-        if (dist > 100) cand[i] = 1;
-      }
-      const seen = new Uint8Array(n);
-      const comps = [];
-      const stack = [];
-      for (let i = 0; i < n; i++) {
-        if (!cand[i] || seen[i]) continue;
-        let area = 0, minX = W, minY = H, maxX = 0, maxY = 0, edge = 0, sumX = 0, sumY = 0, seed = i;
-        stack.push(i);
-        seen[i] = 1;
-        while (stack.length) {
-          const p = stack.pop();
-          const x = p % W;
-          const yy = (p / W) | 0;
-          area++;
-          sumX += x; sumY += yy; edge += mag[p];
-          if (x < minX) minX = x;
-          if (yy < minY) minY = yy;
-          if (x > maxX) maxX = x;
-          if (yy > maxY) maxY = yy;
-          if (x > 0 && cand[p - 1] && !seen[p - 1]) { seen[p - 1] = 1; stack.push(p - 1); }
-          if (x + 1 < W && cand[p + 1] && !seen[p + 1]) { seen[p + 1] = 1; stack.push(p + 1); }
-          if (yy > 0 && cand[p - W] && !seen[p - W]) { seen[p - W] = 1; stack.push(p - W); }
-          if (yy + 1 < H && cand[p + W] && !seen[p + W]) { seen[p + W] = 1; stack.push(p + W); }
-        }
-        if (area < 8) continue;
-        comps.push({ area: area, minX: minX, minY: minY, maxX: maxX, maxY: maxY, edge: edge, sumX: sumX, sumY: sumY, seed: seed });
-      }
-      function sizeCurve(f) {
-        if (f < 0.006) return 8;
-        if (f < 0.02) return 8 + (f - 0.006) / 0.014 * 28;
-        if (f < 0.05) return 36 + (f - 0.02) / 0.03 * 28;
-        if (f < 0.10) return 64 + (f - 0.05) / 0.05 * 22;
-        if (f < 0.28) return 86 + (f - 0.10) / 0.18 * 14;
-        if (f < 0.55) return 100 - (f - 0.28) / 0.27 * 12;
-        return Math.max(28, 88 - (f - 0.55) * 150);
-      }
-      let best = null, bestScore = 0;
-      for (let c = 0; c < comps.length; c++) {
-        const comp = comps[c];
-        const f = comp.area / n;
-        if (f > 0.78) continue;
-        const bw = (comp.maxX - comp.minX + 1) / W;
-        const bh = (comp.maxY - comp.minY + 1) / H;
-        if (bw > 0.78 && bh < 0.18) continue;
-        const box = (comp.maxX - comp.minX + 1) * (comp.maxY - comp.minY + 1);
-        const compact = comp.area / box;
-        if (compact < 0.16) continue;
-        const score = sizeCurve(f) * (0.5 + 0.5 * Math.min(1, compact * 1.4));
-        if (score > bestScore) { bestScore = score; best = comp; }
-      }
-      const sub = new Uint8Array(n);
-      let found = 0;
-      if (best) {
-        const fill = [best.seed];
-        sub[best.seed] = 1;
-        found = 1;
-        for (let k = 0; k < fill.length; k++) {
-          const p = fill[k];
-          const x = p % W;
-          const yy = (p / W) | 0;
-          if (x > 0 && cand[p - 1] && !sub[p - 1]) { sub[p - 1] = 1; fill.push(p - 1); }
-          if (x + 1 < W && cand[p + 1] && !sub[p + 1]) { sub[p + 1] = 1; fill.push(p + 1); }
-          if (yy > 0 && cand[p - W] && !sub[p - W]) { sub[p - W] = 1; fill.push(p - W); }
-          if (yy + 1 < H && cand[p + W] && !sub[p + W]) { sub[p + W] = 1; fill.push(p + W); }
-        }
-      }
-      let count = 0, ySum = 0, clip = 0, chromaSum = 0, distSum = 0, cross = 0, crossN = 0;
-      const subMag = [];
-      const subWide = [];
-      const interior = [];
-      let outMag = 0, outN = 0, ringN = 0, ringY = 0;
-      for (let i = 0; i < n; i++) {
-        const dist = Math.abs(rA[i] - br) + Math.abs(gA[i] - bgc) + Math.abs(bA[i] - bb);
-        if (found && sub[i]) {
-          count++;
-          subMag.push(mag[i]);
-          subWide.push(magW[i]);
-          ySum += y[i];
-          chromaSum += Math.max(rA[i], gA[i], bA[i]) - Math.min(rA[i], gA[i], bA[i]);
-          distSum += dist;
-          if (y[i] < 10 || y[i] > 245) clip++;
-          if (magW[i] < 28) {
-            interior.push(mag[i]);
-            if (i % W > 0 && sub[i - 1] && magW[i - 1] < 28) {
-              const h = y[i] - yb[i];
-              const h0 = y[i - 1] - yb[i - 1];
-              if ((h > 3 && h0 < -3) || (h < -3 && h0 > 3)) cross++;
-              crossN++;
-            }
-          }
-        } else if (!sky[i]) {
-          outMag += mag[i];
-          outN++;
-        }
-      }
-      if (!count) {
-        for (let i = 0; i < n; i++) {
-          if (sky[i]) continue;
-          count++;
-          subMag.push(mag[i]);
-          subWide.push(magW[i]);
-          ySum += y[i];
-          if (y[i] < 10 || y[i] > 245) clip++;
-        }
-      }
-      if (!count) count = 1;
-      function pctOf(arr, p) {
-        if (!arr.length) return 0;
-        const s = arr.slice().sort(function (a, b) { return a - b; });
-        return s[Math.min(s.length - 1, Math.floor(s.length * p))];
-      }
-      const p50 = interior.length > 40 ? pctOf(interior, 0.5) : 0;
-      const p98 = pctOf(subMag, 0.98);
-      const p98w = pctOf(subWide, 0.98);
-      const keep = p98 > 8 ? p98w / p98 : 1;
-      const crossRate = crossN > 40 ? cross / crossN : 0;
-      const interiorFrac = count ? interior.length / count : 0;
-      const meanY = ySum / Math.max(1, count);
-      if (found && best) {
-        const x0 = Math.max(0, best.minX - 4), x1 = Math.min(W - 1, best.maxX + 4);
-        const y0 = Math.max(0, best.minY - 4), y1 = Math.min(H - 1, best.maxY + 4);
-        for (let yy = y0; yy <= y1; yy++) {
-          for (let xx = x0; xx <= x1; xx++) {
-            const i = yy * W + xx;
-            if (sub[i]) continue;
-            ringN++;
-            ringY += y[i];
-          }
-        }
-      }
-      let magSum = 0, magWSum = 0;
-      for (let i = 0; i < subMag.length; i++) { magSum += subMag[i]; magWSum += subWide[i]; }
-      const meanMag = subMag.length ? magSum / subMag.length : 0;
-      const focusRatio = magWSum > 1 ? magSum / magWSum : 1;
-      let skyY = 0, skyY2 = 0, bgN = 0, bgC = 0, bgY = 0, bgY2 = 0;
-      for (let i = 0; i < n; i++) {
-        if (sky[i]) { skyY += y[i]; skyY2 += y[i] * y[i]; }
-        if (!(found && sub[i])) {
-          bgN++;
-          bgY += y[i];
-          bgY2 += y[i] * y[i];
-          bgC += Math.max(rA[i], gA[i], bA[i]) - Math.min(rA[i], gA[i], bA[i]);
-        }
-      }
-      const skyStd = skyN ? Math.sqrt(Math.max(0, skyY2 / skyN - Math.pow(skyY / skyN, 2))) : 0;
-      const bgStd = bgN ? Math.sqrt(Math.max(0, bgY2 / bgN - Math.pow(bgY / bgN, 2))) : 0;
-      const bgChroma = bgN ? bgC / bgN : 0;
-      let sharp = Math.round(100 * (1 - Math.exp(-Math.max(0, p98 - 30) / 150)));
-      if (keep > 0.72 && crossRate < 0.07 && meanMag < 16) sharp = Math.round(sharp * (1 - Math.min(0.72, (keep - 0.62) / 0.36)));
-      if (focusRatio < 1.28 && meanMag < 18) sharp = Math.min(sharp, 18);
-      else if (focusRatio < 1.45 && meanMag < 14) sharp = Math.min(sharp, 36);
-      else if (meanMag < 8) sharp = Math.min(sharp, 32);
-      const grain = interiorFrac >= 0.45
-        ? clampNum(Math.round(Math.max((crossRate - 0.03) / 0.14 * 100, (p50 - 6) / 26 * 100)), 0, 100)
-        : 0;
-      sharp = clampNum(sharp, 0, 100);
-      const sharpIn = sharp;
-      let exposure = 94;
-      if (meanY < 28 || meanY > 228) exposure = 30;
-      else if (meanY < 48 || meanY > 205) exposure = 50;
-      else if (meanY < 70 || meanY > 180) exposure = 72;
-      else if (meanY < 88 || meanY > 162) exposure = 86;
-      exposure = clampNum(Math.round(exposure * (1 - Math.min(0.5, (clip / count) * 2.8))), 0, 100);
-      const size = found ? clampNum(Math.round(sizeCurve(best.area / n)), 0, 100) : 10;
-      const frac = best ? best.area / n : 0;
-      const ringMean = ringN ? ringY / ringN : meanY;
-      const subDist = count ? distSum / Math.max(1, found ? count : 1) : 0;
-      const sep = found ? clampNum(Math.round(Math.min(100, subDist * 0.85) * 0.55 + Math.min(100, Math.abs(meanY - ringMean) * 1.3) * 0.45), 0, 100) : 12;
-      const subject = found ? clampNum(Math.round(size * 0.64 + sep * 0.36), 0, 100) : 12;
-      let cx = 0.5, cy = 0.5, edgeTouch = 0;
-      if (found) {
-        cx = (best.sumX / best.area) / (W - 1);
-        cy = (best.sumY / best.area) / (H - 1);
-        const mrg = Math.min(best.minX / W, best.minY / H, (W - 1 - best.maxX) / W, (H - 1 - best.maxY) / H);
-        edgeTouch = mrg < 0.025 ? 1 : 0;
-      }
-      let placement = 78;
-      if (!found) placement = 20;
-      else if (edgeTouch) placement = 34;
-      else {
-        const tx = Math.abs(cx - 0.33) < 0.1 || Math.abs(cx - 0.67) < 0.1;
-        const ty = Math.abs(cy - 0.33) < 0.1 || Math.abs(cy - 0.67) < 0.1;
-        if (tx || ty) placement = 90;
-        if (cx > 0.12 && cx < 0.88 && cy > 0.12 && cy < 0.88) placement = Math.max(placement, 76);
-        else placement = 48;
-      }
-      const busyRaw = outN > n * 0.08 ? outMag / outN : 8;
-      const busy = clampNum(Math.round(100 * (1 - Math.exp(-Math.max(0, busyRaw - 6) / 22))), 0, 100);
-      const quiet = clampNum(100 - busy, 0, 100);
-      const plumage = found ? clampNum(Math.round((chromaSum / count) / 68 * 100), 0, 100) : 0;
-      const magSample = [];
-      for (let i = 0; i < n; i += 3) magSample.push(mag[i]);
-      const globalSharp = clampNum(Math.round(100 * (1 - Math.exp(-Math.max(0, pctOf(magSample, 0.98) - 30) / 160))), 0, 100);
-      let skyPen = 0;
-      if (skyFrac > 0.45 && size < 62) skyPen = Math.round((skyFrac - 0.4) * 55 + (62 - size) * 0.28);
-      let aesthetic = clampNum(Math.round(size * 0.34 + sep * 0.16 + placement * 0.12 + exposure * 0.16 + quiet * 0.06 + plumage * 0.16) - skyPen, 0, 100);
-      let technical = clampNum(Math.round(sharp * 0.62 + exposure * 0.2 + sep * 0.08 + Math.min(size, 92) * 0.1), 0, 100);
-      const tagMoves = [];
-      let tagTech = technical;
-      let tagAes = aesthetic;
-      function tagTake(name) {
-        const dq = 0.55 * (technical - tagTech) + 0.45 * (aesthetic - tagAes);
-        if (name && Math.abs(dq) >= 0.75) tagMoves.push({ name: name, d: dq });
-        tagTech = technical;
-        tagAes = aesthetic;
-      }
-      if (!found) {
-        technical = Math.min(technical, 36);
-        tagTake('No subject');
-      }
-      const feather = size >= 32 && sharp >= 58 && exposure >= 66 && meanMag >= 13;
-      const mush = !feather && grain >= 68 && (keep >= 0.75 || sharp < 46);
-      if (feather && grain >= 70) {
-        technical = Math.max(0, technical - 6);
-        tagTake('Grain');
-      } else if (mush) {
-        sharp = Math.min(sharp, grain >= 76 ? 36 : 54);
-        technical = Math.min(technical, grain >= 76 ? 34 : 52);
-        aesthetic = Math.min(aesthetic, 48);
-        tagTake('Grain');
-      } else if (grain >= 82) {
-        technical = Math.max(0, technical - 6);
-        tagTake('Grain');
-      }
-      let note = '';
-      if (focusRatio < 1.22 || (meanMag < 9 && focusRatio < 1.6)) {
-        technical = Math.min(technical, 12);
-        aesthetic = Math.min(aesthetic, 12);
-        note = 'soft';
-        tagTake('Soft focus');
-      } else if (focusRatio < 1.42 && meanMag < 24) {
-        technical = Math.min(technical, 32);
-        aesthetic = Math.min(aesthetic, 36);
-        note = 'soft';
-        tagTake('Soft focus');
-      }
-      if (!note && skyFrac > 0.42 && frac > 0.16 && size > 68) {
-        const over = Math.min(1, (frac - 0.14) / 0.26);
-        technical = Math.min(technical, Math.round(34 - over * 16));
-        aesthetic = Math.min(aesthetic, Math.round(32 - over * 8));
-        if (meanY < 82) technical = Math.min(technical, 22);
-        note = 'scenery';
-        tagTake('Setting');
-      }
-      const colorfulScene = bgChroma >= 26 && bgStd >= 24 && busy < 62;
-      const openField = skyFrac > 0.72 && sharp >= 74 && size >= 14 && skyStd >= 18;
-      if (!note && found && meanY < 55 && ringMean > meanY + 32 && plumage < 32 && !openField && !colorfulScene) {
-        technical = Math.min(technical, sharp >= 68 ? 46 : 30);
-        aesthetic = Math.min(aesthetic, 18);
-        note = 'backlit';
-        tagTake('Backlight');
-      }
-      if (skyFrac > 0.7 && size < 42) {
-        const flat = skyStd < 16;
-        if (size < 22 || sharp < 66) {
-          technical = Math.min(technical, 16);
-          aesthetic = Math.min(aesthetic, 12);
-          note = 'speck';
-          tagTake('Speck');
-        } else if (!flat && meanY < 58 && sharp >= 74 && size >= 24) {
-          technical = Math.min(Math.max(technical, 70), 84);
-          aesthetic = Math.max(aesthetic, 86);
-          note = 'atmosphere';
-          tagTake('Atmosphere');
-        } else if (flat) {
-          technical = Math.min(technical, sharp >= 68 ? 46 : 26);
-          aesthetic = Math.min(aesthetic, 16);
-          note = 'backlit';
-          tagTake('Backlight');
-        } else if (sharp >= 70) {
-          technical = Math.min(technical, 84);
-          aesthetic = clampNum(Math.round(34 + Math.min(size, 40) * 0.35 + plumage * 0.08), 36, 52);
-          note = 'skybird';
-          tagTake('Open sky');
-        }
-      }
-      if (!note && meanY < 62 && colorfulScene && sharp >= 64 && size >= 12 && size <= 68 && skyFrac > 0.28) {
-        aesthetic = Math.max(aesthetic, 90);
-        technical = Math.max(Math.min(technical, 82), 72);
-        note = 'landscape';
-        tagTake('Landscape');
-      }
-      if (!note && plumage >= 42 && globalSharp >= 66 && technical < 78 && size < 48 && focusRatio >= 1.45) {
-        technical = Math.max(technical, Math.min(93, Math.round(globalSharp * 0.92)));
-        note = 'missed';
-        tagTake('Detail');
-      }
-      if (!note && found && size < 24 && skyFrac < 0.3 && globalSharp > 62 && technical < 58) {
-        technical = Math.max(technical, Math.round(globalSharp * 0.78));
-        aesthetic = Math.max(aesthetic, plumage >= 30 ? 64 : 52);
-        note = 'missed';
-        tagTake('Frame');
-      }
-      if (!note && busy >= 70) {
-        const floral = plumage >= 36 && sep >= 50 && size >= 36 && sharp >= 62;
-        const ceiling = floral ? 88 : (plumage >= 38 && sharp >= 68) ? 76 : 58;
-        aesthetic = Math.min(aesthetic, ceiling);
-        note = ceiling >= 76 ? 'scene' : 'busy';
-        tagTake('Busy frame');
-      }
-      if (!note && sharp < 46) {
-        aesthetic = Math.min(aesthetic, 46);
-        note = 'soft';
-        tagTake('Soft focus');
-      }
-      if (!note && size < 36) note = 'small';
-      if (!note && technical >= 78 && aesthetic >= 64 && size >= 50) note = 'strong';
-      if (!note) note = 'mixed';
-      if (note !== 'landscape' && note !== 'atmosphere' && plumage < 20 && bgChroma < 18 && bgStd < 22 && sharp >= 58 && aesthetic > 42) {
-        aesthetic = Math.min(aesthetic, 38);
-        tagTake('Flat background');
-      }
-      technical = clampNum(Math.round(technical), 0, 100);
-      aesthetic = clampNum(Math.round(aesthetic), 0, 100);
-      return {
-        sharp: sharp,
-        exposure: exposure,
-        subject: subject,
-        color: plumage,
-        grain: grain,
-        size: size,
-        sky: Math.round(skyFrac * 100) / 100,
-        busy: busy,
-        found: found,
-        note: note,
-        technical: technical,
-        aesthetic: aesthetic,
-        tags: influenceTags({
-          sharp: sharpIn,
-          exposure: exposure,
-          sep: sep,
-          size: size,
-          placement: placement,
-          color: plumage,
-          quiet: quiet,
-          skyPen: skyPen
-        }, tagMoves)
-      };
-    }
-
-    function influenceTags(parts, moves) {
-      const qT = 0.55, qA = 0.45;
-      const rows = [];
-      function add(name, delta) {
-        const d = Math.round(delta);
-        if (!name || Math.abs(d) < 2) return;
-        rows.push({ n: name, d: d });
-      }
-      add('Sharp', qT * 0.62 * (parts.sharp - 50));
-      add('Exposure', (qT * 0.2 + qA * 0.16) * (parts.exposure - 50));
-      add('Separation', (qT * 0.08 + qA * 0.16) * (parts.sep - 50));
-      add('Size', qT * 0.1 * (Math.min(parts.size, 92) - 50) + qA * 0.34 * (parts.size - 50));
-      add('Placement', qA * 0.12 * (parts.placement - 50));
-      add('Color', qA * 0.16 * (parts.color - 50));
-      add('Background', qA * 0.06 * (parts.quiet - 50));
-      if (parts.skyPen > 0) add('Plain sky', -qA * parts.skyPen);
-      (moves || []).forEach(function (mv) { add(mv.name, mv.d); });
-      const props = rows.filter(function (r) { return r.d > 0; }).sort(function (a, b) { return b.d - a.d; }).slice(0, 3);
-      const drags = rows.filter(function (r) { return r.d < 0; }).sort(function (a, b) { return a.d - b.d; }).slice(0, 3);
-      return props.concat(drags);
-    }
-
-    function composeRating(m, rank) {
-      const quality = clampNum(Math.round(m.technical * 0.55 + m.aesthetic * 0.45), 0, 100);
-      const liftRate = quality >= 64 ? (rank === 4 ? 0.14 : rank === 3 ? 0.09 : rank === 2 ? 0.04 : 0) : 0;
-      return {
-        technical: m.technical,
-        aesthetic: m.aesthetic,
-        quality: quality,
-        sharp: m.sharp,
-        exposure: m.exposure,
-        subject: m.subject,
-        color: m.color,
-        grain: m.grain || 0,
-        size: m.size || 0,
-        sky: m.sky || 0,
-        rarityRank: rank,
-        rarity: rarityNameFromRank(rank),
-        composite: clampNum(Math.round(quality * (1 + liftRate)), 0, 100),
-        tags: m.tags || []
-      };
-    }
-
-    function loadScoreImage(src) {
-      return new Promise(function (resolve, reject) {
-        function attempt(cors) {
-          const img = new Image();
-          img.onload = function () { resolve(img); };
-          img.onerror = function () {
-            if (cors) attempt(false);
-            else reject(new Error('load'));
-          };
-          if (cors) img.crossOrigin = 'anonymous';
-          img.src = src;
-        }
-        attempt(src.indexOf('data:') !== 0);
-      });
-    }
-
-    function scheduleRatingPersist() {
-      clearTimeout(ratingPersistTimer);
-      ratingPersistTimer = setTimeout(function () { persistSightings(); }, 350);
-    }
-
-    function queuePhotoRating(id) {
-      if (!id || ratingQueued.has(id)) return;
-      ratingQueued.add(id);
-      ratingQueue.push(id);
-      pumpRatingQueue();
-    }
-
-    function pumpRatingQueue() {
-      if (ratingBusy) return;
-      const id = ratingQueue.shift();
-      if (!id) {
-        syncRatingStatus();
-        return;
-      }
-      ratingBusy = true;
-      scoreSighting(id).then(function () {
-        ratingBusy = false;
-        ratingQueued.delete(id);
-        const s = sightings.find(function (x) { return x.id === id; });
-        const modal = document.getElementById('detail-modal');
-        if (s && currentDetailId === id && modal && modal.classList.contains('on')) paintDetailRating(s);
-        if (ratingsViewOn) renderGallery();
-        if (ratingQueue.length && !ratingAiHold) setTimeout(pumpRatingQueue, 700);
-        else if (ratingQueue.length && ratingAiHold) ratingQueue.length = 0;
-      });
-    }
-
-    function jpegPayload(img) {
-      const maxW = 512;
-      const nw = img.naturalWidth || img.width || maxW;
-      const nh = img.naturalHeight || img.height || maxW;
-      const w = Math.max(1, Math.min(maxW, nw));
-      const h = Math.max(1, Math.round(w * nh / Math.max(1, nw)));
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      const url = canvas.toDataURL('image/jpeg', 0.72);
-      const cut = url.indexOf(',');
-      return { dataUrl: url, b64: url.slice(cut + 1) };
-    }
-
-    function ratingPrompt(s, m, rank) {
-      const name = taxName(s.species_code).comName || s.species_code;
-      return 'You are scoring one bird photograph for a personal field list. Reply with JSON only, no markdown: {"aesthetic": <integer 0-100>, "feedback": "<two or three sentences>"}. '
-        + 'aesthetic is composition, light on the bird, moment, and how clearly the bird reads. Do not treat empty blue sky or saturated background as a plus. Grain and noise are not sharpness. Do not score species rarity. '
-        + 'feedback coaches the photographer: what works, what limits the photo, and one concrete next step. '
-        + 'Species: ' + name + '. Rarity label, already decided: ' + rarityNameFromRank(rank) + '. '
-        + 'On-device read: technical ' + m.technical + ', sharpness ' + m.sharp + ', grain ' + (m.grain || 0) + ' (higher is noisier), exposure ' + m.exposure + ', subject size ' + (m.size || 0) + ', sky fraction ' + (m.sky || 0) + '.';
-    }
-
-    function parseRatingJson(text) {
-      if (!text) return null;
-      const start = String(text).indexOf('{');
-      const end = String(text).lastIndexOf('}');
-      if (start < 0 || end <= start) return null;
-      try {
-        const o = JSON.parse(String(text).slice(start, end + 1));
-        const aesthetic = clampNum(Math.round(Number(o.aesthetic)), 0, 100);
-        const feedback = String(o.feedback || '').replace(/\s+/g, ' ').trim();
-        if (!feedback || !isFinite(aesthetic)) return null;
-        return { aesthetic: aesthetic, feedback: feedback.slice(0, 500) };
-      } catch (e) { return null; }
-    }
-
-    let geminiModelName = '';
-    function clearGeminiModel() { geminiModelName = ''; }
-
-    function apiFail(res) {
-      return res.text().then(function (text) {
-        let msg = '';
-        try {
-          const json = JSON.parse(text);
-          msg = (json.error && (json.error.message || json.error.status)) || '';
-        } catch (e) {}
-        if (!msg) msg = String(text || '').replace(/\s+/g, ' ').trim();
-        const err = new Error((msg || ('HTTP ' + res.status)).slice(0, 180));
-        err.status = res.status;
-        throw err;
-      });
-    }
-
-    function geminiOutput(json) {
-      const chunks = [];
-      const steps = (json && json.steps) || [];
-      for (let i = 0; i < steps.length; i++) {
-        const content = steps[i] && steps[i].content;
-        if (!content) continue;
-        for (let j = 0; j < content.length; j++) {
-          if (content[j] && content[j].text) chunks.push(content[j].text);
-        }
-      }
-      if (!chunks.length && json && json.output_text) chunks.push(json.output_text);
-      return chunks.join('\n');
-    }
-
-    function geminiInteract(b64, prompt, signal) {
-      return fetch('https://generativelanguage.googleapis.com/v1beta/interactions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': getAiKey()
-        },
-        signal: signal,
-        body: JSON.stringify({
-          model: 'gemini-3.8-flash',
-          input: [
-            { type: 'text', text: prompt },
-            { type: 'image', data: b64, mime_type: 'image/jpeg' }
-          ]
-        })
-      }).then(function (res) {
-        if (!res.ok) return apiFail(res);
-        return res.json();
-      }).then(function (json) {
-        const parsed = parseRatingJson(geminiOutput(json));
-        if (!parsed) throw new Error('reply was not a score');
-        return parsed;
-      });
-    }
-    function callVisionRating(b64, dataUrl, prompt) {
-      const provider = getAiProvider();
-      const key = getAiKey();
-      const ctrl = new AbortController();
-      const timer = setTimeout(function () { ctrl.abort(); }, 25000);
-      let req;
-      if (provider === 'gemini') {
-        req = geminiInteract(b64, prompt, ctrl.signal);
-      } else if (provider === 'anthropic') {
-        req = fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': key,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true'
-          },
-          signal: ctrl.signal,
-          body: JSON.stringify({
-            model: 'claude-haiku-4-5',
-            max_tokens: 300,
-            messages: [{ role: 'user', content: [
-              { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } },
-              { type: 'text', text: prompt }
-            ]}]
-          })
-        }).then(function (res) {
-          if (!res.ok) return apiFail(res);
-          return res.json();
-        }).then(function (json) {
-          const blocks = (json && json.content) || [];
-          const parsed = parseRatingJson(blocks.map(function (p) { return p.text || ''; }).join(''));
-          if (!parsed) throw new Error('reply was not a score');
-          return parsed;
-        });
-      } else {
-        const xai = provider === 'xai';
-        req = fetch(xai ? 'https://api.x.ai/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-          signal: ctrl.signal,
-          body: JSON.stringify({
-            model: xai ? 'grok-4-fast-non-reasoning' : 'gpt-4.1-mini',
-            temperature: 0.2,
-            messages: [{ role: 'user', content: [
-              { type: 'text', text: prompt },
-              { type: 'image_url', image_url: { url: dataUrl } }
-            ]}]
-          })
-        }).then(function (res) {
-          if (!res.ok) return apiFail(res);
-          return res.json();
-        }).then(function (json) {
-          const msg = json && json.choices && json.choices[0] && json.choices[0].message;
-          const parsed = parseRatingJson(msg && msg.content);
-          if (!parsed) throw new Error('reply was not a score');
-          return parsed;
-        });
-      }
-      return req.then(function (parsed) {
-        clearTimeout(timer);
-        return parsed;
-      }, function (err) {
-        clearTimeout(timer);
-        if (err && err.name === 'AbortError') throw new Error('timed out');
-        throw err;
-      });
-    }
-
-    function storePhotoRating(s, rating, sig) {
-      rating.v = RATING_V;
-      rating.sig = sig;
-      rating.rated_at = new Date().toISOString();
-      s.ai_rating = rating;
-      scheduleRatingPersist();
-    }
-
-    function scoreSighting(id) {
-      const s = sightings.find(function (x) { return x.id === id; });
-      if (!s) return Promise.resolve();
-      const src = s.photo_url || s.photo_full || '';
-      if (!src) return Promise.resolve();
-      const sig = photoSig(s);
-      if (ratingFresh(s)) return Promise.resolve();
-      if (!ratingDataReady()) {
-        ratingWaits[id] = (ratingWaits[id] || 0) + 1;
-        if (ratingWaits[id] < 20) {
-          setTimeout(function () { queuePhotoRating(id); }, 400);
-        }
-        return Promise.resolve();
-      }
-      return loadScoreImage(src).then(function (img) {
-        const metrics = measurePhoto(img);
-        const rank = rarityStatic(s.species_code, s.state || activeState);
-        const want = getAiKey() ? getAiProvider() : 'local';
-        const prev = s.ai_rating;
-        const same = !!(prev && prev.sig === sig);
-        const keepAi = same && want !== 'local' && ((prev.model === 1 && prev.source === want) || prev.aiTried === want);
-        let rating = composeRating(metrics, rank);
-        rating.source = 'local';
-        rating.model = 0;
-        if (want === 'local' || ratingAiHold || keepAi) {
-          if (same && prev.model === 1 && prev.source === want) {
-            const merged = {};
-            Object.keys(metrics).forEach(function (k) { merged[k] = metrics[k]; });
-            merged.aesthetic = prev.aesthetic;
-            rating = composeRating(merged, rank);
-            rating.feedback = prev.feedback;
-            rating.source = want;
-            rating.model = 1;
-            rating.aiTried = want;
-          } else if (want !== 'local') {
-            rating.aiTried = want;
-            rating.aiError = (same && prev.aiError) || ratingAiHold || '';
-          }
-          storePhotoRating(s, rating, sig);
-          return;
-        }
-        let jpeg = null;
-        try { jpeg = jpegPayload(img); } catch (e) { jpeg = null; }
-        if (!jpeg) {
-          rating.aiError = 'could not read the photo for the provider';
-          rating.feedback = rating.feedback + ' ' + aiProviderLabel(want) + ' was not asked.';
-          ratingFailed.add(id + ':' + sig);
-          storePhotoRating(s, rating, sig);
-          return;
-        }
-        return callVisionRating(jpeg.b64, jpeg.dataUrl, ratingPrompt(s, metrics, rank)).then(function (model) {
-          const merged = {};
-          Object.keys(metrics).forEach(function (k) { merged[k] = metrics[k]; });
-          merged.aesthetic = model.aesthetic;
-          rating = composeRating(merged, rank);
-          rating.feedback = model.feedback;
-          rating.source = want;
-          rating.model = 1;
-          rating.aiTried = want;
-          storePhotoRating(s, rating, sig);
-        }).catch(function (err) {
-          const why = (err && err.message) ? String(err.message).replace(/\s+/g, ' ').slice(0, 160) : 'no response';
-          rating.aiTried = want;
-          rating.aiError = why;
-          rating.feedback = rating.feedback + ' ' + aiProviderLabel(want) + ' did not score this photo (' + why + ').';
-          ratingFailed.add(id + ':' + sig);
-          storePhotoRating(s, rating, sig);
-          const status = err && err.status;
-          if (status === 404 || status === 429 || status === 403 || status === 503) {
-            haltAiRatings(aiProviderLabel(want) + ' stopped after an error (' + why + '). On-device scores are shown. Reset ratings later to try again.');
-          }
-        });
-      }).catch(function (err) {
-        const missing = !err || err.message === 'load';
-        ratingFailed.add(id + ':' + sig);
-        s.ai_rating = {
-          v: RATING_V,
-          sig: sig,
-          blocked: 1,
-          feedback: missing
-            ? 'This photo could not be loaded, so it was not scored.'
-            : 'This photo loaded, but the browser blocked a pixel read, so it was not scored.',
-          rated_at: new Date().toISOString()
-        };
-        scheduleRatingPersist();
-      });
-    }
-
-    function haltAiRatings(reason) {
-      ratingAiHold = reason;
-      ratingQueue.length = 0;
-      const want = getAiProvider();
-      let changed = false;
-      sightings.forEach(function (s) {
-        if (!s || !s.ai_rating || s.ai_rating.blocked) return;
-        if (s.ai_rating.model === 1 && s.ai_rating.source === want) return;
-        if (s.ai_rating.aiTried === want) return;
-        s.ai_rating.aiTried = want;
-        if (!s.ai_rating.aiError) s.ai_rating.aiError = reason;
-        changed = true;
-      });
-      if (changed) persistSightings();
-    }
-
-    function ensurePhotoRating(id) {
-      const s = sightings.find(function (x) { return x.id === id; });
-      if (!s || ratingFresh(s)) return;
-      const sig = photoSig(s);
-      if (ratingFailed.has(id + ':' + sig)) return;
-      queuePhotoRating(id);
-    }
-
-    function queueVisibleRatings(photos) {
-      (photos || []).forEach(function (s) {
-        if (ratingFresh(s)) return;
-        if (ratingFailed.has(s.id + ':' + photoSig(s))) return;
-        queuePhotoRating(s.id);
-      });
-      syncRatingStatus(photos);
-    }
-
     function syncRatingStatus(photos) {
-      const st = document.getElementById('ratings-status');
-      if (!st || !ratingsViewOn) return;
-      const pending = (photos || []).filter(function (p) { return !ratingStored(p) && !ratingFailed.has(p.id + ':' + photoSig(p)); }).length;
-      if (ratingAiHold && !pending) {
-        st.textContent = ratingAiHold;
-        return;
-      }
-      if (pending) {
-        st.textContent = 'Scoring ' + pending + (pending === 1 ? ' photo' : ' photos') + '…';
-        return;
-      }
-      const provider = getAiKey() ? getAiProvider() : '';
+      if (!ratingsViewOn || !photos) return;
+      const gScore = document.getElementById('gallery-scoreline');
+      if (!gScore) return;
       const rows = photos || [];
-      const used = provider && rows.some(function (p) { return p.ai_rating && p.ai_rating.model && p.ai_rating.source === provider; });
-      const errPhoto = rows.find(function (p) { return p.ai_rating && p.ai_rating.aiError && !(p.ai_rating.model && p.ai_rating.source === provider); });
-      if (errPhoto && used) st.textContent = 'Some notes are from ' + aiProviderLabel(provider) + '. Others failed: ' + errPhoto.ai_rating.aiError;
-      else if (errPhoto) st.textContent = aiProviderLabel(provider || getAiProvider()) + ' could not score these photos. ' + errPhoto.ai_rating.aiError;
-      else if (used) st.textContent = 'Aesthetic scores from ' + aiProviderLabel(provider) + '. Sharpness and exposure stay on this device. Rarity only lifts a frame that is already good.';
-      else st.textContent = 'Technical and aesthetic stay on the photo. Rarity only lifts a frame that is already good.';
+      const n = rows.filter(function (s) {
+        const r = shownRating(s);
+        return r && r.composite != null && !r.blocked;
+      }).length;
+      gScore.textContent = n + ' scored';
+      gScore.classList.add('is-count');
     }
 
     function ratingsDisplayOn() {
@@ -7353,24 +6492,124 @@
       const gallery = document.getElementById('view-gallery');
       if (gallery && gallery.classList.contains('on') && typeof renderGallery === 'function') renderGallery();
     }
-    function personalComposite(technical, aesthetic) {
-      const t = clampNum(Math.round(Number(technical)), 0, 100);
-      const a = clampNum(Math.round(Number(aesthetic)), 0, 100);
-      return clampNum(Math.round(t * 0.55 + a * 0.45), 0, 100);
+    function defaultRatingWeights() { return { t: 34, a: 33, v: 33 }; }
+    function ratingWeightsRaw() {
+      try {
+        const raw = JSON.parse(localStorage.getItem('avian_rating_weights') || '');
+        if (raw && isFinite(Number(raw.t)) && isFinite(Number(raw.a)) && isFinite(Number(raw.v))) {
+          return {
+            t: clampNum(Math.round(Number(raw.t)), 0, 100),
+            a: clampNum(Math.round(Number(raw.a)), 0, 100),
+            v: clampNum(Math.round(Number(raw.v)), 0, 100)
+          };
+        }
+      } catch (e) {}
+      return defaultRatingWeights();
+    }
+    function ratingWeights() {
+      const raw = ratingWeightsRaw();
+      const sum = raw.t + raw.a + raw.v;
+      if (!sum) return { t: 1 / 3, a: 1 / 3, v: 1 / 3 };
+      return { t: raw.t / sum, a: raw.a / sum, v: raw.v / sum };
+    }
+    function paintRatingWeights() {
+      const raw = ratingWeightsRaw();
+      const sum = raw.t + raw.a + raw.v;
+      const pct = function (n) { return sum ? Math.round(n / sum * 100) : 0; };
+      [['w-tech', raw.t, pct(raw.t)], ['w-aes', raw.a, pct(raw.a)], ['w-vibes', raw.v, pct(raw.v)]].forEach(function (row) {
+        const el = document.getElementById(row[0]);
+        const lab = document.getElementById(row[0] + '-pct');
+        if (el && document.activeElement !== el) el.value = String(row[1]);
+        if (lab) lab.textContent = row[2] + '%';
+      });
+    }
+    function onRatingWeightInput() {
+      const tEl = document.getElementById('w-tech');
+      const aEl = document.getElementById('w-aes');
+      const vEl = document.getElementById('w-vibes');
+      if (!tEl || !aEl || !vEl) return;
+      const raw = { t: Number(tEl.value) || 0, a: Number(aEl.value) || 0, v: Number(vEl.value) || 0 };
+      try { localStorage.setItem('avian_rating_weights', JSON.stringify(raw)); } catch (e) {}
+      paintRatingWeights();
+      const modal = document.getElementById('detail-modal');
+      if (modal && modal.classList.contains('on') && currentDetailId) {
+        const s = sightings.find(function (x) { return x.id === currentDetailId; });
+        if (s && typeof paintDetailRating === 'function') paintDetailRating(s);
+      }
+      const gallery = document.getElementById('view-gallery');
+      if (gallery && gallery.classList.contains('on') && ratingsViewOn && typeof renderGallery === 'function') renderGallery();
+    }
+    function snapHalf(n) {
+      const x = Number(n);
+      if (!Number.isFinite(x)) return null;
+      return clampNum(Math.round(x * 2) / 2, 0, 5);
+    }
+    function fromStoredScore(n) {
+      const x = Number(n);
+      if (!Number.isFinite(x)) return null;
+      if (x > 5) return snapHalf(x / 20);
+      return snapHalf(x);
+    }
+    function formatScore(n) {
+      const x = Math.round(Number(n) * 10) / 10;
+      if (!Number.isFinite(x)) return '\u2013';
+      if (Math.abs(x - Math.round(x)) < 0.001) return String(Math.round(x));
+      return x.toFixed(1);
+    }
+    function scoreTone(n) {
+      const x = Number(n);
+      if (!Number.isFinite(x)) return '';
+      if (x >= 4) return 'r4';
+      if (x >= 3) return 'r3';
+      if (x >= 2) return 'r2';
+      return 'r1';
+    }
+    function scoreBitsHTML(label, n) {
+      const tone = scoreTone(n);
+      return '<span' + (tone ? ' class="tone-' + tone + '"' : '') + '><i>' + label + '</i><b>' + formatScore(n) + '</b></span>';
+    }
+    function ratingBlockHTML(r, detail) {
+      if (!r || r.composite == null) return '<p class="pr-note">Not rated.</p>';
+      const tone = scoreTone(r.composite);
+      const pip = detail && tone ? '<i class="score-pip tone-' + tone + '"></i>' : '';
+      return '<div class="pr-top">' +
+        '<div class="pr-score"><b>' + formatScore(r.composite) + pip + '</b><span>Composite</span></div>' +
+        '<div class="pr-bits">' +
+          scoreBitsHTML('Technical', r.technical) +
+          scoreBitsHTML('Aesthetic', r.aesthetic) +
+          scoreBitsHTML('Vibes', r.vibes) +
+        '</div></div>';
+    }
+    function personalComposite(technical, aesthetic, vibes) {
+      const t = snapHalf(technical);
+      const a = snapHalf(aesthetic);
+      const v = snapHalf(vibes);
+      if (t == null || a == null || v == null) return null;
+      const w = ratingWeights();
+      return Math.round((t * w.t + a * w.a + v * w.v) * 10) / 10;
     }
     function shownRating(s) {
-      const r = s && s.ai_rating;
       const o = s && s.rating_override;
-      if (!o || o.technical == null || o.aesthetic == null) return r || null;
-      const copy = r ? Object.assign({}, r) : {};
-      copy.technical = clampNum(Math.round(Number(o.technical)), 0, 100);
-      copy.aesthetic = clampNum(Math.round(Number(o.aesthetic)), 0, 100);
-      copy.composite = personalComposite(copy.technical, copy.aesthetic);
-      copy.quality = copy.composite;
-      copy.overridden = 1;
-      copy.blocked = 0;
-      return copy;
+      if (!o || o.technical == null || o.aesthetic == null) return null;
+      const technical = fromStoredScore(o.technical);
+      const aesthetic = fromStoredScore(o.aesthetic);
+      if (technical == null || aesthetic == null) return null;
+      const vibes = o.vibes == null ? snapHalf((technical + aesthetic) / 2) : fromStoredScore(o.vibes);
+      if (vibes == null) return null;
+      const composite = personalComposite(technical, aesthetic, vibes);
+      return { technical: technical, aesthetic: aesthetic, vibes: vibes, composite: composite, quality: composite };
     }
+    function ratingFormValues(s) {
+      const o = s && s.rating_override;
+      if (!o || o.technical == null || o.aesthetic == null) return { technical: 2.5, aesthetic: 2.5, vibes: 2.5 };
+      const technical = fromStoredScore(o.technical);
+      const aesthetic = fromStoredScore(o.aesthetic);
+      let vibes = o.vibes == null ? null : fromStoredScore(o.vibes);
+      if (technical == null || aesthetic == null) return { technical: 2.5, aesthetic: 2.5, vibes: 2.5 };
+      if (vibes == null) vibes = snapHalf((technical + aesthetic) / 2);
+      return { technical: technical, aesthetic: aesthetic, vibes: vibes };
+    }
+
     function syncRatingsChrome() {
       const show = ratingsDisplayOn();
       if (!show) ratingsViewOn = false;
@@ -7407,57 +6646,157 @@
       renderGallery();
     }
 
-    function ratingTagsHTML(r) {
-      const tags = r && r.tags;
-      if (!tags || !tags.length) return '';
-      return '<div class="pr-tags">' + tags.map(function (t) {
-        const up = t.d > 0;
-        return '<span class="pr-tag ' + (up ? 'up' : 'down') + '">' + escHtml(t.n) + ' ' + (up ? '+' : '\u2212') + Math.abs(t.d) + '</span>';
-      }).join('') + '</div>';
+    let ratingsBand = null;
+    function scorePercentile(sorted, p) {
+      if (!sorted.length) return 0;
+      if (sorted.length === 1) return sorted[0];
+      const i = (sorted.length - 1) * p;
+      const lo = Math.floor(i);
+      const hi = Math.min(sorted.length - 1, Math.ceil(i));
+      return sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo);
     }
-
-    function ratingBlockHTML(r, withTags) {
-      if (!r || r.blocked) {
-        return '<p class="pr-note">' + escHtml((r && r.feedback) || 'Not scored yet.') + '</p>';
+    function ratingsPoint(v) {
+      const x = clampNum(Number(v), 0, 5);
+      return Math.round(x * 10) / 10;
+    }
+    function ratingsAtPoint(scores, score) {
+      let n = 0;
+      scores.forEach(function (s) {
+        if (Math.abs(Number(s) - score) <= 0.101) n++;
+      });
+      return n;
+    }
+    function nearestScore(scores, target) {
+      let best = Number(scores[0]);
+      let bestD = Infinity;
+      scores.forEach(function (s) {
+        const d = Math.abs(Number(s) - target);
+        if (d < bestD) { bestD = d; best = Number(s); }
+      });
+      return ratingsPoint(best);
+    }
+    function setRatingsBand(v) {
+      const score = ratingsPoint(v);
+      ratingsBand = score;
+      const n = ratingsAtPoint(ratingsCurveScores, score);
+      const count = document.getElementById('rate-band-count');
+      const label = document.getElementById('rate-band-label');
+      const hair = document.getElementById('rate-hair');
+      if (count) count.textContent = String(n);
+      if (label) label.textContent = 'photos · ' + formatScore(score);
+      const hx = score / 5 * 100;
+      if (hair) { hair.setAttribute('x1', hx); hair.setAttribute('x2', hx); }
+    }
+    let ratingsCurveScores = [];
+    let ratingsCurveMetric = 'composite';
+    function ratingsMetricKey() {
+      const el = document.getElementById('ratings-sort');
+      const v = el ? el.value : 'composite';
+      if (v === 'technical' || v === 'aesthetic' || v === 'vibes') return v;
+      return 'composite';
+    }
+    function ratingsCurveHTML(scores) {
+      ratingsCurveScores = scores.slice();
+      const hair = function (x1, y1, x2, y2) {
+        return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="var(--line-2)" stroke-width="1" stroke-opacity="0.35" vector-effect="non-scaling-stroke"/>';
+      };
+      const frame = hair(0, 8, 100, 8) + hair(0, 52, 100, 52) + hair(0, 96, 100, 96) +
+        hair(20, 8, 20, 96) + hair(40, 8, 40, 96) + hair(60, 8, 60, 96) + hair(80, 8, 80, 96);
+      const axisX = '<div class="rate-x"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>';
+      const statRow = function (marks) {
+        return '<div class="rate-stats" style="grid-template-columns:repeat(' + marks.length + ',minmax(0,1fr))">' +
+          marks.map(function (m) {
+            return '<div class="rate-stat"><i>' + m.k + '</i><b>' + m.n + '</b></div>';
+          }).join('') + '</div>';
+      };
+      const read = function (count, label) {
+        return '<p class="rate-read"><b id="rate-band-count">' + count + '</b><span id="rate-band-label">' + label + '</span></p>';
+      };
+      if (!scores.length) {
+        return '<div class="rate-board">' + statRow([{ k: '25%', n: '\u2013' }, { k: '50%', n: '\u2013' }, { k: '75%', n: '\u2013' }, { k: 'Best', n: '\u2013' }]) +
+          '<div class="rate-chart"><div class="rate-y"><span style="top:96%">0</span></div><div class="rate-plot"><svg viewBox="0 0 100 100" preserveAspectRatio="none">' + frame +
+          '<path d="M0 96 L100 96" fill="none" stroke="var(--em)" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>' +
+          read(0, 'photos') + '</div>' + axisX + '</div></div>';
       }
-      const lift = (r.composite || 0) - (r.quality || 0);
-      const liftChip = lift > 0 ? '<span>+' + lift + ' rarity</span>' : '';
-      return '<div class="pr-top">' +
-        '<div class="pr-score"><b>' + r.composite + '</b><span>Composite</span></div>' +
-        '<div class="pr-bits">' +
-          '<span><i>Technical</i>' + r.technical + '</span>' +
-          '<span><i>Aesthetic</i>' + r.aesthetic + '</span>' +
-          '<span class="pr-rar r' + (r.rarityRank || 4) + '">' + escHtml(r.rarity || '') + '</span>' +
-          liftChip +
-        '</div></div>' +
-        (withTags && !r.overridden ? ratingTagsHTML(r) : '') +
-        (r.overridden ? '<p class="pr-you">Your scores</p>' : '');
+      const bins = new Array(51).fill(0);
+      scores.forEach(function (s) { bins[clampNum(Math.round(Number(s) * 10), 0, 50)]++; });
+      const sigma = 3.2;
+      const curve = new Array(51).fill(0);
+      let peak = 0;
+      for (let x = 0; x <= 50; x++) {
+        let acc = 0;
+        for (let k = -12; k <= 12; k++) {
+          const i = x + k;
+          if (i < 0 || i > 50) continue;
+          acc += bins[i] * Math.exp(-(k * k) / (2 * sigma * sigma));
+        }
+        curve[x] = acc;
+        if (acc > peak) peak = acc;
+      }
+      peak = peak || 1;
+      let maxBand = 1;
+      for (let i = 0; i < 10; i++) {
+        const lo = i * 0.5;
+        const hi = lo + 0.5;
+        const last = i === 9;
+        let n = 0;
+        scores.forEach(function (s) {
+          if (s + 1e-9 >= lo && (last ? s <= hi + 1e-6 : s < hi - 1e-9)) n++;
+        });
+        if (n > maxBand) maxBand = n;
+      }
+      let d = '';
+      for (let x = 0; x <= 50; x++) {
+        const y = 8 + (1 - curve[x] / peak) * 88;
+        d += (x ? 'L' : 'M') + (x * 2) + ' ' + y.toFixed(2) + ' ';
+      }
+      const sorted = scores.slice().sort(function (a, b) { return a - b; });
+      const specs = [
+        { n: Math.round(scorePercentile(sorted, 0.25) * 10) / 10, k: '25%' },
+        { n: Math.round(scorePercentile(sorted, 0.5) * 10) / 10, k: '50%' },
+        { n: Math.round(scorePercentile(sorted, 0.75) * 10) / 10, k: '75%' },
+        { n: Math.round(sorted[sorted.length - 1] * 10) / 10, k: 'Best' }
+      ];
+      const marks = [];
+      specs.forEach(function (s) {
+        const prev = marks.find(function (m) { return Math.abs(m.n - s.n) < 0.05; });
+        if (prev) prev.k += ' · ' + s.k;
+        else marks.push({ n: s.n, k: s.k });
+      });
+      if (ratingsBand == null) ratingsBand = nearestScore(scores, scorePercentile(sorted, 0.5));
+      const score = ratingsPoint(ratingsBand);
+      const hitN = ratingsAtPoint(scores, score);
+      const yMid = Math.round(maxBand / 2);
+      const yLabs = maxBand < 3
+        ? [{ n: maxBand, y: 8 }, { n: 0, y: 96 }]
+        : [{ n: maxBand, y: 8 }, { n: yMid, y: 52 }, { n: 0, y: 96 }];
+      const hx = score / 5 * 100;
+      return '<div class="rate-board">' + statRow(marks.map(function (m) { return { k: m.k, n: formatScore(m.n) }; })) +
+        '<div class="rate-chart">' +
+        '<div class="rate-y">' + yLabs.map(function (lab) { return '<span style="top:' + lab.y + '%">' + lab.n + '</span>'; }).join('') + '</div>' +
+        '<div class="rate-plot">' +
+          '<svg viewBox="0 0 100 100" preserveAspectRatio="none">' +
+            frame +
+            '<path d="' + d + 'L100 96 L0 96 Z" fill="var(--em)" fill-opacity="0.16" stroke="none"/>' +
+            '<path d="' + d.trim() + '" fill="none" stroke="var(--em)" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>' +
+            '<line id="rate-hair" x1="' + hx + '" x2="' + hx + '" y1="8" y2="96" stroke="var(--text)" stroke-width="1" stroke-opacity="0.55" vector-effect="non-scaling-stroke"/>' +
+          '</svg>' +
+          '<input class="rate-scrub" type="range" min="0" max="5" step="0.1" value="' + score + '" aria-label="Score" oninput="setRatingsBand(this.value)"/>' +
+          read(hitN, 'photos · ' + formatScore(score)) +
+        '</div>' + axisX + '</div></div>';
     }
-
     function ratingsProgressHTML(rows) {
-      const scored = rows.filter(function (s) { const r = shownRating(s); return r && r.composite != null && !r.blocked; });
-      if (!scored.length) {
-        return '<p class="hint pr-empty-note">Scores land as each photo is read. The composite is the photo first — rarity only raises a frame that is already decent.</p>';
+      const key = ratingsMetricKey();
+      if (key !== ratingsCurveMetric) {
+        ratingsCurveMetric = key;
+        ratingsBand = null;
       }
-      const avg = Math.round(scored.reduce(function (a, s) { return a + shownRating(s).composite; }, 0) / scored.length);
-      let best = 0;
-      scored.forEach(function (s) { const c = shownRating(s).composite; if (c > best) best = c; });
-      const byDate = scored.slice().sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); });
-      let trend = '';
-      if (byDate.length >= 6) {
-        const half = Math.min(6, Math.floor(byDate.length / 2));
-        const recent = byDate.slice(-half);
-        const prev = byDate.slice(-half * 2, -half);
-        const ra = recent.reduce(function (a, s) { return a + shownRating(s).composite; }, 0) / recent.length;
-        const pa = prev.reduce(function (a, s) { return a + shownRating(s).composite; }, 0) / prev.length;
-        const d = Math.round(ra - pa);
-        trend = '<div><b class="' + (d >= 0 ? 'up' : 'down') + '">' + (d > 0 ? '+' : '') + d + '</b><span>recent vs earlier</span></div>';
-      }
-      return '<div class="ratings-progress">' +
-        '<div><b>' + avg + '</b><span>average</span></div>' +
-        '<div><b>' + best + '</b><span>best</span></div>' +
-        trend +
-        '<div><b>' + scored.length + '</b><span>scored</span></div></div>';
+      const scores = [];
+      rows.forEach(function (s) {
+        const r = shownRating(s);
+        if (r && r[key] != null) scores.push(r[key]);
+      });
+      return ratingsCurveHTML(scores);
     }
 
     function renderRatingsList(photos) {
@@ -7466,29 +6805,22 @@
       const gc = document.getElementById('gallery-count');
       if (gc) gc.innerHTML = photos.length + '<span>' + (ratingsScope === 'lifers' ? 'lifers' : 'photos') + '</span>';
       const gScore = document.getElementById('gallery-scoreline');
-      const scored = photos.filter(function (s) { const r = shownRating(s); return r && r.composite != null && !r.blocked; });
+      const scored = photos.filter(function (s) { const r = shownRating(s); return r && r.composite != null; });
       if (gScore) {
-        if (scored.length) {
-          const avg = Math.round(scored.reduce(function (a, s) { return a + shownRating(s).composite; }, 0) / scored.length);
-          gScore.textContent = 'avg ' + avg + (ratingsScope === 'lifers' ? ' · lifer photos' : ' · all photos');
-        } else {
-          gScore.textContent = ratingsScope === 'lifers' ? 'Lifer photos' : 'All photos';
-        }
+        gScore.textContent = scored.length + ' scored';
+        gScore.classList.add('is-count');
       }
       const list = document.getElementById('ratings-list');
       if (!list) return;
       const lifers = liferPhotoIdSet();
       let html = ratingsProgressHTML(photos);
-      if (!photos.length) {
-        html += '<p class="hint">No photos in this filter.</p>';
-      }
+      if (!photos.length) html += '<p class="hint">No photos in this filter.</p>';
       photos.forEach(function (p) {
         const view = shownRating(p);
-        const body = (view && !view.blocked && (p.rating_override || ratingStored(p)))
-          ? ratingBlockHTML(view)
-          : '<div class="pr-wait">' + (ratingAiHold ? 'Waiting. On-device score comes next.' : 'Scoring this photo…') + '</div>';
+        const body = view ? ratingBlockHTML(view, false) : '<p class="pr-note">Not rated.</p>';
+        const tone = view ? scoreTone(view.composite) : '';
         const lifer = lifers.has(p.id) ? ' · Lifer' : '';
-        html += '<button type="button" class="rating-row" data-id="' + escHtml(p.id) + '">' +
+        html += '<button type="button" class="rating-row' + (tone ? ' tone-' + tone : '') + '" data-id="' + escHtml(p.id) + '">' +
           '<img src="' + escHtml(p.photo_url || '') + '" alt="" />' +
           '<div class="pr-main">' +
             '<div class="pr-name">' + escHtml(p._name || taxName(p.species_code).comName) + '</div>' +
@@ -7504,30 +6836,86 @@
       syncRatingStatus(photos);
     }
 
+    function overrideSliderHTML(which, label, value) {
+      const v = snapHalf(value);
+      return '<label class="pr-slide">' + label +
+        '<input type="range" id="ov-' + which + '" min="0" max="5" step="0.5" value="' + v + '" oninput="syncOverrideSlider(\'' + which + '\')">' +
+        '<button type="button" class="pr-num" id="ov-' + which + '-num" onclick="editOverrideNumber(\'' + which + '\')">' + formatScore(v) + '</button>' +
+        '</label>';
+    }
     function ratingOverrideControlsHTML(s) {
-      const view = shownRating(s) || {};
-      const on = !!(s && s.rating_override);
-      const t = view.technical != null ? view.technical : '';
-      const a = view.aesthetic != null ? view.aesthetic : '';
-      const c = (t !== '' && a !== '') ? personalComposite(t, a) : '—';
+      const vals = ratingFormValues(s);
+      const rated = !!shownRating(s);
+      const start = personalComposite(vals.technical, vals.aesthetic, vals.vibes);
+      const startTone = scoreTone(start);
       return '<div class="pr-override">' +
-        '<button type="button" class="ghost" onclick="toggleRatingOverrideForm()">' + (on ? 'Edit override' : 'Override') + '</button>' +
-        (on ? '<button type="button" class="ghost" onclick="clearRatingOverride()">Use calculated</button>' : '') +
+        '<button type="button" class="ghost" onclick="toggleRatingOverrideForm()">' + (rated ? 'Edit' : 'Rate') + '</button>' +
+        (s && s.rating_override ? '<button type="button" class="ghost" onclick="clearRatingOverride()">Clear</button>' : '') +
         '<form id="pr-override-form" class="pr-override-form" hidden onsubmit="return saveRatingOverride(event)">' +
-          '<label>Technical<input type="number" id="ov-tech" min="0" max="100" step="1" value="' + t + '" oninput="previewOverrideComposite()"></label>' +
-          '<label>Aesthetic<input type="number" id="ov-aes" min="0" max="100" step="1" value="' + a + '" oninput="previewOverrideComposite()"></label>' +
-          '<div class="pr-ov-comp"><b id="ov-comp">' + c + '</b><span>Composite</span></div>' +
-          '<button type="submit" class="btn-em">Save</button>' +
-        '</form></div>';
+          overrideSliderHTML('tech', 'Technical', vals.technical) +
+          overrideSliderHTML('aes', 'Aesthetic', vals.aesthetic) +
+          overrideSliderHTML('vibes', 'Vibes', vals.vibes) +
+          '<div class="pr-ov-row">' +
+            '<div class="pr-ov-comp"><b id="ov-comp">' + formatScore(start) + '<i id="ov-comp-pip" class="score-pip' + (startTone ? ' tone-' + startTone : '') + '"' + (startTone ? '' : ' hidden') + '></i></b><span>Composite</span></div>' +
+            '<button type="submit" class="btn-em">Save</button>' +
+          '</div></form></div>';
+    }
+    function syncOverrideSlider(which) {
+      const range = document.getElementById('ov-' + which);
+      const num = document.getElementById('ov-' + which + '-num');
+      if (!range || !num) return;
+      if (num.tagName === 'INPUT') num.value = range.value;
+      else num.textContent = formatScore(range.value);
+      previewOverrideComposite();
+    }
+    function editOverrideNumber(which) {
+      const num = document.getElementById('ov-' + which + '-num');
+      const range = document.getElementById('ov-' + which);
+      if (!num || !range || num.tagName === 'INPUT') return;
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.id = num.id;
+      input.className = 'pr-num-input';
+      input.min = '0';
+      input.max = '5';
+      input.step = '0.5';
+      input.value = range.value;
+      num.replaceWith(input);
+      input.focus();
+      input.select();
+      function commit() {
+        const raw = Number(input.value);
+        const n = Number.isFinite(raw) ? snapHalf(raw) : snapHalf(range.value);
+        range.value = String(n);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = 'ov-' + which + '-num';
+        btn.className = 'pr-num';
+        btn.textContent = formatScore(n);
+        btn.onclick = function () { editOverrideNumber(which); };
+        if (input.parentNode) input.replaceWith(btn);
+        previewOverrideComposite();
+      }
+      input.addEventListener('blur', commit);
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+        if (e.key === 'Escape') { input.value = range.value; input.blur(); }
+      });
     }
     function previewOverrideComposite() {
       const el = document.getElementById('ov-comp');
       const tech = document.getElementById('ov-tech');
       const aes = document.getElementById('ov-aes');
-      if (!el || !tech || !aes) return;
-      const t = Number(tech.value);
-      const a = Number(aes.value);
-      el.textContent = (Number.isFinite(t) && Number.isFinite(a)) ? String(personalComposite(t, a)) : '—';
+      const vibes = document.getElementById('ov-vibes');
+      if (!el || !tech || !aes || !vibes) return;
+      const c = personalComposite(tech.value, aes.value, vibes.value);
+      const tone = scoreTone(c);
+      const pip = document.getElementById('ov-comp-pip');
+      if (el.firstChild) el.firstChild.nodeValue = c == null ? '\u2013' : formatScore(c);
+      if (pip) {
+        pip.hidden = !tone;
+        pip.className = 'score-pip' + (tone ? ' tone-' + tone : '');
+      }
     }
     function toggleRatingOverrideForm() {
       const form = document.getElementById('pr-override-form');
@@ -7539,16 +6927,13 @@
       if (ev) ev.preventDefault();
       const s = sightings.find(function (x) { return x.id === currentDetailId; });
       if (!s) return false;
-      const t = Number(document.getElementById('ov-tech').value);
-      const a = Number(document.getElementById('ov-aes').value);
-      if (!Number.isFinite(t) || !Number.isFinite(a)) return false;
-      const technical = clampNum(Math.round(t), 0, 100);
-      const aesthetic = clampNum(Math.round(a), 0, 100);
-      s.rating_override = {
-        technical: technical,
-        aesthetic: aesthetic,
-        composite: personalComposite(technical, aesthetic)
-      };
+      const t = snapHalf(document.getElementById('ov-tech').value);
+      const a = snapHalf(document.getElementById('ov-aes').value);
+      const v = snapHalf(document.getElementById('ov-vibes').value);
+      if (t == null || a == null || v == null) return false;
+      s.rating_override = { technical: t, aesthetic: a, vibes: v };
+      const form = document.getElementById('pr-override-form');
+      if (form) form.hidden = true;
       persistSightings();
       paintDetailRating(s);
       if (ratingsViewOn && typeof renderGallery === 'function') renderGallery();
@@ -7572,24 +6957,25 @@
       }
       const draftForm = document.getElementById('pr-override-form');
       const draft = draftForm && !draftForm.hidden ? {
-        t: document.getElementById('ov-tech').value,
-        a: document.getElementById('ov-aes').value
+        t: document.getElementById('ov-tech') && document.getElementById('ov-tech').value,
+        a: document.getElementById('ov-aes') && document.getElementById('ov-aes').value,
+        v: document.getElementById('ov-vibes') && document.getElementById('ov-vibes').value
       } : null;
       el.hidden = false;
       const view = shownRating(s);
-      const ready = view && !view.blocked && (s.rating_override || ratingStored(s));
-      el.innerHTML = (ready
-        ? ratingBlockHTML(view, true)
-        : '<div class="pr-wait">' + (ratingAiHold ? 'On-device score is next.' : 'Scoring this photo…') + '</div>') +
-        ratingOverrideControlsHTML(s);
-      if (draft) {
+      el.innerHTML = (view ? ratingBlockHTML(view, true) : '<p class="pr-note">Not rated.</p>') + ratingOverrideControlsHTML(s);
+      if (draft && draft.t != null && draft.a != null && draft.v != null) {
         const form = document.getElementById('pr-override-form');
         if (form) form.hidden = false;
         const ti = document.getElementById('ov-tech');
         const ai = document.getElementById('ov-aes');
+        const vi = document.getElementById('ov-vibes');
         if (ti) ti.value = draft.t;
         if (ai) ai.value = draft.a;
-        previewOverrideComposite();
+        if (vi) vi.value = draft.v;
+        syncOverrideSlider('tech');
+        syncOverrideSlider('aes');
+        syncOverrideSlider('vibes');
       }
     }
 
@@ -7659,7 +7045,7 @@
         const rsort = rsortEl ? rsortEl.value : 'composite';
         photos.sort(function (a, b) {
           if (rsort === 'newest') return String(b.date || '').localeCompare(String(a.date || ''));
-          const key = rsort === 'technical' ? 'technical' : rsort === 'aesthetic' ? 'aesthetic' : 'composite';
+          const key = (rsort === 'technical' || rsort === 'aesthetic' || rsort === 'vibes') ? rsort : 'composite';
           const ar = shownRating(a);
           const br = shownRating(b);
           const av = ar && !ar.blocked && ar[key] != null ? ar[key] : -1;
@@ -7712,7 +7098,10 @@
       });
       const maxG = Math.max(1, ...monthsG);
       const gScore = document.getElementById('gallery-scoreline');
-      if (gScore) gScore.textContent = monthsG.reduce((a,b)=>a+b,0) + ' photos this year';
+      if (gScore) {
+        gScore.textContent = monthsG.reduce((a,b)=>a+b,0) + ' photos this year';
+        gScore.classList.remove('is-count');
+      }
       const gSpark = document.getElementById('gallery-spark');
       if (gSpark) {
         gSpark.innerHTML = monthsG.map((n, i) => {
@@ -7723,7 +7112,6 @@
       }
       if (ratingsViewOn) {
         renderRatingsList(photos);
-        queueVisibleRatings(photos);
         return;
       }
       const picking = photoPick.mode === 'gallery';
@@ -11843,7 +11231,6 @@
       coverBtn.textContent = Number(s.is_cover) ? 'Cover ✓' : 'Cover';
       coverBtn.onclick = function () { setBestPhoto(s.id); };
       paintDetailRating(s);
-      ensurePhotoRating(s.id);
       document.getElementById('detail-modal').classList.add('on');
     }
 
@@ -12676,7 +12063,7 @@
       markAchTargetIfNeeded(speciesCode);
       if (!editingId && bulkQueue.length >= 10) markAchBulkIfNeeded(bulkQueue.length);
       const savedId = editingId || (sightings[sightings.length - 1] && sightings[sightings.length - 1].id);
-      if (savedId) ensurePhotoRating(savedId);
+
       const moreBulk = !editingId && bulkQueue.length && bulkIndex < bulkQueue.length - 1;
       if (moreBulk) {
         bulkIndex += 1;
