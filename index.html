@@ -850,18 +850,17 @@
       color: var(--muted-2); font-variant-numeric: tabular-nums;
     }
     .rating-row {
+      position: relative; overflow: hidden;
       display: flex; gap: 10px; align-items: flex-start; text-align: left;
-      width: 100%; background: var(--photo); border: 1px solid var(--line);
-      border-radius: 12px; padding: 8px; cursor: pointer; color: inherit;
+      width: 100%; background: var(--ribbon); border: 1px solid var(--line);
+      border-radius: 12px; box-shadow: var(--inset);
+      padding: 8px 8px 8px 12px; cursor: pointer; color: inherit;
     }
-    .rating-row.tone-r1, .rating-row.tone-r2, .rating-row.tone-r3, .rating-row.tone-r4 {
-      background:
-        radial-gradient(120% 150% at 0% 40%, color-mix(in srgb, var(--tone) 20%, transparent), transparent 62%),
-        var(--photo);
-      border-color: color-mix(in srgb, var(--tone) 40%, var(--line));
-      box-shadow:
-        inset 0 0 32px color-mix(in srgb, var(--tone) 12%, transparent),
-        0 0 18px color-mix(in srgb, var(--tone) 14%, transparent);
+    .rating-row.tone-r1::before, .rating-row.tone-r2::before,
+    .rating-row.tone-r3::before, .rating-row.tone-r4::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(180deg, transparent, var(--tone) 18%, var(--tone) 82%, transparent);
+      pointer-events: none;
     }
     .rating-row img {
       width: 72px; height: 72px; object-fit: cover; border-radius: 8px; flex: none;
@@ -870,9 +869,12 @@
     .rating-row .pr-main { min-width: 0; flex: 1; }
     .rating-row .pr-name { font-size: 14px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2; }
     .rating-row .pr-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .photo-rating { margin-top: 12px; }
+    .photo-rating { margin-top: 10px; }
     .photo-rating[hidden] { display: none !important; }
-    .pr-override { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; align-items: center; }
+    .pr-override { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; align-items: center; }
+    .pr-override > .ghost {
+      padding: 3px 8px; font-size: 11px; line-height: 1.2; border-radius: 6px;
+    }
     .pr-override-form { display: flex; flex-direction: column; gap: 8px; width: 100%; align-items: stretch; }
     .pr-override-form[hidden] { display: none !important; }
     .pr-slide { display: grid; grid-template-columns: 84px 1fr 42px; gap: 8px; align-items: center; width: 100%; min-width: 0; font-size: 11px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
@@ -881,36 +883,40 @@
     .pr-num-input { border-bottom: 1px solid var(--line-2); }
     .pr-ov-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .pr-ov-comp { flex: none; min-width: 72px; }
-    .pr-ov-comp b { display: flex; align-items: center; gap: 6px; font-size: 22px; line-height: 1; letter-spacing: -.04em; text-transform: none; color: var(--text); }
+    .pr-ov-comp b { display: inline-flex; align-items: flex-end; gap: 4px; font-size: 22px; line-height: 1; letter-spacing: -.04em; text-transform: none; color: var(--text); }
     .pr-ov-comp span { display: block; margin-top: 3px; font-size: 10px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
     .score-pip {
-      display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex: none;
-      background: var(--tone, var(--muted-2));
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone, transparent) 28%, transparent), 0 0 8px var(--tone, transparent);
+      display: block; width: 18px; height: 18px; margin: 0 -1px 0.22em 0; border-radius: 50%; flex: none;
+      background: radial-gradient(circle closest-side,
+        var(--tone, var(--muted-2)) 0 28%,
+        color-mix(in srgb, var(--tone, var(--muted-2)) 72%, transparent) 48%,
+        color-mix(in srgb, var(--tone, var(--muted-2)) 22%, transparent) 72%,
+        transparent 100%);
     }
     .pr-bits > span.pr-custom { color: var(--em); }
-    .pr-top { display: flex; gap: 12px; align-items: flex-start; }
-    .pr-score { flex: none; min-width: 72px; }
+    .pr-top { display: flex; gap: 10px; align-items: center; }
+    .pr-score { flex: none; min-width: 64px; }
     .pr-score b {
-      display: flex; align-items: center; gap: 6px; color: var(--text);
+      display: inline-flex; align-items: flex-end; gap: 4px; color: var(--text);
       font-size: 32px; letter-spacing: -.05em; line-height: 1;
     }
     .pr-score span {
-      display: block; margin-top: 3px; font-size: 10px; font-weight: 750;
+      display: block; margin-top: 2px; font-size: 10px; font-weight: 750;
       letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
     }
     .pr-bits { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-width: 0; }
     .pr-bits > span {
-      font-size: 11px; font-weight: 700; color: var(--text);
+      font-size: 11px; font-weight: 700; color: var(--text); line-height: 1.2;
       background: transparent;
-      border: 1px solid color-mix(in srgb, var(--tone, var(--line-2)) 62%, transparent);
-      box-shadow:
-        0 0 10px color-mix(in srgb, var(--tone, transparent) 32%, transparent),
-        inset 0 0 8px color-mix(in srgb, var(--tone, transparent) 14%, transparent);
-      border-radius: 999px; padding: 3px 8px;
+      border: 1px solid color-mix(in srgb, var(--tone, var(--line)) 40%, var(--line));
+      box-shadow: none;
+      border-radius: 999px; padding: 2px 7px;
     }
-    .pr-bits i { font-style: normal; color: var(--muted); font-weight: 650; margin-right: 4px; }
+    .pr-bits i { font-style: normal; color: var(--muted); font-weight: 650; margin-right: 3px; }
     .pr-bits b { color: var(--text); font-weight: 800; letter-spacing: -.02em; }
+    #detail-rating .pr-top { gap: 8px; }
+    #detail-rating .pr-bits { gap: 3px; }
+    #detail-rating .pr-bits > span { padding: 1px 6px; font-size: 10px; }
     .pr-rar.r1 { color: #047857; border-color: #6ee7b7; background: #ecfdf5; }
     .pr-rar.r2 { color: #c2410c; border-color: #fdba74; background: #fff7ed; }
     .pr-rar.r3 { color: #6d28d9; border-color: #c4b5fd; background: #f5f3ff; }
@@ -1256,6 +1262,12 @@
     .az-log b { display: inline; font-size: 11px; }
     .az-log span { font-size: 10px; color: var(--muted); }
     #analyze-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+    #analyze-legend .az-heatkey { display: inline-flex; align-items: center; gap: 6px; }
+    #analyze-legend .az-heatkey b { font-size: 10px; font-weight: 750; color: var(--muted); }
+    #analyze-legend .az-heatkey i {
+      width: 88px; height: 8px; margin: 0; border-radius: 99px;
+      background: linear-gradient(90deg, #fde68a, #f97316, #dc2626);
+    }
     .az-dot { stroke: rgba(12,10,9,.4); stroke-width: 0.55; cursor: pointer; }
     .az-dot.on { stroke: #fff; stroke-width: 1.1; }
     .az-col { cursor: pointer; }
@@ -1271,6 +1283,7 @@
     .sheet-f { border-top: 1px solid var(--line); }
     .sheet-b { padding: 10px 12px 16px; overflow: auto; flex: 1; min-height: 0; font-size: 12px; }
     .x { background: none; border: 0; color: var(--muted); font-size: 16px; }
+    #map-tiles { width: 100%; max-width: none; }
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
     input[type=text], input[type=password], input[type=date], textarea, select {
@@ -2841,10 +2854,15 @@
         </div>
         <div class="field" style="margin-top:14px">
           <label>Map tiles</label>
-          <div class="seg">
-            <button type="button" id="btn-tiles-light" class="on" onclick="setDarkTiles(false)">Light</button>
-            <button type="button" id="btn-tiles-dark" onclick="setDarkTiles(true)">Dark</button>
-          </div>
+          <select id="map-tiles" class="mini" onchange="setMapTiles(this.value)">
+            <option value="osm">OpenStreetMap</option>
+            <option value="gray">Esri Dark Gray</option>
+            <option value="topo">Esri World Topo</option>
+            <option value="imagery">Esri Imagery</option>
+            <option value="usgs">USGS Topo</option>
+            <option value="opentopo">OpenTopoMap</option>
+          </select>
+          <p class="hint">Applies to every map. Gaps and Places fill counties on top of whichever base you pick.</p>
         </div>
         <div class="two" style="margin-top:16px">
           <button class="ghost" type="button" onclick="exportLogs()">Export logs</button>
@@ -2927,6 +2945,16 @@
       'South Carolina':'US-SC','South Dakota':'US-SD','Tennessee':'US-TN','Texas':'US-TX','Utah':'US-UT',
       'Vermont':'US-VT','Virginia':'US-VA','Washington':'US-WA','West Virginia':'US-WV','Wisconsin':'US-WI','Wyoming':'US-WY'
     };
+    const STATE_FIPS = {
+      '01':'Alabama','02':'Alaska','04':'Arizona','05':'Arkansas','06':'California','08':'Colorado','09':'Connecticut',
+      '10':'Delaware','11':'District of Columbia','12':'Florida','13':'Georgia','15':'Hawaii','16':'Idaho','17':'Illinois',
+      '18':'Indiana','19':'Iowa','20':'Kansas','21':'Kentucky','22':'Louisiana','23':'Maine','24':'Maryland','25':'Massachusetts',
+      '26':'Michigan','27':'Minnesota','28':'Mississippi','29':'Missouri','30':'Montana','31':'Nebraska','32':'Nevada',
+      '33':'New Hampshire','34':'New Jersey','35':'New Mexico','36':'New York','37':'North Carolina','38':'North Dakota',
+      '39':'Ohio','40':'Oklahoma','41':'Oregon','42':'Pennsylvania','44':'Rhode Island','45':'South Carolina','46':'South Dakota',
+      '47':'Tennessee','48':'Texas','49':'Utah','50':'Vermont','51':'Virginia','53':'Washington','54':'West Virginia',
+      '55':'Wisconsin','56':'Wyoming'
+    };
     const ALPH = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const CURRENT_MONTH = new Date().getMonth();
     const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -2988,7 +3016,20 @@
     let heatSpeed = Number(localStorage.getItem('avian_heat_speed') || 1) || 1;
     const HUNT_RARITY_KEYS = ['common', 'uncommon', 'rare', 'pulse', 'vagrant'];
     let huntRarity = new Set(HUNT_RARITY_KEYS);
-    let darkTiles = localStorage.getItem('avian_dark_tiles') === '1';
+    const MAP_TILES = {
+      osm: { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', maxZoom: 19, attribution: '&copy; OSM', dark: false, bg: '#d7d2c8' },
+      gray: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', maxZoom: 16, attribution: 'Tiles &copy; Esri', dark: true, bg: '#2a2a2a' },
+      topo: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', maxZoom: 19, attribution: 'Tiles &copy; Esri', dark: false, bg: '#e6e1d6' },
+      imagery: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', maxZoom: 19, attribution: 'Tiles &copy; Esri', dark: true, bg: '#0c1a12' },
+      usgs: { url: 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', maxZoom: 16, attribution: 'Tiles &copy; USGS', dark: false, bg: '#f3efe4' },
+      opentopo: { url: 'https://tile.opentopomap.org/{z}/{x}/{y}.png', maxZoom: 17, attribution: '&copy; OpenTopoMap', dark: false, bg: '#f2efe9' }
+    };
+    function initialMapTiles() {
+      const saved = localStorage.getItem('avian_map_tiles');
+      if (saved && MAP_TILES[saved]) return saved;
+      return localStorage.getItem('avian_dark_tiles') === '1' ? 'gray' : 'osm';
+    }
+    let mapTiles = initialMapTiles();
     let uiTheme = (localStorage.getItem('avian_ui_theme') === 'light') ? 'light' : 'dark';
     let baseLayer = null;
     let gpsMarker = null;
@@ -3662,31 +3703,51 @@
     function getEbirdKey() {
       return localStorage.getItem('avian_ebird_key') || '';
     }
+    function mapTileSpec() {
+      return MAP_TILES[mapTiles] || MAP_TILES.osm;
+    }
     function tileUrl() {
-      return darkTiles
-        ? 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'
-        : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+      return mapTileSpec().url;
+    }
+    function tileLayerOpts() {
+      const spec = mapTileSpec();
+      return {
+        maxZoom: spec.maxZoom,
+        attribution: spec.attribution,
+        keepBuffer: 6,
+        updateWhenZooming: false,
+        updateWhenIdle: false,
+        className: 'be-tiles'
+      };
+    }
+    function paintMapChrome(map) {
+      if (!map) return;
+      const spec = mapTileSpec();
+      map.getContainer().classList.toggle('be-dark', !!spec.dark);
+      map.getContainer().style.background = spec.bg;
     }
 
     function applyMapTiles() {
-      const opts = darkTiles
-        ? { maxZoom: 16, attribution: 'Tiles &copy; Esri', keepBuffer: 6, updateWhenZooming: false, updateWhenIdle: false, className: 'be-tiles' }
-        : { maxZoom: 19, attribution: '&copy; OSM', keepBuffer: 6, updateWhenZooming: false, updateWhenIdle: false, className: 'be-tiles' };
+      const opts = tileLayerOpts();
       if (baseLayer && mapInstance) mapInstance.removeLayer(baseLayer);
       baseLayer = L.tileLayer(tileUrl(), opts);
       if (mapInstance) {
         baseLayer.addTo(mapInstance).bringToBack();
-        mapInstance.getContainer().classList.toggle('be-dark', !!darkTiles);
-        mapInstance.getContainer().style.background = darkTiles ? '#2a2a2a' : '#d7d2c8';
+        paintMapChrome(mapInstance);
       }
       if (pickerMap) {
         pickerMap.eachLayer(l => { if (l instanceof L.TileLayer) pickerMap.removeLayer(l); });
         L.tileLayer(tileUrl(), opts).addTo(pickerMap);
+        paintMapChrome(pickerMap);
       }
-      const light = document.getElementById('btn-tiles-light');
-      const dark = document.getElementById('btn-tiles-dark');
-      if (light) light.className = darkTiles ? '' : 'on';
-      if (dark) dark.className = darkTiles ? 'on' : '';
+      if (analyzeMap && analyzeBaseLayer) {
+        analyzeMap.removeLayer(analyzeBaseLayer);
+        analyzeBaseLayer = L.tileLayer(tileUrl(), opts).addTo(analyzeMap);
+        analyzeBaseLayer.bringToBack();
+        paintMapChrome(analyzeMap);
+      }
+      const sel = document.getElementById('map-tiles');
+      if (sel && sel.value !== mapTiles) sel.value = mapTiles;
       if (typeof searchApplyTiles === 'function') searchApplyTiles();
     }
 
@@ -3726,9 +3787,10 @@
       return false;
     }
 
-    function setDarkTiles(on) {
-      darkTiles = !!on;
-      localStorage.setItem('avian_dark_tiles', darkTiles ? '1' : '0');
+    function setMapTiles(id) {
+      if (!MAP_TILES[id]) return;
+      mapTiles = id;
+      localStorage.setItem('avian_map_tiles', id);
       applyMapTiles();
     }
     function cssVar(name, fallback) {
@@ -6442,16 +6504,22 @@
     function clampNum(n, a, b) { return Math.max(a, Math.min(b, n)); }
 
     function liferPhotoIdSet() {
-      const first = {};
+      const groups = {};
       sightings.forEach(function (s) {
-        if (!s.species_code || !s.date) return;
-        const d = String(s.date).slice(0, 10);
-        if (!first[s.species_code] || d < first[s.species_code]) first[s.species_code] = d;
+        if (!s.species_code || (!s.photo_url && !s.photo_full)) return;
+        if (!groups[s.species_code]) groups[s.species_code] = [];
+        groups[s.species_code].push(s);
       });
       const ids = new Set();
-      sightings.forEach(function (s) {
-        if (!s.photo_url && !s.photo_full) return;
-        if (first[s.species_code] && String(s.date || '').slice(0, 10) === first[s.species_code]) ids.add(s.id);
+      Object.keys(groups).forEach(function (code) {
+        const rows = groups[code];
+        const covers = rows.filter(function (s) { return Number(s.is_cover); });
+        if (covers.length) {
+          covers.sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
+          ids.add(covers[0].id);
+        } else if (rows.length === 1) {
+          ids.add(rows[0].id);
+        }
       });
       return ids;
     }
@@ -6655,45 +6723,92 @@
       const hi = Math.min(sorted.length - 1, Math.ceil(i));
       return sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo);
     }
-    function ratingsPoint(v) {
+    function ratingsSnap(v) {
+      const metric = ratingsMetricKey();
+      const ranged = metric === 'composite';
+      const step = ranged ? 0.25 : 0.5;
       const x = clampNum(Number(v), 0, 5);
-      return Math.round(x * 10) / 10;
+      if (!ranged) {
+        let at = Math.round(x / step) * step;
+        at = clampNum(Math.round(at * 10) / 10, 0, 5);
+        return { at: at, lo: at, hi: at, exact: true, label: formatScore(at) };
+      }
+      let lo = Math.floor((x + 1e-8) / step) * step;
+      if (x >= 5 - 1e-6) lo = 5 - step;
+      lo = clampNum(Math.round(lo * 1000) / 1000, 0, 5 - step);
+      const hi = Math.round((lo + step) * 1000) / 1000;
+      const at = Math.round((lo + step / 2) * 1000) / 1000;
+      const labelNum = function (n) {
+        const q = Math.round(n * 100) / 100;
+        if (Math.abs(q - Math.round(q)) < 0.001) return String(Math.round(q));
+        if (Math.abs(q * 2 - Math.round(q * 2)) < 0.001) return q.toFixed(1);
+        return q.toFixed(2);
+      };
+      return { at: at, lo: lo, hi: hi, exact: false, label: labelNum(lo) + '\u2013' + labelNum(hi) };
     }
-    function ratingsAtPoint(scores, score) {
+    function ratingsInSnap(scores, snap) {
       let n = 0;
+      const last = !snap.exact && snap.hi >= 4.999;
       scores.forEach(function (s) {
-        if (Math.abs(Number(s) - score) <= 0.101) n++;
+        const x = Number(s);
+        if (snap.exact) {
+          if (Math.abs(x - snap.at) <= 0.001) n++;
+        } else if (x + 1e-9 >= snap.lo && (last ? x <= snap.hi + 1e-6 : x < snap.hi - 1e-9)) n++;
       });
       return n;
     }
-    function nearestScore(scores, target) {
-      let best = Number(scores[0]);
-      let bestD = Infinity;
-      scores.forEach(function (s) {
-        const d = Math.abs(Number(s) - target);
-        if (d < bestD) { bestD = d; best = Number(s); }
-      });
-      return ratingsPoint(best);
-    }
     function setRatingsBand(v) {
-      const score = ratingsPoint(v);
-      ratingsBand = score;
-      const n = ratingsAtPoint(ratingsCurveScores, score);
+      if (ratingsSortValue() === 'newest' && ratingsTrend.length) {
+        const i = clampNum(Math.round(Number(v)), 0, ratingsTrend.length - 1);
+        ratingsBand = i;
+        const pt = ratingsTrend[i];
+        const count = document.getElementById('rate-band-count');
+        const label = document.getElementById('rate-band-label');
+        const hair = document.getElementById('rate-hair');
+        if (count) count.textContent = formatScore(pt.avg);
+        if (label) label.textContent = ratingsTrendLabel(pt.date);
+        const hx = ratingsTrend.length === 1 ? 50 : i / (ratingsTrend.length - 1) * 100;
+        if (hair) { hair.setAttribute('x1', hx); hair.setAttribute('x2', hx); }
+        return;
+      }
+      const snap = ratingsSnap(v);
+      ratingsBand = snap.lo;
+      const n = ratingsInSnap(ratingsCurveScores, snap);
       const count = document.getElementById('rate-band-count');
       const label = document.getElementById('rate-band-label');
       const hair = document.getElementById('rate-hair');
       if (count) count.textContent = String(n);
-      if (label) label.textContent = 'photos · ' + formatScore(score);
-      const hx = score / 5 * 100;
+      if (label) label.textContent = 'photos · ' + snap.label;
+      const hx = snap.at / 5 * 100;
       if (hair) { hair.setAttribute('x1', hx); hair.setAttribute('x2', hx); }
     }
     let ratingsCurveScores = [];
+    let ratingsTrend = [];
+    let ratingsTrendWindow = 1;
     let ratingsCurveMetric = 'composite';
-    function ratingsMetricKey() {
+    function ratingsSortValue() {
       const el = document.getElementById('ratings-sort');
-      const v = el ? el.value : 'composite';
+      return el ? el.value : 'composite';
+    }
+    function ratingsMetricKey() {
+      const v = ratingsSortValue();
       if (v === 'technical' || v === 'aesthetic' || v === 'vibes') return v;
       return 'composite';
+    }
+    function rollingWindowSize(n) {
+      if (n <= 2) return Math.max(1, n);
+      return clampNum(Math.max(3, Math.round(n * 0.15)), 3, n);
+    }
+    function ratingsTrendLabel(date) {
+      const s = String(date || '').slice(0, 10);
+      let pretty = s || '–';
+      if (s.length >= 10) pretty = Number(s.slice(5, 7)) + '/' + Number(s.slice(8, 10)) + '/' + s.slice(2, 4);
+      return (ratingsTrendWindow > 1 ? ratingsTrendWindow + '-photo avg · ' : 'avg · ') + pretty;
+    }
+    function shortRateDate(date) {
+      const s = String(date || '').slice(0, 10);
+      if (s.length < 10) return s || '–';
+      return Number(s.slice(5, 7)) + '/' + Number(s.slice(8, 10)) + '/' + s.slice(2, 4);
     }
     function ratingsCurveHTML(scores) {
       ratingsCurveScores = scores.slice();
@@ -6734,15 +6849,12 @@
         if (acc > peak) peak = acc;
       }
       peak = peak || 1;
+      const composite = ratingsMetricKey() === 'composite';
+      const step = composite ? 0.25 : 0.5;
+      const stops = composite ? 20 : 11;
       let maxBand = 1;
-      for (let i = 0; i < 10; i++) {
-        const lo = i * 0.5;
-        const hi = lo + 0.5;
-        const last = i === 9;
-        let n = 0;
-        scores.forEach(function (s) {
-          if (s + 1e-9 >= lo && (last ? s <= hi + 1e-6 : s < hi - 1e-9)) n++;
-        });
+      for (let i = 0; i < stops; i++) {
+        const n = ratingsInSnap(scores, ratingsSnap(Math.round(i * step * 1000) / 1000));
         if (n > maxBand) maxBand = n;
       }
       let d = '';
@@ -6763,14 +6875,15 @@
         if (prev) prev.k += ' · ' + s.k;
         else marks.push({ n: s.n, k: s.k });
       });
-      if (ratingsBand == null) ratingsBand = nearestScore(scores, scorePercentile(sorted, 0.5));
-      const score = ratingsPoint(ratingsBand);
-      const hitN = ratingsAtPoint(scores, score);
+      if (ratingsBand == null) ratingsBand = ratingsSnap(scorePercentile(sorted, 0.5)).lo;
+      const snap = ratingsSnap(ratingsBand);
+      const hitN = ratingsInSnap(scores, snap);
       const yMid = Math.round(maxBand / 2);
       const yLabs = maxBand < 3
         ? [{ n: maxBand, y: 8 }, { n: 0, y: 96 }]
         : [{ n: maxBand, y: 8 }, { n: yMid, y: 52 }, { n: 0, y: 96 }];
-      const hx = score / 5 * 100;
+      const hx = snap.at / 5 * 100;
+      const sliderMax = 5;
       return '<div class="rate-board">' + statRow(marks.map(function (m) { return { k: m.k, n: formatScore(m.n) }; })) +
         '<div class="rate-chart">' +
         '<div class="rate-y">' + yLabs.map(function (lab) { return '<span style="top:' + lab.y + '%">' + lab.n + '</span>'; }).join('') + '</div>' +
@@ -6781,16 +6894,107 @@
             '<path d="' + d.trim() + '" fill="none" stroke="var(--em)" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>' +
             '<line id="rate-hair" x1="' + hx + '" x2="' + hx + '" y1="8" y2="96" stroke="var(--text)" stroke-width="1" stroke-opacity="0.55" vector-effect="non-scaling-stroke"/>' +
           '</svg>' +
-          '<input class="rate-scrub" type="range" min="0" max="5" step="0.1" value="' + score + '" aria-label="Score" oninput="setRatingsBand(this.value)"/>' +
-          read(hitN, 'photos · ' + formatScore(score)) +
+          '<input class="rate-scrub" type="range" min="0" max="' + sliderMax + '" step="' + step + '" value="' + snap.lo + '" aria-label="Score" oninput="setRatingsBand(this.value)"/>' +
+          read(hitN, 'photos · ' + snap.label) +
         '</div>' + axisX + '</div></div>';
     }
+    function ratingsTrendHTML(rows) {
+      const hair = function (x1, y1, x2, y2) {
+        return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="var(--line-2)" stroke-width="1" stroke-opacity="0.35" vector-effect="non-scaling-stroke"/>';
+      };
+      const frame = hair(0, 8, 100, 8) + hair(0, 52, 100, 52) + hair(0, 96, 100, 96) +
+        hair(20, 8, 20, 96) + hair(40, 8, 40, 96) + hair(60, 8, 60, 96) + hair(80, 8, 80, 96);
+      const statRow = function (marks) {
+        return '<div class="rate-stats" style="grid-template-columns:repeat(' + marks.length + ',minmax(0,1fr))">' +
+          marks.map(function (m) {
+            return '<div class="rate-stat"><i>' + m.k + '</i><b>' + m.n + '</b></div>';
+          }).join('') + '</div>';
+      };
+      const read = function (count, label) {
+        return '<p class="rate-read"><b id="rate-band-count">' + count + '</b><span id="rate-band-label">' + label + '</span></p>';
+      };
+      const yLabs = '<div class="rate-y"><span style="top:8%">5</span><span style="top:52%">2.5</span><span style="top:96%">0</span></div>';
+      const scored = [];
+      rows.forEach(function (s) {
+        const r = shownRating(s);
+        if (r && r.composite != null) scored.push({ date: s.date || '', id: s.id, composite: r.composite });
+      });
+      scored.sort(function (a, b) {
+        const d = String(a.date).localeCompare(String(b.date));
+        return d || String(a.id).localeCompare(String(b.id));
+      });
+      const composites = scored.map(function (s) { return s.composite; });
+      const sortedScores = composites.slice().sort(function (a, b) { return a - b; });
+      const specs = scored.length ? [
+        { n: Math.round(scorePercentile(sortedScores, 0.25) * 10) / 10, k: '25%' },
+        { n: Math.round(scorePercentile(sortedScores, 0.5) * 10) / 10, k: '50%' },
+        { n: Math.round(scorePercentile(sortedScores, 0.75) * 10) / 10, k: '75%' },
+        { n: Math.round(sortedScores[sortedScores.length - 1] * 10) / 10, k: 'Best' }
+      ] : [{ n: '\u2013', k: '25%' }, { n: '\u2013', k: '50%' }, { n: '\u2013', k: '75%' }, { n: '\u2013', k: 'Best' }];
+      const marks = [];
+      specs.forEach(function (s) {
+        if (typeof s.n !== 'number') { marks.push({ n: s.n, k: s.k }); return; }
+        const prev = marks.find(function (m) { return Math.abs(m.n - s.n) < 0.05; });
+        if (prev) prev.k += ' · ' + s.k;
+        else marks.push({ n: s.n, k: s.k });
+      });
+      const stats = '<div class="rate-board">' + statRow(marks.map(function (m) { return { k: m.k, n: typeof m.n === 'number' ? formatScore(m.n) : m.n }; }));
+      if (!scored.length) {
+        ratingsTrend = [];
+        ratingsTrendWindow = 1;
+        return stats +
+          '<div class="rate-chart">' + yLabs +
+          '<div class="rate-plot"><svg viewBox="0 0 100 100" preserveAspectRatio="none">' + frame +
+          '<path d="M0 96 L100 96" fill="none" stroke="var(--em)" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>' +
+          read('\u2013', 'avg') + '</div>' +
+          '<div class="rate-x"><span>First</span><span>Latest</span></div></div></div>';
+      }
+      const w = rollingWindowSize(scored.length);
+      ratingsTrendWindow = w;
+      let sum = 0;
+      ratingsTrend = scored.map(function (s, i) {
+        sum += s.composite;
+        if (i >= w) sum -= scored[i - w].composite;
+        const len = Math.min(i + 1, w);
+        const avg = Math.round((sum / len) * 10) / 10;
+        return { avg: avg, date: s.date };
+      });
+      let d = '';
+      ratingsTrend.forEach(function (pt, i) {
+        const x = ratingsTrend.length === 1 ? 50 : i / (ratingsTrend.length - 1) * 100;
+        const y = 8 + (1 - clampNum(pt.avg, 0, 5) / 5) * 88;
+        d += (i ? 'L' : 'M') + x.toFixed(2) + ' ' + y.toFixed(2) + ' ';
+      });
+      const endX = ratingsTrend.length === 1 ? 50 : 100;
+      const startX = ratingsTrend.length === 1 ? 50 : 0;
+      if (ratingsBand == null || ratingsBand > ratingsTrend.length - 1) ratingsBand = ratingsTrend.length - 1;
+      const idx = clampNum(Math.round(Number(ratingsBand)), 0, ratingsTrend.length - 1);
+      const hx = ratingsTrend.length === 1 ? 50 : idx / (ratingsTrend.length - 1) * 100;
+      const pt = ratingsTrend[idx];
+      const axis = ratingsTrend.length < 3
+        ? '<div class="rate-x"><span>' + shortRateDate(scored[0].date) + '</span><span>' + shortRateDate(scored[scored.length - 1].date) + '</span></div>'
+        : '<div class="rate-x"><span>' + shortRateDate(scored[0].date) + '</span><span>' + shortRateDate(scored[Math.floor((scored.length - 1) / 2)].date) + '</span><span>' + shortRateDate(scored[scored.length - 1].date) + '</span></div>';
+      return stats +
+        '<div class="rate-chart">' + yLabs +
+        '<div class="rate-plot">' +
+          '<svg viewBox="0 0 100 100" preserveAspectRatio="none">' +
+            frame +
+            '<path d="' + d + 'L' + endX + ' 96 L' + startX + ' 96 Z" fill="var(--em)" fill-opacity="0.16" stroke="none"/>' +
+            '<path d="' + d.trim() + '" fill="none" stroke="var(--em)" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>' +
+            '<line id="rate-hair" x1="' + hx + '" x2="' + hx + '" y1="8" y2="96" stroke="var(--text)" stroke-width="1" stroke-opacity="0.55" vector-effect="non-scaling-stroke"/>' +
+          '</svg>' +
+          '<input class="rate-scrub" type="range" min="0" max="' + (ratingsTrend.length - 1) + '" step="1" value="' + idx + '" aria-label="Chronology" oninput="setRatingsBand(this.value)"/>' +
+          read(formatScore(pt.avg), ratingsTrendLabel(pt.date)) +
+        '</div>' + axis + '</div></div>';
+    }
     function ratingsProgressHTML(rows) {
-      const key = ratingsMetricKey();
-      if (key !== ratingsCurveMetric) {
-        ratingsCurveMetric = key;
+      const sort = ratingsSortValue();
+      if (sort !== ratingsCurveMetric) {
+        ratingsCurveMetric = sort;
         ratingsBand = null;
       }
+      if (sort === 'newest') return ratingsTrendHTML(rows);
+      const key = ratingsMetricKey();
       const scores = [];
       rows.forEach(function (s) {
         const r = shownRating(s);
@@ -8769,7 +8973,11 @@
     }
 
     let analyzeMap = null;
+    let analyzeBaseLayer = null;
     let analyzeLayer = null;
+    let analyzeCountyDraw = 0;
+    let countyShapePromise = null;
+    let countyShapeIndex = null;
     let analyzeLens = 'year';
     let analyzeYear = new Date().getFullYear();
     let analyzeBucketKey = '';
@@ -9148,12 +9356,9 @@
       if (!el || typeof L === 'undefined') return null;
       if (!analyzeMap) {
         analyzeMap = L.map(el, { zoomControl: false, attributionControl: false });
-        const dark = document.documentElement.getAttribute('data-theme') !== 'light';
-        L.tileLayer(typeof tileUrl === 'function' ? tileUrl() : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 16
-        }).addTo(analyzeMap);
+        analyzeBaseLayer = L.tileLayer(tileUrl(), tileLayerOpts()).addTo(analyzeMap);
         analyzeLayer = L.layerGroup().addTo(analyzeMap);
-        el.classList.toggle('be-dark', dark);
+        paintMapChrome(analyzeMap);
       }
       setTimeout(function () { if (analyzeMap) analyzeMap.invalidateSize(); }, 80);
       return analyzeMap;
@@ -9433,6 +9638,7 @@
 
     function renderAnalyzeMap(rows, firsts, win, skipFit) {
       const map = ensureAnalyzeMap();
+      analyzeCountyDraw++;
       if (!map || !analyzeLayer) return;
       analyzeLayer.clearLayers();
       const pts = [];
@@ -9501,9 +9707,18 @@
     }
     function analyzePlaceName(s) {
       const c = String(s.county || '').trim();
-      if (c) return /county$/i.test(c) ? c : (c + ' County');
-      const loc = String(s.location || '').trim();
-      return loc || 'Unplaced';
+      const label = c
+        ? (/(county|parish|borough|census area|municipality|city)$/i.test(c) ? c : (c + ' County'))
+        : (String(s.location || '').trim() || 'Unplaced');
+      if (analyzeIsCountry() && label !== 'Unplaced' && s.state) return label + ' · ' + s.state;
+      return label;
+    }
+    function analyzePlaceCounty(key) {
+      return String(key || '').replace(/ · .+$/, '');
+    }
+    function analyzePlaceStateFromKey(key, fallback) {
+      const m = String(key || '').match(/ · (.+)$/);
+      return m ? m[1] : (fallback || activeState);
     }
     function setAnalyzeLens(lens) {
       analyzeLens = lens || 'year';
@@ -9599,6 +9814,7 @@
     }
     function renderAnalyzePins(pins, doFit) {
       const map = ensureAnalyzeMap();
+      analyzeCountyDraw++;
       if (!map || !analyzeLayer) return;
       analyzeLayer.clearLayers();
       const pts = [];
@@ -9624,6 +9840,216 @@
         const b = STATE_BOUNDS[activeState];
         map.fitBounds([[b[1], b[0]], [b[3], b[2]]], { padding: [12, 12] });
       }
+    }
+    function countyNorm(name) {
+      return String(name || '').toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/\./g, '')
+        .replace(/\s+(county|parish|borough|census area|municipality|city)$/i, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+    function loadCountyShapes() {
+      if (countyShapeIndex) return Promise.resolve(countyShapeIndex);
+      if (countyShapePromise) return countyShapePromise;
+      countyShapePromise = fetch('https://cdn.jsdelivr.net/gh/plotly/datasets@master/geojson-counties-fips.json')
+        .then(function (res) { if (!res.ok) throw new Error('counties'); return res.json(); })
+        .then(function (data) {
+          const plain = {};
+          const exact = {};
+          const byState = {};
+          const features = [];
+          (data.features || []).forEach(function (f) {
+            const props = f.properties || {};
+            const fips = String(props.STATE || '').padStart(2, '0');
+            const state = STATE_FIPS[fips];
+            if (!state) return;
+            features.push(f);
+            (byState[state] = byState[state] || []).push(f);
+            const base = countyNorm(props.NAME);
+            const lsad = String(props.LSAD || '').toLowerCase();
+            const k = state.toLowerCase() + '|' + base;
+            exact[k + '|' + lsad] = f;
+            const prev = plain[k];
+            if (!prev) plain[k] = f;
+            else {
+              const prevLsad = String((prev.properties || {}).LSAD || '').toLowerCase();
+              const rank = function (s) { return (s === 'county' || s === 'parish' || s === 'borough') ? 2 : (s === 'city' ? 0 : 1); };
+              if (rank(lsad) > rank(prevLsad)) plain[k] = f;
+            }
+          });
+          countyShapeIndex = { plain: plain, exact: exact, byState: byState, features: features };
+          return countyShapeIndex;
+        })
+        .catch(function (err) {
+          countyShapePromise = null;
+          throw err;
+        });
+      return countyShapePromise;
+    }
+    function findCountyShape(index, state, label) {
+      if (!index || !state) return null;
+      const base = countyNorm(analyzePlaceCounty(label));
+      const raw = String(analyzePlaceCounty(label) || '').toLowerCase();
+      const m = raw.match(/\b(county|parish|borough|census area|municipality|city)$/);
+      const lsad = m ? m[1] : '';
+      const k = String(state).toLowerCase() + '|' + base;
+      if (lsad && index.exact[k + '|' + lsad]) return index.exact[k + '|' + lsad];
+      return index.plain[k] || null;
+    }
+    function analyzeFitMap(map, group, pts) {
+      if (group && group.getLayers().length) {
+        map.fitBounds(group.getBounds(), { padding: [12, 12], maxZoom: 9 });
+        return;
+      }
+      if (pts.length === 1) map.setView(pts[0], 10);
+      else if (pts.length) map.fitBounds(pts, { padding: [18, 18], maxZoom: 9 });
+      else if (!analyzeIsCountry() && STATE_BOUNDS[activeState]) {
+        const b = STATE_BOUNDS[activeState];
+        map.fitBounds([[b[1], b[0]], [b[3], b[2]]], { padding: [12, 12] });
+      }
+    }
+    function analyzeHeatColor(t) {
+      const stops = [[0, '#fde68a'], [0.5, '#f97316'], [1, '#dc2626']];
+      const x = Math.max(0, Math.min(1, Number(t) || 0));
+      for (let i = 1; i < stops.length; i++) {
+        if (x <= stops[i][0]) {
+          const span = stops[i][0] - stops[i - 1][0];
+          return searchMix(stops[i - 1][1], stops[i][1], span ? (x - stops[i - 1][0]) / span : 1);
+        }
+      }
+      return stops[stops.length - 1][1];
+    }
+    function analyzeHeatT(value, lo, hi) {
+      const n = Number(value);
+      const a = Number(lo);
+      const b = Number(hi);
+      const v = Number.isFinite(n) ? n : 0;
+      const min = Number.isFinite(a) ? a : 0;
+      const max = Number.isFinite(b) ? b : min;
+      if (max <= min) return 1;
+      return Math.max(0, Math.min(1, (v - min) / (max - min)));
+    }
+    function analyzeHeatSpan(list) {
+      const vals = (list || []).map(function (p) { return Number(p.value) || 0; });
+      if (!vals.length) return { lo: 0, hi: 0 };
+      return { lo: Math.min.apply(null, vals), hi: Math.max.apply(null, vals) };
+    }
+    function analyzeHeatLegend(lo, hi) {
+      return '<span class="az-heatkey"><b>' + lo + '</b><i></i><b>' + hi + '</b></span>';
+    }
+    function renderAnalyzeCounties(items, extraPins, doFit) {
+      const map = ensureAnalyzeMap();
+      const token = ++analyzeCountyDraw;
+      if (!map || !analyzeLayer) return;
+      analyzeLayer.clearLayers();
+      const drawPins = function () {
+        (extraPins || []).forEach(function (p) {
+          if (!Number.isFinite(p.lat) || !Number.isFinite(p.lng)) return;
+          const focus = p.id && p.id === analyzeFocusId;
+          const mk = L.circleMarker([p.lat, p.lng], {
+            radius: p.radius || (focus ? 7 : 5),
+            color: '#fff',
+            weight: focus ? 2 : 1,
+            fillColor: p.color || '#fff',
+            fillOpacity: 0.95
+          });
+          if (p.onClick) mk.on('click', p.onClick);
+          if (p.tip) mk.bindTooltip(p.tip, { direction: 'top' });
+          analyzeLayer.addLayer(mk);
+        });
+      };
+      const drawCircles = function (rows) {
+        const pts = [];
+        rows.forEach(function (item) {
+          if (!Number.isFinite(item.lat) || !Number.isFinite(item.lng)) return;
+          pts.push([item.lat, item.lng]);
+          const t = analyzeHeatT(item.value, item.minV, item.maxV);
+          const heat = analyzeHeatColor(t);
+          const mk = L.circleMarker([item.lat, item.lng], {
+            radius: 6 + 12 * Math.max(0.2, t),
+            color: item.selected ? '#fff' : 'rgba(12,10,9,.45)',
+            weight: item.selected ? 2 : 0.6,
+            fillColor: heat,
+            fillOpacity: item.dim ? 0.28 : 0.92
+          });
+          if (item.onClick) mk.on('click', item.onClick);
+          if (item.tip) mk.bindTooltip(item.tip, { direction: 'top' });
+          analyzeLayer.addLayer(mk);
+        });
+        drawPins();
+        if (doFit) analyzeFitMap(map, null, pts);
+      };
+      loadCountyShapes().then(function (index) {
+        if (token !== analyzeCountyDraw) return;
+        analyzeLayer.clearLayers();
+        const group = L.featureGroup();
+        const scopeState = analyzeIsCountry() ? '' : activeState;
+        const baseFeats = scopeState ? ((index.byState && index.byState[scopeState]) || []) : (index.features || []);
+        let baseLayer = null;
+        if (baseFeats.length) {
+          baseLayer = L.geoJSON({ type: 'FeatureCollection', features: baseFeats }, {
+            interactive: false,
+            style: {
+              interactive: false,
+              color: '#a8a29e',
+              weight: 0.7,
+              fillColor: '#e7e5e4',
+              fillOpacity: 0.72
+            }
+          });
+          analyzeLayer.addLayer(baseLayer);
+          baseLayer.eachLayer(function (layer) {
+            layer.options.interactive = false;
+            if (layer._path) {
+              layer._path.style.pointerEvents = 'none';
+              layer._path.classList.remove('leaflet-interactive');
+            }
+          });
+        }
+        const missed = [];
+        (items || []).forEach(function (item) {
+          const feat = findCountyShape(index, item.state, item.key);
+          if (!feat) { missed.push(item); return; }
+          const t = analyzeHeatT(item.value, item.minV, item.maxV);
+          const gj = L.geoJSON(feat, {
+            style: {
+              color: item.selected ? '#fff' : 'rgba(12,10,9,.55)',
+              weight: item.selected ? 2.2 : 0.8,
+              fillColor: analyzeHeatColor(t),
+              fillOpacity: item.dim ? 0.28 : 0.86
+            }
+          });
+          gj.eachLayer(function (layer) {
+            if (item.onClick) layer.on('click', item.onClick);
+            if (item.tip) layer.bindTooltip(item.tip, { sticky: true, direction: 'top' });
+          });
+          analyzeLayer.addLayer(gj);
+          if (gj.bringToFront) gj.bringToFront();
+          group.addLayer(gj);
+        });
+        const pts = [];
+        missed.forEach(function (item) {
+          if (!Number.isFinite(item.lat) || !Number.isFinite(item.lng)) return;
+          pts.push([item.lat, item.lng]);
+          const mk = L.circleMarker([item.lat, item.lng], {
+            radius: 7,
+            color: 'rgba(255,255,255,.7)',
+            weight: 1,
+            fillColor: analyzeHeatColor(analyzeHeatT(item.value, item.minV, item.maxV)),
+            fillOpacity: item.dim ? 0.28 : 0.9
+          });
+          if (item.onClick) mk.on('click', item.onClick);
+          if (item.tip) mk.bindTooltip(item.tip, { direction: 'top' });
+          analyzeLayer.addLayer(mk);
+        });
+        drawPins();
+        if (doFit) analyzeFitMap(map, (!analyzeIsCountry() && baseLayer) ? baseLayer : group, pts);
+      }).catch(function () {
+        if (token !== analyzeCountyDraw) return;
+        analyzeLayer.clearLayers();
+        drawCircles(items || []);
+      });
     }
     function analyzeBestDay(logs, firsts) {
       const days = {};
@@ -10023,10 +10449,11 @@
           let svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '">';
           top.forEach(function (p, i) {
             const y = i * rowH;
-            const bw = Math.max(2, ((w - labelW - 28) * p.value) / maxBar);
+            const heat = analyzeHeatSpan(list);
+            const bw = Math.max(2, ((w - labelW - 28) * p.value) / Math.max(1, heat.hi));
             const on = !analyzePlaceKey || analyzePlaceKey === p.key;
             svg += '<text class="az-axis" x="0" y="' + (y + 12) + '">' + azText(p.key).slice(0, 18) + '</text>';
-            svg += '<rect x="' + labelW + '" y="' + (y + 4) + '" width="' + bw + '" height="10" rx="2" fill="' + AZ_COL.uncommon + '" opacity="' + (on ? 1 : 0.3) + '"></rect>';
+            svg += '<rect x="' + labelW + '" y="' + (y + 4) + '" width="' + bw + '" height="10" rx="2" fill="' + analyzeHeatColor(analyzeHeatT(p.value, heat.lo, heat.hi)) + '" opacity="' + (on ? 1 : 0.3) + '"></rect>';
             svg += '<text class="az-axis" x="' + (w - 2) + '" y="' + (y + 12) + '" text-anchor="end">' + p.value + '</text>';
             svg += '<rect x="0" y="' + y + '" width="' + w + '" height="' + rowH + '" fill="transparent" onclick="setAnalyzePlace(\'' + azEsc(p.key) + '\')"></rect>';
           });
@@ -10034,20 +10461,20 @@
           box.innerHTML = svg;
         }
       }
-      if (legend) legend.innerHTML = '<span><i style="background:' + AZ_COL.uncommon + '"></i>Birds in season while you were there, still unlogged</span>';
+      if (legend) legend.innerHTML = analyzeHeatLegend(analyzeHeatSpan(list).lo, analyzeHeatSpan(list).hi);
       const rangeEl = document.getElementById('analyze-range-label');
       if (rangeEl) rangeEl.textContent = analyzePlaceKey || (analyzeIsCountry() ? 'United States' : activeState);
       const maxV = Math.max(1, ...list.map(function (p) { return p.value; }));
-      renderAnalyzePins(list.filter(function (p) { return Number.isFinite(p.lat); }).map(function (p) {
+      renderAnalyzeCounties(list.map(function (p) {
         const dim = analyzePlaceKey && analyzePlaceKey !== p.key;
         return {
-          lat: p.lat, lng: p.lng, dim: dim, color: AZ_COL.uncommon,
-          opacity: dim ? 0.12 : 0.9,
-          radius: 6 + 12 * (p.value / maxV),
+          key: p.key, state: p.state, value: p.value, minV: analyzeHeatSpan(list).lo, maxV: analyzeHeatSpan(list).hi,
+          lat: p.lat, lng: p.lng, dim: dim, selected: analyzePlaceKey === p.key,
+          color: AZ_COL.uncommon,
           tip: p.key + ' · ' + p.value + ' still open',
           onClick: function () { setAnalyzePlace(azEsc(p.key)); }
         };
-      }), true);
+      }), [], true);
       const boxList = document.getElementById('analyze-list');
       if (!boxList) return;
       if (!list.length) { boxList.innerHTML = '<p class="hint">Log a few places first.</p>'; return; }
@@ -10058,7 +10485,7 @@
           '<span class="az-gap-top"><b>' + azText(p.key) + '</b><span class="az-meta">' + p.value + ' still open</span></span></button>';
         if (analyzePlaceKey !== p.key) return html;
         const month = analyzeGapMonth == null ? gapDefaultMonth(p) : analyzeGapMonth;
-        const info = ensureGapCounty(p.state, p.key);
+        const info = ensureGapCounty(p.state, analyzePlaceCounty(p.key));
         const monthMap = monthlyForState(p.state);
         let pool = Object.keys(monthMap);
         if (info.codes && info.codes.size) pool = pool.filter(function (code) { return info.codes.has(code); });
@@ -10105,11 +10532,13 @@
       const places = {};
       all.forEach(function (s) {
         const key = analyzePlaceName(s);
-        if (!places[key]) places[key] = { key: key, logs: [], species: {}, lifers: {}, lats: [], lngs: [] };
+        if (!places[key]) places[key] = { key: key, logs: [], species: {}, lifers: {}, lats: [], lngs: [], states: {} };
         const p = places[key];
         p.logs.push(s);
         p.species[s.species_code] = 1;
         if (firsts[s.species_code] === String(s.date || '')) p.lifers[s.species_code] = 1;
+        const st = s.state || activeState;
+        if (st) p.states[st] = (p.states[st] || 0) + 1;
         const lat = Number(s.lat), lng = Number(s.lng);
         if (Number.isFinite(lat) && Number.isFinite(lng)) { p.lats.push(lat); p.lngs.push(lng); }
       });
@@ -10118,6 +10547,11 @@
         p.speciesN = Object.keys(p.species).length;
         p.liferN = Object.keys(p.lifers).length;
         p.value = analyzePlaceMetric === 'species' ? p.speciesN : (analyzePlaceMetric === 'logs' ? p.logs.length : p.liferN);
+        p.state = analyzePlaceStateFromKey(p.key, '');
+        if (!p.state) {
+          let sn = -1;
+          Object.keys(p.states).forEach(function (st) { if (p.states[st] > sn) { sn = p.states[st]; p.state = st; } });
+        }
         p.lat = p.lats.length ? p.lats.reduce(function (a, b) { return a + b; }, 0) / p.lats.length : NaN;
         p.lng = p.lngs.length ? p.lngs.reduce(function (a, b) { return a + b; }, 0) / p.lngs.length : NaN;
         return p;
@@ -10125,7 +10559,7 @@
       const color = analyzePlaceMetric === 'species' ? AZ_COL.neu : (analyzePlaceMetric === 'logs' ? AZ_COL.rep : AZ_COL.common);
       const label = analyzePlaceMetric === 'species' ? 'species' : (analyzePlaceMetric === 'logs' ? 'logs' : 'lifers');
       if (head) head.innerHTML = list.length
-        ? ('<b>' + list.length + '</b> places · sized by ' + label)
+        ? ('<b>' + list.length + '</b> places · shaded by ' + label)
         : 'Log a sighting with a place to see it here.';
       const chart = document.getElementById('analyze-chart');
       const top = list.filter(function (p) { return p.value > 0; }).slice(0, 8);
@@ -10139,10 +10573,11 @@
           let svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '">';
           top.forEach(function (p, i) {
             const y = i * rowH;
-            const bw = Math.max(2, ((w - labelW - 28) * p.value) / maxV);
+            const heat = analyzeHeatSpan(list);
+            const bw = Math.max(2, ((w - labelW - 28) * p.value) / Math.max(1, heat.hi));
             const on = !analyzePlaceKey || analyzePlaceKey === p.key;
             svg += '<text class="az-axis" x="0" y="' + (y + 12) + '">' + azText(p.key).slice(0, 18) + '</text>';
-            svg += '<rect x="' + labelW + '" y="' + (y + 4) + '" width="' + bw + '" height="10" rx="2" fill="' + color + '" opacity="' + (on ? 1 : 0.3) + '"></rect>';
+            svg += '<rect x="' + labelW + '" y="' + (y + 4) + '" width="' + bw + '" height="10" rx="2" fill="' + analyzeHeatColor(analyzeHeatT(p.value, heat.lo, heat.hi)) + '" opacity="' + (on ? 1 : 0.3) + '"></rect>';
             svg += '<text class="az-axis" x="' + (w - 2) + '" y="' + (y + 12) + '" text-anchor="end">' + p.value + '</text>';
             svg += '<rect x="0" y="' + y + '" width="' + w + '" height="' + rowH + '" fill="transparent" onclick="setAnalyzePlace(\'' + azEsc(p.key) + '\')"></rect>';
           });
@@ -10150,36 +10585,32 @@
           chart.innerHTML = svg;
         }
       }
-      if (legend) legend.innerHTML = '<span><i style="background:' + color + '"></i>' + label.charAt(0).toUpperCase() + label.slice(1) + '</span>';
+      if (legend) legend.innerHTML = analyzeHeatLegend(analyzeHeatSpan(list).lo, analyzeHeatSpan(list).hi);
       const rangeEl = document.getElementById('analyze-range-label');
       if (rangeEl) rangeEl.textContent = analyzePlaceKey || (analyzeIsCountry() ? 'United States' : activeState);
       const maxV = Math.max(1, ...list.map(function (p) { return p.value; }));
-      const pins = [];
-      list.forEach(function (p) {
-        if (!Number.isFinite(p.lat)) return;
+      const extra = [];
+      if (analyzePlaceKey && analyzeFocusSpecies && places[analyzePlaceKey]) {
+        places[analyzePlaceKey].logs.forEach(function (s) {
+          if (s.species_code !== analyzeFocusSpecies) return;
+          extra.push({
+            id: s.id, lat: Number(s.lat), lng: Number(s.lng), color: '#fff',
+            radius: analyzeFocusId === s.id ? 8 : 5,
+            tip: taxName(s.species_code).comName + ' · ' + String(s.date || '').slice(0, 10),
+            onClick: function () { setAnalyzeLog(azEsc(s.id)); }
+          });
+        });
+      }
+      renderAnalyzeCounties(list.map(function (p) {
         const dim = analyzePlaceKey && analyzePlaceKey !== p.key;
-        pins.push({
-          lat: p.lat, lng: p.lng, dim: dim, color: color,
-          radius: 6 + 12 * (p.value / maxV),
+        return {
+          key: p.key, state: p.state, value: p.value, minV: analyzeHeatSpan(list).lo, maxV: analyzeHeatSpan(list).hi,
+          lat: p.lat, lng: p.lng, dim: dim, selected: analyzePlaceKey === p.key,
+          color: color,
           tip: p.key + ' · ' + p.value + ' ' + label,
           onClick: function () { setAnalyzePlace(azEsc(p.key)); }
-        });
-      });
-      if (analyzePlaceKey && analyzeFocusSpecies) {
-        const place = places[analyzePlaceKey];
-        if (place) {
-          place.logs.forEach(function (s) {
-            if (s.species_code !== analyzeFocusSpecies) return;
-            pins.push({
-              id: s.id, lat: Number(s.lat), lng: Number(s.lng), color: '#fff',
-              radius: analyzeFocusId === s.id ? 8 : 5,
-              tip: taxName(s.species_code).comName + ' · ' + String(s.date || '').slice(0, 10),
-              onClick: function () { setAnalyzeLog(azEsc(s.id)); }
-            });
-          });
-        }
-      }
-      renderAnalyzePins(pins, !analyzeFocusId);
+        };
+      }), extra, !analyzeFocusId);
       const listEl = document.getElementById('analyze-list');
       if (!listEl) return;
       if (analyzePlaceKey && places[analyzePlaceKey]) {
@@ -15290,14 +15721,11 @@
 
     function searchApplyTiles() {
       if (!searchMap || typeof L === 'undefined') return;
-      const opts = darkTiles
-        ? { maxZoom: 16, attribution: 'Tiles &copy; Esri' }
-        : { maxZoom: 19, attribution: '&copy; OSM' };
+      const opts = tileLayerOpts();
       if (searchBaseLayer) searchMap.removeLayer(searchBaseLayer);
       searchBaseLayer = L.tileLayer(tileUrl(), opts).addTo(searchMap);
       searchBaseLayer.bringToBack();
-      searchMap.getContainer().classList.toggle('be-dark', !!darkTiles);
-      searchMap.getContainer().style.background = darkTiles ? '#2a2a2a' : '#d7d2c8';
+      paintMapChrome(searchMap);
     }
 
     function ensureSearchMap() {
