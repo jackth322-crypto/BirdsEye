@@ -16804,5 +16804,33 @@
       backfillCounties();
     });
   </script>
+<div id="auth-test" style="position:fixed; bottom:20px; right:20px; background:#1c1917; color:#f5f5f4; padding:16px; border-radius:12px; z-index:9999; font-family:system-ui; width:280px;">
+  <h3 style="margin:0 0 12px; font-size:16px;">Auth Test</h3>
+  <input id="auth-email" type="email" placeholder="Email" style="width:100%; margin-bottom:8px; padding:8px; border-radius:6px; border:1px solid #444; background:#292524; color:white;">
+  <input id="auth-password" type="password" placeholder="Password" style="width:100%; margin-bottom:8px; padding:8px; border-radius:6px; border:1px solid #444; background:#292524; color:white;">
+  <button id="auth-signup" style="width:100%; margin-bottom:6px; padding:8px; border-radius:6px; border:none; background:#059669; color:white; cursor:pointer;">Sign Up</button>
+  <button id="auth-signin" style="width:100%; padding:8px; border-radius:6px; border:none; background:#444; color:white; cursor:pointer;">Sign In</button>
+  <p id="auth-message" style="margin:8px 0 0; font-size:13px; min-height:1.2em;"></p>
+</div>
+
+<script>
+  const authMsg = document.getElementById('auth-message');
+
+  document.getElementById('auth-signup').onclick = async () => {
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+    authMsg.textContent = error ? error.message : 'Check your email to confirm (or you’re signed up)!';
+    console.log('signup', data, error);
+  };
+
+  document.getElementById('auth-signin').onclick = async () => {
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    authMsg.textContent = error ? error.message : 'Signed in!';
+    console.log('signin', data, error);
+  };
+</script>  
 </body>
 </html>
