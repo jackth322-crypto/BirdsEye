@@ -3001,7 +3001,11 @@
       'Canada':'CA','Mexico':'MX','Belize':'BZ','Costa Rica':'CR','El Salvador':'SV',
       'Guatemala':'GT','Honduras':'HN','Nicaragua':'NI','Panama':'PA','Bahamas':'BS',
       'Cuba':'CU','Dominican Republic':'DO','Haiti':'HT','Jamaica':'JM','Puerto Rico':'PR',
-      'Barbados':'BB','Trinidad and Tobago':'TT','Greenland':'GL'
+      'Barbados':'BB','Trinidad and Tobago':'TT','Greenland':'GL',
+      'Albania':'AL','Andorra':'AD','Austria':'AT','Belarus':'BY','Belgium':'BE',
+      'Bosnia and Herzegovina':'BA','Bulgaria':'BG','Croatia':'HR','Cyprus':'CY',
+      'Czechia':'CZ','Denmark':'DK','Estonia':'EE','Finland':'FI','France':'FR',
+      'Germany':'DE'
     };
     const COUNTRY_NAMES = Object.fromEntries(Object.entries(COUNTRY_CODES).map(([n,c]) => [c,n]));
     const sightings = [];
@@ -15197,6 +15201,16 @@
           globeRankCache = null;
         }
       } catch (e) {}
+      try {
+        const res = await fetch('./avian_eu_data.json');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.T) Object.assign(DATA.T, json.T);
+          if (json.C) Object.assign(DATA.C, json.C);
+          searchCatalog = null;
+          globeRankCache = null;
+        }
+      } catch (e) {}
     }
 
     let searchCode = '';
@@ -15220,7 +15234,11 @@
       'Canada':'CAN','Mexico':'MEX','Belize':'BLZ','Costa Rica':'CRI','El Salvador':'SLV',
       'Guatemala':'GTM','Honduras':'HND','Nicaragua':'NIC','Panama':'PAN','Bahamas':'BHS',
       'Cuba':'CUB','Dominican Republic':'DOM','Haiti':'HTI','Jamaica':'JAM','Puerto Rico':'PRI',
-      'Barbados':'BRB','Trinidad and Tobago':'TTO','Greenland':'GRL'
+      'Barbados':'BRB','Trinidad and Tobago':'TTO','Greenland':'GRL',
+      'Albania':'ALB','Andorra':'AND','Austria':'AUT','Belarus':'BLR','Belgium':'BEL',
+      'Bosnia and Herzegovina':'BIH','Bulgaria':'BGR','Croatia':'HRV','Cyprus':'CYP',
+      'Czechia':'CZE','Denmark':'DNK','Estonia':'EST','Finland':'FIN','France':'FRA',
+      'Germany':'DEU'
     };
     let searchThumbObs = null;
     let searchSimilarFor = '';
@@ -15898,7 +15916,8 @@
             const p = f.properties || {};
             const iso = p.ISO_A3 || p.iso_a3 || p.ADM0_A3 || '';
             const name = p.ADMIN || p.name || p.NAME || '';
-            return want.has(iso) || COUNTRY_CODES[name] || name === 'United States' || name === 'United States of America';
+            const alias = name === 'Czech Republic' ? 'Czechia' : name === 'Bosnia & Herzegovina' ? 'Bosnia and Herzegovina' : name;
+            return want.has(iso) || COUNTRY_CODES[name] || COUNTRY_CODES[alias] || name === 'United States' || name === 'United States of America';
           });
           if (keep.length) {
             keep.forEach(f => {
@@ -15908,6 +15927,10 @@
                 p.name = 'United States';
               } else if (COUNTRY_CODES[name]) {
                 p.name = name;
+              } else if (name === 'Czech Republic') {
+                p.name = 'Czechia';
+              } else if (name === 'Bosnia & Herzegovina') {
+                p.name = 'Bosnia and Herzegovina';
               } else {
                 const iso = p.ISO_A3 || p.iso_a3 || p.ADM0_A3 || '';
                 const hit = Object.entries(NA_COUNTRY_ISO).find(([, v]) => v === iso);
