@@ -1488,6 +1488,7 @@
     .cmp-viz.mode-common .cmp-split i.a,
     .cmp-viz.mode-common .cmp-split i.b { opacity: .35; }
     .cmp-viz-caps { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; font-size: 10px; color: var(--muted); line-height: 1.2; }
+    .cmp-viz-caps span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .cmp-viz-caps span:nth-child(2) { text-align: center; }
     .cmp-viz-caps span:nth-child(3) { text-align: right; }
     .cmp-viz-caps b { color: var(--text); font-weight: 800; }
@@ -1540,7 +1541,7 @@
     .cmp-col { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--photo); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
     .cmp-col h3 { margin: 0; padding: 8px 10px 6px; font-size: 12px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
     .cmp-col h3 span { font-size: 10px; font-weight: 600; color: var(--muted); }
-    .cmp-list { overflow: auto; flex: 1; min-height: 0; padding: 6px; }
+    .cmp-list { overflow: auto; flex: 1; min-height: 160px; padding: 6px; }
     .cmp-row {
       position: relative; width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
       padding: 8px 22px 8px 8px; margin-bottom: 5px; text-align: left;
@@ -1826,14 +1827,29 @@
     #search-catalog, #search-dossier { height: 100%; }
     #search-dossier[hidden], #search-catalog[hidden] { display: none !important; }
     .search-tools { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-    .search-tools input[type=text] { width: 100%; }
+    .search-top-row { display: flex; gap: 8px; align-items: center; }
+    .search-top-row input[type=text] { flex: 1; min-width: 0; }
+    .search-top-row .seg { flex: none; }
+    .search-extra-filters { display: flex; gap: 6px; }
+    .search-extra-filters select {
+      flex: 1; min-width: 0; font-size: 12px; padding: 6px 8px; border-radius: 8px;
+      background: var(--bg-2); color: var(--text); border: 1px solid var(--line);
+      color-scheme: dark;
+    }
+    .search-extra-filters select option { background: #1c1917; color: #f5f5f4; }
+    html[data-theme="light"] .search-extra-filters select { color-scheme: light; }
+    html[data-theme="light"] .search-extra-filters select option { background: #fff; color: #1c1917; }
     .search-count { font-size: 11px; color: var(--muted); margin: 8px 0 0; }
     .search-type-h {
       position: sticky; top: 0; z-index: 3;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      width: 100%; text-align: left; cursor: pointer;
       font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
-      color: var(--muted-2); background: var(--bg); padding: 10px 2px 6px; margin-top: 4px;
-      border-bottom: 1px solid var(--line);
+      color: var(--text-2); background: var(--bg); padding: 10px 8px; margin-top: 4px;
+      border: 1px solid var(--line); border-radius: 8px;
     }
+    .search-type-h.on { border-color: var(--em-dim); color: var(--text); }
+    .search-type-h .muted { font-weight: 600; letter-spacing: 0; text-transform: none; }
     .search-row {
       display: flex; align-items: center; gap: 10px; width: 100%;
       text-align: left; background: var(--photo); border: 1px solid var(--line);
@@ -2355,11 +2371,25 @@
           </div>
         </div>
         <div class="search-tools">
-          <input type="text" id="search-q" placeholder="Search species…" autocomplete="off" oninput="onSearchQuery()" />
-          <div class="seg" id="search-filter-seg">
-            <button type="button" id="btn-search-all" class="on" onclick="setSearchFilter('all')">All</button>
-            <button type="button" id="btn-search-logged" onclick="setSearchFilter('logged')">Logged</button>
-            <button type="button" id="btn-search-missing" onclick="setSearchFilter('missing')">Missing</button>
+          <div class="search-top-row">
+            <input type="text" id="search-q" placeholder="Search…" autocomplete="off" oninput="onSearchQuery()" />
+            <div class="seg" id="search-filter-seg">
+              <button type="button" id="btn-search-all" class="on" onclick="setSearchFilter('all')">All</button>
+              <button type="button" id="btn-search-logged" onclick="setSearchFilter('logged')">Logged</button>
+              <button type="button" id="btn-search-missing" onclick="setSearchFilter('missing')">Missing</button>
+            </div>
+          </div>
+          <div class="search-extra-filters">
+            <select id="search-type-filter" onchange="onSearchTypeFilter()" title="Species type">
+              <option value="">Type</option>
+            </select>
+            <select id="search-country-filter" onchange="onSearchCountryFilter()" title="Country">
+              <option value="">Country</option>
+              <option value="United States">United States</option>
+            </select>
+            <select id="search-state-filter" onchange="onSearchStateFilter()" title="State" style="display:none">
+              <option value="">State</option>
+            </select>
           </div>
         </div>
         <p class="search-count" id="search-count"></p>
@@ -2389,11 +2419,15 @@
         <a class="search-bio-more" id="search-bio-more" hidden target="_blank" rel="noopener">Read more</a>
         <div id="search-spark-wrap"></div>
         <div class="search-logged" id="search-logged"></div>
-        <div class="tgt-lenses" style="margin-top:12px">
+        <div class="tgt-lenses" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;">
           <div class="seg" id="search-map-modes">
             <button type="button" id="btn-smap-season" class="on" onclick="setSearchMapMode('season')">Season</button>
             <button type="button" id="btn-smap-week" onclick="setSearchMapMode('week')">Reports</button>
             <button type="button" id="btn-smap-logs" onclick="setSearchMapMode('logs')">My logs</button>
+          </div>
+          <div class="seg" id="search-region-view">
+            <button type="button" id="btn-sreg-us" class="on" onclick="setSearchRegionView('us')">US States</button>
+            <button type="button" id="btn-sreg-countries" onclick="setSearchRegionView('countries')">Countries</button>
           </div>
         </div>
         <div class="search-map-box">
@@ -2600,7 +2634,7 @@
         <div class="two" style="margin-top:12px">
           <div><div class="muted">Date Seen</div><div id="detail-date"></div></div>
           <div><div class="muted">Location</div><div id="detail-location"></div></div>
-          <div><div class="muted">State</div><div id="detail-state"></div></div>
+          <div><div class="muted" id="detail-state-label">State</div><div id="detail-state"></div></div>
           <div><div class="muted">Coordinates</div><button type="button" id="detail-coords" class="coord-link" onclick="flyToCurrentSighting()"></button></div>
         </div>
         <p id="detail-notes" class="hint" style="font-style:italic;margin-top:12px"></p>
@@ -2675,8 +2709,11 @@
         <button class="x" type="button" onclick="closeFieldBook()" aria-label="Close field book">✕</button>
       </div>
       <div class="fb-tools">
+        <select id="fieldbook-country" class="mini" onchange="onFieldBookCountry()">
+          <option value="United States">United States</option>
+        </select>
         <select id="fieldbook-state" class="mini" onchange="renderFieldBook()">
-          <option value="US">United States</option>
+          <option value="US">All states</option>
         </select>
         <div class="fb-rarities" id="fieldbook-rarities">
           <button type="button" class="fb-rar r1 on" onclick="toggleFieldBookRarity(1)">Common</button>
@@ -2765,9 +2802,9 @@
           </div>
           <div class="two" style="margin-top:8px">
             <div><div class="muted">Location Name (optional)</div><input type="text" id="form-location" placeholder="My House, school pond…" /></div>
-            <div><div class="muted">County</div><input type="text" id="form-county" placeholder="County from GPS / map" /></div>
+            <div><div class="muted" id="form-county-label">County</div><input type="text" id="form-county" placeholder="County from GPS / map" /></div>
           </div>
-          <div style="margin-top:8px"><div class="muted">State</div><input type="text" id="form-state" value="North Carolina" /></div>
+          <div style="margin-top:8px"><div class="muted" id="form-state-label">State</div><input type="text" id="form-state" value="North Carolina" /></div>
         </div>
         <div class="field"><label>Date</label><input type="date" id="form-date" /></div>
         <div class="field"><label>Field Notes</label><textarea id="form-notes" rows="2"></textarea></div>
@@ -2841,8 +2878,9 @@
           <div class="seg">
             <button type="button" id="btn-stats-state" class="on" onclick="setStatsMode('state')">State</button>
             <button type="button" id="btn-stats-country" onclick="setStatsMode('country')">Country</button>
+            <button type="button" id="btn-stats-globe" onclick="setStatsMode('globe')">Globe</button>
           </div>
-          <p class="hint">State: a lifer counts only in the state where you logged it. Country: a bird logged anywhere in the US counts as logged on every state’s checklist and targets. Gallery is unchanged.</p>
+          <p class="hint">State: a lifer counts only in the state where you logged it. Country: a lifer counts if logged anywhere in that country. Globe: all lifers count. Foreign countries use country-level tallies in both State and Country mode.</p>
         </div>
         <div class="field" style="margin-top:14px">
           <label>Appearance</label>
@@ -2958,7 +2996,14 @@
     const ALPH = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const CURRENT_MONTH = new Date().getMonth();
     const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const DATA = { L: [], T: {}, S: {} };
+    const DATA = { L: [], T: {}, S: {}, C: {} };
+    const COUNTRY_CODES = {
+      'Canada':'CA','Mexico':'MX','Belize':'BZ','Costa Rica':'CR','El Salvador':'SV',
+      'Guatemala':'GT','Honduras':'HN','Nicaragua':'NI','Panama':'PA','Bahamas':'BS',
+      'Cuba':'CU','Dominican Republic':'DO','Haiti':'HT','Jamaica':'JM','Puerto Rico':'PR',
+      'Barbados':'BB','Trinidad and Tobago':'TT','Greenland':'GL'
+    };
+    const COUNTRY_NAMES = Object.fromEntries(Object.entries(COUNTRY_CODES).map(([n,c]) => [c,n]));
     const sightings = [];
     let editingId = null;
     let bulkQueue = [];
@@ -3032,6 +3077,7 @@
     let mapTiles = initialMapTiles();
     let uiTheme = (localStorage.getItem('avian_ui_theme') === 'light') ? 'light' : 'dark';
     let baseLayer = null;
+    let imageryOverlay = null;
     let gpsMarker = null;
     let savedPlaces = [];
     let huntBack = 3;
@@ -3627,6 +3673,29 @@
       return decoded;
     }
 
+    function decodeCountry(code) {
+      const raw = DATA.C && DATA.C[code];
+      if (!raw) return { count: 0, list: [] };
+      const list = [];
+      const items = raw.p || [];
+      for (let i = 0; i < items.length; i++) {
+        const parts = items[i].split(':');
+        list.push({
+          code: parts[0],
+          status: officialStatus(DATA.L[Number(parts[1])]),
+          monthly: unpackMonth(parts[2] || '')
+        });
+      }
+      return { count: raw.c || list.length, list };
+    }
+
+    function decodeRegion(code) {
+      if (!code) return { count: 0, list: [] };
+      if (code.startsWith('US-') || code === 'US') return decodeState(code);
+      if (DATA.C && DATA.C[code]) return decodeCountry(code);
+      return decodeState(code);
+    }
+
     function seedSightings() {
       sightings.length = 0;
       try {
@@ -3695,7 +3764,7 @@
           if (skipHuntMove) { skipHuntMove = Math.max(0, skipHuntMove - 1); return; }
           if (huntUiHold()) return;
           if (mapMode === 'hunt' && !radiusLocked && currentSpeciesFilter === 'all' && !rarityWantsStatewide()) scheduleHunt();
-        }, 1400);
+        }, 350);
       });
       renderMapMarkers();
     }
@@ -3730,14 +3799,23 @@
     function applyMapTiles() {
       const opts = tileLayerOpts();
       if (baseLayer && mapInstance) mapInstance.removeLayer(baseLayer);
+      if (imageryOverlay && mapInstance) { mapInstance.removeLayer(imageryOverlay); imageryOverlay = null; }
       baseLayer = L.tileLayer(tileUrl(), opts);
       if (mapInstance) {
         baseLayer.addTo(mapInstance).bringToBack();
+        if (mapTiles === 'imagery') {
+          imageryOverlay = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19, attribution: 'Labels &copy; Esri', pane: 'overlayPane'
+          }).addTo(mapInstance);
+        }
         paintMapChrome(mapInstance);
       }
       if (pickerMap) {
         pickerMap.eachLayer(l => { if (l instanceof L.TileLayer) pickerMap.removeLayer(l); });
         L.tileLayer(tileUrl(), opts).addTo(pickerMap);
+        if (mapTiles === 'imagery') {
+          L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 }).addTo(pickerMap);
+        }
         paintMapChrome(pickerMap);
       }
       if (analyzeMap && analyzeBaseLayer) {
@@ -3968,16 +4046,18 @@
     }
 
     function lifeCodes() {
-      return loggedCodesFor(activeState, statsMode === 'country');
+      return loggedCodesFor(activeState, statsMode === 'country' || statsMode === 'globe');
     }
 
     function setStatsMode(mode) {
-      statsMode = mode === 'country' ? 'country' : 'state';
+      statsMode = mode === 'country' ? 'country' : mode === 'globe' ? 'globe' : 'state';
       localStorage.setItem('avian_stats_mode', statsMode);
       const st = document.getElementById('btn-stats-state');
       const co = document.getElementById('btn-stats-country');
+      const gl = document.getElementById('btn-stats-globe');
       if (st) st.className = statsMode === 'state' ? 'on' : '';
       if (co) co.className = statsMode === 'country' ? 'on' : '';
+      if (gl) gl.className = statsMode === 'globe' ? 'on' : '';
       updateRegionalHUD();
       renderRadar();
       const modal = document.getElementById('region-species-modal');
@@ -5893,6 +5973,20 @@
       const c = mapInstance.getCenter();
       const seq = ++stateLookupSeq;
       try {
+        // Prefer the reverse geocode for accuracy; local bounds are only a hint
+        const country = await lookupCountryName(c.lat, c.lng);
+        if (seq !== stateLookupSeq) return;
+        const isUS = !country || country === 'United States' || country === 'United States of America';
+        const wantCountry = currentRegionLevel === 'country' || !isUS;
+        if (wantCountry) {
+          const label = isUS ? 'United States' : country;
+          if (label && label !== activeState) {
+            activeState = label;
+            localStorage.setItem('avian_focus_state', activeState);
+            updateRegionalHUD();
+          }
+          return;
+        }
         const info = await lookupCounty(c.lat, c.lng);
         if (seq !== stateLookupSeq) return;
         const geoState = (info && info.state) || await lookupStateName(c.lat, c.lng);
@@ -5923,6 +6017,27 @@
       } catch (e) {}
     }
 
+    const countryLookupCache = new Map();
+    async function lookupCountryName(lat, lng) {
+      const key = Math.round(lat * 2) / 2 + ',' + Math.round(lng * 2) / 2;
+      if (countryLookupCache.has(key)) return countryLookupCache.get(key);
+      let name = '';
+      try {
+        const res = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lng + '&localityLanguage=en');
+        const data = await res.json();
+        name = (data && (data.countryName || data.country)) || '';
+      } catch (e) {}
+      if (!name) {
+        try {
+          const res = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + lat + '&lon=' + lng + '&zoom=3&addressdetails=1');
+          const data = await res.json();
+          name = (data && data.address && data.address.country) || '';
+        } catch (e) {}
+      }
+      if (name) countryLookupCache.set(key, name);
+      return name;
+    }
+
     function setRegionLevel(level) {
       currentRegionLevel = level;
       document.getElementById('btn-level-state').className = level === 'state' ? 'on' : '';
@@ -5934,17 +6049,30 @@
 
     function loggedCodesFor(stateName, countryOnly) {
       const set = new Set();
+      const isForeign = stateName && !STATE_CODES[stateName] && stateName !== 'United States';
+      const useGlobe = statsMode === 'globe';
+      const useCountry = countryOnly || statsMode === 'country' || isForeign;
       for (let i = 0; i < sightings.length; i++) {
         const s = sightings[i];
-        if (countryOnly) {
-          if (s.country === 'United States') set.add(s.species_code);
-        } else if ((s.state || '').toLowerCase() === (stateName || '').toLowerCase()) set.add(s.species_code);
+        if (useGlobe) {
+          set.add(s.species_code);
+        } else if (useCountry) {
+          // Country-level: match by country name, or US for United States
+          const want = isForeign ? stateName : (stateName === 'United States' || countryOnly ? 'United States' : '');
+          if (want && (s.country === want || (want === 'United States' && (!s.country || s.country === 'United States' || STATE_CODES[s.state])))) {
+            set.add(s.species_code);
+          } else if (!want && s.country === 'United States') {
+            set.add(s.species_code);
+          }
+        } else if ((s.state || '').toLowerCase() === (stateName || '').toLowerCase()) {
+          set.add(s.species_code);
+        }
       }
       return set;
     }
 
     function officialListCodes(regionCode) {
-      const entry = decodeState(regionCode);
+      const entry = decodeRegion(regionCode);
       const set = new Set();
       const list = (entry && entry.list) || [];
       for (let i = 0; i < list.length; i++) {
@@ -5968,17 +6096,26 @@
 
     function updateRegionalHUD() {
       const isCountry = currentRegionLevel === 'country';
-      const regionCode = isCountry ? 'US' : (STATE_CODES[activeState] || 'US-NC');
-      const creditCountry = isCountry || statsMode === 'country';
+      const isNaCountry = !!COUNTRY_CODES[activeState];
+      let label = activeState;
+      let regionCode = STATE_CODES[activeState] || 'US-NC';
+      if (isCountry) {
+        // Country mode: show the country under the map (or United States if over the US)
+        label = isNaCountry ? activeState : (activeState === 'United States' ? 'United States' : activeState);
+        regionCode = isNaCountry ? COUNTRY_CODES[activeState] : 'US';
+      } else if (isNaCountry) {
+        regionCode = COUNTRY_CODES[activeState];
+      }
+      const creditCountry = isCountry || statsMode === 'country' || statsMode === 'globe';
       const logged = loggedCodesFor(activeState, creditCountry);
       const tallied = countLoggedOnOfficialList(logged, regionCode);
       const count = tallied.count;
       const total = tallied.total;
       const pct = total ? ((count / total) * 100).toFixed(1) : '0.0';
-      document.getElementById('region-label').textContent = isCountry ? 'United States' : activeState;
+      document.getElementById('region-label').textContent = label;
       document.getElementById('region-stats').textContent = total
         ? (count + ' / ' + total + ' (' + pct + '%)')
-        : 'no list';
+        : (isNaCountry || isCountry ? 'country data' : 'no list');
       document.getElementById('region-bar').style.width = Math.min(100, Number(pct)) + '%';
     }
 
@@ -6184,12 +6321,22 @@
 
     function loggedCodesForWindow(stateName, countryOnly) {
       const set = new Set();
-      const useCountry = countryOnly || statsMode === 'country';
+      const isForeign = stateName && !STATE_CODES[stateName] && stateName !== 'United States';
+      const useGlobe = statsMode === 'globe';
+      const useCountry = countryOnly || statsMode === 'country' || isForeign;
       for (let i = 0; i < sightings.length; i++) {
         const s = sightings[i];
-        const locOk = useCountry ? s.country === 'United States' : ((s.state || '').toLowerCase() === (stateName || '').toLowerCase());
-        if (!locOk || !inCheckWindow(s.date)) continue;
-        set.add(s.species_code);
+        if (!inCheckWindow(s.date)) continue;
+        if (useGlobe) {
+          set.add(s.species_code);
+        } else if (useCountry) {
+          const want = isForeign ? stateName : 'United States';
+          if (s.country === want || (want === 'United States' && (!s.country || s.country === 'United States' || STATE_CODES[s.state]))) {
+            set.add(s.species_code);
+          }
+        } else if ((s.state || '').toLowerCase() === (stateName || '').toLowerCase()) {
+          set.add(s.species_code);
+        }
       }
       return set;
     }
@@ -7632,14 +7779,57 @@
       return 'linear-gradient(90deg, ' + stops.join(', ') + ')';
     }
 
+    let globeRankCache = null;
+    function globeRankFor(code) {
+      if (!globeRankCache) {
+        globeRankCache = {};
+        Object.keys(DATA.C || {}).forEach(iso => {
+          const entry = decodeCountry(iso);
+          (entry.list || []).forEach(sp => {
+            const r = rarityStaticFromMonthly(sp.monthly);
+            const prev = globeRankCache[sp.code];
+            if (prev == null || (r > 0 && r < prev)) globeRankCache[sp.code] = r;
+          });
+        });
+      }
+      const us = rarityStaticUS(code);
+      const c = globeRankCache[code];
+      if (c && c < us) return c;
+      return us || c || 4;
+    }
+
     function rarityRankScope(code, stateName) {
+      if (stateName && COUNTRY_CODES[stateName]) {
+        const entry = decodeCountry(COUNTRY_CODES[stateName]);
+        const sp = (entry.list || []).find(s => s.code === code);
+        return rarityStaticFromMonthly(sp ? sp.monthly : []);
+      }
       if (stateName && STATE_CODES[stateName]) return rarityStatic(code, stateName);
+      if (stateName === 'Globe' || !stateName) return globeRankFor(code);
       return rarityStaticUS(code);
     }
 
-    function fieldBookOfficialList(stateKey) {
-      if (stateKey && stateKey !== 'US' && STATE_CODES[stateKey]) {
-        return officialRows(STATE_CODES[stateKey]);
+    function fieldBookOfficialList(regionKey) {
+      if (regionKey === 'Globe') {
+        const seen = new Set();
+        const out = [];
+        const add = (list) => {
+          (list || []).forEach(sp => {
+            if (!sp || !sp.code || seen.has(sp.code) || !isRealSpecies(sp.code)) return;
+            seen.add(sp.code);
+            out.push(sp);
+          });
+        };
+        add(usOfficialList());
+        Object.keys(DATA.C || {}).forEach(code => add(decodeCountry(code).list));
+        return out;
+      }
+      if (regionKey && COUNTRY_CODES[regionKey]) {
+        const entry = decodeCountry(COUNTRY_CODES[regionKey]);
+        return (entry.list || []).filter(sp => isRealSpecies(sp.code));
+      }
+      if (regionKey && regionKey !== 'US' && STATE_CODES[regionKey]) {
+        return officialRows(STATE_CODES[regionKey]);
       }
       return (usOfficialList() || []).filter(sp => isRealSpecies(sp.code));
     }
@@ -7669,21 +7859,53 @@
     }
 
     function populateFieldBookStates() {
-      const el = document.getElementById('fieldbook-state');
-      if (!el) return;
-      const prev = el.value || 'US';
-      const names = Object.keys(STATE_CODES).sort((a, b) => a.localeCompare(b));
-      el.innerHTML = '<option value="US">United States</option>' +
-        names.map(n => '<option value="' + escHtml(n) + '">' + escHtml(n) + '</option>').join('');
-      el.value = (prev === 'US' || STATE_CODES[prev]) ? prev : 'US';
-      if (el.selectedIndex < 0) el.value = 'US';
+      const countryEl = document.getElementById('fieldbook-country');
+      const stateEl = document.getElementById('fieldbook-state');
+      if (countryEl) {
+        const prevC = countryEl.value || 'United States';
+        const countries = ['United States', 'Globe', ...Object.keys(COUNTRY_CODES).sort((a, b) => a.localeCompare(b))];
+        countryEl.innerHTML = countries.map(n => '<option value="' + escHtml(n) + '">' + escHtml(n) + '</option>').join('');
+        countryEl.value = countries.includes(prevC) ? prevC : 'United States';
+        if (countryEl.selectedIndex < 0) countryEl.value = 'United States';
+      }
+      if (stateEl) {
+        const prev = stateEl.value || 'US';
+        const names = Object.keys(STATE_CODES).sort((a, b) => a.localeCompare(b));
+        stateEl.innerHTML = '<option value="US">All states</option>' +
+          names.map(n => '<option value="' + escHtml(n) + '">' + escHtml(n) + '</option>').join('');
+        stateEl.value = (prev === 'US' || STATE_CODES[prev]) ? prev : 'US';
+        if (stateEl.selectedIndex < 0) stateEl.value = 'US';
+      }
+      onFieldBookCountry(true);
+    }
+
+    function onFieldBookCountry(skipRender) {
+      const country = (document.getElementById('fieldbook-country') || {}).value || 'United States';
+      const stateEl = document.getElementById('fieldbook-state');
+      if (stateEl) stateEl.style.display = country === 'United States' ? '' : 'none';
+      if (!skipRender) renderFieldBook();
+    }
+
+    function fieldBookLoggedSet(regionKey, isUS, stateKey) {
+      // Globe mode: any log counts for species on this region's list
+      if (statsMode === 'globe' || regionKey === 'Globe') {
+        const set = new Set();
+        for (let i = 0; i < sightings.length; i++) set.add(sightings[i].species_code);
+        return set;
+      }
+      // Foreign countries: always country-level (no province split)
+      if (!isUS) return loggedCodesFor(regionKey, true);
+      // US country mode, or US "All states": any US log
+      if (statsMode === 'country' || stateKey === 'US') return loggedCodesFor('United States', true);
+      // US state mode: only logs in that state
+      return loggedCodesFor(stateKey, false);
     }
 
     async function openFieldBook() {
       populateFieldBookStates();
       fieldBookOpenGroup = '';
       document.getElementById('fieldbook-modal').classList.add('on');
-      if (!DATA.S || !Object.keys(DATA.S).length) await loadData();
+      if (!DATA.S || !Object.keys(DATA.S).length || !DATA.C || !Object.keys(DATA.C).length) await loadData();
       renderFieldBook();
     }
 
@@ -7719,12 +7941,15 @@
       const body = document.getElementById('fieldbook-body');
       if (!body) return;
       syncFieldBookRarityChips();
+      const country = (document.getElementById('fieldbook-country') || {}).value || 'United States';
       const stateKey = (document.getElementById('fieldbook-state') || {}).value || 'US';
+      const isUS = country === 'United States';
+      const isGlobe = country === 'Globe';
+      const regionKey = isGlobe ? 'Globe' : (isUS ? (stateKey === 'US' ? 'US' : stateKey) : country);
+      const stateName = isUS && stateKey !== 'US' ? stateKey : (isGlobe ? 'Globe' : (isUS ? '' : country));
       const allRarity = fieldBookRarityAll();
-      const isCountry = stateKey === 'US';
-      const stateName = isCountry ? '' : stateKey;
       const title = document.getElementById('fieldbook-title');
-      if (title) title.textContent = isCountry ? 'United States' : stateKey;
+      if (title) title.textContent = isGlobe ? 'Globe' : (isUS ? (stateKey === 'US' ? 'United States' : stateKey) : country);
       if (!fieldBookRarity.size) {
         const countEl = document.getElementById('fieldbook-count');
         if (countEl) countEl.textContent = '0 / 0';
@@ -7733,8 +7958,8 @@
         body.innerHTML = '<p class="hint">Select a rarity to see the sets.</p>';
         return;
       }
-      const official = fieldBookOfficialList(stateKey);
-      const have = loggedCodesFor(isCountry ? activeState : stateKey, isCountry);
+      const official = fieldBookOfficialList(regionKey);
+      const have = fieldBookLoggedSet(regionKey, isUS, stateKey);
       const groups = {};
       fieldBookPhotoMap = {};
       official.forEach(sp => {
@@ -7770,7 +7995,7 @@
         const gotCore = core.filter(r => r.logged).length;
         const gotVag = vag.filter(r => r.logged).length;
         haveAll += gotCore + gotVag;
-        totalAll += core.length;
+        totalAll += rows.length;
         if (core.length) {
           typeN++;
           if (gotCore === core.length) doneTypes++;
@@ -10762,11 +10987,12 @@
     }
 
     async function openRegionSpeciesModal() {
-      const isCountry = currentRegionLevel === 'country';
-      document.getElementById('modal-region-title').textContent = isCountry ? 'United States' : activeState;
+      const isNaCountry = !!COUNTRY_CODES[activeState];
+      const isUSCountry = currentRegionLevel === 'country' && !isNaCountry;
+      const title = isUSCountry ? 'United States' : activeState;
+      document.getElementById('modal-region-title').textContent = title;
       const cmpTab = document.getElementById('tab-btn-compare');
-      if (cmpTab) cmpTab.style.display = isCountry ? 'none' : '';
-      if (isCountry && modalTab === 'compare') modalTab = 'discovered';
+      if (cmpTab) cmpTab.style.display = '';
       const modal = document.getElementById('region-species-modal');
       const fresh = modal && !modal.classList.contains('on');
       if (modal) modal.classList.add('on');
@@ -10810,6 +11036,11 @@
     }
 
     function rarityForRegion(code, isCountry, stateName) {
+      if (stateName && COUNTRY_CODES[stateName]) {
+        const entry = decodeCountry(COUNTRY_CODES[stateName]);
+        const sp = (entry.list || []).find(s => s.code === code);
+        return rarityStaticFromMonthly(sp ? sp.monthly : []);
+      }
       if (isCountry) return rarityStaticUS(code);
       return rarityStatic(code, stateName || activeState);
     }
@@ -10893,10 +11124,21 @@
     }
 
     function renderChecklistViews() {
-      const isCountry = currentRegionLevel === 'country';
-      const stateName = isCountry ? '' : activeState;
-      const code = isCountry ? 'US' : (STATE_CODES[activeState] || 'US-NC');
-      const entry = decodeState(code);
+      const isNaCountry = !!COUNTRY_CODES[activeState];
+      const isUSCountry = currentRegionLevel === 'country' && !isNaCountry;
+      const isCountry = isUSCountry || isNaCountry;
+      const stateName = isNaCountry ? activeState : (isUSCountry ? 'United States' : activeState);
+      let code, entry;
+      if (isNaCountry) {
+        code = COUNTRY_CODES[activeState];
+        entry = decodeCountry(code);
+      } else if (isUSCountry) {
+        code = 'US';
+        entry = decodeState(code);
+      } else {
+        code = STATE_CODES[activeState] || 'US-NC';
+        entry = decodeState(code);
+      }
       const have = loggedCodesForWindow(activeState, isCountry);
       const q = (document.getElementById('checklist-search').value || '').toLowerCase();
       const statusF = checklistStatus || 'all';
@@ -11208,8 +11450,10 @@
     let compareSort = 'az';
 
     function stateShort(name) {
+      if (name === 'United States') return 'US';
+      if (COUNTRY_CODES[name]) return COUNTRY_CODES[name];
       const code = STATE_CODES[name] || '';
-      return code.replace('US-', '') || name;
+      return code.replace('US-', '') || (name.length > 4 ? name.slice(0, 3) : name);
     }
 
     function rangeFreq(monthly, a, b) {
@@ -11227,19 +11471,20 @@
       return false;
     }
 
-    function lifeLoggedCodes() {
-      const set = new Set();
-      sightings.forEach(s => { if (s.species_code) set.add(s.species_code); });
-      return set;
-    }
-
     function compareSpeciesMap(stateName) {
-      const code = STATE_CODES[stateName];
-      const entry = decodeState(code || 'US-NC');
+      let entry;
+      if (COUNTRY_CODES[stateName]) {
+        entry = decodeCountry(COUNTRY_CODES[stateName]);
+      } else if (stateName === 'United States') {
+        entry = decodeState('US');
+      } else {
+        const code = STATE_CODES[stateName];
+        entry = decodeState(code || 'US-NC');
+      }
       const map = new Map();
       const a = compareAllMonths ? 0 : compareMonthA;
       const b = compareAllMonths ? 11 : compareMonthB;
-      for (let i = 0; i < entry.list.length; i++) {
+      for (let i = 0; i < (entry.list || []).length; i++) {
         const sp = entry.list[i];
         if (!isRealSpecies(sp.code)) continue;
         if (!compareAllMonths && !rangePresent(sp.monthly, a, b)) continue;
@@ -11257,9 +11502,14 @@
     function fillCompareStateSelect(home) {
       const sel = document.getElementById('compare-state-b');
       if (!sel) return;
-      const names = Object.keys(STATE_CODES).filter(n => n !== home);
-      if (!compareStateB || compareStateB === home || !STATE_CODES[compareStateB]) {
-        compareStateB = names.includes('Virginia') && home !== 'Virginia' ? 'Virginia' : names[0];
+      const isCountryHome = !!COUNTRY_CODES[home] || home === 'United States';
+      const names = isCountryHome
+        ? ['United States', ...Object.keys(COUNTRY_CODES)].filter(n => n !== home)
+        : Object.keys(STATE_CODES).filter(n => n !== home);
+      if (!compareStateB || compareStateB === home || !names.includes(compareStateB)) {
+        compareStateB = isCountryHome
+          ? (names.includes('Mexico') ? 'Mexico' : names[0])
+          : (names.includes('Virginia') && home !== 'Virginia' ? 'Virginia' : names[0]);
       }
       sel.innerHTML = names.map(n => '<option value="' + n.replace(/"/g, '') + '"' + (n === compareStateB ? ' selected' : '') + '>' + n + '</option>').join('');
       sel.value = compareStateB;
@@ -11287,8 +11537,7 @@
     }
 
     async function openComparePanel() {
-      if (currentRegionLevel === 'country') return;
-      if (!DATA.S || !Object.keys(DATA.S).length) await loadData();
+      if (!DATA.S || !Object.keys(DATA.S).length || !DATA.C || !Object.keys(DATA.C).length) await loadData();
       fillCompareStateSelect(activeState);
       syncCompareMonthUI();
       const un = document.getElementById('btn-compare-unlogged');
@@ -11303,7 +11552,7 @@
       const freq = document.getElementById('btn-cmp-freq');
       if (az) az.className = compareSort === 'az' ? 'on' : '';
       if (freq) freq.className = compareSort === 'freq' ? 'on' : '';
-      renderCompareViews();
+      try { renderCompareViews(); } catch (e) { console.error('compare render', e); }
     }
 
     function onCompareStateChange() {
@@ -11407,10 +11656,31 @@
     function renderCompareViews() {
       const home = activeState;
       const other = compareStateB;
-      if (!home || !other || !STATE_CODES[other]) return;
-      const mapA = compareSpeciesMap(home);
-      const mapB = compareSpeciesMap(other);
-      const logged = lifeLoggedCodes();
+      const titleA = document.getElementById('compare-col-a-title');
+      const titleB = document.getElementById('compare-col-b-title');
+      if (titleA) titleA.innerHTML = (home || 'A') + ' <span id="compare-col-a-count"></span>';
+      if (titleB) titleB.innerHTML = (other || 'B') + ' <span id="compare-col-b-count"></span>';
+      if (!home || !other) return;
+      let mapA, mapB, err = '';
+      try {
+        mapA = compareSpeciesMap(home);
+        mapB = compareSpeciesMap(other);
+      } catch (e) {
+        err = (e && e.message) || String(e);
+        mapA = new Map();
+        mapB = new Map();
+      }
+      if (titleA) titleA.innerHTML = home + ' <span id="compare-col-a-count">' + (mapA ? mapA.size : 0) + (err ? ' err' : '') + '</span>';
+      if (titleB) titleB.innerHTML = other + ' <span id="compare-col-b-count">' + (mapB ? mapB.size : 0) + '</span>';
+      const listAEl0 = document.getElementById('compare-list-a');
+      const listBEl0 = document.getElementById('compare-list-b');
+      if (!mapA.size && !mapB.size) {
+        const msg = err || ('No species. C keys: ' + Object.keys(DATA.C || {}).slice(0, 8).join(','));
+        if (listAEl0) listAEl0.innerHTML = '<div class="hint">' + msg + '</div>';
+        if (listBEl0) listBEl0.innerHTML = '<div class="hint">home=' + home + ' other=' + other + '</div>';
+        return;
+      }
+      const logged = (typeof lifeCodes === 'function') ? lifeCodes() : new Set();
       const codes = new Set([...mapA.keys(), ...mapB.keys()]);
       const rows = [];
       codes.forEach(code => {
@@ -11446,9 +11716,9 @@
         if (compareSort === 'freq') {
           const xf = side === 'b' ? x.freqB : x.freqA;
           const yf = side === 'b' ? y.freqB : y.freqA;
-          return yf - xf || x.comName.localeCompare(y.comName);
+          return yf - xf || String(x.comName || '').localeCompare(String(y.comName || ''));
         }
-        return x.comName.localeCompare(y.comName);
+        return String(x.comName || '').localeCompare(String(y.comName || ''));
       };
       listA.sort(sorter('a'));
       listB.sort(sorter('b'));
@@ -11464,8 +11734,8 @@
         else bHigher++;
       });
 
-      document.getElementById('compare-col-a-title').innerHTML = home + ' <span id="compare-col-a-count">' + listA.length + '</span>';
-      document.getElementById('compare-col-b-title').innerHTML = other + ' <span id="compare-col-b-count">' + listB.length + '</span>';
+      if (titleA) titleA.innerHTML = home + ' <span id="compare-col-a-count">' + listA.length + '</span>';
+      if (titleB) titleB.innerHTML = other + ' <span id="compare-col-b-count">' + listB.length + '</span>';
       const stats = document.getElementById('compare-stats');
       if (stats) stats.className = 'cmp-viz mode-' + compareMode;
       const relTotal = aHigher + bHigher + even;
@@ -11485,8 +11755,15 @@
             '<div class="cmp-viz-caps"><span>' + aHigher + ' ' + aAb + ' higher</span>' +
             '<span>' + even + ' even</span><span>' + bHigher + ' ' + bAb + ' higher</span></div>')
           : '');
-      document.getElementById('compare-list-a').innerHTML = listA.map(r => compareRowHtml(r, aAb, bAb, showBoth, home)).join('') || '<div class="hint">No species on this side.</div>';
-      document.getElementById('compare-list-b').innerHTML = listB.map(r => compareRowHtml(r, aAb, bAb, showBoth, other)).join('') || '<div class="hint">No species on this side.</div>';
+      const listAEl = document.getElementById('compare-list-a');
+      const listBEl = document.getElementById('compare-list-b');
+      try {
+        if (listAEl) listAEl.innerHTML = listA.map(r => compareRowHtml(r, aAb, bAb, showBoth, home)).join('') || '<div class="hint">No species on this side.</div>';
+        if (listBEl) listBEl.innerHTML = listB.map(r => compareRowHtml(r, aAb, bAb, showBoth, other)).join('') || '<div class="hint">No species on this side.</div>';
+      } catch (e) {
+        if (listAEl) listAEl.innerHTML = '<div class="hint">Render error: ' + (e && e.message || e) + '</div>';
+        if (listBEl) listBEl.innerHTML = '<div class="hint">' + listA.length + ' / ' + listB.length + ' species ready.</div>';
+      }
       if (checklistScrollPending && checklistScrollPending.tab === 'compare') applyChecklistScrollPending();
     }
 
@@ -11648,6 +11925,9 @@
       document.getElementById('detail-scientific-name').textContent = n.sciName;
       document.getElementById('detail-date').textContent = s.date;
       document.getElementById('detail-location').textContent = placeLabel(s);
+      const isUS = !s.state || STATE_CODES[s.state] || s.country === 'United States' || s.state === 'United States';
+      const stateLabel = document.getElementById('detail-state-label');
+      if (stateLabel) stateLabel.textContent = isUS ? 'State' : 'Country';
       document.getElementById('detail-state').textContent = s.state;
       document.getElementById('detail-coords').textContent = Number(s.lat).toFixed(4) + ', ' + Number(s.lng).toFixed(4);
       document.getElementById('detail-notes').textContent = s.notes ? '"' + s.notes + '"' : '';
@@ -11689,6 +11969,11 @@
       document.getElementById('form-location').value = s.location_name || '';
       document.getElementById('form-county').value = s.county || '';
       document.getElementById('form-state').value = s.state || '';
+      const isUS = !s.state || STATE_CODES[s.state] || s.country === 'United States';
+      const countyLabel = document.getElementById('form-county-label');
+      const stateLabel = document.getElementById('form-state-label');
+      if (countyLabel) countyLabel.textContent = isUS ? 'County' : 'Province';
+      if (stateLabel) stateLabel.textContent = isUS ? 'State' : 'Country';
       document.getElementById('form-date').value = s.date || '';
       document.getElementById('form-notes').value = s.notes || '';
       document.getElementById('form-is-cover').checked = !!Number(s.is_cover);
@@ -12374,15 +12659,54 @@
       const countyEl = document.getElementById('form-county');
       const locEl = document.getElementById('form-location');
       const stateEl = document.getElementById('form-state');
-      const guess = localStateGuess(lat, lng);
-      if (stateEl && guess) stateEl.value = guess;
-      if (countyEl && !countyEl.value) countyEl.placeholder = 'Looking up…';
-      const info = await lookupCounty(lat, lng);
-      if (countyEl) {
-        countyEl.value = info.county || '';
-        countyEl.placeholder = 'County from GPS / map';
+      const countyLabel = document.getElementById('form-county-label');
+      const stateLabel = document.getElementById('form-state-label');
+      // Rough box covers most of the lower 48; southern Canada/northern Mexico can still land inside it,
+      // so we confirm with the reverse geocoder before treating it as US.
+      const maybeUS = lat >= 24 && lat <= 49.5 && lng >= -125 && lng <= -66;
+      let country = '', province = '', county = '';
+      try {
+        const res = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lng + '&localityLanguage=en');
+        const data = await res.json();
+        country = (data && (data.countryName || data.country)) || '';
+        province = (data && (data.principalSubdivision || data.locality)) || '';
+      } catch (e) {}
+      if (!country) {
+        try {
+          const res = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + lat + '&lon=' + lng + '&zoom=5&addressdetails=1');
+          const data = await res.json();
+          const addr = data && data.address || {};
+          country = addr.country || '';
+          province = addr.state || addr.region || addr.county || '';
+        } catch (e2) {}
       }
-      if (stateEl && info.state) stateEl.value = info.state;
+      const isUS = !country || country === 'United States' || country === 'United States of America';
+      if (isUS && maybeUS) {
+        if (countyLabel) countyLabel.textContent = 'County';
+        if (stateLabel) stateLabel.textContent = 'State';
+        if (countyEl) countyEl.placeholder = 'County from GPS / map';
+        const guess = localStateGuess(lat, lng);
+        if (stateEl && guess) stateEl.value = guess;
+        if (countyEl && !countyEl.value) countyEl.placeholder = 'Looking up…';
+        const info = await lookupCounty(lat, lng);
+        if (countyEl) {
+          countyEl.value = info.county || '';
+          countyEl.placeholder = 'County from GPS / map';
+        }
+        if (stateEl && info.state) stateEl.value = info.state;
+        else if (stateEl && !stateEl.value) stateEl.value = 'United States';
+      } else {
+        if (countyLabel) countyLabel.textContent = 'Province';
+        if (stateLabel) stateLabel.textContent = 'Country';
+        if (countyEl) {
+          countyEl.placeholder = 'Province / region';
+          countyEl.value = province || '';
+        }
+        if (stateEl) {
+          stateEl.placeholder = 'Country';
+          stateEl.value = country || '';
+        }
+      }
       if (locEl && locEl.value === 'Field Observation') locEl.value = '';
     }
 
@@ -12468,7 +12792,9 @@
         location_name: (document.getElementById('form-location').value || '').trim(),
         county: document.getElementById('form-county').value || '',
         state: document.getElementById('form-state').value || activeState,
-        country: 'United States',
+        country: (document.getElementById('form-state-label') && document.getElementById('form-state-label').textContent === 'Country')
+          ? (document.getElementById('form-state').value || '')
+          : 'United States',
         notes: document.getElementById('form-notes').value,
         is_cover: isCover
       };
@@ -14361,7 +14687,7 @@
     function openAchModal() {
       const mode = statsMode === 'country' ? 'country' : 'state';
       document.getElementById('ach-title').textContent = 'Achievements';
-      document.getElementById('ach-mode-hint').textContent = (mode === 'country' ? 'Country mode' : 'State mode') + ' · switch in Settings';
+      document.getElementById('ach-mode-hint').textContent = (mode === 'globe' ? 'Globe mode' : mode === 'country' ? 'Country mode' : 'State mode') + ' · switch in Settings';
       document.getElementById('ach-modal').classList.add('on');
       const rowsMode = achLastRows[0] && achLastRows[0].def && achLastRows[0].def.mode;
       if (!achLastRows.length || rowsMode !== mode) syncAchievements({ toast: false });
@@ -14736,7 +15062,7 @@
       if (sum) sum.textContent = earnedTiers + ' earned';
       paintAchLevel();
       const hint = document.getElementById('ach-mode-hint');
-      if (hint) hint.textContent = (mode === 'country' ? 'Country mode' : 'State mode') + ' · switch in Settings';
+      if (hint) hint.textContent = (mode === 'globe' ? 'Globe mode' : mode === 'country' ? 'Country mode' : 'State mode') + ' · switch in Settings';
 
       const byCat = {};
       familiesAll.forEach(f => {
@@ -14861,11 +15187,23 @@
         try { for (const k in rarSplitCache) delete rarSplitCache[k]; } catch (e) {}
         searchCatalog = null;
       } catch (e) {}
+      try {
+        const res = await fetch('./avian_na_data.json');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.T) Object.assign(DATA.T, json.T);
+          DATA.C = json.C || {};
+          searchCatalog = null;
+          globeRankCache = null;
+        }
+      } catch (e) {}
     }
 
     let searchCode = '';
     let searchMapMode = 'season';
-    let searchFilter = 'all';
+    let searchTypeFilter = '';
+    let searchCountryFilter = '';
+    let searchStateFilter = '';
     let searchMonth = CURRENT_MONTH;
     let searchQuery = '';
     let searchListScroll = 0;
@@ -14876,7 +15214,14 @@
     let searchWeekCache = {};
     let searchWeekPending = {};
     let searchZoomState = '';
-    let searchCatalog = null;
+    let searchRegionView = localStorage.getItem('avian_search_region') || 'us';
+    let countryShapes = [];
+    const NA_COUNTRY_ISO = {
+      'Canada':'CAN','Mexico':'MEX','Belize':'BLZ','Costa Rica':'CRI','El Salvador':'SLV',
+      'Guatemala':'GTM','Honduras':'HND','Nicaragua':'NIC','Panama':'PAN','Bahamas':'BHS',
+      'Cuba':'CUB','Dominican Republic':'DOM','Haiti':'HTI','Jamaica':'JAM','Puerto Rico':'PRI',
+      'Barbados':'BRB','Trinidad and Tobago':'TTO','Greenland':'GRL'
+    };
     let searchThumbObs = null;
     let searchSimilarFor = '';
     let searchSimilarHistory = [];
@@ -14942,10 +15287,64 @@
       return loggedCodesFor(activeState, statsMode === 'country');
     }
 
+    let searchRegionCodes = null;
+    let searchRegionKey = '';
+    function searchRegionCodeSet() {
+      const key = (searchCountryFilter || '') + '|' + (searchStateFilter || '');
+      if (searchRegionCodes && searchRegionKey === key) return searchRegionCodes;
+      searchRegionKey = key;
+      const set = new Set();
+      if (!searchCountryFilter) {
+        searchRegionCodes = null;
+        return null;
+      }
+      if (searchCountryFilter === 'United States') {
+        if (searchStateFilter && STATE_CODES[searchStateFilter]) {
+          (decodeState(STATE_CODES[searchStateFilter]).list || []).forEach(s => set.add(s.code));
+        } else {
+          Object.keys(STATE_CODES).forEach(name => {
+            (decodeState(STATE_CODES[name]).list || []).forEach(s => set.add(s.code));
+          });
+        }
+      } else if (COUNTRY_CODES[searchCountryFilter]) {
+        (decodeCountry(COUNTRY_CODES[searchCountryFilter]).list || []).forEach(s => set.add(s.code));
+      }
+      searchRegionCodes = set;
+      return set;
+    }
+
+    let searchCountryRankMap = null;
+    let searchCountryRankKey = '';
+    function searchCountryRank(code, countryName) {
+      const key = countryName || '';
+      if (searchCountryRankKey !== key) {
+        searchCountryRankKey = key;
+        searchCountryRankMap = {};
+        const iso = COUNTRY_CODES[countryName];
+        if (iso) {
+          (decodeCountry(iso).list || []).forEach(sp => {
+            searchCountryRankMap[sp.code] = rarityStaticFromMonthly(sp.monthly);
+          });
+        }
+      }
+      return searchCountryRankMap[code] || 4;
+    }
+
     function searchShelfChip(code) {
-      const kind = rarityStaticKind(code, activeState);
+      let scope = activeState;
+      if (searchCountryFilter) {
+        scope = searchCountryFilter === 'United States' ? (searchStateFilter || '') : searchCountryFilter;
+      }
+      if (scope && COUNTRY_CODES[scope]) {
+        const r = searchCountryRank(code, scope);
+        if (r === 4) return '<span class="chip">Vgr</span>';
+        if (r === 3) return '<span class="chip rare">Rare</span>';
+        if (r === 2) return '<span class="chip s">Unc</span>';
+        return '<span class="chip y">Com</span>';
+      }
+      const kind = rarityStaticKind(code, scope || activeState);
       if (kind === 'vagrant') return '<span class="chip">Vgr</span>';
-      const r = rarityStatic(code, activeState);
+      const r = rarityStatic(code, scope || activeState);
       if (r === 3) return '<span class="chip rare">Rare</span>';
       if (r === 2) return '<span class="chip s">Unc</span>';
       return '<span class="chip y">Com</span>';
@@ -15001,6 +15400,13 @@
       });
     }
 
+    let searchOpenGroup = '';
+
+    function toggleSearchGroup(group) {
+      searchOpenGroup = searchOpenGroup === group ? '' : group;
+      renderSearchList();
+    }
+
     function renderSearchList() {
       const box = document.getElementById('search-list');
       if (!box) return;
@@ -15010,6 +15416,11 @@
       const rows = searchCatalog.filter(r => {
         if (searchFilter === 'logged' && !have.has(r.code)) return false;
         if (searchFilter === 'missing' && have.has(r.code)) return false;
+        if (searchTypeFilter && r.group !== searchTypeFilter) return false;
+        if (searchCountryFilter) {
+          const regionCodes = searchRegionCodeSet();
+          if (regionCodes && !regionCodes.has(r.code)) return false;
+        }
         if (!q) return true;
         return nameMatches(r.comName, q) || nameMatches(r.sciName, q) || nameMatches(r.code, q);
       });
@@ -15021,23 +15432,20 @@
         line.textContent = searchFilter === 'logged' ? 'Logged' : searchFilter === 'missing' ? 'Not yet logged' : 'Countable species';
       }
       if (count) {
+        let extra = '';
+        if (searchTypeFilter) extra += ' · ' + searchTypeFilter;
+        if (searchCountryFilter) extra += ' · ' + searchCountryFilter;
+        if (searchStateFilter) extra += ' · ' + searchStateFilter;
         count.textContent = rows.length + ' species' + (q ? ' matching “' + q + '”' : '') +
-          (searchFilter === 'all' ? '' : ' · ' + searchFilter);
+          (searchFilter === 'all' ? '' : ' · ' + searchFilter) + extra;
       }
-      const showHeads = !q;
-      let html = '';
-      let lastG = '';
       const ph = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-      rows.forEach(r => {
-        if (showHeads && r.group !== lastG) {
-          lastG = r.group;
-          html += '<div class="search-type-h">' + escHtml(r.group || 'Other') + '</div>';
-        }
+      const rowHtml = (r) => {
         const logged = have.has(r.code);
         const photo = speciesPhotoCache[r.code] || '';
-        html += '<button type="button" class="search-row' + (searchCode === r.code ? ' on' : '') + '" onclick="openSearchDossier(\'' + r.code + '\')">' +
+        return '<button type="button" class="search-row' + (searchCode === r.code ? ' on' : '') + '" onclick="openSearchDossier(\'' + r.code + '\')">' +
           (photo
-            ? '<img src="' + photo.replace(/"/g, '&quot;') + '" alt="" />'
+            ? '<img src="' + photo.replace(/"/g, '"') + '" alt="" />'
             : '<img class="empty" data-search-thumb="' + r.code + '" src="' + ph + '" alt="" />') +
           '<div><b>' + escHtml(r.comName) + '</b>' +
           (r.sciName ? '<div class="sci">' + escHtml(r.sciName) + '</div>' : '') +
@@ -15045,9 +15453,87 @@
           searchShelfChip(r.code) +
           (logged ? '<span class="chip y">Logged</span>' : '') +
           '</div></div></button>';
+      };
+      if (q || searchTypeFilter) {
+        box.innerHTML = rows.map(rowHtml).join('') || '<p class="hint">No countable species match.</p>';
+        bindSearchThumbs(document.getElementById('search-catalog'));
+        return;
+      }
+      const groups = {};
+      rows.forEach(r => {
+        const g = r.group || 'Other';
+        if (!groups[g]) groups[g] = [];
+        groups[g].push(r);
+      });
+      const order = Object.keys(groups).sort((a, b) => a.localeCompare(b));
+      let html = '';
+      order.forEach(g => {
+        const list = groups[g];
+        const open = searchOpenGroup === g;
+        const loggedN = list.filter(r => have.has(r.code)).length;
+        html += '<button type="button" class="search-type-h' + (open ? ' on' : '') + '" onclick="toggleSearchGroup(\'' + g.replace(/'/g, '\\\'') + '\')">' +
+          '<span>' + escHtml(g) + '</span><span class="muted">' + loggedN + ' / ' + list.length + '</span></button>';
+        if (open) html += list.map(rowHtml).join('');
       });
       box.innerHTML = html || '<p class="hint">No countable species match.</p>';
       bindSearchThumbs(document.getElementById('search-catalog'));
+    }
+
+    function onSearchTypeFilter() {
+      const el = document.getElementById('search-type-filter');
+      searchTypeFilter = el ? el.value : '';
+      renderSearchList();
+    }
+
+    function onSearchCountryFilter() {
+      const el = document.getElementById('search-country-filter');
+      searchCountryFilter = el ? el.value : '';
+      searchStateFilter = '';
+      const st = document.getElementById('search-state-filter');
+      if (st) {
+        st.style.display = searchCountryFilter === 'United States' ? '' : 'none';
+        st.value = '';
+      }
+      renderSearchList();
+    }
+
+    function onSearchStateFilter() {
+      const el = document.getElementById('search-state-filter');
+      searchStateFilter = el ? el.value : '';
+      renderSearchList();
+    }
+
+    function populateSearchFilters() {
+      const typeSel = document.getElementById('search-type-filter');
+      if (typeSel && typeSel.options.length <= 1) {
+        const groups = new Set();
+        if (!searchCatalog) searchCatalog = searchCountableCatalog();
+        searchCatalog.forEach(r => { if (r.group) groups.add(r.group); });
+        [...groups].sort().forEach(g => {
+          const opt = document.createElement('option');
+          opt.value = g;
+          opt.textContent = g;
+          typeSel.appendChild(opt);
+        });
+      }
+      const countrySel = document.getElementById('search-country-filter');
+      if (countrySel && countrySel.options.length <= 2) {
+        Object.keys(COUNTRY_CODES).sort().forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          countrySel.appendChild(opt);
+        });
+      }
+      const stateSel = document.getElementById('search-state-filter');
+      if (stateSel && stateSel.options.length <= 1) {
+        Object.keys(STATE_CODES).sort().forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          stateSel.appendChild(opt);
+        });
+      }
     }
 
     function openSearchDossier(code) {
@@ -15381,6 +15867,58 @@
       syncSearchMapModeBtns();
       paintSearchSpark(searchCode, searchZoomState || '');
       paintSearchMap();
+    }
+
+    function setSearchRegionView(view) {
+      searchRegionView = view === 'countries' ? 'countries' : 'us';
+      try { localStorage.setItem('avian_search_region', searchRegionView); } catch (e) {}
+      const us = document.getElementById('btn-sreg-us');
+      const co = document.getElementById('btn-sreg-countries');
+      if (us) us.className = searchRegionView === 'us' ? 'on' : '';
+      if (co) co.className = searchRegionView === 'countries' ? 'on' : '';
+      searchZoomState = '';
+      if (searchMapMode === 'season') paintSearchMap();
+    }
+
+    async function loadCountryShapes() {
+      if (countryShapes.length) return;
+      const urls = [
+        'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
+        'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
+      ];
+      for (let u = 0; u < urls.length; u++) {
+        try {
+          const res = await fetch(urls[u]);
+          if (!res.ok) continue;
+          const gj = await res.json();
+          const feats = (gj && gj.features) || [];
+          const want = new Set(Object.values(NA_COUNTRY_ISO));
+          want.add('USA');
+          const keep = feats.filter(f => {
+            const p = f.properties || {};
+            const iso = p.ISO_A3 || p.iso_a3 || p.ADM0_A3 || '';
+            const name = p.ADMIN || p.name || p.NAME || '';
+            return want.has(iso) || COUNTRY_CODES[name] || name === 'United States' || name === 'United States of America';
+          });
+          if (keep.length) {
+            keep.forEach(f => {
+              const p = f.properties || {};
+              const name = p.ADMIN || p.name || p.NAME || '';
+              if (name === 'United States' || name === 'United States of America' || (p.ISO_A3 || p.iso_a3 || p.ADM0_A3) === 'USA') {
+                p.name = 'United States';
+              } else if (COUNTRY_CODES[name]) {
+                p.name = name;
+              } else {
+                const iso = p.ISO_A3 || p.iso_a3 || p.ADM0_A3 || '';
+                const hit = Object.entries(NA_COUNTRY_ISO).find(([, v]) => v === iso);
+                if (hit) p.name = hit[0];
+              }
+            });
+            countryShapes = keep;
+            return;
+          }
+        } catch (e) {}
+      }
     }
 
     function syncSearchMapModeBtns() {
@@ -15769,22 +16307,28 @@
       const el = document.getElementById('search-legend');
       if (!el) return;
       if (searchMapMode === 'season') {
-        el.innerHTML =
-          '<span><i style="background:#78716c"></i>None</span>' +
-          '<span><i style="background:#f97316"></i>Few</span>' +
-          '<span><i style="background:#fbbf24"></i>Seasonal</span>' +
-          '<span><i style="background:#10b981"></i>Common</span>' +
-          '<span><i style="background:#047857"></i>Peak</span>' +
-          '<span class="note">Fill is that state’s sampled-day share' +
-          (searchMonth === 'all' && searchAllLens === 'rarity'
-            ? '. Rarity shelf: green Common, orange Uncommon, purple Rare, hatched Vagrant.'
-            : ' for the selected month (same units as the spark). Gray = none that month.') +
-          '</span>';
+        const rarityOn = searchMonth === 'all' && searchAllLens === 'rarity';
+        if (rarityOn) {
+          el.innerHTML =
+            '<span><i style="background:#10b981"></i>Common</span>' +
+            '<span><i style="background:#f97316"></i>Uncommon</span>' +
+            '<span><i style="background:#7c3aed"></i>Rare</span>' +
+            '<span><i style="background:#6b6178"></i>Vagrant</span>' +
+            '<span class="note">Rarity from the region’s monthly curve. Green Common, orange Uncommon, purple Rare, muted Vagrant.</span>';
+        } else {
+          el.innerHTML =
+            '<span><i style="background:#78716c"></i>None</span>' +
+            '<span><i style="background:#f97316"></i>Low</span>' +
+            '<span><i style="background:#fbbf24"></i>Moderate</span>' +
+            '<span><i style="background:#10b981"></i>Common</span>' +
+            '<span><i style="background:#047857"></i>Peak</span>' +
+            '<span class="note">Fill is that region’s sampled-day share for the selected month. Gray = none that month.</span>';
+        }
       } else if (searchMapMode === 'week') {
         el.innerHTML =
           '<span><i style="background:#a8a29e"></i>None this month</span>' +
           '<span><i style="background:#10b981"></i>Present this month</span>' +
-          '<span class="note">Green = any historic sampled-day presence in this calendar month. Gray = none. Pins use that state’s rarity.</span>';
+          '<span class="note">Green = any historic sampled-day presence in this calendar month. Gray = none.</span>';
       } else {
         el.innerHTML = '<span class="note">Your logs for this species. Photo chits where you saved a picture.</span>';
       }
@@ -15821,20 +16365,23 @@
       const token = ++searchPaintToken;
       if (searchPolyLayer) searchPolyLayer.clearLayers();
       searchSetStatus('');
-      await loadStateShapes();
+      const useCountries = searchRegionView === 'countries';
+      if (useCountries) await loadCountryShapes();
+      else await loadStateShapes();
       if (token !== searchPaintToken) return;
-      if (!stateShapes.length) {
-        searchSetStatus('Could not load state outlines.');
+      const shapes = useCountries ? countryShapes : stateShapes;
+      if (!shapes.length) {
+        searchSetStatus(useCountries ? 'Could not load country outlines.' : 'Could not load state outlines.');
         return;
       }
-      const layer = L.geoJSON(stateShapes, {
+      const layer = L.geoJSON(shapes, {
         style: function (feat) {
-          const name = (feat.properties && (feat.properties.name || feat.properties.NAME)) || '';
-          return searchStateStyle(code, name);
+          const name = (feat.properties && (feat.properties.name || feat.properties.NAME || feat.properties.ADMIN)) || '';
+          return useCountries ? searchCountryStyle(code, name) : searchStateStyle(code, name);
         },
         onEachFeature: function (feat, lyr) {
-          const name = (feat.properties && (feat.properties.name || feat.properties.NAME)) || '';
-          lyr.on('click', function () { searchOnSeasonState(code, name); });
+          const name = (feat.properties && (feat.properties.name || feat.properties.NAME || feat.properties.ADMIN)) || '';
+          lyr.on('click', function () { searchOnSeasonRegion(code, name, useCountries); });
         }
       });
       if (searchPolyLayer) {
@@ -15843,33 +16390,127 @@
       }
       layer.eachLayer(function (lyr) {
         const feat = lyr.feature;
-        const name = feat && feat.properties && (feat.properties.name || feat.properties.NAME);
+        const name = feat && feat.properties && (feat.properties.name || feat.properties.NAME || feat.properties.ADMIN);
         if (name && name === searchZoomState) lyr.bringToFront();
       });
       ensureSearchHatch();
-      if (!opts || opts.fit !== false) searchFitUS();
+      if (!opts || opts.fit !== false) {
+        if (useCountries) searchFitCountries();
+        else searchFitUS();
+      }
       searchSetTip(searchSeasonTip(code, searchZoomState || ''));
     }
 
-    function searchSeasonTip(code, name) {
-      const label = (name && STATE_CODES[name]) ? name : 'United States';
-      const when = searchMonth === 'all' ? 'year avg' : (MONTH_LABELS[searchMonth] || '');
-      if (searchMapMode === 'season' && searchMonth === 'all' && searchAllLens === 'rarity' && name && STATE_CODES[name]) {
-        return '<b>' + escHtml(label) + '</b> · ' + when + ' · ' + searchRarityLabel(code, name);
+    function searchCountryStyle(code, name) {
+      const rarityAll = searchMapMode === 'season' && searchMonth === 'all' && searchAllLens === 'rarity';
+      let monthly = [];
+      if (name === 'United States') {
+        monthly = searchUsMonthly(code);
+      } else {
+        const iso = COUNTRY_CODES[name];
+        if (!iso || !DATA.C || !DATA.C[iso]) return { color: '#64748b', weight: 1, fillColor: searchNoneFill(), fillOpacity: 0.35 };
+        const entry = decodeCountry(iso);
+        const sp = (entry.list || []).find(s => s.code === code);
+        monthly = sp ? sp.monthly : [0,0,0,0,0,0,0,0,0,0,0,0];
       }
-      const v = searchFreqValue(code, (name && STATE_CODES[name]) ? name : 'US');
+      let fill, opacity;
+      if (rarityAll) {
+        const rank = rarityStaticFromMonthly(monthly);
+        if (rank === 1) fill = '#10b981';
+        else if (rank === 2) fill = '#f97316';
+        else if (rank === 3) fill = '#7c3aed';
+        else fill = uiTheme === 'light' ? '#d4cce0' : '#6b6178';
+        opacity = 0.62;
+      } else {
+        const v = searchMonth === 'all' ? monthly.reduce((a,b)=>a+b,0)/12 : (monthly[searchMonth] || 0);
+        fill = v > 0 ? searchFreqColor(v) : searchNoneFill();
+        opacity = v > 0 ? 0.62 : 0.34;
+      }
+      return { color: '#334155', weight: 1, fillColor: fill, fillOpacity: opacity };
+    }
+
+    function searchOnSeasonRegion(code, name, isCountry) {
+      if (searchZoomState === name) searchZoomState = '';
+      else searchZoomState = name;
+      persistSearchState();
+      searchSetTip(searchSeasonTip(code, searchZoomState || ''));
+      paintSearchSpark(searchCode, searchZoomState || '');
+      paintSearchSeason(code, { fit: false });
+    }
+
+    function searchFitCountries() {
+      if (!searchMap || !countryShapes.length) return;
+      try {
+        const layer = L.geoJSON(countryShapes);
+        searchMap.fitBounds(layer.getBounds(), { padding: [20, 20], animate: false });
+      } catch (e) {}
+    }
+
+    function searchSeasonTip(code, name) {
+      const isCountries = searchRegionView === 'countries';
+      let label = 'United States';
+      if (name) {
+        if (isCountries && (COUNTRY_CODES[name] || name === 'United States')) label = name;
+        else if (STATE_CODES[name]) label = name;
+      }
+      const when = searchMonth === 'all' ? 'year avg' : (MONTH_LABELS[searchMonth] || '');
+      if (searchMapMode === 'season' && searchMonth === 'all' && searchAllLens === 'rarity') {
+        let rankLabel = '';
+        if (isCountries && name && (COUNTRY_CODES[name] || name === 'United States')) {
+          let monthly = [];
+          if (name === 'United States') monthly = searchUsMonthly(code);
+          else {
+            const iso = COUNTRY_CODES[name];
+            const entry = decodeCountry(iso);
+            const sp = (entry.list || []).find(s => s.code === code);
+            monthly = sp ? sp.monthly : [];
+          }
+          const rank = rarityStaticFromMonthly(monthly);
+          rankLabel = rank === 1 ? 'Common' : rank === 2 ? 'Uncommon' : rank === 3 ? 'Rare' : 'Vagrant';
+        } else if (name && STATE_CODES[name]) {
+          rankLabel = searchRarityLabel(code, name);
+        }
+        if (rankLabel) return '<b>' + escHtml(label) + '</b> · ' + when + ' · ' + rankLabel;
+      }
+      let v = 0;
+      if (isCountries && name && COUNTRY_CODES[name]) {
+        const iso = COUNTRY_CODES[name];
+        const entry = decodeCountry(iso);
+        const sp = (entry.list || []).find(s => s.code === code);
+        const monthly = sp ? sp.monthly : [0,0,0,0,0,0,0,0,0,0,0,0];
+        v = searchMonth === 'all' ? monthly.reduce((a,b)=>a+b,0)/12 : (monthly[searchMonth] || 0);
+      } else {
+        v = searchFreqValue(code, (name && STATE_CODES[name]) ? name : 'US');
+      }
       const pct = Math.round(v * 100);
       return '<b>' + escHtml(label) + '</b> · ' + when + ' · ' + pct + '% sampled-day share';
     }
 
     function paintSearchSpark(code, stateName) {
-      const named = stateName && STATE_CODES[stateName] ? stateName : '';
-      const label = named || 'United States';
-      const monthly = named ? searchMonthlyFor(code, named) : searchUsMonthly(code);
+      const isCountries = searchRegionView === 'countries';
+      let label = 'United States';
+      let monthly = searchUsMonthly(code);
+      if (stateName) {
+        if (isCountries && (COUNTRY_CODES[stateName] || stateName === 'United States')) {
+          label = stateName;
+          if (stateName === 'United States') {
+            monthly = searchUsMonthly(code);
+          } else {
+            const iso = COUNTRY_CODES[stateName];
+            const entry = decodeCountry(iso);
+            const sp = (entry.list || []).find(s => s.code === code);
+            monthly = sp ? sp.monthly : [0,0,0,0,0,0,0,0,0,0,0,0];
+          }
+        } else if (STATE_CODES[stateName]) {
+          label = stateName;
+          monthly = searchMonthlyFor(code, stateName);
+        }
+      }
       const sparkWrap = document.getElementById('search-spark-wrap');
       if (!sparkWrap) return;
+      const suffix = (label === 'United States' && !COUNTRY_CODES[stateName]) ? ' · US mean of states' : ' season shape';
       sparkWrap.innerHTML = sparkMonthsHTML(monthly, searchMonth) +
-        '<div class="muted" style="margin-top:4px">' + escHtml(label) + (named ? ' season shape' : ' · US mean of states') + ' · sampled-day share</div>';
+        '<div class="muted" style="margin-top:4px">' + escHtml(label) + suffix + ' · sampled-day share</div>';
     }
 
     function searchOnSeasonState(code, name) {
@@ -16049,8 +16690,13 @@
 
     function showSearchTab() {
       setSearchFilter(searchFilter);
+      populateSearchFilters();
       const q = document.getElementById('search-q');
       if (q && q.value !== searchQuery) q.value = searchQuery || '';
+      const us = document.getElementById('btn-sreg-us');
+      const co = document.getElementById('btn-sreg-countries');
+      if (us) us.className = searchRegionView === 'us' ? 'on' : '';
+      if (co) co.className = searchRegionView === 'countries' ? 'on' : '';
       const dos = document.getElementById('search-dossier');
       if (searchCode && dos) {
         openSearchDossier(searchCode);
