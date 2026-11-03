@@ -12,6 +12,13 @@
       } catch (e) {}
     })();
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://dqbiiqeyxxzazpaliley.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_QFYYrsYZEDrPr2SudmHbHQ_gbma5iDi';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  console.log('Supabase connected:', supabase);
+</script>
   <title>BirdsEye — Find what's flying.</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
