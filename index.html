@@ -17,7 +17,6 @@
   const SUPABASE_URL = 'https://dqbiiqeyxxzazpaliley.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_QFYYrsYZEDrPr2SudmHbHQ_gbma5iDi';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  console.log('Supabase connected:', supabaseClient);
 </script>
   <title>BirdsEye — Find what's flying.</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -321,6 +320,50 @@
     }
     .icon-btn svg { width: 18px; height: 18px; display: block; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .icon-btn:hover { color: var(--em3); border-color: var(--em-dim); }
+    .pf-avatar-slot { position: relative; }
+    .pf-notes-btn {
+      position: absolute; top: -7px; right: -7px; z-index: 2;
+      min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+      border: 2px solid var(--bg); background: #e11d48; color: #fff;
+      font-size: 10px; font-weight: 800; line-height: 14px;
+    }
+    .pf-notes-btn[hidden] { display: none; }
+    #pf-notes[hidden] { display: none; }
+    #pf-notes {
+      position: fixed; z-index: 70; width: min(380px, calc(100vw - 20px));
+    }
+    .pf-notes-card {
+      background: var(--panel); border: 1px solid var(--line-2); border-radius: 18px;
+      box-shadow: 0 22px 60px rgba(0,0,0,.4); overflow: hidden;
+    }
+    .pf-notes-h {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 14px 14px 12px;
+    }
+    .pf-notes-h b { font-size: 16px; letter-spacing: -.03em; }
+    .pf-notes-h button { background: none; border: 0; color: var(--muted); font-size: 12px; font-weight: 750; margin-left: auto; }
+    .pf-notes-list { max-height: min(460px, 70vh); overflow: auto; }
+    .pf-note-row {
+      display: flex; gap: 10px; align-items: center; width: 100%; text-align: left;
+      padding: 10px 12px; border: 0; border-top: 1px solid var(--line);
+      background: transparent; color: inherit; cursor: pointer;
+    }
+    .pf-note-row.unread { background: color-mix(in srgb, var(--em) 8%, transparent); }
+    .pf-note-shot, .pf-note-ph {
+      width: 54px; height: 54px; border-radius: 12px; object-fit: cover; flex: none; background: var(--photo);
+    }
+    .pf-note-ph { display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .pf-note-copy { min-width: 0; flex: 1; }
+    .pf-note-copy b { display: block; font-size: 13px; letter-spacing: -.02em; }
+    .pf-note-copy span { display: block; margin-top: 2px; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pf-note-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; font-size: 11px; font-weight: 750; }
+    .pf-note-kind { color: var(--em3); }
+    .pf-note-kind.like { color: #fb7185; }
+    .pf-note-x {
+      flex: none; width: 26px; height: 26px; border-radius: 999px; border: 0;
+      background: transparent; color: var(--muted); font-size: 14px;
+    }
+    .pf-notes-empty { padding: 28px 16px 32px; text-align: center; color: var(--muted); font-size: 13px; }
     .ach-btn { position: relative; width: auto; padding: 0 8px 0 6px; gap: 5px; }
     .ach-btn .ach-count {
       font-family: ui-monospace, monospace; font-size: 11px; font-weight: 800;
@@ -2037,6 +2080,453 @@
     .search-sim-card b {
       display: block; font-size: 11px; line-height: 1.25; padding: 6px 7px 0;
     }
+    #profile-modal.modal {
+      padding: 0; background: var(--bg); align-items: stretch; justify-content: stretch; z-index: 40;
+    }
+    #ach-modal { z-index: 6400; }
+    body.pf-open { overflow: hidden; }
+    .profile-btn.has-user svg { display: none; }
+    .profile-btn .pf-initials {
+      display: none; font-size: 12px; font-weight: 800; letter-spacing: .02em; color: var(--em3);
+    }
+    .profile-btn.has-user .pf-initials { display: block; }
+    .profile-btn.has-photo { overflow: hidden; background-size: cover; background-position: center; }
+    .profile-btn.has-photo svg, .profile-btn.has-photo .pf-initials { display: none; }
+    #profile-modal .sheet {
+      max-width: none; width: 100%; height: 100%; max-height: none;
+      border: 0; border-radius: 0; background: var(--bg); box-shadow: none;
+    }
+    #profile-modal .sheet-h {
+      height: 56px; padding: 0 28px; background: var(--header); border-radius: 0;
+    }
+    #profile-modal #pf-body {
+      width: min(920px, 100%); margin: 0 auto;
+      padding: 18px 28px 80px;
+      padding-left: max(28px, env(safe-area-inset-left));
+      padding-right: max(28px, env(safe-area-inset-right));
+    }
+    .pf-banner {
+      position: relative; border: 1px solid var(--line-2); border-radius: 22px;
+      background: var(--panel); overflow: hidden; margin-bottom: 14px;
+    }
+    .pf-banner-bg { position: relative; height: 168px; background: var(--ribbon); overflow: hidden; }
+    .pf-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pf-banner-hit {
+      position: absolute; inset: 0; border: 0; padding: 0; background: transparent; cursor: pointer;
+    }
+    .pf-cam {
+      position: absolute; right: 12px; bottom: 12px; z-index: 1;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(12,10,9,.72); color: #fff; border: 0; border-radius: 999px;
+      padding: 5px 10px; font-size: 11px; font-weight: 750; pointer-events: none;
+    }
+    .pf-banner-bg > .pf-cam { top: 12px; bottom: auto; }
+    .pf-cam svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .pf-avatar-btn {
+      position: relative; padding: 0; overflow: hidden; cursor: pointer;
+    }
+    .pf-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    button.pf-avatar { color: var(--em3); line-height: 1; }
+    .pf-avatar-btn .pf-cam {
+      right: 6px; bottom: 6px; padding: 0; width: 26px; height: 26px; justify-content: center;
+    }
+    .pf-under { background: var(--panel); padding: 14px 16px 16px; }
+    .pf-bio-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: 8px; }
+    .pf-under-actions { margin-left: auto; flex: none; display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
+    .pf-under-actions .btn-em, .pf-under-actions .ghost { padding: 6px 10px; font-size: 12px; white-space: nowrap; }
+    .pf-id { display: flex; gap: 14px; align-items: flex-start; padding: 0; margin-top: 0; }
+    .pf-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .pf-rank {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: linear-gradient(180deg, #44403c, #292524);
+      border: 1px solid #57534e; color: #fbbf24;
+      border-radius: 999px; padding: 2px 8px 2px 6px;
+      font-size: 12px; font-weight: 800; letter-spacing: -.02em; line-height: 1.4;
+    }
+    .pf-rank svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linejoin: round; }
+    .pf-cals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .pf-cal-name { font-size: 11px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 4px; white-space: nowrap; }
+    .pf-cal-dow, .pf-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+    .pf-cal-dow { margin-bottom: 3px; }
+    .pf-cal-dow span { text-align: center; font-size: 8px; font-weight: 750; color: var(--muted); }
+    .pf-cal .pf-heat-cell { border-radius: 2px; }
+    .pf-heat-cell.empty { background: transparent; }
+    #pf-crop[hidden] { display: none; }
+    #pf-crop { position: fixed; inset: 0; z-index: 80; }
+    .pf-crop-dim { position: absolute; inset: 0; background: rgba(0,0,0,.72); }
+    .pf-crop-stage {
+      position: fixed; overflow: hidden; z-index: 2; background: #111;
+      touch-action: none; cursor: grab; box-shadow: 0 0 0 2px rgba(255,255,255,.9);
+    }
+    .pf-crop-stage img { position: absolute; max-width: none; user-select: none; pointer-events: none; }
+    .pf-crop-tools {
+      position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom));
+      transform: translateX(-50%); z-index: 3;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      width: min(460px, calc(100% - 28px));
+      background: var(--panel); border: 1px solid var(--line-2); border-radius: 18px; padding: 10px 12px;
+    }
+    .pf-crop-tools span { font-size: 12px; font-weight: 750; color: var(--muted); flex: 1; min-width: 140px; }
+    .pf-id-copy { min-width: 0; flex: 1; padding-bottom: 4px; }
+    .pf-avatar {
+      width: 86px; height: 86px; border-radius: 24px; flex: none;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 800; letter-spacing: -.04em;
+      background: var(--em-bg); color: var(--em3);
+      border: 3px solid var(--panel); box-shadow: 0 10px 24px rgba(0,0,0,.28);
+    }
+    .pf-name { font-size: 26px; font-weight: 800; letter-spacing: -.04em; line-height: 1.05; }
+    .pf-handle { font-size: 13px; color: var(--muted); margin-top: 3px; }
+    .pf-social { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .pf-social span {
+      font-size: 12px; color: var(--muted); background: var(--panel-2);
+      border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px; line-height: 1.3;
+    }
+    .pf-social b { color: var(--text); font-weight: 800; margin-right: 4px; }
+    .pf-bio { font-size: 14px; color: var(--text-2); line-height: 1.45; min-width: 0; flex: 1; }
+    .pf-statgrid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
+      padding: 14px 14px 16px;
+    }
+    .pf-tile {
+      background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px;
+      padding: 10px 10px 9px; min-width: 0;
+    }
+    .pf-tile b { display: block; font-size: 20px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+    .pf-tile span {
+      display: block; margin-top: 5px; font-size: 10px; font-weight: 750;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pf-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; padding-bottom: 6px; }
+    .pf-tabs {
+      position: sticky; top: 0; z-index: 3;
+      display: flex; align-items: center; gap: 6px; padding: 4px 0 12px; overflow-x: auto;
+      background: linear-gradient(180deg, var(--bg) 72%, transparent);
+    }
+    .pf-tabs .pf-seg { margin-left: auto; flex: none; }
+    .pf-board.headless .pf-metrics { margin-top: 0; }
+    .pf-tabs button {
+      background: var(--panel); border: 1px solid var(--line); color: var(--muted);
+      border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 750; white-space: nowrap;
+    }
+    .pf-tabs button.on { color: #fff; background: var(--em); border-color: var(--em); }
+    .pf-board-h { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin: 4px 2px 0; }
+    .pf-kicker { font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--em3); }
+    .pf-board-title { font-size: 20px; font-weight: 800; letter-spacing: -.03em; margin-top: 2px; }
+    .pf-seg { display: flex; background: var(--panel); border: 1px solid var(--line-2); border-radius: 999px; padding: 3px; }
+    .pf-seg button { border: 0; background: transparent; color: var(--muted); border-radius: 999px; padding: 6px 11px; font-size: 12px; font-weight: 750; }
+    .pf-seg button.on { background: var(--em); color: #fff; }
+    .pf-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+    .pf-metric {
+      position: relative; overflow: hidden; background: var(--panel);
+      border: 1px solid var(--line-2); border-radius: 18px; padding: 14px 14px 12px;
+    }
+    .pf-metric b { position: relative; font-size: 32px; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
+    .pf-metric span {
+      position: relative; display: block; margin-top: 6px;
+      font-size: 11px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+    }
+    .pf-metric::after {
+      content: ""; position: absolute; right: -16px; top: -22px; width: 84px; height: 84px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(16,185,129,.28), transparent 68%);
+    }
+    .pf-card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
+      padding: 12px 14px 14px; margin-top: 8px;
+    }
+    .pf-card-h { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+    .pf-swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+    .pf-swatch.em { background: #34d399; }
+    .pf-swatch.gold { background: #fbbf24; }
+    .pf-chart { width: 100%; height: 128px; display: block; }
+    .pf-heat { display: flex; flex-direction: column; gap: 3px; }
+    .pf-heat-row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 3px; }
+    .pf-heat-cell { display: block; aspect-ratio: 1; border-radius: 3px; background: var(--line); }
+    .pf-heat-cell.lv1 { background: #064e3b; }
+    .pf-heat-cell.lv2 { background: #047857; }
+    .pf-heat-cell.lv3 { background: #10b981; }
+    .pf-heat-cell.lv4 { background: #6ee7b7; }
+    .pf-heat-legend { margin-left: auto; display: flex; gap: 3px; }
+    .pf-heat-legend i { width: 10px; height: 10px; border-radius: 2px; display: block; background: var(--line); }
+    .pf-heat-legend i.lv2 { background: #047857; }
+    .pf-heat-legend i.lv4 { background: #6ee7b7; }
+    html[data-theme="light"] .pf-heat-cell { background: #e7e5e4; }
+    html[data-theme="light"] .pf-heat-cell.lv1 { background: #a7f3d0; }
+    html[data-theme="light"] .pf-heat-cell.lv2 { background: #34d399; }
+    html[data-theme="light"] .pf-heat-cell.lv3 { background: #059669; }
+    html[data-theme="light"] .pf-heat-cell.lv4 { background: #065f46; }
+    .pf-section { font-size: 13px; font-weight: 800; letter-spacing: -.02em; margin: 18px 2px 8px; }
+    .pf-checkins { display: flex; flex-direction: column; gap: 14px; }
+    .pf-checkin {
+      background: var(--panel); border: 1px solid var(--line-2); border-radius: 22px;
+      padding: 12px 12px 8px; box-shadow: 0 12px 28px rgba(0,0,0,.14);
+    }
+    .pf-checkin-who {
+      display: flex; gap: 10px; align-items: center; width: 100%; text-align: left; color: inherit;
+      background: none; border: 0; padding: 2px 2px 8px;
+    }
+    .pf-checkin-av {
+      width: 42px; height: 42px; border-radius: 50%; flex: none; overflow: hidden;
+      background: var(--em-bg); color: var(--em3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800;
+    }
+    .pf-checkin-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pf-checkin-id { min-width: 0; flex: 1; }
+    .pf-checkin-name {
+      display: block; font-size: 15px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pf-checkin-handle { font-weight: 650; color: var(--muted); margin-left: 5px; }
+    .pf-checkin-place {
+      display: block; margin-top: 1px; font-size: 13px; color: var(--text-2); font-weight: 650;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pf-checkin-place b { font-weight: 800; color: var(--text); }
+    .pf-checkin-sp {
+      padding: 2px 4px 10px; font-size: 20px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15;
+    }
+    .pf-checkin-shot {
+      display: block; width: 100%; padding: 0; border: 0; border-radius: 16px; overflow: hidden;
+      position: relative; background: #1c1917; aspect-ratio: 16 / 11; cursor: zoom-in;
+    }
+    .pf-checkin-shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pf-checkin { cursor: pointer; }
+    .pf-checkin-foot {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 2px 2px; font-size: 12px; color: var(--muted); font-weight: 650;
+    }
+    .pf-rar {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(18,16,14,.88); color: #fff;
+      border-radius: 999px; padding: 2px 8px 2px 3px;
+      font-size: 11px; font-weight: 750; letter-spacing: 0; line-height: 1;
+    }
+    .pf-rar i { width: 12px; height: 12px; border-radius: 50%; display: block; background: #34d399; }
+    .pf-rar i.rar-u { background: #fb923c; }
+    .pf-rar i.rar-r { background: #a78bfa; }
+    .pf-rar i.rar-p { background: #fbbf24; }
+    .pf-checkin-date { font-size: 13px; font-weight: 650; }
+    .pf-checkin-end { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; }
+    .pf-reacts { display: inline-flex; align-items: center; gap: 10px; }
+    .pf-reacts:empty { display: none; }
+    .pf-react {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 14px; font-weight: 750; color: var(--text-2); line-height: 1;
+    }
+    .pf-react b { font-weight: 800; line-height: 1; }
+    .pf-react.like { color: #fb7185; }
+    .pf-react svg { width: 18px; height: 18px; display: block; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+    .pf-react.like svg { fill: currentColor; stroke: none; }
+    .pf-reacts.corner {
+      position: absolute; top: 8px; right: 8px; z-index: 1; margin: 0; gap: 6px;
+      display: inline-flex; align-items: center;
+    }
+    .pf-reacts.corner .pf-react {
+      background: rgba(0,0,0,.62); color: #fff; border-radius: 999px;
+      height: 26px; padding: 0 8px; font-size: 13px; gap: 4px;
+    }
+    .pf-reacts.corner .pf-react svg { width: 15px; height: 15px; }
+    .pf-reacts.corner .pf-react.like { color: #fff; }
+    .pf-checkin-tools { display: flex; gap: 4px; flex: none; }
+    .pf-checkin.slim .pf-checkin-sp { padding-bottom: 0; font-size: 16px; }
+    .pf-checkin.slim { padding-bottom: 6px; }
+    #pf-detail[hidden] { display: none !important; }
+    #pf-detail {
+      position: fixed; inset: 0; z-index: 70; background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column;
+    }
+    .pf-detail-bar {
+      height: 56px; flex: none; display: flex; align-items: center; gap: 12px;
+      padding: 0 16px; background: var(--header); border-bottom: 1px solid var(--line);
+    }
+    .pf-detail-bar button { background: none; border: 0; color: var(--em3); font-weight: 750; padding: 0; }
+    .pf-detail-body { flex: 1; overflow: auto; width: min(720px, 100%); margin: 0 auto; padding: 0 16px 64px; }
+    .pf-detail-shot {
+      display: block; width: calc(100% + 32px); margin: 0 -16px 14px; padding: 0; border: 0;
+      background: #111; cursor: zoom-in;
+    }
+    .pf-detail-shot img { display: block; width: 100%; max-height: 68vh; object-fit: contain; background: #111; }
+    .pf-detail-dn { font-size: 20px; font-weight: 800; letter-spacing: -.03em; }
+    .pf-detail-un { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .pf-detail-loc { font-size: 14px; font-weight: 700; margin-top: 4px; }
+    .pf-spbox {
+      position: relative; display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center;
+      margin-top: 14px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 18px; padding: 12px;
+    }
+    .pf-spbox img, .pf-stock {
+      width: 64px; height: 64px; border-radius: 14px; object-fit: cover; background: var(--photo);
+      display: flex; align-items: center; justify-content: center; font-size: 26px; overflow: hidden;
+    }
+    .pf-stock img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 0; }
+    .pf-sp-name { font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
+    .pf-sp-sci { font-size: 13px; font-style: italic; color: var(--muted); margin: 2px 0 6px; }
+    .pf-got {
+      position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%;
+      background: color-mix(in srgb, var(--em) 14%, var(--panel));
+      color: var(--em3);
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid color-mix(in srgb, var(--em3) 65%, var(--line-2));
+    }
+    .pf-got svg { width: 13px; height: 13px; display: block; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .pf-detail-block { margin-top: 18px; }
+    .pf-detail-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 800; margin-bottom: 8px; }
+    .pf-like {
+      display: inline-flex; align-items: center; gap: 5px; border-radius: 999px;
+      border: 1px solid var(--line-2); background: var(--panel); color: var(--text); padding: 4px 10px; font-weight: 750;
+    }
+    .pf-like.on { background: #9f1239; border-color: #9f1239; color: #fff; }
+    .pf-comment { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+    .pf-comment-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .pf-comment b { display: block; font-size: 12px; margin-bottom: 2px; }
+    .pf-comment-top button { background: none; border: 0; color: var(--muted); font-size: 11px; font-weight: 750; padding: 0; }
+    .pf-comment-row { display: flex; gap: 8px; margin-top: 10px; }
+    .pf-comment-row input {
+      flex: 1; background: var(--input); border: 1px solid var(--line-2); border-radius: 10px; padding: 8px 10px;
+    }
+    .pf-hscroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
+    .pf-award {
+      flex: none; width: 168px; scroll-snap-align: start;
+      background: var(--panel); border: 1px solid var(--line-2); border-radius: 14px; padding: 10px;
+    }
+    .pf-award b { display: block; font-size: 13px; letter-spacing: -.02em; line-height: 1.25; }
+    .pf-award span { display: block; margin-top: 6px; font-size: 11px; color: var(--muted); font-weight: 700; }
+    .pf-award em { display: inline-block; margin-top: 6px; font-style: normal; font-size: 10px; font-weight: 800; color: #fff; background: var(--em); border-radius: 999px; padding: 2px 6px; }
+    .pf-more {
+      position: relative; flex: none; width: 168px; height: 220px; padding: 0; border: 0;
+      border-radius: 16px; overflow: hidden; background: #111; scroll-snap-align: start; cursor: pointer;
+    }
+    .pf-more img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pf-more-cap {
+      position: absolute; left: 0; right: 0; bottom: 0; padding: 36px 10px 10px; text-align: left;
+      background: linear-gradient(to top, rgba(0,0,0,.86), rgba(0,0,0,0)); color: #fff;
+    }
+    .pf-more-cap b { display: block; font-size: 13px; font-weight: 800; letter-spacing: -.02em; }
+    .pf-more-cap span { display: block; margin-top: 2px; font-size: 11px; font-weight: 650; color: rgba(255,255,255,.84); }
+    .pf-pins {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px;
+    }
+    .pf-pin {
+      position: relative; display: block; width: 100%; min-width: 0; aspect-ratio: 3 / 4;
+      padding: 0; border: 0; border-radius: 16px; overflow: hidden; background: #111; cursor: pointer;
+    }
+    .pf-pin img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pf-pin .pf-more-cap { padding: 28px 8px 8px; }
+    .pf-pin .pf-more-cap b { font-size: 12px; }
+    .pf-pin .pf-more-cap span {
+      font-size: 10px; line-height: 1.25;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .pf-detail-pinrow { margin-top: 10px; }
+    .pf-perm {
+      display: flex; flex-direction: column; gap: 8px; margin: 0 0 14px; padding: 12px;
+      background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px;
+    }
+    .pf-perm b { display: block; font-size: 14px; letter-spacing: -.02em; }
+    .pf-perm p { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
+    .pf-perm-choices { display: flex; gap: 6px; }
+    .pf-perm-choices button {
+      flex: 1; border-radius: 999px; border: 1px solid var(--line-2); background: var(--panel-2);
+      color: var(--text-2); padding: 7px 8px; font-size: 12px; font-weight: 750;
+    }
+    .pf-perm-choices button.on { background: var(--em); border-color: var(--em); color: #fff; }
+    #pf-pin-map { height: 240px; border-radius: 16px; overflow: hidden; border: 1px solid var(--line-2); position: relative; z-index: 0; isolation: isolate; }
+    .pf-log {
+      display: flex; gap: 12px; align-items: center; width: 100%; text-align: left; color: inherit;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 8px; margin: 0 0 8px;
+    }
+    .pf-log img, .pf-log .pf-ph {
+      width: 84px; height: 84px; border-radius: 12px; object-fit: cover; flex: none;
+      background: var(--photo); display: flex; align-items: center; justify-content: center; font-size: 22px;
+    }
+    .pf-log-main { min-width: 0; flex: 1; }
+    .pf-log-name { font-size: 16px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; }
+    .pf-log-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; align-items: center; }
+    .pf-chip {
+      font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+      border-radius: 999px; padding: 3px 7px; background: var(--em-bg); color: var(--em3);
+    }
+    .pf-chip.soft { background: var(--input); color: var(--text-2); text-transform: none; letter-spacing: 0; font-weight: 650; font-size: 11px; }
+    .pf-log-tools { display: flex; flex-direction: column; gap: 4px; flex: none; }
+    .pf-person {
+      display: flex; gap: 12px; align-items: center;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+      padding: 8px 10px; margin: 0 0 8px;
+    }
+    .pf-person .pf-avatar { width: 44px; height: 44px; border-radius: 14px; font-size: 15px; border: 0; box-shadow: none; }
+    .pf-person > button { background: none; border: 0; padding: 0; flex: 1; text-align: left; min-width: 0; color: inherit; }
+    .pf-ib {
+      width: 30px; height: 30px; border-radius: 10px; padding: 0;
+      border: 1px solid var(--line-2); background: var(--bg); color: var(--muted-2);
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .pf-ib svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .pf-ib.on { color: #ecfdf5; background: var(--em); border-color: var(--em); }
+    .pf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .pf-grid > button, .pf-grid > .cell {
+      aspect-ratio: 1; border-radius: 14px; overflow: hidden; border: 1px solid var(--line);
+      background: var(--photo); padding: 0; position: relative;
+    }
+    .pf-grid img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pf-grid-hit { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; cursor: pointer; }
+    .pf-pin-mini {
+      position: absolute; top: 6px; left: 6px; z-index: 2;
+      height: 22px; padding: 0 7px; border: 0; border-radius: 999px;
+      background: rgba(0,0,0,.62); color: #fff;
+      font-size: 10px; font-weight: 800; letter-spacing: .02em;
+    }
+    .pf-pin-mini.on { background: var(--em); }
+    .pf-flag {
+      position: absolute; left: 6px; bottom: 6px; font-size: 9px; font-weight: 800;
+      letter-spacing: .04em; text-transform: uppercase; background: rgba(0,0,0,.62);
+      color: #fff; border-radius: 999px; padding: 3px 7px;
+    }
+    .pf-empty { padding: 28px 8px; text-align: center; color: var(--muted); font-size: 13px; }
+    #pf-map { height: min(68vh, 640px); border-radius: 18px; overflow: hidden; border: 1px solid var(--line-2); position: relative; z-index: 0; isolation: isolate; }
+    .pf-map-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 10px; }
+    .pf-map-tools select {
+      background: var(--input); color: var(--text); border: 1px solid var(--line-2);
+      border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 750;
+    }
+    #pf-map-birds { margin-top: 10px; }
+    .pf-map-birds-h { font-size: 14px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 8px; }
+    .pf-map-birds { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pf-map-birds span {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--panel); border: 1px solid var(--line-2); border-radius: 999px;
+      padding: 4px 8px 4px 10px; font-size: 12px; font-weight: 700;
+    }
+    .pf-map-birds i {
+      font-style: normal; font-size: 10px; font-weight: 800; color: #fff;
+      background: var(--em); border-radius: 999px; min-width: 16px; text-align: center; padding: 1px 5px;
+    }
+    .pf-form label { display: block; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 10px 0 4px; }
+    .pf-form input, .pf-form textarea {
+      width: 100%; background: var(--input); border: 1px solid var(--line-2); border-radius: 10px; padding: 8px 10px;
+    }
+    .pf-auth {
+      max-width: 26rem; margin: 8vh auto 0; background: var(--panel);
+      border: 1px solid var(--line-2); border-radius: 22px; padding: 22px 20px 18px;
+    }
+    .pf-auth h2 { margin: 0 0 6px; font-size: 26px; letter-spacing: -.04em; }
+    .pf-note { font-size: 12px; color: var(--muted); line-height: 1.45; margin: 8px 0 0; }
+    .pf-switch { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+    .rar-c { color: var(--em3); } .rar-u { color: var(--text-2); } .rar-r { color: var(--warn); } .rar-p { color: var(--gold-ink); }
+    .pf-back { background: none; border: 0; color: var(--em3); font-weight: 700; font-size: 12px; padding: 0; }
+    @media (max-width: 720px) {
+      #profile-modal .sheet-h { padding: 0 22px; }
+      #profile-modal #pf-body {
+        padding: 14px 20px 72px;
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+      }
+      .pf-name { font-size: 22px; }
+      .pf-id { flex-wrap: wrap; }
+      .pf-actions { width: 100%; justify-content: flex-start; padding: 8px 0 0; }
+      .pf-log img, .pf-log .pf-ph { width: 68px; height: 68px; }
+      .pf-metric b { font-size: 26px; }
+    }
     .search-status { font-size: 11px; color: var(--muted); margin-top: 6px; }
 </style>
 </head>
@@ -2061,16 +2551,16 @@
     </div>
     <div style="display:flex;gap:8px;align-items:center">
       <button type="button" id="checklist-back" class="checklist-back" hidden onclick="returnToChecklist()">← Checklist</button>
-      <button class="icon-btn ach-btn" type="button" onclick="openAchModal()" title="Achievements" aria-label="Achievements">
+      <span class="pf-avatar-slot">
+      <button class="icon-btn profile-btn" type="button" id="btn-profile" onclick="openProfile()" title="Profile" aria-label="Profile">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M8 4h8v3a4 4 0 0 1-8 0V4z"/>
-          <path d="M8 5H5a3 3 0 0 0 3 5M16 5h3a3 3 0 0 1-3 5"/>
-          <path d="M12 12v3"/>
-          <path d="M8 21h8"/>
-          <path d="M9 21v-4a3 3 0 0 1 6 0v4"/>
+          <circle cx="12" cy="8" r="3.2"/>
+          <path d="M5.5 19.2c1.4-3 3.7-4.4 6.5-4.4s5.1 1.4 6.5 4.4"/>
         </svg>
-        <span class="ach-count zero" id="ach-badge">0</span>
+        <span class="pf-initials" id="profile-btn-initials"></span>
       </button>
+      <button type="button" id="pf-notes-btn" class="pf-notes-btn" hidden onclick="event.stopPropagation(); pfToggleNotes(event)">0</button>
+      </span>
       <button class="icon-btn" type="button" onclick="openKeyModal()" title="Settings" aria-label="Settings">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="12" r="3"/>
@@ -12841,6 +13331,7 @@
       const finishId = savedId;
       clearBulkQueue();
       closeUploadModal();
+      if (window.avianMaybePublish) window.avianMaybePublish();
       refreshUI({ toast: true });
       renderLifeList();
       renderGallery();
@@ -14255,6 +14746,61 @@
       achXpMode[mode] = split.earned + split.progress;
       return { rows: rows, prev: prev, next: next, ctx: ctx };
     }
+    function achImpactOf(id) {
+      if (!id) return [];
+      const idx = sightings.findIndex(s => s && s.id === id);
+      if (idx < 0) return [];
+      const removed = sightings[idx];
+      const snapEarned = JSON.parse(JSON.stringify(achEarned));
+      const snapSplit = JSON.parse(JSON.stringify(achXpSplit));
+      const snapMode = JSON.parse(JSON.stringify(achXpMode));
+      const snapCtx = achLastCtx;
+      const rowsNow = () => {
+        const st = evaluateAchievements('state');
+        const co = evaluateAchievements('country');
+        return (st.rows || []).concat(co.rows || []);
+      };
+      let before = [], after = [];
+      try {
+        sightings.splice(idx, 1);
+        before = rowsNow();
+        sightings.splice(idx, 0, removed);
+        after = rowsNow();
+      } catch (e) {
+        before = [];
+        after = [];
+      } finally {
+        if (sightings.indexOf(removed) < 0) sightings.splice(Math.min(idx, sightings.length), 0, removed);
+        achEarned = snapEarned;
+        achXpSplit = snapSplit;
+        achXpMode = snapMode;
+        achLastCtx = snapCtx;
+      }
+      const prevBy = {};
+      before.forEach(r => { if (r.def) prevBy[r.def.id] = r; });
+      const moved = [];
+      after.forEach(r => {
+        if (!r.def || !r.p || r.p.skip) return;
+        const prev = prevBy[r.def.id];
+        const had = prev && prev.p ? (prev.p.have || 0) : 0;
+        const have = r.p.have || 0;
+        const wasEarned = !!(prev && prev.p && prev.p.earned);
+        const justEarned = !!(r.p.earned && !wasEarned);
+        if (r.def.secret && !justEarned) return;
+        if (!(have > had || justEarned)) return;
+        moved.push({
+          title: r.def.title || 'Award',
+          had: had,
+          have: have,
+          total: r.p.total || 0,
+          earned: justEarned,
+          delta: have - had
+        });
+      });
+      moved.sort((a, b) => (b.earned - a.earned) || (b.delta - a.delta));
+      return moved.slice(0, 24);
+    }
+    window.achImpactOf = achImpactOf;
 
     function updateAchBadge() {
       const mode = statsMode === 'country' ? 'country' : 'state';
@@ -16802,35 +17348,2701 @@
       refreshUI();
       achInitSilent = false;
       backfillCounties();
+      if (typeof window.pfAfterLocalLoad === 'function') window.pfAfterLocalLoad();
     });
   </script>
-<div id="auth-test" style="position:fixed; bottom:20px; right:20px; background:#1c1917; color:#f5f5f4; padding:16px; border-radius:12px; z-index:9999; font-family:system-ui; width:280px;">
-  <h3 style="margin:0 0 12px; font-size:16px;">Auth Test</h3>
-  <input id="auth-email" type="email" placeholder="Email" style="width:100%; margin-bottom:8px; padding:8px; border-radius:6px; border:1px solid #444; background:#292524; color:white;">
-  <input id="auth-password" type="password" placeholder="Password" style="width:100%; margin-bottom:8px; padding:8px; border-radius:6px; border:1px solid #444; background:#292524; color:white;">
-  <button id="auth-signup" style="width:100%; margin-bottom:6px; padding:8px; border-radius:6px; border:none; background:#059669; color:white; cursor:pointer;">Sign Up</button>
-  <button id="auth-signin" style="width:100%; padding:8px; border-radius:6px; border:none; background:#444; color:white; cursor:pointer;">Sign In</button>
-  <p id="auth-message" style="margin:8px 0 0; font-size:13px; min-height:1.2em;"></p>
-</div>
 
-<script>
-  const authMsg = document.getElementById('auth-message');
+  <div id="pf-notes" hidden>
+    <div class="pf-notes-card">
+      <div class="pf-notes-h"><b>Notifications</b><button type="button" id="pf-notes-clear">Clear all</button></div>
+      <div class="pf-notes-list" id="pf-notes-list"></div>
+    </div>
+  </div>
+  <div id="profile-modal" class="modal" onclick="if(event.target===this)closeProfile()">
+    <div class="sheet">
+      <div class="sheet-h">
+        <div style="min-width:0">
+          <button type="button" class="pf-back" id="pf-back" hidden onclick="profileBack()">← Your profile</button>
+          <strong id="pf-title">Profile</strong>
+        </div>
+        <button class="x" type="button" onclick="closeProfile()" aria-label="Close">✕</button>
+      </div>
+      <div class="sheet-b" id="pf-body"></div>
+    </div>
+    <input id="pf-avatar-file" type="file" accept="image/*" hidden />
+    <input id="pf-cover-file" type="file" accept="image/*" hidden />
+    <div id="pf-crop" hidden>
+      <div class="pf-crop-dim"></div>
+      <div class="pf-crop-stage" id="pf-crop-stage"><img id="pf-crop-img" alt="" /></div>
+      <div class="pf-crop-tools">
+        <span>Drag to move. Pinch or scroll to zoom until it fills the frame.</span>
+        <button type="button" class="ghost" id="pf-crop-cancel">Cancel</button>
+        <button type="button" class="btn-em" id="pf-crop-save">Use photo</button>
+      </div>
+    </div>
+    <div id="pf-detail" hidden>
+      <div class="pf-detail-bar">
+        <button type="button" id="pf-detail-back">← Back</button>
+        <strong>Sighting</strong>
+      </div>
+      <div class="pf-detail-body" id="pf-detail-body"></div>
+    </div>
+  </div>
+  <script>
+    let pfUser = null;
+    let pfSelf = null;
+    let pfOther = null;
+    let pfTab = 'feed';
+    let pfRange = '30';
+    let pfEditing = false;
+    let pfPreview = false;
+    let pfMap = null;
+    let pfMapMode = 'sightings';
+    let pfMapScope = 'state';
+    let pfMapState = '';
+    let pfMapRows = [];
+    let pfMapMine = false;
+    let pfMapOwner = '';
+    let pfMapFit = true;
+    let pfMapCluster = null;
+    let pfMapShapes = null;
+    let pfMapDrawing = false;
+    let pfMapToken = 0;
+    let pfLocalReady = false;
+    let pfCatching = false;
+    let pfCatchTried = false;
+    let pfPublicByKey = null;
+    let pfSocialCounts = {};
+    let pfGen = 0;
+    let pfPubTimer = null;
+    let pfCardIndex = {};
+    let pfDetail = null;
+    let pfPinMap = null;
+    let pfSocialRemote = false;
+    let pfAwardSql = false;
+    let pfAwardMemo = {};
 
-  document.getElementById('auth-signup').onclick = async () => {
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
-    const { data, error } = await supabaseClient.auth.signUp({ email, password });
-    authMsg.textContent = error ? error.message : 'Check your email to confirm (or you’re signed up)!';
-    console.log('signup', data, error);
-  };
+    function pfEsc(s) {
+      try { return escHtml(s); } catch (e) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&','<':'<','>':'>','"':'"',"'":'&#39;' }[c]));
+      }
+    }
+    function pfInitials(name) {
+      const parts = String(name || '?').trim().split(/\s+/).slice(0, 2);
+      const out = parts.map(w => w.charAt(0)).join('').toUpperCase();
+      return out || '?';
+    }
+    function pfSpName(code) {
+      try { const n = taxName(code); return (n && n.comName) || code || 'Sighting'; }
+      catch (e) { return code || 'Sighting'; }
+    }
+    function pfRarity(code, state) {
+      try {
+        const rank = rarityRank(code, state || '');
+        return ({ 1: 'Common', 2: 'Uncommon', 3: 'Rare', 4: 'Pulse' })[rank] || '';
+      } catch (e) { return ''; }
+    }
+    function pfRarClass(label) {
+      const n = String(label || '').toLowerCase();
+      if (n.startsWith('c')) return 'rar-c';
+      if (n.startsWith('u')) return 'rar-u';
+      if (n.startsWith('p') || n.startsWith('v')) return 'rar-p';
+      if (!n) return '';
+      return 'rar-r';
+    }
+    function pfDate(d) {
+      if (!d) return '';
+      const s = String(d).slice(0, 10);
+      const dt = new Date(s + 'T12:00:00');
+      if (isNaN(dt.getTime())) return s;
+      return dt.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    function pfWhere(county, state) {
+      return [county, state].filter(Boolean).join(', ');
+    }
+    function pfSafeSrc(u) {
+      const s = String(u || '');
+      if (s.startsWith('data:image/') || s.startsWith('https://') || s.startsWith('http://')) return s;
+      return '';
+    }
+    function pfRecentLocal() {
+      return (typeof sightings !== 'undefined' ? sightings : []).slice()
+        .filter(s => s && s.species_code)
+        .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+    }
+    function pfStats() {
+      const rows = (typeof sightings !== 'undefined' ? sightings : []);
+      const species = new Set(rows.map(s => s.species_code).filter(Boolean));
+      const photos = rows.filter(s => s.photo_url).length;
+      let level = null, earned = 0;
+      try { level = computeAchLevel(); } catch (e) {}
+      try {
+        const mode = (typeof statsMode !== 'undefined' && statsMode === 'country') ? 'country' : 'state';
+        earned = Object.keys((typeof achEarned !== 'undefined' && achEarned[mode]) || {}).length;
+      } catch (e) {}
+      return { species: species.size, photos: photos, level: level, earned: earned };
+    }
+    function pfKillMap() {
+      pfMapCluster = null;
+      pfMapShapes = null;
+      if (pfMap) { try { pfMap.remove(); } catch (e) {} pfMap = null; }
+    }
+    function syncProfileButton() {
+      const btn = document.getElementById('btn-profile');
+      const ini = document.getElementById('profile-btn-initials');
+      if (!btn || !ini) return;
+      if (!pfSelf) {
+        btn.classList.remove('has-user', 'has-photo');
+        btn.style.backgroundImage = '';
+        ini.textContent = '';
+        btn.title = 'Profile';
+        return;
+      }
+      const name = pfSelf.display_name || pfSelf.username || '';
+      const avatar = pfSelf.public_stats && pfSafeSrc(pfSelf.public_stats.avatar);
+      ini.textContent = pfInitials(name);
+      btn.classList.add('has-user');
+      btn.title = name;
+      if (avatar) {
+        btn.classList.add('has-photo');
+        btn.style.backgroundImage = 'url("' + String(avatar).replace(/"/g, '') + '")';
+        ini.textContent = '';
+      } else {
+        btn.classList.remove('has-photo');
+        btn.style.backgroundImage = '';
+      }
+    }
+    async function pfRefreshUser() {
+      const { data } = await supabaseClient.auth.getSession();
+      pfUser = (data && data.session && data.session.user) || null;
+      pfSelf = pfUser ? await pfEnsure(pfUser) : null;
+      syncProfileButton();
+    }
+    async function pfEnsure(user) {
+      const existing = await supabaseClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
+      if (existing.data) return existing.data;
+      let base = String(user.email || 'birder').split('@')[0].replace(/[^a-zA-Z0-9_]/g, '').slice(0, 18) || 'birder';
+      for (let n = 0; n < 5; n++) {
+        const username = n ? base + (n + 1) : base;
+        const ins = await supabaseClient.from('profiles').insert({
+          id: user.id,
+          username: username,
+          display_name: base,
+          public_stats: { exact_grants: [] }
+        }).select().single();
+        if (!ins.error) return ins.data;
+        const again = await supabaseClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
+        if (again.data) return again.data;
+      }
+      return null;
+    }
+    function pfMsg(text) {
+      const el = document.getElementById('pf-msg');
+      if (el) el.textContent = text || '';
+    }
+    function shrinkDataUrl(dataUrl) {
+      return new Promise(resolve => {
+        const src = String(dataUrl || '');
+        if (!src.startsWith('data:image/')) { resolve(src.startsWith('http') ? src : null); return; }
+        const img = new Image();
+        img.onload = () => {
+          const edge = 360;
+          const scale = Math.min(1, edge / Math.max(img.width || 1, img.height || 1));
+          const w = Math.max(1, Math.round((img.width || edge) * scale));
+          const h = Math.max(1, Math.round((img.height || edge) * scale));
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          let q = 0.62;
+          let out = canvas.toDataURL('image/jpeg', q);
+          while (out.length > 42000 && q > 0.34) {
+            q -= 0.08;
+            out = canvas.toDataURL('image/jpeg', q);
+          }
+          resolve(out.length > 52000 ? null : out);
+        };
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    }
+    function pfPackAwards(rows) {
+      return (rows || []).slice(0, 12).map(r => ({
+        title: String(r.title || '').slice(0, 80),
+        had: r.had || 0,
+        have: r.have || 0,
+        total: r.total || 0,
+        earned: r.earned ? 1 : 0
+      }));
+    }
+    async function pfCollectAwards(recent, opts) {
+      const out = {};
+      if (typeof achImpactOf !== 'function' || typeof sightings === 'undefined') return out;
+      const need = {};
+      (recent || []).forEach(s => { if (s && s.id) need[s.id] = 1; });
+      const sorted = sightings.filter(s => s && s.id).slice().sort((a, b) =>
+        String(a.date || '').localeCompare(String(b.date || '')) || String(a.id).localeCompare(String(b.id)));
+      let prefix = '';
+      let n = 0;
+      const total = Object.keys(need).length;
+      for (let i = 0; i < sorted.length; i++) {
+        const s = sorted[i];
+        prefix += '|' + s.id;
+        if (!need[s.id]) continue;
+        n += 1;
+        const hit = pfAwardMemo[s.id];
+        if (hit && hit.prefix === prefix) { out[s.id] = hit.awards; continue; }
+        if (!opts.silent) pfMsg('Checking awards ' + n + ' / ' + total + '…');
+        await new Promise(r => setTimeout(r, 0));
+        let awards = [];
+        try { awards = pfPackAwards(achImpactOf(s.id)); } catch (e) { awards = []; }
+        pfAwardMemo[s.id] = { prefix: prefix, awards: awards };
+        out[s.id] = awards;
+      }
+      return out;
+    }
+    function pfCanSeeExact(profile) {
+      if (!profile || !pfUser) return false;
+      if (profile.id === pfUser.id) return true;
+      const stats = profile.public_stats || {};
+      if (stats.exact_public) return true;
+      return (stats.exact_grants || []).indexOf(pfUser.id) >= 0;
+    }
+    async function pfPublicRows(run, cap) {
+      const rich = 'id,user_id,species_code,species_name,date,county,state,country,location_name,awards,has_exact_location,photo_url,rarity';
+      const plain = 'id,user_id,species_code,species_name,date,county,state,has_exact_location,photo_url,rarity';
+      const pageSize = 1000;
+      const all = [];
+      let from = 0;
+      let usePlain = false;
+      while (from < 8000) {
+        const cols = usePlain ? plain : rich;
+        let q = await run(cols).range(from, from + pageSize - 1);
+        if (q.error && !usePlain) {
+          usePlain = true;
+          q = await run(plain).range(from, from + pageSize - 1);
+        }
+        if (q.error) break;
+        const chunk = q.data || [];
+        all.push.apply(all, chunk);
+        if (cap && all.length >= cap) return all.slice(0, cap);
+        if (chunk.length < pageSize) break;
+        from += pageSize;
+      }
+      return all;
+    }
+    function pfPlaceLine(s) {
+      const loc = String((s && s.location_name) || '').trim();
+      let county = String((s && s.county) || '').trim();
+      if (county && !/county/i.test(county)) county += ' County';
+      return [loc, county].filter(Boolean).join(' · ');
+    }
+    function pfAwardList(raw) {
+      if (!raw) return [];
+      if (typeof raw === 'string') { try { raw = JSON.parse(raw); } catch (e) { return []; } }
+      return Array.isArray(raw) ? raw : [];
+    }
+    async function pfInsertPublic(rows) {
+      const send = list => supabaseClient.from('public_sightings').insert(list);
+      const stripExtra = list => list.map(r => {
+        const c = Object.assign({}, r);
+        delete c.awards;
+        delete c.location_name;
+        return c;
+      });
+      let strip = false;
+      const size = 12;
+      for (let i = 0; i < rows.length; i += size) {
+        let chunk = rows.slice(i, i + size);
+        let ins = await send(strip ? stripExtra(chunk) : chunk);
+        if (ins.error && !strip && /column|schema cache|awards|location_name/i.test(ins.error.message || '')) {
+          strip = true;
+          ins = await send(stripExtra(chunk));
+        }
+        if (ins.error) {
+          const bare = (strip ? stripExtra(chunk) : chunk).map(r => Object.assign({}, r, { photo_url: null }));
+          ins = await send(bare);
+        }
+        if (ins.error) return ins.error;
+      }
+      if (strip) pfAwardSql = true;
+      return null;
+    }
+    async function publishPublic(opts) {
+      opts = opts || {};
+      if (!pfUser) return;
+      pfAwardSql = false;
+      if (!opts.silent) pfMsg('Publishing your sightings…');
+      const recent = pfRecentLocal();
+      const awardMap = {};
+      recent.forEach(s => {
+        const hit = s && pfAwardMemo[s.id];
+        if (hit && hit.awards) awardMap[s.id] = hit.awards;
+      });
+      const rows = [];
+      for (let i = 0; i < recent.length; i++) {
+        const s = recent[i];
+        if (i === 0 || i % 25 === 0) pfMsg((opts.catchup ? 'Updating your public list' : 'Publishing') + ' ' + (i + 1) + ' / ' + recent.length + '…');
+        const pubPhoto = s.share_public !== false && s.share_public !== 0 && !!s.photo_url;
+        const photo = pubPhoto ? await shrinkDataUrl(s.photo_url) : null;
+        const exact = !!(s.share_exact && s.lat != null && s.lng != null);
+        rows.push({
+          user_id: pfUser.id,
+          species_code: s.species_code,
+          species_name: pfSpName(s.species_code),
+          date: s.date ? String(s.date).slice(0, 10) : null,
+          county: s.county || '',
+          state: s.state || '',
+          location_name: s.location_name || '',
+          lat: exact ? Number(s.lat) : null,
+          lng: exact ? Number(s.lng) : null,
+          has_exact_location: exact,
+          photo_url: photo,
+          rarity: pfRarity(s.species_code, s.state),
+          awards: (awardMap && awardMap[s.id]) || []
+        });
+      }
+      const st = pfStats();
+      const prev = (pfSelf && pfSelf.public_stats) || {};
+      const grants = prev.exact_grants || [];
+      const stats = Object.assign({}, prev, {
+        species: st.species,
+        photos: rows.filter(r => r.photo_url).length,
+        level: st.level ? st.level.level : null,
+        band: st.level ? st.level.band : '',
+        earned: st.earned,
+        exact_grants: grants,
+        exact_public: !!prev.exact_public,
+        avatar: prev.avatar || null,
+        cover: prev.cover || null
+      });
+      await supabaseClient.from('public_sightings').delete().eq('user_id', pfUser.id);
+      pfPublicByKey = null;
+      if (rows.length) {
+        const err = await pfInsertPublic(rows);
+        if (err) { pfMsg(err.message || 'Could not publish'); return; }
+      }
+      const up = await supabaseClient.from('profiles').update({
+        public_stats: stats,
+        updated_at: new Date().toISOString()
+      }).eq('id', pfUser.id).select().single();
+      if (up.data) pfSelf = up.data;
+      if (up.error) { pfMsg(up.error.message); return; }
+      if (!opts.silent) {
+        await renderSelf();
+        pfMsg(pfAwardSql ? 'Public list updated. Awards still need the one-time SQL step.' : 'Public list updated');
+      } else if (opts.catchup) {
+        pfMsg('Public list now includes every sighting (' + rows.length + ').');
+      }
+    }
+    window.avianMaybePublish = function () {
+      try { if (localStorage.getItem('avian_auto_publish') !== '1') return; } catch (e) { return; }
+      clearTimeout(pfPubTimer);
+      pfPubTimer = setTimeout(() => { publishPublic({ silent: true }); }, 900);
+    };
 
-  document.getElementById('auth-signin').onclick = async () => {
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    authMsg.textContent = error ? error.message : 'Signed in!';
-    console.log('signin', data, error);
-  };
-</script>  
+    function pfDayKey(d) {
+      if (!d) return '';
+      if (d instanceof Date) {
+        if (isNaN(d.getTime())) return '';
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      }
+      const s = String(d).slice(0, 10);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      const t = new Date(s.length === 10 ? s + 'T12:00:00' : String(d));
+      if (isNaN(t.getTime())) return '';
+      return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+    }
+    function pfLocalRows() {
+      return (typeof sightings !== 'undefined' ? sightings : []).filter(s => s && s.species_code);
+    }
+    function pfFirstDates(rows) {
+      const first = {};
+      rows.forEach(s => {
+        const k = pfDayKey(s.date);
+        if (!k || !s.species_code) return;
+        if (!first[s.species_code] || k < first[s.species_code]) first[s.species_code] = k;
+      });
+      return first;
+    }
+    function pfWindow(rows, days) {
+      if (!days) return rows.slice();
+      const cut = new Date();
+      cut.setHours(12, 0, 0, 0);
+      cut.setDate(cut.getDate() - (days - 1));
+      const cutKey = pfDayKey(cut);
+      return rows.filter(s => {
+        const k = pfDayKey(s.date);
+        return k && k >= cutKey;
+      });
+    }
+    function pfSummarize(rows, first) {
+      const species = new Set();
+      const seen = new Set();
+      let lifers = 0;
+      rows.forEach(s => {
+        if (!s.species_code) return;
+        species.add(s.species_code);
+        const k = pfDayKey(s.date);
+        if (first && first[s.species_code] === k && !seen.has(s.species_code)) {
+          seen.add(s.species_code);
+          lifers++;
+        }
+      });
+      return { logs: rows.length, species: species.size, lifers: lifers, photos: rows.filter(s => s.photo_url).length };
+    }
+    function pfBuckets(rows, first, mode) {
+      const now = new Date();
+      now.setHours(12, 0, 0, 0);
+      const buckets = [];
+      let yearly = false;
+      if (mode === 'day') {
+        for (let i = 29; i >= 0; i--) {
+          const d = new Date(now);
+          d.setDate(now.getDate() - i);
+          buckets.push({ key: pfDayKey(d), label: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }), species: new Set(), lifers: new Set() });
+        }
+      } else if (mode === 'month') {
+        for (let i = 11; i >= 0; i--) {
+          const d = new Date(now.getFullYear(), now.getMonth() - i, 1, 12);
+          buckets.push({
+            key: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'),
+            label: d.toLocaleDateString(undefined, { month: 'short' }),
+            species: new Set(), lifers: new Set()
+          });
+        }
+      } else {
+        let min = '';
+        rows.forEach(s => { const k = pfDayKey(s.date); if (k && (!min || k < min)) min = k; });
+        if (!min) min = pfDayKey(now);
+        const start = new Date(min + 'T12:00:00');
+        const span = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+        if (span > 18) {
+          yearly = true;
+          for (let y = start.getFullYear(); y <= now.getFullYear(); y++) {
+            buckets.push({ key: String(y), label: String(y), species: new Set(), lifers: new Set() });
+          }
+        } else {
+          const cursor = new Date(start.getFullYear(), start.getMonth(), 1, 12);
+          const end = new Date(now.getFullYear(), now.getMonth(), 1, 12);
+          while (cursor <= end) {
+            buckets.push({
+              key: cursor.getFullYear() + '-' + String(cursor.getMonth() + 1).padStart(2, '0'),
+              label: cursor.toLocaleDateString(undefined, { month: 'short', year: '2-digit' }),
+              species: new Set(), lifers: new Set()
+            });
+            cursor.setMonth(cursor.getMonth() + 1);
+          }
+        }
+      }
+      if (!buckets.length) buckets.push({ key: pfDayKey(now), label: 'Now', species: new Set(), lifers: new Set() });
+      const index = {};
+      buckets.forEach((b, i) => { index[b.key] = i; });
+      rows.forEach(s => {
+        const day = pfDayKey(s.date);
+        if (!day) return;
+        const key = mode === 'day' ? day : (yearly ? day.slice(0, 4) : day.slice(0, 7));
+        const i = index[key];
+        if (i == null) return;
+        const b = buckets[i];
+        if (s.species_code) b.species.add(s.species_code);
+        if (first && s.species_code && first[s.species_code] === day) b.lifers.add(s.species_code);
+      });
+      return {
+        yearly: yearly,
+        buckets: buckets.map(b => ({ label: b.label, species: b.species.size, lifers: b.lifers.size }))
+      };
+    }
+    function pfChartSvg(buckets, showLifers) {
+      const w = 640, h = 118, pad = 2;
+      const n = Math.max(1, buckets.length);
+      const gap = n > 20 ? 3 : 8;
+      const bw = (w - pad * 2 - gap * (n - 1)) / n;
+      const max = Math.max(1, ...buckets.map(b => Math.max(b.species, showLifers ? b.lifers : 0)));
+      const inner = h - 16;
+      let body = '';
+      buckets.forEach((b, i) => {
+        const x = pad + i * (bw + gap);
+        const sh = b.species ? Math.max(3, (b.species / max) * inner) : 0;
+        const slot = showLifers ? bw * 0.46 : bw;
+        if (sh) body += '<rect x="' + x.toFixed(1) + '" y="' + (inner - sh).toFixed(1) + '" width="' + slot.toFixed(1) + '" height="' + sh.toFixed(1) + '" rx="2.5" fill="#34d399"><title>' + pfEsc(b.label) + ' · ' + b.species + ' species</title></rect>';
+        if (showLifers && b.lifers) {
+          const lh = Math.max(3, (b.lifers / max) * inner);
+          body += '<rect x="' + (x + slot + 2).toFixed(1) + '" y="' + (inner - lh).toFixed(1) + '" width="' + Math.max(2, bw - slot - 2).toFixed(1) + '" height="' + lh.toFixed(1) + '" rx="2.5" fill="#fbbf24"><title>' + pfEsc(b.label) + ' · ' + b.lifers + ' lifers</title></rect>';
+        }
+      });
+      [0, Math.floor((n - 1) / 2), n - 1].filter((v, i, a) => a.indexOf(v) === i).forEach(i => {
+        const b = buckets[i];
+        if (!b) return;
+        const x = pad + i * (bw + gap) + bw / 2;
+        body += '<text x="' + x.toFixed(1) + '" y="' + (h - 2) + '" text-anchor="middle" fill="#a8a29e" font-size="11" font-family="system-ui,sans-serif">' + pfEsc(b.label) + '</text>';
+      });
+      return '<svg viewBox="0 0 ' + w + ' ' + h + '" class="pf-chart" role="img">' + body + '</svg>';
+    }
+    function pfCalendars(rows) {
+      const counts = {};
+      let max = 1;
+      rows.forEach(s => {
+        const k = pfDayKey(s.date);
+        if (!k) return;
+        counts[k] = (counts[k] || 0) + 1;
+        if (counts[k] > max) max = counts[k];
+      });
+      const now = new Date();
+      now.setHours(12, 0, 0, 0);
+      const dows = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+      const months = [];
+      for (let i = 2; i >= 0; i--) months.push(new Date(now.getFullYear(), now.getMonth() - i, 1, 12));
+      return '<div class="pf-cals">' + months.map(month => {
+        const y = month.getFullYear();
+        const m = month.getMonth();
+        const name = month.toLocaleDateString(undefined, { month: 'short' });
+        const firstDow = new Date(y, m, 1, 12).getDay();
+        const dim = new Date(y, m + 1, 0).getDate();
+        let cells = '';
+        for (let i = 0; i < firstDow; i++) cells += '<i class="pf-heat-cell empty"></i>';
+        for (let d = 1; d <= dim; d++) {
+          const key = y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+          const when = new Date(y, m, d, 12);
+          const v = counts[key] || 0;
+          const future = when > now;
+          const level = future || !v ? 0 : v >= max * 0.75 ? 4 : v >= max * 0.45 ? 3 : v >= max * 0.2 ? 2 : 1;
+          const cls = future ? 'empty' : 'lv' + level;
+          cells += '<i class="pf-heat-cell ' + cls + '" title="' + pfEsc(name + ' ' + d + ' · ' + v + (v === 1 ? ' log' : ' logs')) + '"></i>';
+        }
+        return '<div class="pf-cal"><div class="pf-cal-name">' + pfEsc(name) + '</div>' +
+          '<div class="pf-cal-dow">' + dows.map(d => '<span>' + d + '</span>').join('') + '</div>' +
+          '<div class="pf-cal-grid">' + cells + '</div></div>';
+      }).join('') + '</div>';
+    }
+    function pfBoard(rows, opts) {
+      opts = opts || {};
+      const showLifers = opts.lifers !== false;
+      const all = opts.all || rows;
+      const first = showLifers ? pfFirstDates(all) : null;
+      const days = pfRange === '365' ? 365 : pfRange === '0' ? 0 : 30;
+      const windowRows = pfWindow(rows, days);
+      const sum = pfSummarize(windowRows, first);
+      const mode = days === 30 ? 'day' : days === 365 ? 'month' : 'all';
+      const packed = pfBuckets(windowRows, first, mode);
+      const chartLabel = mode === 'day' ? 'Each day' : packed.yearly ? 'Each year' : 'Each month';
+      const rangeName = days === 30 ? '30 days' : days === 365 ? 'Year' : 'All time';
+      const metrics = [
+        ['Logs', sum.logs],
+        ['Species', sum.species],
+        showLifers ? ['Lifers', sum.lifers] : ['Photos', sum.photos]
+      ];
+      const ranges = [['30', '30 days'], ['365', 'Year'], ['0', 'All time']];
+      const head = opts.headless ? '' :
+        '<div class="pf-board-h"><div><div class="pf-kicker">Field activity</div><div class="pf-board-title">' + pfEsc(opts.title || 'Your recent pace') + '</div></div>' +
+        '<div class="pf-seg">' + ranges.map(it => '<button type="button" data-act="range" data-range="' + it[0] + '" class="' + (pfRange === it[0] ? 'on' : '') + '">' + it[1] + '</button>').join('') + '</div></div>';
+      return '<section class="pf-board' + (opts.headless ? ' headless' : '') + '">' + head +
+        '<div class="pf-metrics">' + metrics.map(m => '<div class="pf-metric"><b>' + m[1] + '</b><span>' + m[0] + ' · ' + rangeName + '</span></div>').join('') + '</div>' +
+        '<div class="pf-card"><div class="pf-card-h"><span>' + chartLabel + '</span><span class="pf-swatch em"></span><span>Species</span>' +
+          (showLifers ? '<span class="pf-swatch gold"></span><span>Lifers</span>' : '') + '</div>' +
+          pfChartSvg(packed.buckets, showLifers) + '</div>' +
+        '<div class="pf-card"><div class="pf-card-h"><span>Last 3 months</span><span class="pf-heat-legend"><i></i><i class="lv2"></i><i class="lv4"></i></span></div>' +
+          pfCalendars(rows) + '</div></section>';
+    }
+    function pfSvg(kind) {
+      if (kind === 'pin') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.1"/></svg>';
+      if (kind === 'eye') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4l18 16"/><path d="M10.6 6.2A10.7 10.7 0 0 1 12 6c6 0 10 6 10 6a18 18 0 0 1-3.2 3.8"/><path d="M6.1 6.8C3.7 8.5 2 12 2 12s4 7 10 7a11 11 0 0 0 4.2-.8"/></svg>';
+    }
+    function pfRangeSeg() {
+      const ranges = [['30', '30 days'], ['365', 'Year'], ['0', 'All time']];
+      return '<div class="pf-seg">' + ranges.map(it =>
+        '<button type="button" data-act="range" data-range="' + it[0] + '" class="' + (pfRange === it[0] ? 'on' : '') + '">' + it[1] + '</button>'
+      ).join('') + '</div>';
+    }
+    function pfTabs(which) {
+      const items = which === 'self'
+        ? [['feed','Feed'],['sightings','Sightings'],['photos','Photos'],['map','Map'],['awards','Awards'],['people','People']]
+        : [['sightings','Sightings'],['photos','Photos'],['map','Map']];
+      return '<div class="pf-tabs">' + items.map(it =>
+        '<button type="button" data-act="tab" data-tab="' + it[0] + '" class="' + (pfTab === it[0] ? 'on' : '') + '">' + it[1] + '</button>'
+      ).join('') + (which === 'other' ? pfRangeSeg() : '') + '</div>';
+    }
+    function pfHero(profile, stats, counts, opts) {
+      opts = opts || {};
+      const name = profile.display_name || profile.username || 'Birder';
+      const handle = profile.username ? '@' + profile.username : '';
+      const region = profile.home_region || '';
+      const st = stats || profile.public_stats || {};
+      const band = (stats && stats.level && stats.level.band) || st.band || '';
+      const levelNum = (stats && stats.level && stats.level.level) || (st.level != null && st.level !== '–' ? st.level : '');
+      const followers = counts ? counts.followers : 0;
+      const following = counts ? counts.following : 0;
+      const pics = profile.public_stats || {};
+      const avatar = pfSafeSrc(pics.avatar);
+      const cover = pfSafeSrc(pics.cover);
+      const mine = !!opts.mine;
+      const cam = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg>';
+      const ribbon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8v12l-4 2.4L8 15z"/><path d="M9 21.5l3-1.6 3 1.6"/></svg>';
+      const rank = levelNum !== '' && levelNum != null
+        ? '<span class="pf-rank" title="' + pfEsc(band || 'Rank') + '">' + ribbon + pfEsc(levelNum) + '</span>'
+        : '';
+      const avatarInner = avatar ? '<img src="' + avatar + '" alt="" />' : pfEsc(pfInitials(name));
+      const avatarEl = mine
+        ? '<button type="button" class="pf-avatar pf-avatar-btn" data-act="pick-avatar" aria-label="' + (avatar ? 'Change profile photo' : 'Add profile photo') + '">' + avatarInner + (avatar ? '' : '<span class="pf-cam">' + cam + '</span>') + '</button>'
+        : '<div class="pf-avatar">' + avatarInner + '</div>';
+      const coverEl = (cover ? '<img class="pf-cover" src="' + cover + '" alt="" />' : '') +
+        (mine
+          ? '<button type="button" class="pf-banner-hit" data-act="pick-cover" aria-label="' + (cover ? 'Change cover photo' : 'Add cover photo') + '"></button>' + (cover ? '' : '<span class="pf-cam">' + cam + 'Cover</span>')
+          : '');
+      const underActions = opts.actions ? '<div class="pf-under-actions">' + opts.actions + '</div>' : '';
+      return '<section class="pf-banner">' +
+        '<div class="pf-banner-bg" id="pf-cover-frame">' + coverEl + '</div>' +
+        '<div class="pf-under">' +
+        '<div class="pf-id">' +
+          avatarEl +
+          '<div class="pf-id-copy">' +
+            '<div class="pf-name-row"><div class="pf-name">' + pfEsc(name) + '</div>' + rank + '</div>' +
+            '<div class="pf-handle">' + pfEsc(handle) + (region ? ' · ' + pfEsc(region) : '') + '</div>' +
+            '<div class="pf-social"><span><b>' + followers + '</b>followers</span><span><b>' + following + '</b>following</span></div>' +
+            '<div class="pf-bio-row">' +
+              (profile.bio ? '<div class="pf-bio">' + pfEsc(profile.bio) + '</div>' : '<div class="pf-bio"></div>') +
+              underActions +
+            '</div>' +
+          '</div>' +
+        '</div></div>' +
+      '</section>';
+    }
+    function renderAuth() {
+      pfKillMap();
+      document.getElementById('pf-title').textContent = 'Profile';
+      document.getElementById('pf-back').hidden = true;
+      document.getElementById('pf-body').innerHTML =
+        '<div class="pf-auth">' +
+          '<h2>Your field profile</h2>' +
+          '<p class="pf-note">Sign in to publish your list, follow people, and see their sightings. Logs and photos stay on this device either way.</p>' +
+          '<div class="pf-form">' +
+            '<label>Email</label><input id="pf-email" type="email" autocomplete="username" />' +
+            '<label>Password</label><input id="pf-pass" type="password" autocomplete="current-password" />' +
+          '</div>' +
+          '<div class="pf-actions">' +
+            '<button type="button" class="btn-em" data-act="signin">Sign in</button>' +
+            '<button type="button" class="ghost" data-act="signup">Create account</button>' +
+          '</div>' +
+          '<p class="pf-note" id="pf-msg"></p>' +
+        '</div>';
+    }
+
+    async function renderSelf() {
+      if (pfPreview) return renderPreview();
+      const gen = ++pfGen;
+      pfKillMap();
+      if (!pfUser || !pfSelf) { renderAuth(); return; }
+      document.getElementById('pf-title').textContent = 'Your profile';
+      document.getElementById('pf-back').hidden = true;
+      const counts = await pfCounts(pfUser.id);
+      if (gen !== pfGen) return;
+      const st = pfStats();
+      if (pfEditing) {
+        const auto = localStorage.getItem('avian_auto_publish') === '1';
+        document.getElementById('pf-body').innerHTML =
+          '<div class="pf-form">' +
+            '<label>Display name</label><input id="pf-dn" value="' + pfEsc(pfSelf.display_name || '') + '" />' +
+            '<label>Username</label><input id="pf-un" value="' + pfEsc(pfSelf.username || '') + '" />' +
+            '<label>Home region</label><input id="pf-rg" value="' + pfEsc(pfSelf.home_region || '') + '" placeholder="North Carolina" />' +
+            '<label>Bio</label><textarea id="pf-bio" rows="3">' + pfEsc(pfSelf.bio || '') + '</textarea>' +
+            '<div class="pf-switch"><span>Always update my public list when I log a bird or add a photo</span>' +
+              '<input id="pf-auto" type="checkbox" ' + (auto ? 'checked' : '') + ' /></div>' +
+            '<p class="pf-note">Every sighting stays public: species, date, and county. Photos go with them unless you mark one private. Exact pins stay off until you turn them on for someone under People.</p>' +
+          '</div>' +
+          '<div class="pf-actions">' +
+            '<button type="button" class="btn-em" data-act="save">Save</button>' +
+            '<button type="button" class="ghost" data-act="publish">Publish now</button>' +
+            '<button type="button" class="ghost" data-act="cancel-edit">Cancel</button>' +
+            '<button type="button" class="ghost" data-act="signout">Sign out</button>' +
+          '</div>' +
+          '<p class="pf-note" id="pf-msg"></p>';
+        return;
+      }
+      const actions = '<button type="button" class="ghost" data-act="preview">View as others</button>' +
+        '<button type="button" class="btn-em" data-act="edit">Edit profile</button>';
+      let body = pfHero(pfSelf, st, counts, { actions: actions, mine: true }) + pfPinsHtml(pfRecentLocal(), pfSelf) + pfTabs('self');
+      if (pfTab === 'sightings') {
+        const rows = pfRecentLocal();
+        body += rows.length ? '<div class="pf-checkins">' + rows.map(s => pfCheckin(s, pfSelf, { localId: s.id, mine: true })).join('') + '</div>' :
+          '<div class="pf-empty">No sightings yet. Log a bird and it will show up here.</div>';
+        body += '<p class="pf-note" id="pf-msg"></p>';
+      } else if (pfTab === 'photos') {
+        const rows = pfRecentLocal().filter(s => s.photo_url);
+        body += rows.length ? '<div class="pf-grid">' + rows.map(s => {
+          const pub = s.share_public !== false && s.share_public !== 0;
+          return pfPhotoCell(s, { profile: pfSelf, pinnable: true, flag: pub ? 'Public' : 'Private' });
+        }).join('') + '</div>' : '<div class="pf-empty">Photos you add to a sighting show up here.</div>';
+        body += '<p class="pf-note">Tap a photo to open the sighting. Pin up to three favorites for the top of your profile.</p><p class="pf-note" id="pf-msg"></p>';
+      } else if (pfTab === 'map') {
+        pfPrepareMap(pfRecentLocal(), true);
+        body += pfMapChrome();
+        body += '<p class="pf-note" id="pf-msg"></p>';
+      } else if (pfTab === 'people') {
+        body += '<div style="display:flex;gap:8px;margin-bottom:10px">' +
+          '<input id="pf-lookup" placeholder="Find a username" style="flex:1;background:var(--input);border:1px solid var(--line-2);border-radius:10px;padding:8px 10px" />' +
+          '<button type="button" class="btn-em" data-act="lookup">View</button></div>' +
+          '<div id="pf-people"><div class="pf-empty">Loading people…</div></div><p class="pf-note" id="pf-msg"></p>';
+      } else if (pfTab === 'awards') {
+        const L = st.level;
+        const pct = L && L.need ? Math.max(4, Math.min(100, Math.round(L.into / L.need * 100))) : 0;
+        body += '<div style="padding:8px 4px 16px">' +
+          (L ? '<div class="pf-name" style="font-size:16px">Level ' + L.level + ' · ' + pfEsc(L.band) + '</div>' +
+            '<div class="pf-note">' + L.into + ' / ' + L.need + ' XP · ' + st.earned + ' awards in this mode</div>' +
+            '<div style="height:8px;border-radius:99px;background:var(--line);margin:10px 0 16px"><div style="height:100%;width:' + pct + '%;background:var(--em);border-radius:99px"></div></div>'
+            : '') +
+          '<button type="button" class="btn-em" data-act="awards">Open awards</button>' +
+          '<p class="pf-note">Awards live with your profile now. State and country lists still follow the stats mode in Settings.</p></div>';
+      } else {
+        body += pfBoard(pfLocalRows(), { title: 'How the field has been' });
+        body += '<div class="pf-section">From people you follow</div>';
+        body += '<div id="pf-feed"><div class="pf-empty">Loading feed…</div></div><p class="pf-note" id="pf-msg"></p>';
+      }
+      document.getElementById('pf-body').innerHTML = body;
+      if (gen !== pfGen) return;
+      if (pfTab === 'map') pfRenderProfileMap();
+      else if (pfTab === 'feed') pfFillFeed(gen);
+      else if (pfTab === 'people') pfFillPeople(gen);
+      else if (pfTab === 'sightings' || pfTab === 'photos') {
+        const socialRows = pfTab === 'photos' ? pfRecentLocal().filter(s => s.photo_url) : pfRecentLocal();
+        pfAttachSocial(socialRows).then(() => { if (gen === pfGen) pfPaintReacts(); });
+      }
+    }
+
+    async function renderOther() {
+      const gen = ++pfGen;
+      pfKillMap();
+      if (!pfOther) { renderSelf(); return; }
+      document.getElementById('pf-title').textContent = pfOther.display_name || pfOther.username || 'Profile';
+      document.getElementById('pf-back').hidden = false;
+      if (pfTab !== 'sightings' && pfTab !== 'photos' && pfTab !== 'map') pfTab = 'sightings';
+      const counts = await pfCounts(pfOther.id);
+      const following = pfUser ? await pfAmFollowing(pfOther.id) : false;
+      if (gen !== pfGen) return;
+      const trusted = pfCanSeeExact(pfOther);
+      const rows = await pfPublicRows(cols => {
+        const fields = trusted ? cols + ',lat,lng' : cols;
+        return supabaseClient.from('public_sightings').select(fields).eq('user_id', pfOther.id).order('date', { ascending: false });
+      });
+      if (gen !== pfGen) return;
+      const actions = pfUser && pfUser.id !== pfOther.id
+        ? '<button type="button" class="' + (following ? 'ghost' : 'btn-em') + '" data-act="' + (following ? 'unfollow' : 'follow') + '" data-id="' + pfEsc(pfOther.id) + '">' + (following ? 'Following' : 'Follow') + '</button>'
+        : '';
+      let body = pfHero(pfOther, null, counts, { actions: actions }) + pfPinsHtml(rows, pfOther) + pfTabs('other');
+      if (pfTab === 'photos') {
+        const photos = rows.filter(s => pfSafeSrc(s.photo_url));
+        body += photos.length ? '<div class="pf-grid">' + photos.map(s => pfPhotoCell(s, { profile: pfOther })).join('') + '</div>' : '<div class="pf-empty">No public photos yet.</div>';
+      } else if (pfTab === 'map') {
+        pfPrepareMap(rows, false);
+        body += pfMapChrome();
+      } else {
+        body += pfBoard(rows, { lifers: false, all: rows, headless: true });
+        body += rows.length ? '<div class="pf-checkins">' + rows.map(s => pfCheckin(s, pfOther)).join('') + '</div>' : '<div class="pf-empty">No public sightings yet.</div>';
+      }
+      body += '<p class="pf-note" id="pf-msg"></p>';
+      document.getElementById('pf-body').innerHTML = body;
+      if (gen !== pfGen) return;
+      if (pfTab === 'map') pfRenderProfileMap();
+      else if (pfTab === 'sightings' || pfTab === 'photos') pfAttachSocial(rows).then(() => { if (gen === pfGen) pfPaintReacts(); });
+    }
+
+    function pfPinnedKeys(profile) {
+      const raw = profile && profile.public_stats && profile.public_stats.pinned;
+      if (!Array.isArray(raw)) return [];
+      const out = [];
+      raw.forEach(k => {
+        const s = String(k || '');
+        if (s && out.indexOf(s) < 0) out.push(s);
+      });
+      return out.slice(0, 3);
+    }
+    function pfFindPinned(rows, key) {
+      let loose = null;
+      const parts = String(key || '').split('|');
+      const looseKey = parts.slice(0, 4).join('|');
+      for (let i = 0; i < (rows || []).length; i++) {
+        const s = rows[i];
+        if (!s || !pfSafeSrc(s.photo_url || s.photo_full)) continue;
+        if (pfSightKey(s) === key) return s;
+        if (!loose && [s.species_code || '', String(s.date || '').slice(0, 10), pfCountyKey(s.county), s.state || ''].join('|') === looseKey) loose = s;
+      }
+      return loose;
+    }
+    function pfPinsHtml(rows, profile) {
+      const keys = pfPinnedKeys(profile);
+      if (!keys.length || !profile) return '';
+      const cards = [];
+      keys.forEach(k => {
+        const s = pfFindPinned(rows, k);
+        if (!s || !s.id) return;
+        pfCardIndex[s.id] = { s: s, p: profile };
+        const src = pfSafeSrc(s.photo_full || s.photo_url);
+        const place = pfPlaceLine(s);
+        const when = s.date ? String(s.date).slice(0, 10) : '';
+        cards.push('<button type="button" class="pf-pin" data-act="card" data-id="' + pfEsc(s.id) + '">' +
+          '<img src="' + pfEsc(src) + '" alt="" />' +
+          '<span class="pf-more-cap"><b>' + pfEsc(when) + '</b>' +
+          (place ? '<span>' + pfEsc(place) + '</span>' : '') +
+          '</span></button>');
+      });
+      if (!cards.length) return '';
+      return '<div class="pf-pins">' + cards.join('') + '</div>';
+    }
+    function pfPhotoCell(s, opts) {
+      opts = opts || {};
+      const src = pfSafeSrc(s.photo_url || s.photo_full);
+      const id = s.id || '';
+      if (id) pfCardIndex[id] = { s: s, p: opts.profile || {} };
+      let pin = '';
+      if (opts.pinnable) {
+        const on = pfPinnedKeys(pfSelf).indexOf(pfSightKey(s)) >= 0;
+        pin = '<button type="button" class="pf-pin-mini' + (on ? ' on' : '') + '" data-act="pin" data-id="' + pfEsc(id) + '">' + (on ? 'Pinned' : 'Pin') + '</button>';
+      }
+      const flag = opts.flag ? '<span class="pf-flag">' + pfEsc(opts.flag) + '</span>' : '';
+      return '<div class="cell">' +
+        '<button type="button" class="pf-grid-hit" data-act="card" data-id="' + pfEsc(id) + '">' +
+          (src ? '<img src="' + src + '" alt="" />' : '') +
+          '<span class="pf-reacts corner" data-react="' + pfEsc(id) + '"></span>' +
+          flag +
+        '</button>' + pin + '</div>';
+    }
+    function pfAsOthers(rows) {
+      const everyone = !!(pfSelf && pfSelf.public_stats && pfSelf.public_stats.exact_public);
+      return (rows || []).map(s => {
+        const pub = s.share_public !== false && s.share_public !== 0;
+        const exact = !!(everyone && s.share_exact && s.lat != null && s.lng != null && s.lat !== '' && s.lng !== '');
+        return {
+          id: s.id,
+          user_id: pfUser ? pfUser.id : '',
+          species_code: s.species_code,
+          species_name: pfSpName(s.species_code),
+          date: s.date ? String(s.date).slice(0, 10) : null,
+          county: s.county || '',
+          state: s.state || '',
+          location_name: s.location_name || '',
+          lat: exact ? Number(s.lat) : null,
+          lng: exact ? Number(s.lng) : null,
+          has_exact_location: exact,
+          share_exact: exact,
+          photo_url: pub && s.photo_url ? s.photo_url : null,
+          photo_full: pub ? (s.photo_full || s.photo_url || null) : null,
+          rarity: pfRarity(s.species_code, s.state),
+          awards: (s.id && pfAwardMemo[s.id] && pfAwardMemo[s.id].awards) || []
+        };
+      });
+    }
+    async function renderPreview() {
+      const gen = ++pfGen;
+      pfKillMap();
+      if (!pfUser || !pfSelf) { pfPreview = false; renderAuth(); return; }
+      document.getElementById('pf-title').textContent = 'How others see you';
+      const back = document.getElementById('pf-back');
+      if (back) back.hidden = false;
+      if (pfTab !== 'sightings' && pfTab !== 'photos' && pfTab !== 'map') pfTab = 'sightings';
+      const counts = await pfCounts(pfUser.id);
+      if (gen !== pfGen) return;
+      const rows = pfAsOthers(pfRecentLocal());
+      let body = pfHero(pfSelf, null, counts, { mine: false }) +
+        '<p class="pf-note">This is what other people see. Exact pins show only when that sighting is shared exactly and exact locations are on for everyone. Private photos stay off this page.</p>' +
+        pfPinsHtml(rows, pfSelf) + pfTabs('other');
+      if (pfTab === 'photos') {
+        const photos = rows.filter(s => pfSafeSrc(s.photo_url));
+        body += photos.length ? '<div class="pf-grid">' + photos.map(s => pfPhotoCell(s, { profile: pfSelf })).join('') + '</div>' : '<div class="pf-empty">No public photos yet.</div>';
+      } else if (pfTab === 'map') {
+        pfPrepareMap(rows, false);
+        body += pfMapChrome();
+      } else {
+        body += pfBoard(rows, { lifers: false, all: rows, headless: true });
+        body += rows.length ? '<div class="pf-checkins">' + rows.map(s => pfCheckin(s, pfSelf)).join('') + '</div>' : '<div class="pf-empty">No public sightings yet.</div>';
+      }
+      body += '<p class="pf-note" id="pf-msg"></p>';
+      document.getElementById('pf-body').innerHTML = body;
+      if (gen !== pfGen) return;
+      if (pfTab === 'map') pfRenderProfileMap();
+      else if (pfTab === 'sightings' || pfTab === 'photos') pfAttachSocial(rows).then(() => { if (gen === pfGen) pfPaintReacts(); });
+    }
+
+    function pfGuessState(rows) {
+      const counts = {};
+      (rows || []).forEach(s => {
+        const st = s && s.state && typeof STATE_CODES !== 'undefined' && STATE_CODES[s.state] ? s.state : '';
+        if (st) counts[st] = (counts[st] || 0) + 1;
+      });
+      let best = '', n = 0;
+      Object.keys(counts).forEach(k => { if (counts[k] > n) { best = k; n = counts[k]; } });
+      if (best) return best;
+      const home = String((pfMapMine ? (pfSelf && pfSelf.home_region) : (pfOther && pfOther.home_region)) || '');
+      if (typeof STATE_CODES !== 'undefined' && STATE_CODES[home]) return home;
+      return 'North Carolina';
+    }
+    function pfPrepareMap(rows, mine) {
+      const owner = mine ? ((pfUser && pfUser.id) || 'self') : ((pfOther && pfOther.id) || 'other');
+      if (pfMapOwner !== owner) {
+        pfMapOwner = owner;
+        pfMapState = '';
+        pfMapScope = 'state';
+        pfMapMode = 'sightings';
+        pfMapFit = true;
+      }
+      pfMapRows = rows || [];
+      pfMapMine = !!mine;
+      if (!pfMapState || typeof STATE_CODES === 'undefined' || !STATE_CODES[pfMapState]) pfMapState = pfGuessState(pfMapRows);
+    }
+    function pfRowCountry(s) {
+      const raw = String((s && s.country) || '').trim();
+      if (/^(united states|united states of america|usa|us)$/i.test(raw)) return 'United States';
+      if (raw) return raw;
+      if (s && s.state && typeof STATE_CODES !== 'undefined' && STATE_CODES[s.state]) return 'United States';
+      return '';
+    }
+    function pfCountyKey(name) {
+      try { if (typeof countyNorm === 'function') return countyNorm(name); } catch (e) {}
+      return String(name || '').toLowerCase().replace(/\s+(county|parish|borough|census area|municipality|city)$/i, '').replace(/\s+/g, ' ').trim();
+    }
+    function pfGeomCenter(geom) {
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      const walk = coords => {
+        if (!coords) return;
+        if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+          if (coords[0] < minX) minX = coords[0];
+          if (coords[0] > maxX) maxX = coords[0];
+          if (coords[1] < minY) minY = coords[1];
+          if (coords[1] > maxY) maxY = coords[1];
+          return;
+        }
+        for (let i = 0; i < coords.length; i++) walk(coords[i]);
+      };
+      walk(geom && geom.coordinates);
+      if (!isFinite(minX)) return null;
+      return { lat: (minY + maxY) / 2, lng: (minX + maxX) / 2 };
+    }
+    let pfPlaceCache = null;
+    let pfPlacePromise = null;
+    const PF_EXTRA_POINTS = {
+      'Ontario': [50.0, -85.0], 'Quebec': [52.0, -72.0], 'British Columbia': [54.0, -125.0],
+      'Alberta': [54.5, -115.0], 'Manitoba': [54.0, -98.0], 'Saskatchewan': [54.0, -106.0],
+      'Nova Scotia': [45.0, -63.0], 'New Brunswick': [46.5, -66.2],
+      'Newfoundland and Labrador': [53.0, -60.0], 'Prince Edward Island': [46.3, -63.1],
+      'Northwest Territories': [64.5, -120.0], 'Yukon': [64.0, -136.0], 'Nunavut': [70.0, -90.0],
+      'Baja California': [30.0, -115.0], 'Chiapas': [16.5, -92.5], 'Jalisco': [20.5, -103.5],
+      'Oaxaca': [17.0, -96.5], 'Quintana Roo': [19.6, -88.0], 'Yucatan': [20.8, -89.0],
+      'Yucatán': [20.8, -89.0], 'Veracruz': [19.5, -96.5], 'Mexico City': [19.4, -99.1]
+    };
+    async function pfEnsurePlaces() {
+      if (pfPlaceCache) return pfPlaceCache;
+      if (pfPlacePromise) return pfPlacePromise;
+      pfPlacePromise = (async () => {
+        const county = {}, state = {}, country = {};
+        if (typeof STATE_BOUNDS !== 'undefined') {
+          Object.keys(STATE_BOUNDS).forEach(name => {
+            const b = STATE_BOUNDS[name];
+            state[name] = { lat: (b[1] + b[3]) / 2, lng: (b[0] + b[2]) / 2 };
+          });
+        }
+        try {
+          if (typeof loadCountyShapes === 'function') {
+            const index = await loadCountyShapes();
+            ((index && index.features) || []).forEach(f => {
+              const props = f.properties || {};
+              const fips = String(props.STATE || '').padStart(2, '0');
+              const st = (typeof STATE_FIPS !== 'undefined' && STATE_FIPS[fips]) || '';
+              const c = pfGeomCenter(f.geometry);
+              if (!st || !c) return;
+              const k = st.toLowerCase() + '|' + pfCountyKey(props.NAME);
+              if (!county[k]) county[k] = c;
+            });
+          }
+        } catch (e) {}
+        try {
+          if (typeof loadCountryShapes === 'function') {
+            await loadCountryShapes();
+            ((typeof countryShapes !== 'undefined' && countryShapes) || []).forEach(f => {
+              const name = (f.properties && f.properties.name) || '';
+              const c = pfGeomCenter(f.geometry);
+              if (name && c && !country[name]) country[name] = c;
+            });
+          }
+        } catch (e) {}
+        if (!country['United States']) country['United States'] = { lat: 39.8, lng: -98.5 };
+        pfPlaceCache = { county: county, state: state, country: country };
+        return pfPlaceCache;
+      })();
+      return pfPlacePromise;
+    }
+    function pfExactPoint(s) {
+      if (!s || s.lat == null || s.lng == null || s.lat === '' || s.lng === '') return null;
+      if (s.has_exact_location === false) return null;
+      const lat = Number(s.lat), lng = Number(s.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+      if (Math.abs(lat) < 0.001 && Math.abs(lng) < 0.001) return null;
+      return { lat: lat, lng: lng };
+    }
+    function pfRegionPoint(s, cache) {
+      if (!s || !cache) return null;
+      const stateName = s.state && typeof STATE_CODES !== 'undefined' && STATE_CODES[s.state] ? s.state : '';
+      const county = pfCountyKey(s.county);
+      if (stateName && county) {
+        const hit = cache.county[stateName.toLowerCase() + '|' + county];
+        if (hit) return hit;
+      }
+      if (stateName && cache.state[stateName]) return cache.state[stateName];
+      const raw = String(s.state || '').trim();
+      if (raw && PF_EXTRA_POINTS[raw]) return { lat: PF_EXTRA_POINTS[raw][0], lng: PF_EXTRA_POINTS[raw][1] };
+      if (raw && cache.country[raw]) return cache.country[raw];
+      const country = pfRowCountry(s) || raw;
+      if (country && cache.country[country]) return cache.country[country];
+      if (country && PF_EXTRA_POINTS[country]) return { lat: PF_EXTRA_POINTS[country][0], lng: PF_EXTRA_POINTS[country][1] };
+      return null;
+    }
+    function pfRangeDays() {
+      return pfRange === '365' ? 365 : pfRange === '0' ? 0 : 30;
+    }
+    function pfRangeLabel() {
+      const days = pfRangeDays();
+      return days === 30 ? 'the last 30 days' : days === 365 ? 'the past year' : 'all time';
+    }
+    function pfMapSourceRows() {
+      return pfWindow(pfMapRows || [], pfRangeDays());
+    }
+    function pfViewerSeesExact(s) {
+      if (!s) return false;
+      if (pfMapMine && !pfPreview) return !!s.share_exact && !!pfExactPoint(s);
+      if (s.has_exact_location === false) return false;
+      return !!pfExactPoint(s);
+    }
+    function pfSightingPos(s, cache) {
+      if (pfViewerSeesExact(s)) {
+        const exact = pfExactPoint(s);
+        if (exact) return exact;
+      }
+      return pfRegionPoint(s, cache);
+    }
+    function pfSpeciesCounts(list) {
+      const map = {};
+      (list || []).forEach(s => {
+        const name = (s && (s.species_name || pfSpName(s.species_code))) || 'Bird';
+        map[name] = (map[name] || 0) + 1;
+      });
+      return Object.keys(map).map(name => ({ name: name, n: map[name] })).sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
+    }
+    function pfMapToolsHtml() {
+      const on = m => pfMapMode === m ? ' on' : '';
+      const sc = m => pfMapScope === m ? ' on' : '';
+      let extra = '';
+      if (pfMapMode === 'activity') {
+        const names = (typeof STATE_CODES !== 'undefined' ? Object.keys(STATE_CODES) : []).sort((a, b) => a.localeCompare(b));
+        const opts = names.map(n => '<option value="' + pfEsc(n) + '"' + (n === pfMapState ? ' selected' : '') + '>' + pfEsc(n) + '</option>').join('');
+        extra = '<div class="pf-seg">' +
+          '<button type="button" data-act="map-scope" data-scope="state" class="' + sc('state') + '">State</button>' +
+          '<button type="button" data-act="map-scope" data-scope="us" class="' + sc('us') + '">United States</button>' +
+          '<button type="button" data-act="map-scope" data-scope="world" class="' + sc('world') + '">World</button>' +
+          '</div>' + (pfMapScope === 'state' ? '<select id="pf-map-state" aria-label="State">' + opts + '</select>' : '');
+      }
+      const range = (pfMapMine && !pfPreview) ? pfRangeSeg() : '';
+      return '<div class="pf-map-tools" id="pf-map-tools"><div class="pf-seg">' +
+        '<button type="button" data-act="map-mode" data-mode="sightings" class="' + on('sightings') + '">Sightings</button>' +
+        '<button type="button" data-act="map-mode" data-mode="activity" class="' + on('activity') + '">Activity</button>' +
+        '</div>' + range + extra + '</div>';
+    }
+    function pfMapChrome() {
+      return pfMapToolsHtml() + '<div id="pf-map"></div><p class="pf-note" id="pf-map-hint"></p><div id="pf-map-birds"></div>';
+    }
+    function pfBindMapChrome() {
+      const sel = document.getElementById('pf-map-state');
+      if (!sel || sel._pfBound) return;
+      sel._pfBound = true;
+      sel.addEventListener('change', () => {
+        pfMapState = sel.value;
+        pfMapScope = 'state';
+        pfMapFit = true;
+        pfShowBirds('', []);
+        pfRenderProfileMap();
+      });
+    }
+    function pfRefreshMapChrome() {
+      const tools = document.getElementById('pf-map-tools');
+      if (!tools) return;
+      const wrap = document.createElement('div');
+      wrap.innerHTML = pfMapToolsHtml();
+      tools.replaceWith(wrap.firstElementChild);
+      pfBindMapChrome();
+      pfShowBirds('', []);
+      pfRenderProfileMap();
+    }
+    function pfSetMapHint(text) {
+      const el = document.getElementById('pf-map-hint');
+      if (el) el.textContent = text || '';
+    }
+    function pfShowBirds(title, items) {
+      const box = document.getElementById('pf-map-birds');
+      if (!box) return;
+      if (!title) { box.innerHTML = ''; return; }
+      const chips = (items || []).map(it => '<span>' + pfEsc(it.name) + '<i>' + it.n + '</i></span>').join('');
+      box.innerHTML = '<div class="pf-map-birds-h">' + pfEsc(title) + '</div>' +
+        (chips ? '<div class="pf-map-birds">' + chips + '</div>' : '<div class="pf-empty">No birds logged there.</div>');
+    }
+    function pfHeatFill(t, empty) {
+      if (empty) return '#a8a29e';
+      const x = Math.max(0, Math.min(1, t || 0));
+      const mix = typeof searchMix === 'function' ? searchMix : null;
+      if (!mix) return '#34d399';
+      if (x < 0.5) return mix('#d1fae5', '#34d399', x / 0.5);
+      return mix('#34d399', '#064e3b', (x - 0.5) / 0.5);
+    }
+    function pfClearMapOverlays() {
+      pfCloseCycle();
+      if (pfMap && pfMapCluster) { try { pfMap.removeLayer(pfMapCluster); } catch (e) {} }
+      if (pfMap && pfMapShapes) { try { pfMap.removeLayer(pfMapShapes); } catch (e) {} }
+      pfMapCluster = null;
+      pfMapShapes = null;
+    }
+    function pfEnsureMap() {
+      const el = document.getElementById('pf-map');
+      if (!el || typeof L === 'undefined') return null;
+      if (pfMap && pfMap.getContainer && pfMap.getContainer() === el) return pfMap;
+      if (pfMap) { try { pfMap.remove(); } catch (e) {} pfMap = null; }
+      pfMapCluster = null;
+      pfMapShapes = null;
+      pfMapFit = true;
+      pfMap = L.map(el, { zoomControl: true, attributionControl: true });
+      let url = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+      let opts = { maxZoom: 19, attribution: '&copy; OpenStreetMap' };
+      try {
+        if (typeof tileUrl === 'function') url = tileUrl();
+        if (typeof tileLayerOpts === 'function') opts = tileLayerOpts();
+        else if (typeof mapTileSpec === 'function') {
+          const spec = mapTileSpec();
+          opts = { maxZoom: spec.maxZoom, attribution: spec.attribution };
+        }
+      } catch (e) {}
+      L.tileLayer(url, opts).addTo(pfMap);
+      try {
+        if (typeof mapTiles !== 'undefined' && mapTiles === 'imagery') {
+          L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19, attribution: 'Labels &copy; Esri'
+          }).addTo(pfMap);
+        }
+        if (typeof paintMapChrome === 'function') paintMapChrome(pfMap);
+      } catch (e) {}
+      let lastZoom = pfMap.getZoom();
+      pfMap.on('zoomend', () => {
+        if (pfMapDrawing || pfMapMode !== 'sightings' || !pfMap) return;
+        const z = pfMap.getZoom();
+        const crossed = (lastZoom >= 10) !== (z >= 10);
+        lastZoom = z;
+        if (crossed) {
+          pfMapFit = false;
+          pfMapToken++;
+          pfRenderSightingMap(pfMap);
+        }
+      });
+      return pfMap;
+    }
+    function pfFitBox(map, box) {
+      if (!box) return false;
+      map.fitBounds([[box[1], box[0]], [box[3], box[2]]], { padding: [16, 16], animate: false });
+      return true;
+    }
+    function pfAddShapes(map, features, countOf, max, onClick) {
+      pfMapShapes = L.geoJSON({ type: 'FeatureCollection', features: features }, {
+        style: function (f) {
+          const n = countOf(f) || 0;
+          const empty = !n;
+          return {
+            color: empty ? '#a8a29e' : '#064e3b',
+            weight: 1,
+            fillColor: pfHeatFill(max > 0 ? n / max : 0, empty),
+            fillOpacity: empty ? 0.22 : 0.82
+          };
+        },
+        onEachFeature: function (f, layer) {
+          const name = (f.properties && (f.properties.name || f.properties.NAME)) || 'Area';
+          const n = countOf(f) || 0;
+          layer.bindTooltip(name + (n ? ' · ' + n : ''), { sticky: true });
+          layer.on('click', function () { onClick(name, n, layer, f); });
+        }
+      }).addTo(map);
+    }
+    let pfCyclePopup = null;
+    let pfCyclePeers = [];
+    let pfCycleFocus = null;
+    function pfCloseCycle() {
+      pfCyclePeers = [];
+      pfCycleFocus = null;
+      if (pfCyclePopup && pfMap) {
+        try { pfMap.closePopup(pfCyclePopup); } catch (e) {}
+      }
+      if (typeof clearChitFocus === 'function') clearChitFocus();
+    }
+    function pfPeersFor(marker) {
+      if (!marker || !marker.getLatLng) return marker ? [marker] : [];
+      if (pfCyclePeers.indexOf(marker) >= 0 && pfCyclePeers.length > 1) return pfCyclePeers.slice();
+      if (!pfMapCluster) return [marker];
+      const ll = marker.getLatLng();
+      const out = [];
+      pfMapCluster.eachLayer(function (m) {
+        if (!m.getLatLng) return;
+        const p = m.getLatLng();
+        if (Math.abs(p.lat - ll.lat) < 0.0004 && Math.abs(p.lng - ll.lng) < 0.0004) out.push(m);
+      });
+      return out.length ? out : [marker];
+    }
+    function pfOpenCycle(peers, index, keepPlace) {
+      if (!pfMap || !peers || !peers.length) return;
+      index = (index + peers.length) % peers.length;
+      pfCycleFocus = peers[index];
+      pfCyclePeers = peers;
+      if (typeof highlightCycleMarker === 'function') highlightCycleMarker(pfCycleFocus);
+      const marker = pfCycleFocus;
+      const html = (typeof cycleCardHTML === 'function' ? cycleCardHTML : function (inner) { return inner; })(marker._beCard || '', index, peers.length);
+      if (!pfCyclePopup) {
+        pfCyclePopup = L.popup({ autoPan: true, autoPanPadding: [28, 28], closeButton: true, className: 'cycle-pop', maxWidth: 260, offset: [0, -18] });
+        pfCyclePopup.on('remove', function () {
+          pfCyclePeers = [];
+          pfCycleFocus = null;
+          if (typeof clearChitFocus === 'function') clearChitFocus();
+        });
+      }
+      let here = marker.getLatLng();
+      if (!(keepPlace && pfCyclePopup.getLatLng())) {
+        peers.forEach(function (m) {
+          const p = m.getLatLng && m.getLatLng();
+          if (p && p.lat > here.lat) here = p;
+        });
+      } else here = pfCyclePopup.getLatLng();
+      if (marker.closePopup) marker.closePopup();
+      pfCyclePopup.setLatLng(here).setContent(html).openOn(pfMap);
+      const root = pfCyclePopup.getElement();
+      if (!root) return;
+      L.DomEvent.disableClickPropagation(root);
+      root.querySelectorAll('[data-cycle]').forEach(function (btn) {
+        L.DomEvent.on(btn, 'mousedown', L.DomEvent.stop);
+        L.DomEvent.on(btn, 'click', function (ev) {
+          L.DomEvent.stop(ev);
+          let i = pfCyclePeers.indexOf(pfCycleFocus);
+          if (i < 0) i = 0;
+          pfOpenCycle(pfCyclePeers, i + Number(btn.getAttribute('data-cycle')), true);
+        });
+      });
+      const go = root.querySelector('.popup-open');
+      if (go) {
+        go.onclick = function (ev) {
+          ev.preventDefault();
+          const s = pfCycleFocus && pfCycleFocus._pfSight;
+          if (s) pfOpenMapSighting(s);
+        };
+      }
+    }
+    function pfOpenMapSighting(s) {
+      if (!s || !s.id) return;
+      pfCloseCycle();
+      if (pfMap && pfMap.closePopup) pfMap.closePopup();
+      const profile = (pfMapMine || pfPreview) ? (pfSelf || {}) : (pfOther || {});
+      pfCardIndex[s.id] = { s: s, p: profile };
+      pfOpenCard(s.id);
+    }
+    async function pfRenderSightingMap(map) {
+      const token = pfMapToken;
+      const places = await pfEnsurePlaces();
+      if (token !== pfMapToken || pfMapMode !== 'sightings' || pfMap !== map) return;
+      pfClearMapOverlays();
+      pfShowBirds('', []);
+      const clusterOpts = {
+        showCoverageOnHover: false, maxClusterRadius: 32, spiderfyOnMaxZoom: true,
+        disableClusteringAtZoom: 18, zoomToBoundsOnClick: false, spiderfyDistanceMultiplier: 1,
+        iconCreateFunction: typeof rarityClusterIcon === 'function' ? rarityClusterIcon : undefined
+      };
+      pfMapCluster = L.markerClusterGroup(clusterOpts);
+      pfMapCluster.on('spiderfied', function (e) { pfCyclePeers = e.markers || []; });
+      pfMapCluster.on('clusterclick', function (e) {
+        if (!pfMap) return;
+        const cluster = e.layer;
+        let bounds = cluster.getBounds();
+        if (!bounds.isValid() || bounds.getNorthEast().distanceTo(bounds.getSouthWest()) < 8) {
+          cluster.spiderfy();
+          const kids = cluster.getAllChildMarkers ? cluster.getAllChildMarkers() : [];
+          if (kids.length > 1) pfOpenCycle(kids, 0, false);
+          return;
+        }
+        bounds = bounds.pad(0.28);
+        const padTL = L.point(56, 64);
+        const padBR = L.point(56, 136);
+        const nextZoom = pfMap.getBoundsZoom(bounds, false, padTL.add(padBR));
+        if (pfMap.getZoom() >= nextZoom) {
+          cluster.spiderfy();
+          const kids = cluster.getAllChildMarkers ? cluster.getAllChildMarkers() : [];
+          if (kids.length > 1) pfOpenCycle(kids, 0, false);
+        }
+        else pfMap.fitBounds(bounds, {
+          paddingTopLeft: padTL,
+          paddingBottomRight: padBR,
+          maxZoom: Math.min(16, nextZoom),
+          animate: true
+        });
+      });
+      const usePhotos = map.getZoom() >= 10;
+      const pts = [];
+      pfMapSourceRows().forEach(s => {
+        const pos = pfSightingPos(s, places);
+        if (!pos) return;
+        const lat = pos.lat, lng = pos.lng;
+        pts.push([lat, lng]);
+        const code = s.species_code || '';
+        const state = s.state || '';
+        const name = s.species_name || pfSpName(code);
+        let color = '#10b981';
+        let rarity = 1;
+        try {
+          if (typeof mapStableRank === 'function') rarity = mapStableRank(code, state) || 1;
+          if (typeof photoColor === 'function') color = photoColor(code, state) || color;
+        } catch (e) {}
+        const src = pfSafeSrc(s.photo_url || s.photo_full || '');
+        const markerOpts = { rarity: rarity, rarityColor: color, speciesCode: code, sightingId: s.id };
+        let marker;
+        if (usePhotos && src) {
+          marker = L.marker([lat, lng], Object.assign({}, markerOpts, {
+            icon: L.divIcon({
+              className: 'bird-chit',
+              html: '<img src="' + String(src).replace(/"/g, '"') + '" alt="" style="border:3px solid ' + color + '" />',
+              iconSize: [40, 40],
+              iconAnchor: [20, 20]
+            })
+          }));
+        } else {
+          marker = L.circleMarker([lat, lng], Object.assign({}, markerOpts, {
+            radius: 8, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.95
+          }));
+        }
+        const where = pfPlaceLine(s) || pfWhere(s.county, s.state);
+        const date = pfDate(s.date);
+        const inner = '<div class="popup-open">' +
+          (src ? '<img src="' + String(src).replace(/"/g, '"') + '" alt="" />' : '') +
+          '<div class="pop-card-top"><b>' + pfEsc(name) + '</b></div>' +
+          '<div class="muted">' + pfEsc([where, date].filter(Boolean).join(' · ')) + '</div>' +
+          '<div class="hint" style="margin-top:4px;text-align:center">Tap for details</div></div>';
+        marker._beCard = inner;
+        marker._pfSight = s;
+        marker.bindPopup(typeof cycleCardHTML === 'function' ? cycleCardHTML(inner, 0, 1) : inner, { closeButton: true, autoPan: true, maxWidth: 260, className: 'cycle-pop' });
+        marker.on('click', function () {
+          const peers = pfPeersFor(marker);
+          if (peers.length < 2) return;
+          if (marker.closePopup) marker.closePopup();
+          pfOpenCycle(peers, Math.max(0, peers.indexOf(marker)), !!(pfCyclePopup && pfMap && pfMap.hasLayer(pfCyclePopup)));
+        });
+        marker.on('popupopen', function (ev) {
+          const peers = pfPeersFor(marker);
+          if (peers.length > 1) {
+            if (marker.closePopup) marker.closePopup();
+            pfOpenCycle(peers, Math.max(0, peers.indexOf(marker)), false);
+            return;
+          }
+          const root = ev.popup.getElement();
+          if (!root) return;
+          const go = function (e) {
+            if (e.target && e.target.classList && (e.target.classList.contains('leaflet-popup-close-button') || e.target.classList.contains('pop-prev') || e.target.classList.contains('pop-next'))) return;
+            L.DomEvent.stop(e);
+            pfOpenMapSighting(s);
+          };
+          L.DomEvent.on(root, 'click', go);
+        });
+        pfMapCluster.addLayer(marker);
+      });
+      map.addLayer(pfMapCluster);
+      if (pfMapFit) {
+        pfMapDrawing = true;
+        if (pts.length === 1) map.setView(pts[0], 12, { animate: false });
+        else if (pts.length) map.fitBounds(pts, { padding: [28, 28], maxZoom: 12, animate: false });
+        else map.setView([37.5, -96], 4, { animate: false });
+        pfMapDrawing = false;
+        pfMapFit = false;
+      }
+      const pinned = pts.length;
+      const span = pfRangeLabel();
+      pfSetMapHint(pinned
+        ? 'Exact pins stay on the spot you shared. If that exact spot isn’t shared with you, those birds stack in the middle of the county. Tap a stack to spiral them, then use the arrows. Showing ' + span + '.'
+        : 'No places in ' + span + '.');
+    }
+    async function pfRenderActivityMap(map) {
+      const token = pfMapToken;
+      pfClearMapOverlays();
+      pfShowBirds('', []);
+      const rows = pfMapSourceRows();
+      const stale = () => token !== pfMapToken || pfMapMode !== 'activity' || pfMap !== map;
+      if (pfMapScope === 'world') {
+        try { if (typeof loadCountryShapes === 'function') await loadCountryShapes(); } catch (e) {}
+        if (stale()) return;
+        const feats = (typeof countryShapes !== 'undefined' && countryShapes) || [];
+        const counts = {};
+        rows.forEach(s => {
+          const c = pfRowCountry(s);
+          if (c) counts[c] = (counts[c] || 0) + 1;
+        });
+        const max = Math.max(0, ...Object.values(counts));
+        if (!feats.length) { pfSetMapHint('Could not load country shapes.'); return; }
+        pfAddShapes(map, feats, f => counts[(f.properties && f.properties.name) || ''] || 0, max, function (name) {
+          if (name === 'United States') {
+            pfMapScope = 'us';
+            pfMapFit = true;
+            pfRefreshMapChrome();
+            return;
+          }
+          const hit = rows.filter(s => pfRowCountry(s) === name);
+          pfShowBirds(name, pfSpeciesCounts(hit));
+        });
+        if (pfMapFit && pfMapShapes) {
+          pfMapDrawing = true;
+          try { map.fitBounds(pfMapShapes.getBounds(), { padding: [12, 12], animate: false }); }
+          catch (e) { map.setView([24, -40], 2, { animate: false }); }
+          pfMapDrawing = false;
+          pfMapFit = false;
+        }
+        pfSetMapHint('Darker green means more sightings. Tap a country for its birds. Tap the United States to open states. Showing ' + pfRangeLabel() + '.');
+        return;
+      }
+      if (pfMapScope === 'us') {
+        try { if (typeof loadStateShapes === 'function') await loadStateShapes(); } catch (e) {}
+        if (stale()) return;
+        const feats = (typeof stateShapes !== 'undefined' && stateShapes) || [];
+        const counts = {};
+        rows.forEach(s => {
+          if (s.state && typeof STATE_CODES !== 'undefined' && STATE_CODES[s.state]) counts[s.state] = (counts[s.state] || 0) + 1;
+        });
+        const max = Math.max(0, ...Object.values(counts));
+        if (!feats.length) { pfSetMapHint('Could not load state shapes.'); return; }
+        pfAddShapes(map, feats, f => counts[(f.properties && (f.properties.name || f.properties.NAME)) || ''] || 0, max, function (name) {
+          if (!STATE_CODES[name]) return;
+          pfMapState = name;
+          pfMapScope = 'state';
+          pfMapFit = true;
+          pfRefreshMapChrome();
+        });
+        if (pfMapFit && pfMapShapes) {
+          pfMapDrawing = true;
+          try { map.fitBounds(pfMapShapes.getBounds(), { padding: [12, 12], animate: false }); }
+          catch (e) { map.setView([39.5, -96], 4, { animate: false }); }
+          pfMapDrawing = false;
+          pfMapFit = false;
+        }
+        pfSetMapHint('States, shaded by how many sightings. Tap a state to open its counties. Showing ' + pfRangeLabel() + '.');
+        return;
+      }
+      let index = null;
+      try { if (typeof loadCountyShapes === 'function') index = await loadCountyShapes(); } catch (e) { index = null; }
+      if (stale()) return;
+      const feats = (index && index.byState && index.byState[pfMapState]) || [];
+      const counts = {};
+      rows.forEach(s => {
+        if (s.state !== pfMapState) return;
+        const k = pfCountyKey(s.county);
+        if (!k) return;
+        counts[k] = (counts[k] || 0) + 1;
+      });
+      const max = Math.max(0, ...Object.values(counts));
+      if (!feats.length) {
+        pfSetMapHint('Could not load counties for ' + pfMapState + '.');
+        if (pfMapFit && typeof STATE_BOUNDS !== 'undefined') pfFitBox(map, STATE_BOUNDS[pfMapState]);
+        pfMapFit = false;
+        return;
+      }
+      pfMapShapes = L.geoJSON({ type: 'FeatureCollection', features: feats }, {
+        style: function (f) {
+          const n = counts[pfCountyKey(f.properties && f.properties.NAME)] || 0;
+          return {
+            color: n ? '#064e3b' : '#a8a29e',
+            weight: 1,
+            fillColor: pfHeatFill(max > 0 ? n / max : 0, !n),
+            fillOpacity: n ? 0.82 : 0.22
+          };
+        },
+        onEachFeature: function (f, layer) {
+          const label = ((f.properties && f.properties.NAME) || 'County');
+          const key = pfCountyKey(label);
+          const n = counts[key] || 0;
+          layer.bindTooltip(label + (n ? ' · ' + n : ''), { sticky: true });
+          layer.on('click', function () {
+            const hit = rows.filter(s => s.state === pfMapState && pfCountyKey(s.county) === key);
+            pfShowBirds(label + (pfMapState ? ', ' + pfMapState : ''), pfSpeciesCounts(hit));
+            try { map.fitBounds(layer.getBounds(), { padding: [24, 24], maxZoom: 10, animate: true }); } catch (e) {}
+          });
+        }
+      }).addTo(map);
+      if (pfMapFit) {
+        pfMapDrawing = true;
+        if (!(typeof STATE_BOUNDS !== 'undefined' && pfFitBox(map, STATE_BOUNDS[pfMapState])) && pfMapShapes) {
+          try { map.fitBounds(pfMapShapes.getBounds(), { padding: [12, 12], animate: false }); } catch (e) {}
+        }
+        pfMapDrawing = false;
+        pfMapFit = false;
+      }
+      pfSetMapHint('Counties in ' + pfMapState + '. Darker green means more sightings. Tap a county to list its birds. Showing ' + pfRangeLabel() + '.');
+    }
+    function pfRenderProfileMap() {
+      const map = pfEnsureMap();
+      if (!map) return;
+      const token = ++pfMapToken;
+      pfBindMapChrome();
+      const run = pfMapMode === 'activity' ? pfRenderActivityMap(map) : Promise.resolve(pfRenderSightingMap(map));
+      Promise.resolve(run).then(() => {
+        if (token !== pfMapToken || !pfMap) return;
+        setTimeout(() => { if (pfMap && token === pfMapToken) pfMap.invalidateSize(); }, 80);
+        setTimeout(() => { if (pfMap && token === pfMapToken) pfMap.invalidateSize(); }, 320);
+      });
+    }
+    async function pfCatchUpPublic() {
+      if (pfCatchTried || pfCatching || !pfLocalReady || !pfUser) return;
+      const localN = pfRecentLocal().length;
+      if (!localN) return;
+      const q = await supabaseClient.from('public_sightings').select('id', { count: 'exact', head: true }).eq('user_id', pfUser.id);
+      if (q.error) return;
+      if ((q.count || 0) >= localN) { pfCatchTried = true; return; }
+      pfCatchTried = true;
+      pfCatching = true;
+      try { await publishPublic({ silent: true, catchup: true }); }
+      finally { pfCatching = false; }
+    }
+    window.pfAfterLocalLoad = function () {
+      pfLocalReady = true;
+      pfCatchUpPublic();
+    };
+
+    async function pfCounts(id) {
+      const a = await supabaseClient.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', id);
+      const b = await supabaseClient.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', id);
+      return { followers: a.count || 0, following: b.count || 0 };
+    }
+    async function pfAmFollowing(id) {
+      if (!pfUser) return false;
+      const { data } = await supabaseClient.from('follows').select('follower_id').eq('follower_id', pfUser.id).eq('following_id', id).maybeSingle();
+      return !!data;
+    }
+    async function pfProfiles(ids) {
+      if (!ids.length) return [];
+      const { data } = await supabaseClient.from('profiles').select('id,username,display_name,home_region,public_stats').in('id', ids);
+      return data || [];
+    }
+    function pfPersonRow(p, extra) {
+      const av = pfSafeSrc(p.public_stats && p.public_stats.avatar);
+      const face = av ? '<img src="' + av + '" alt="" />' : pfEsc(pfInitials(p.display_name || p.username));
+      return '<div class="pf-person">' +
+        '<div class="pf-avatar">' + face + '</div>' +
+        '<button type="button" data-act="user" data-id="' + pfEsc(p.id) + '">' +
+          '<div class="pf-log-name">' + pfEsc(p.display_name || p.username || 'Birder') + '</div>' +
+          '<div class="pf-handle">@' + pfEsc(p.username || '') + (p.home_region ? ' · ' + pfEsc(p.home_region) : '') + '</div>' +
+        '</button>' + (extra || '') + '</div>';
+    }
+    async function pfFillPeople(gen) {
+      const box = document.getElementById('pf-people');
+      if (!box) return;
+      const follows = await supabaseClient.from('follows').select('following_id').eq('follower_id', pfUser.id);
+      const fans = await supabaseClient.from('follows').select('follower_id').eq('following_id', pfUser.id);
+      if (gen !== pfGen || !box.isConnected) return;
+      const followingIds = (follows.data || []).map(r => r.following_id);
+      const followerIds = (fans.data || []).map(r => r.follower_id);
+      const profs = await pfProfiles(followingIds.concat(followerIds));
+      if (gen !== pfGen || !box.isConnected) return;
+      const byId = {};
+      profs.forEach(p => { byId[p.id] = p; });
+      const grants = new Set((pfSelf.public_stats && pfSelf.public_stats.exact_grants) || []);
+      const everyone = !!(pfSelf.public_stats && pfSelf.public_stats.exact_public);
+      const pin = id => '<button type="button" class="pf-ib' + (grants.has(id) ? ' on' : '') + '" data-act="' + (grants.has(id) ? 'ungrant' : 'grant') + '" data-id="' + pfEsc(id) + '" title="' + (grants.has(id) ? 'Can see your exact pins' : 'County only') + '" aria-label="' + (grants.has(id) ? 'Can see your exact pins' : 'County only') + '">' + pfSvg('pin') + '</button>';
+      let html = '<div class="pf-perm"><div><b>Exact locations</b><p>' +
+        (everyone ? 'Everyone can see the pins you mark exact.' : 'Everyone sees the county. Turn the pin on for a person, or for everyone.') +
+        '</p></div><div class="pf-perm-choices">' +
+        '<button type="button" data-act="exact-public" data-on="0"' + (everyone ? '' : ' class="on"') + '>Chosen people</button>' +
+        '<button type="button" data-act="exact-public" data-on="1"' + (everyone ? ' class="on"' : '') + '>Everyone</button>' +
+        '</div></div>';
+      html += '<div class="pf-note" style="margin-bottom:6px">Followed</div>';
+      html += followingIds.length ? followingIds.map(id => byId[id] ? pfPersonRow(byId[id], pin(id)) : '').join('') : '<div class="pf-empty">You’re not following anyone yet.</div>';
+      html += '<div class="pf-note" style="margin:12px 0 6px">Followed by</div>';
+      html += followerIds.length ? followerIds.map(id => byId[id] ? pfPersonRow(byId[id], pin(id)) : '').join('') : '<div class="pf-empty">No followers yet.</div>';
+      box.innerHTML = html;
+    }
+    function pfRarPill(rar) {
+      if (!rar) return '';
+      return '<span class="pf-rar"><i class="' + pfRarClass(rar) + '"></i>' + pfEsc(rar) + '</span>';
+    }
+    function pfCheckin(s, p, opts) {
+      opts = opts || {};
+      p = p || {};
+      if (s && s.id) pfCardIndex[s.id] = { s: s, p: p };
+      const who = p.display_name || p.username || 'Birder';
+      const handle = p.username ? '@' + p.username : '';
+      const av = pfSafeSrc(p.public_stats && p.public_stats.avatar);
+      const face = av ? '<img src="' + av + '" alt="" />' : pfEsc(pfInitials(who));
+      const where = pfWhere(s.county, s.state);
+      const name = s.species_name || pfSpName(s.species_code);
+      const rar = s.rarity || (opts.mine ? pfRarity(s.species_code, s.state) : '');
+      const src = pfSafeSrc(s.photo_url);
+      const place = where
+        ? '<span class="pf-checkin-place">at <b>' + pfEsc(where) + '</b></span>'
+        : '<span class="pf-checkin-place">shared a sighting</span>';
+      const shot = src
+        ? '<button type="button" class="pf-checkin-shot" data-act="photo"' +
+            (opts.localId ? ' data-id="' + pfEsc(opts.localId) + '"' : '') +
+            ' data-name="' + pfEsc(name) + '" aria-label="View photo of ' + pfEsc(name) + '">' +
+            '<img src="' + src + '" alt="" /></button>'
+        : '';
+      let tools = '';
+      if (opts.mine) {
+        const pub = s.share_public !== false && s.share_public !== 0;
+        tools = '<span class="pf-checkin-tools">' +
+          (s.photo_url ? '<button type="button" class="pf-ib' + (pub ? ' on' : '') + '" data-act="share-public" data-id="' + pfEsc(s.id) + '" title="' + (pub ? 'Photo is public' : 'Photo is private') + '" aria-label="' + (pub ? 'Photo is public' : 'Photo is private') + '">' + pfSvg(pub ? 'eye' : 'eyeoff') + '</button>' : '') +
+          '<button type="button" class="pf-ib' + (s.share_exact ? ' on' : '') + '" data-act="share-exact" data-id="' + pfEsc(s.id) + '" title="' + (s.share_exact ? 'Exact pin on' : 'County only') + '" aria-label="' + (s.share_exact ? 'Exact pin on' : 'County only') + '">' + pfSvg('pin') + '</button>' +
+          '</span>';
+      }
+      const exact = (!opts.mine && s.lat != null && s.lng != null) ? '<span class="pf-checkin-exact">Exact</span>' : '';
+      return '<article class="pf-checkin' + (src ? '' : ' slim') + '" data-act="card" data-id="' + pfEsc(s.id || '') + '">' +
+        '<div class="pf-checkin-who">' +
+          '<span class="pf-checkin-av">' + face + '</span>' +
+          '<span class="pf-checkin-id">' +
+            '<span class="pf-checkin-name">' + pfEsc(who) + (handle ? '<span class="pf-checkin-handle">' + pfEsc(handle) + '</span>' : '') + '</span>' +
+            place +
+          '</span></div>' +
+        '<div class="pf-checkin-sp">' + pfEsc(name) + '</div>' +
+        shot +
+        '<div class="pf-checkin-foot">' +
+          pfRarPill(rar) +
+          exact +
+          '<span class="pf-checkin-end">' +
+            '<span class="pf-reacts" data-react="' + pfEsc(s.id || '') + '"></span>' +
+            '<span class="pf-checkin-date">' + pfEsc(pfDate(s.date) || '') + '</span>' +
+            tools +
+          '</span>' +
+        '</div>' +
+      '</article>';
+    }
+    async function pfFillFeed(gen) {
+      const box = document.getElementById('pf-feed');
+      if (!box) return;
+      const follows = await supabaseClient.from('follows').select('following_id').eq('follower_id', pfUser.id);
+      const ids = (follows.data || []).map(r => r.following_id);
+      if (!ids.length) {
+        if (gen === pfGen && box.isConnected) box.innerHTML = '<div class="pf-empty">Follow someone to see their latest sightings. Find them under People.</div>';
+        return;
+      }
+      const sight = await pfPublicRows(cols => supabaseClient.from('public_sightings')
+        .select(cols).in('user_id', ids).order('date', { ascending: false }), 100);
+      const profs = await pfProfiles(ids);
+      if (gen !== pfGen || !box.isConnected) return;
+      const byId = {};
+      profs.forEach(p => { byId[p.id] = p; });
+      const rows = sight || [];
+      if (!rows.length) { box.innerHTML = '<div class="pf-empty">No public sightings from people you follow yet.</div>'; return; }
+      box.innerHTML = '<div class="pf-checkins">' + rows.map(s => pfCheckin(s, byId[s.user_id] || {})).join('') + '</div>';
+      pfAttachSocial(rows).then(() => { if (gen === pfGen && box.isConnected) pfPaintReacts(box); });
+    }
+
+    async function pfLookup() {
+      const input = document.getElementById('pf-lookup');
+      const name = input ? input.value.trim().replace(/^@/, '') : '';
+      if (!name) return;
+      pfMsg('Looking up @' + name + '…');
+      const { data, error } = await supabaseClient.from('profiles').select('*').eq('username', name).maybeSingle();
+      if (error || !data) { pfMsg('No profile named @' + name); return; }
+      if (data.id === pfUser.id) { pfMsg('That’s you'); return; }
+      pfPreview = false;
+      pfOther = data;
+      pfTab = 'sightings';
+      renderOther();
+    }
+    async function pfSave() {
+      const username = (document.getElementById('pf-un').value || '').trim().replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
+      const display_name = (document.getElementById('pf-dn').value || '').trim() || username;
+      const home_region = (document.getElementById('pf-rg').value || '').trim();
+      const bio = (document.getElementById('pf-bio').value || '').trim();
+      const auto = !!document.getElementById('pf-auto').checked;
+      try { localStorage.setItem('avian_auto_publish', auto ? '1' : '0'); } catch (e) {}
+      const up = await supabaseClient.from('profiles').update({
+        username: username, display_name: display_name, home_region: home_region, bio: bio,
+        updated_at: new Date().toISOString()
+      }).eq('id', pfUser.id).select().single();
+      if (up.error) { pfMsg(up.error.message); return; }
+      pfSelf = up.data;
+      pfEditing = false;
+      syncProfileButton();
+      await renderSelf();
+      if (auto) publishPublic({ silent: true });
+    }
+    function pfToggleShare(id, key) {
+      const s = (sightings || []).find(x => x.id === id);
+      if (!s) return;
+      if (key === 'share_exact') s.share_exact = !s.share_exact;
+      if (key === 'share_public') s.share_public = !(s.share_public !== false && s.share_public !== 0);
+      try { persistSightings(); } catch (e) {}
+      if (window.avianMaybePublish) window.avianMaybePublish();
+      renderSelf();
+    }
+    function pfPinStatus(text) {
+      pfMsg(text);
+      const n = document.getElementById('pf-pin-status');
+      if (n) n.textContent = text || '';
+    }
+    async function pfTogglePin(id) {
+      const s = (typeof sightings !== 'undefined' ? sightings : []).find(x => x && String(x.id) === String(id));
+      if (!s || !pfUser || !pfSelf) return;
+      if (!pfSafeSrc(s.photo_url || s.photo_full)) { pfPinStatus('Add a photo before pinning it.'); return; }
+      const stats = Object.assign({}, pfSelf.public_stats || {});
+      const pins = Array.isArray(stats.pinned) ? stats.pinned.map(String) : [];
+      const key = pfSightKey(s);
+      const at = pins.indexOf(key);
+      if (at >= 0) pins.splice(at, 1);
+      else {
+        if (pins.length >= 3) { pfPinStatus('Unpin one of the three photos first.'); return; }
+        pins.push(key);
+      }
+      stats.pinned = pins.slice(0, 3);
+      const up = await supabaseClient.from('profiles').update({
+        public_stats: stats,
+        updated_at: new Date().toISOString()
+      }).eq('id', pfUser.id).select().single();
+      if (up.error) { pfPinStatus(up.error.message); return; }
+      pfSelf = up.data;
+      const note = at >= 0 ? 'Unpinned.' : 'Pinned to the top of your profile.';
+      if (pfPreview) await renderPreview();
+      else if (!pfOther) await renderSelf();
+      pfPinStatus(note);
+      const btn = document.querySelector('#pf-detail [data-act="pin"]');
+      if (btn && pfDetail && String(pfDetail.s.id) === String(id)) btn.textContent = at >= 0 ? 'Pin to profile' : 'Unpin from profile';
+    }
+    async function pfSetFollow(id, on) {
+      if (!pfUser || id === pfUser.id) return;
+      if (on) await supabaseClient.from('follows').insert({ follower_id: pfUser.id, following_id: id });
+      else await supabaseClient.from('follows').delete().eq('follower_id', pfUser.id).eq('following_id', id);
+      if (pfOther && pfOther.id === id) renderOther();
+      else renderSelf();
+    }
+    async function pfSetGrant(id, on) {
+      const stats = Object.assign({}, (pfSelf && pfSelf.public_stats) || {});
+      const grants = new Set(stats.exact_grants || []);
+      if (on) grants.add(id); else grants.delete(id);
+      stats.exact_grants = Array.from(grants);
+      const up = await supabaseClient.from('profiles').update({ public_stats: stats }).eq('id', pfUser.id).select().single();
+      if (up.data) pfSelf = up.data;
+      renderSelf();
+    }
+    async function pfSetExactPublic(on) {
+      const stats = Object.assign({}, (pfSelf && pfSelf.public_stats) || {});
+      stats.exact_public = !!on;
+      const up = await supabaseClient.from('profiles').update({ public_stats: stats }).eq('id', pfUser.id).select().single();
+      if (up.data) pfSelf = up.data;
+      renderSelf();
+    }
+
+    function pfKillPin() {
+      if (pfPinMap) { try { pfPinMap.remove(); } catch (e) {} pfPinMap = null; }
+    }
+    function pfCloseDetail() {
+      pfKillPin();
+      pfDetail = null;
+      const root = document.getElementById('pf-detail');
+      if (root) root.hidden = true;
+    }
+    function pfIsMine(s) {
+      if (!s) return false;
+      if (pfUser && s.user_id && s.user_id === pfUser.id) return true;
+      return (typeof sightings !== 'undefined' ? sightings : []).some(x => x && x.id === s.id);
+    }
+    function pfHasSpecies(code) {
+      return (typeof sightings !== 'undefined' ? sightings : []).some(x => x && x.species_code === code);
+    }
+    function pfSocialBag() {
+      try { return JSON.parse(localStorage.getItem('avian_card_social') || '{}'); } catch (e) { return {}; }
+    }
+    function pfSocialWrite(bag) {
+      try { localStorage.setItem('avian_card_social', JSON.stringify(bag)); } catch (e) {}
+    }
+    function pfSightKey(s) {
+      return [s.species_code || '', String(s.date || '').slice(0, 10), pfCountyKey(s.county), s.state || '', String(s.location_name || '').trim()].join('|');
+    }
+    async function pfPublicIndex() {
+      if (pfPublicByKey) return pfPublicByKey;
+      if (!pfUser) return {};
+      const pub = await pfPublicRows(cols => {
+        const fields = cols.indexOf('location_name') >= 0
+          ? 'id,species_code,date,county,state,location_name'
+          : 'id,species_code,date,county,state';
+        return supabaseClient.from('public_sightings').select(fields).eq('user_id', pfUser.id);
+      });
+      const map = {};
+      (pub || []).forEach(p => {
+        const k = pfSightKey(p);
+        (map[k] = map[k] || []).push(p.id);
+      });
+      pfPublicByKey = map;
+      return map;
+    }
+    async function pfSocialIds(id) {
+      const ids = [String(id)];
+      const local = (typeof sightings !== 'undefined' ? sightings : []).find(x => x && String(x.id) === String(id));
+      if (local && pfUser) {
+        const idx = await pfPublicIndex();
+        (idx[pfSightKey(local)] || []).forEach(pid => { if (ids.indexOf(String(pid)) < 0) ids.push(String(pid)); });
+      }
+      return ids;
+    }
+    function pfHeartSvg() {
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-9a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 4.6-7 9-7 9z"/></svg>';
+    }
+    function pfBubbleSvg() {
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H10l-4 3v-3H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/></svg>';
+    }
+    function pfPaintReacts(root) {
+      const scope = root || document.getElementById('pf-body');
+      if (!scope) return;
+      scope.querySelectorAll('[data-react]').forEach(el => {
+        const c = pfSocialCounts[el.getAttribute('data-react')] || { likes: 0, comments: 0 };
+        let html = '';
+        if (c.likes > 0) html += '<span class="pf-react like"><b>' + c.likes + '</b>' + pfHeartSvg() + '</span>';
+        if (c.comments > 0) html += '<span class="pf-react comment"><b>' + c.comments + '</b>' + pfBubbleSvg() + '</span>';
+        el.innerHTML = html;
+      });
+    }
+    async function pfFetchCountMap(ids) {
+      const uniq = [];
+      const seen = {};
+      (ids || []).forEach(id => {
+        const k = String(id || '');
+        if (!k || seen[k]) return;
+        seen[k] = 1;
+        uniq.push(k);
+      });
+      const counts = {};
+      uniq.forEach(id => { counts[id] = { likes: 0, comments: 0 }; });
+      for (let i = 0; i < uniq.length; i += 80) {
+        const slice = uniq.slice(i, i + 80);
+        const c = await supabaseClient.from('sighting_comments').select('sighting_id').in('sighting_id', slice);
+        const l = await supabaseClient.from('sighting_likes').select('sighting_id').in('sighting_id', slice);
+        if (!c.error) (c.data || []).forEach(r => { if (counts[r.sighting_id]) counts[r.sighting_id].comments += 1; });
+        if (!l.error) (l.data || []).forEach(r => { if (counts[r.sighting_id]) counts[r.sighting_id].likes += 1; });
+      }
+      return counts;
+    }
+    async function pfAttachSocial(rows) {
+      const list = rows || [];
+      const ids = [];
+      const locals = [];
+      list.forEach(s => {
+        if (!s || s.id == null) return;
+        if (s.user_id) ids.push(s.id);
+        else locals.push(s);
+      });
+      let keyToPublic = null;
+      if (locals.length && pfUser) {
+        keyToPublic = await pfPublicIndex();
+        locals.forEach(s => { (keyToPublic[pfSightKey(s)] || []).forEach(id => ids.push(id)); ids.push(s.id); });
+      }
+      const counts = await pfFetchCountMap(ids);
+      Object.keys(counts).forEach(id => { pfSocialCounts[id] = counts[id]; });
+      if (keyToPublic) {
+        locals.forEach(s => {
+          const pubs = keyToPublic[pfSightKey(s)] || [];
+          let likes = counts[s.id] ? counts[s.id].likes : 0;
+          let comments = counts[s.id] ? counts[s.id].comments : 0;
+          pubs.forEach(id => {
+            const c = counts[id];
+            if (c) { likes += c.likes; comments += c.comments; }
+          });
+          pfSocialCounts[s.id] = { likes: likes, comments: comments };
+        });
+      }
+    }
+    async function pfLoadSocial(id) {
+      const ids = await pfSocialIds(id);
+      const key = String(id);
+      const bag = pfSocialBag()[key] || { comments: [], likes: [] };
+      const comments = await supabaseClient.from('sighting_comments').select('id,user_id,body,created_at').in('sighting_id', ids).order('created_at');
+      const likes = await supabaseClient.from('sighting_likes').select('user_id,sighting_id').in('sighting_id', ids);
+      if (comments.error || likes.error) {
+        pfSocialRemote = false;
+        return { comments: bag.comments || [], likes: bag.likes || [] };
+      }
+      pfSocialRemote = true;
+      const rows = comments.data || [];
+      const who = rows.map(r => r.user_id).filter(Boolean);
+      const profs = await pfProfiles(who);
+      const by = {};
+      profs.forEach(p => { by[p.id] = p; });
+      const likeIds = [];
+      (likes.data || []).forEach(r => { if (r.user_id && likeIds.indexOf(r.user_id) < 0) likeIds.push(r.user_id); });
+      return {
+        comments: rows.map(r => ({
+          id: r.id,
+          user_id: r.user_id,
+          body: r.body,
+          display_name: (by[r.user_id] && (by[r.user_id].display_name || by[r.user_id].username)) || 'Birder'
+        })),
+        likes: likeIds
+      };
+    }
+    function pfPaintSocial(social) {
+      const box = document.getElementById('pf-comments');
+      const like = document.getElementById('pf-like');
+      if (box) {
+        const rows = (social && social.comments) || [];
+        box.innerHTML = rows.length ? rows.map(c => {
+          const mine = pfUser && c.user_id === pfUser.id;
+          return '<div class="pf-comment"><div class="pf-comment-top"><b>' + pfEsc(c.display_name || 'Birder') + '</b>' +
+            (mine ? '<button type="button" data-act="delete-comment" data-id="' + pfEsc(c.id) + '">Delete</button>' : '') +
+            '</div><span>' + pfEsc(c.body) + '</span></div>';
+        }).join('') : '<div class="pf-empty">No comments yet.</div>';
+      }
+      if (like) {
+        const n = social && social.likes ? social.likes.length : 0;
+        const on = pfUser && social && social.likes && social.likes.indexOf(pfUser.id) >= 0;
+        like.classList.toggle('on', !!on);
+        like.innerHTML = (on ? '♥' : '♡') + ' ' + n;
+      }
+      if (pfDetail && pfDetail.s) {
+        pfSocialCounts[String(pfDetail.s.id)] = {
+          likes: social && social.likes ? social.likes.length : 0,
+          comments: social && social.comments ? social.comments.length : 0
+        };
+        pfPaintReacts();
+      }
+    }
+    async function pfPostComment() {
+      if (!pfDetail || !pfUser) return;
+      const input = document.getElementById('pf-comment-in');
+      const text = input ? input.value.trim() : '';
+      if (!text) return;
+      const id = String(pfDetail.s.id);
+      const target = pfSocialRemote ? (await pfSocialIds(id)).slice(-1)[0] : id;
+      if (pfSocialRemote) {
+        const ins = await supabaseClient.from('sighting_comments').insert({
+          sighting_id: target, user_id: pfUser.id, body: text.slice(0, 500)
+        });
+        if (ins.error) { pfMsg(ins.error.message); return; }
+      } else {
+        const bag = pfSocialBag();
+        const row = bag[id] || { comments: [], likes: [] };
+        row.comments = row.comments || [];
+        row.comments.push({
+          id: String(Date.now()),
+          user_id: pfUser.id,
+          body: text.slice(0, 500),
+          display_name: (pfSelf && (pfSelf.display_name || pfSelf.username)) || 'You'
+        });
+        bag[id] = row;
+        pfSocialWrite(bag);
+      }
+      if (input) input.value = '';
+      pfPaintSocial(await pfLoadSocial(id));
+    }
+    async function pfToggleLike() {
+      if (!pfDetail || !pfUser) return;
+      const id = String(pfDetail.s.id);
+      const social = await pfLoadSocial(id);
+      const on = social.likes.indexOf(pfUser.id) >= 0;
+      const target = pfSocialRemote ? (await pfSocialIds(id)).slice(-1)[0] : id;
+      if (pfSocialRemote) {
+        if (on) await supabaseClient.from('sighting_likes').delete().eq('sighting_id', target).eq('user_id', pfUser.id);
+        else await supabaseClient.from('sighting_likes').insert({ sighting_id: target, user_id: pfUser.id });
+      } else {
+        const bag = pfSocialBag();
+        const row = bag[id] || { comments: social.comments, likes: social.likes.slice() };
+        row.likes = on ? row.likes.filter(x => x !== pfUser.id) : row.likes.concat([pfUser.id]);
+        bag[id] = row;
+        pfSocialWrite(bag);
+      }
+      pfPaintSocial(await pfLoadSocial(id));
+    }
+    async function pfDeleteComment(commentId) {
+      if (!pfDetail || !pfUser || !commentId) return;
+      const id = String(pfDetail.s.id);
+      if (pfSocialRemote) {
+        const del = await supabaseClient.from('sighting_comments').delete().eq('id', commentId).eq('user_id', pfUser.id).select('id');
+        if (del.error || !del.data || !del.data.length) {
+          const box = document.getElementById('pf-comments');
+          if (box && !box.querySelector('.pf-del-help')) {
+            const note = document.createElement('p');
+            note.className = 'pf-note pf-del-help';
+            note.textContent = 'Supabase blocked the delete. Open the SQL editor, choose + then Create a new snippet, paste the policy from the chat, and press Run. Then delete the comment again.';
+            box.appendChild(note);
+          }
+          return;
+        }
+      } else {
+        const bag = pfSocialBag();
+        const row = bag[id];
+        if (row) row.comments = (row.comments || []).filter(c => String(c.id) !== String(commentId));
+        pfSocialWrite(bag);
+      }
+      pfPaintSocial(await pfLoadSocial(id));
+    }
+    function pfMountPin(lat, lng, title) {
+      const el = document.getElementById('pf-pin-map');
+      const note = document.getElementById('pf-pin-note');
+      pfKillPin();
+      if (!el) return;
+      if (lat == null || lng == null || isNaN(Number(lat)) || isNaN(Number(lng)) || typeof L === 'undefined') {
+        el.hidden = true;
+        if (note) { note.hidden = false; note.textContent = 'Exact pin isn’t shared for this sighting.'; }
+        return;
+      }
+      el.hidden = false;
+      if (note) note.hidden = true;
+      pfPinMap = L.map(el, { zoomControl: false, attributionControl: true });
+      let url = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+      let opts = { maxZoom: 19, attribution: '&copy; OpenStreetMap' };
+      try {
+        if (typeof tileUrl === 'function') url = tileUrl();
+        if (typeof tileLayerOpts === 'function') opts = tileLayerOpts();
+      } catch (e) {}
+      L.tileLayer(url, opts).addTo(pfPinMap);
+      L.circleMarker([Number(lat), Number(lng)], {
+        radius: 8, color: '#047857', weight: 2, fillColor: '#34d399', fillOpacity: 0.95
+      }).bindPopup('<b>' + pfEsc(title || 'Sighting') + '</b>').addTo(pfPinMap);
+      pfPinMap.setView([Number(lat), Number(lng)], 13);
+      setTimeout(() => { if (pfPinMap) pfPinMap.invalidateSize(); }, 120);
+    }
+    function pfPaintAwards(rows) {
+      const box = document.getElementById('pf-awards');
+      if (!box) return;
+      if (!rows || !rows.length) {
+        box.innerHTML = '<div class="pf-empty">No awards published for this log.</div>';
+        return;
+      }
+      box.innerHTML = '<div class="pf-hscroll">' + rows.map(r =>
+        '<article class="pf-award"><b>' + pfEsc(r.title) + '</b><span>' +
+        (r.had || 0) + ' → ' + (r.have || 0) + (r.total ? ' / ' + r.total : '') + '</span>' +
+        (r.earned ? '<em>Earned</em>' : '') + '</article>'
+      ).join('') + '</div>';
+    }
+    function pfPaintMore(rows, profile) {
+      const box = document.getElementById('pf-more');
+      if (!box) return;
+      const shots = (rows || []).filter(s => s && pfSafeSrc(s.photo_url));
+      if (!shots.length) { box.innerHTML = '<div class="pf-empty">No other photos of this species.</div>'; return; }
+      shots.forEach(s => { if (s.id) pfCardIndex[s.id] = { s: s, p: profile || {} }; });
+      box.innerHTML = '<div class="pf-hscroll">' + shots.map(s => {
+        const src = pfSafeSrc(s.photo_url);
+        const place = pfPlaceLine(s);
+        const when = s.date ? String(s.date).slice(0, 10) : '';
+        return '<button type="button" class="pf-more" data-act="card" data-id="' + pfEsc(s.id || '') + '">' +
+          '<img src="' + pfEsc(src) + '" alt="" />' +
+          '<span class="pf-more-cap"><b>' + pfEsc(when) + '</b>' +
+          (place ? '<span>' + pfEsc(place) + '</span>' : '') +
+          '</span></button>';
+      }).join('') + '</div>';
+    }
+    async function pfOpenCard(id) {
+      const rec = pfCardIndex[id];
+      if (!rec) return;
+      const s = Object.assign({}, rec.s);
+      const p = rec.p || {};
+      const mine = pfIsMine(s);
+      if (!mine && pfUser && s.user_id && pfCanSeeExact(p) && (s.lat == null || s.lng == null)) {
+        const q = await supabaseClient.from('public_sightings').select('lat,lng').eq('id', s.id).maybeSingle();
+        if (q.data && q.data.lat != null) { s.lat = q.data.lat; s.lng = q.data.lng; }
+      }
+      if (mine && !pfPreview) {
+        const local = (typeof sightings !== 'undefined' ? sightings : []).find(x => x.id === s.id);
+        if (local) {
+          if (local.lat != null) { s.lat = local.lat; s.lng = local.lng; }
+          if (local.photo_full) s.photo_full = local.photo_full;
+          if (!s.species_code) s.species_code = local.species_code;
+          if (!s.location_name) s.location_name = local.location_name;
+        }
+      } else if (pfPreview) {
+        const local = (typeof sightings !== 'undefined' ? sightings : []).find(x => x.id === s.id);
+        if (local && s.photo_url && local.photo_full) s.photo_full = local.photo_full;
+      }
+      pfDetail = { s: s, p: p, mine: mine };
+      const name = s.species_name || pfSpName(s.species_code);
+      const tax = (typeof taxName === 'function') ? taxName(s.species_code) : { comName: name, sciName: '' };
+      const sci = tax.sciName || '';
+      const who = p.display_name || p.username || 'Birder';
+      const handle = p.username ? '@' + p.username : '';
+      const where = [s.location_name, pfWhere(s.county, s.state)].filter(Boolean).join(' · ');
+      const rar = s.rarity || pfRarity(s.species_code, s.state);
+      const src = pfSafeSrc(s.photo_full || s.photo_url);
+      const got = pfHasSpecies(s.species_code);
+      const canPin = !!(mine && !pfPreview && src);
+      const pinnedOn = canPin && pfPinnedKeys(pfSelf).indexOf(pfSightKey(s)) >= 0;
+      const pinRow = canPin
+        ? '<div class="pf-detail-pinrow"><button type="button" class="ghost" data-act="pin" data-id="' + pfEsc(s.id) + '">' + (pinnedOn ? 'Unpin from profile' : 'Pin to profile') + '</button><p class="pf-note" id="pf-pin-status"></p></div>'
+        : '';
+      const root = document.getElementById('pf-detail');
+      const body = document.getElementById('pf-detail-body');
+      if (!root || !body) return;
+      body.innerHTML =
+        (src ? '<button type="button" class="pf-detail-shot" data-act="detail-photo" aria-label="Open full photo"><img src="' + src + '" alt="" /></button>' : '') +
+        '<div class="pf-detail-un">' + pfEsc(handle || 'Birder') + '</div>' +
+        '<div class="pf-detail-dn">' + pfEsc(who) + '</div>' +
+        (where ? '<div class="pf-detail-loc">' + pfEsc(where) + '</div>' : '') +
+        pinRow +
+        '<section class="pf-spbox">' +
+          (got ? '<span class="pf-got" title="On your list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7.5"/></svg></span>' : '') +
+          '<div class="pf-stock" id="pf-stock">🐦</div>' +
+          '<div><div class="pf-sp-name">' + pfEsc(tax.comName || name) + '</div>' +
+            (sci ? '<div class="pf-sp-sci">' + pfEsc(sci) + '</div>' : '') +
+            pfRarPill(rar) +
+          '</div></section>' +
+        '<section class="pf-detail-block"><div class="pf-detail-h"><span>Comments</span>' +
+          '<button type="button" class="pf-like" id="pf-like" data-act="like">♡ 0</button></div>' +
+          '<div id="pf-comments"><div class="pf-empty">Loading…</div></div>' +
+          (pfUser ? '<div class="pf-comment-row"><input id="pf-comment-in" maxlength="500" placeholder="Add a comment" /><button type="button" class="btn-em" data-act="comment">Post</button></div>' : '<p class="pf-note">Sign in to comment or like this photo.</p>') +
+        '</section>' +
+        '<section class="pf-detail-block"><div class="pf-detail-h">Awards this log moved</div><div id="pf-awards"><div class="pf-empty">Checking awards…</div></div></section>' +
+        '<section class="pf-detail-block"><div class="pf-detail-h">Where</div><div id="pf-pin-map"></div><p class="pf-note" id="pf-pin-note" hidden></p></section>' +
+        '<section class="pf-detail-block"><div class="pf-detail-h">More of this species</div><div id="pf-more"><div class="pf-empty">Loading photos…</div></div></section>';
+      root.hidden = false;
+      body.scrollTop = 0;
+      pfMountPin(s.lat, s.lng, name);
+      if (typeof resolveSpeciesPhoto === 'function') {
+        resolveSpeciesPhoto(s.species_code, tax.comName || name).then(url => {
+          const box = document.getElementById('pf-stock');
+          if (box && url && pfDetail && pfDetail.s && pfDetail.s.id === s.id) box.innerHTML = '<img src="' + pfEsc(url) + '" alt="" />';
+        });
+      }
+      pfLoadSocial(s.id).then(social => { if (pfDetail && pfDetail.s && pfDetail.s.id === s.id) pfPaintSocial(social); });
+      const published = pfAwardList(s.awards);
+      if (published.length) pfPaintAwards(published);
+      else if (mine && typeof achImpactOf === 'function') {
+        setTimeout(() => {
+          if (!pfDetail || pfDetail.s.id !== s.id) return;
+          let moved = [];
+          try { moved = pfPackAwards(achImpactOf(s.id)); } catch (e) { moved = []; }
+          pfPaintAwards(moved);
+        }, 30);
+      } else pfPaintAwards([]);
+      const more = mine
+        ? (typeof sightings !== 'undefined' ? sightings : []).filter(x => x && x.species_code === s.species_code && x.id !== s.id && pfSafeSrc(x.photo_url || x.photo_full)).map(x => ({
+            id: x.id,
+            user_id: pfUser ? pfUser.id : '',
+            species_code: x.species_code,
+            species_name: pfSpName(x.species_code),
+            photo_url: x.photo_url || x.photo_full,
+            date: x.date,
+            county: x.county,
+            state: x.state,
+            location_name: x.location_name,
+            rarity: pfRarity(x.species_code, x.state),
+            lat: x.lat,
+            lng: x.lng
+          }))
+        : [];
+      if (mine) pfPaintMore(more, p);
+      else if (s.user_id && s.species_code) {
+        const rows = await pfPublicRows(cols => supabaseClient.from('public_sightings').select(cols).eq('user_id', s.user_id).eq('species_code', s.species_code).limit(40));
+        const shots = rows.filter(x => x.id !== s.id && pfSafeSrc(x.photo_url));
+        if (pfDetail && pfDetail.s && pfDetail.s.id === s.id) pfPaintMore(shots, p);
+      } else pfPaintMore([], p);
+    }
+
+    document.getElementById('pf-body').addEventListener('click', function (e) {
+      const t = e.target.closest('[data-act]');
+      if (!t || !document.getElementById('pf-body').contains(t)) return;
+      const act = t.getAttribute('data-act');
+      const id = t.getAttribute('data-id');
+      if (act === 'tab') { pfTab = t.getAttribute('data-tab') || 'feed'; pfOther ? renderOther() : renderSelf(); }
+      else if (act === 'range') {
+        pfRange = t.getAttribute('data-range') || '30';
+        if (pfTab === 'map') pfMapFit = true;
+        pfOther ? renderOther() : renderSelf();
+      }
+      else if (act === 'map-mode') {
+        pfMapMode = t.getAttribute('data-mode') === 'activity' ? 'activity' : 'sightings';
+        pfMapFit = true;
+        pfRefreshMapChrome();
+      } else if (act === 'map-scope') {
+        const scope = t.getAttribute('data-scope');
+        pfMapScope = scope === 'us' || scope === 'world' ? scope : 'state';
+        pfMapFit = true;
+        pfRefreshMapChrome();
+      }
+      else if (act === 'edit') { pfPreview = false; pfEditing = true; renderSelf(); }
+      else if (act === 'cancel-edit') { pfEditing = false; renderSelf(); }
+      else if (act === 'preview') { pfPreview = true; pfEditing = false; renderSelf(); }
+      else if (act === 'save') pfSave();
+      else if (act === 'publish') publishPublic();
+      else if (act === 'signout') supabaseClient.auth.signOut().then(() => { pfUser = null; pfSelf = null; pfOther = null; pfPreview = false; syncProfileButton(); renderAuth(); });
+      else if (act === 'signin' || act === 'signup') pfAuth(act === 'signup');
+      else if (act === 'lookup') pfLookup();
+      else if (act === 'user' && id) {
+        pfPreview = false;
+        if (pfUser && id === pfUser.id) { pfOther = null; pfTab = 'feed'; renderSelf(); }
+        else supabaseClient.from('profiles').select('*').eq('id', id).maybeSingle().then(res => {
+          if (!res.data) return;
+          pfOther = res.data; pfTab = 'sightings'; renderOther();
+        });
+      }
+      else if (act === 'follow') pfSetFollow(id, true);
+      else if (act === 'unfollow') pfSetFollow(id, false);
+      else if (act === 'grant') pfSetGrant(id, true);
+      else if (act === 'ungrant') pfSetGrant(id, false);
+      else if (act === 'exact-public') pfSetExactPublic(t.getAttribute('data-on') === '1');
+      else if (act === 'share-public') pfToggleShare(id, 'share_public');
+      else if (act === 'share-exact') pfToggleShare(id, 'share_exact');
+      else if (act === 'pin') pfTogglePin(id);
+      else if (act === 'pick-avatar') { const el = document.getElementById('pf-avatar-file'); if (el) el.click(); }
+      else if (act === 'pick-cover') { const el = document.getElementById('pf-cover-file'); if (el) el.click(); }
+      else if (act === 'awards') { try { openAchModal(); } catch (err) {} }
+      else if (act === 'card' && id) pfOpenCard(id);
+      else if (act === 'photo') {
+        const id = t.getAttribute('data-id');
+        if (id) {
+          const s = (typeof sightings !== 'undefined' ? sightings : []).find(x => x.id === id);
+          if (s) {
+            try { openLightboxImage(s.photo_full || s.photo_url, pfSpName(s.species_code), pfDate(s.date)); } catch (err) {}
+          }
+          return;
+        }
+        const img = t.querySelector('img');
+        try { openLightboxImage(img && img.getAttribute('src'), t.getAttribute('data-name') || '', ''); } catch (err) {}
+      }
+    });
+
+    async function pfAuth(isSignUp) {
+      const email = (document.getElementById('pf-email') || {}).value || '';
+      const password = (document.getElementById('pf-pass') || {}).value || '';
+      pfMsg(isSignUp ? 'Creating account…' : 'Signing in…');
+      const res = isSignUp
+        ? await supabaseClient.auth.signUp({ email: email.trim(), password: password })
+        : await supabaseClient.auth.signInWithPassword({ email: email.trim(), password: password });
+      if (res.error) { pfMsg(res.error.message); return; }
+      if (isSignUp && res.data && res.data.user && !res.data.session) {
+        pfMsg('Check your email to confirm, then sign in.');
+        return;
+      }
+      await pfRefreshUser();
+      pfTab = 'feed';
+      pfEditing = false;
+      renderSelf();
+    }
+
+    let pfNotes = [];
+    function pfNoteState() {
+      try {
+        const s = JSON.parse(localStorage.getItem('avian_note_state') || '{}');
+        return { readBefore: s.readBefore || '', clearedBefore: s.clearedBefore || '', hidden: s.hidden || [] };
+      } catch (e) { return { readBefore: '', clearedBefore: '', hidden: [] }; }
+    }
+    function pfNoteSave(s) { try { localStorage.setItem('avian_note_state', JSON.stringify(s)); } catch (e) {} }
+    function pfNoteVisible(n, state) {
+      if ((state.hidden || []).indexOf(n.id) >= 0) return false;
+      if (state.clearedBefore && n.at && n.at <= state.clearedBefore) return false;
+      return true;
+    }
+    function pfAgo(iso) {
+      const t = new Date(iso || 0).getTime();
+      if (!t) return '';
+      const s = Math.max(0, (Date.now() - t) / 1000);
+      if (s < 60) return 'Just now';
+      if (s < 3600) return Math.floor(s / 60) + 'm';
+      if (s < 86400) return Math.floor(s / 3600) + 'h';
+      if (s < 86400 * 14) return Math.floor(s / 86400) + 'd';
+      return String(iso).slice(0, 10);
+    }
+    function pfPaintNoteBadge() {
+      const btn = document.getElementById('pf-notes-btn');
+      if (!btn) return;
+      const state = pfNoteState();
+      const n = pfNotes.filter(item => pfNoteVisible(item, state)).length;
+      btn.hidden = n < 1;
+      btn.textContent = n > 9 ? '9+' : String(n);
+    }
+    function pfPaintNotes() {
+      const box = document.getElementById('pf-notes-list');
+      const clear = document.getElementById('pf-notes-clear');
+      if (!box) return;
+      const state = pfNoteState();
+      const rows = pfNotes.filter(n => pfNoteVisible(n, state));
+      if (clear) clear.hidden = !rows.length;
+      if (!rows.length) {
+        box.innerHTML = '<div class="pf-notes-empty">No likes or comments yet.</div>';
+        return;
+      }
+      box.innerHTML = rows.map(n => {
+        const shot = pfSafeSrc(n.photo);
+        const who = n.who || 'Someone';
+        const bird = n.bird || 'a bird';
+        const line = n.kind === 'like'
+          ? 'liked your ' + bird
+          : 'commented on ' + bird;
+        return '<div class="pf-note-row">' +
+          '<button type="button" data-act="open-note" data-id="' + pfEsc(n.id) + '" style="display:flex;gap:10px;align-items:center;flex:1;min-width:0;background:none;border:0;padding:0;color:inherit;text-align:left">' +
+            (shot ? '<img class="pf-note-shot" src="' + pfEsc(shot) + '" alt="" />' : '<span class="pf-note-ph">🐦</span>') +
+            '<span class="pf-note-copy"><b>' + pfEsc(who) + '</b><span>' + pfEsc(line) + (n.body ? ' · ' + pfEsc(n.body) : '') + '</span>' +
+              '<span class="pf-note-meta"><span class="pf-note-kind ' + (n.kind === 'like' ? 'like' : '') + '">' + (n.kind === 'like' ? 'Like' : 'Comment') + '</span><span>' + pfEsc(pfAgo(n.at)) + '</span></span></span></button>' +
+          '<button type="button" class="pf-note-x" data-act="clear-note" data-id="' + pfEsc(n.id) + '" aria-label="Clear">✕</button></div>';
+      }).join('');
+    }
+    function pfCloseNotes() {
+      const panel = document.getElementById('pf-notes');
+      if (panel) panel.hidden = true;
+    }
+    function pfToggleNotes() {
+      const panel = document.getElementById('pf-notes');
+      if (!panel) return;
+      if (!panel.hidden) { pfCloseNotes(); return; }
+      const anchor = document.getElementById('btn-profile');
+      if (anchor) {
+        const r = anchor.getBoundingClientRect();
+        const width = Math.min(380, window.innerWidth - 20);
+        panel.style.width = width + 'px';
+        panel.style.top = (r.bottom + 8) + 'px';
+        panel.style.left = Math.max(10, Math.min(r.right - width, window.innerWidth - width - 10)) + 'px';
+      }
+      pfPaintNotes();
+      panel.hidden = false;
+    }
+    function pfClearNote(id) {
+      const state = pfNoteState();
+      state.hidden = (state.hidden || []).concat([id]).slice(-400);
+      pfNoteSave(state);
+      pfPaintNotes();
+      pfPaintNoteBadge();
+    }
+    function pfClearAllNotes() {
+      const state = pfNoteState();
+      state.clearedBefore = new Date().toISOString();
+      state.hidden = [];
+      pfNoteSave(state);
+      pfPaintNotes();
+      pfPaintNoteBadge();
+    }
+    async function pfOpenNote(id) {
+      const note = pfNotes.find(n => n.id === id);
+      pfCloseNotes();
+      if (!note || !note.sighting) return;
+      pfCardIndex[note.sighting.id] = { s: note.sighting, p: pfSelf || {} };
+      document.getElementById('profile-modal').classList.add('on');
+      document.body.classList.add('pf-open');
+      pfOther = null;
+      pfTab = 'sightings';
+      document.getElementById('pf-body').innerHTML = '<div class="pf-empty">Loading…</div>';
+      await pfRefreshUser();
+      if (!pfUser) { renderAuth(); return; }
+      await renderSelf();
+      pfOpenCard(note.sighting.id);
+    }
+    async function pfRefreshNotes() {
+      if (!pfUser) { pfNotes = []; pfPaintNoteBadge(); return; }
+      const mine = await pfPublicRows(cols => supabaseClient.from('public_sightings').select(cols).eq('user_id', pfUser.id).order('date', { ascending: false }));
+      const bySight = {};
+      mine.forEach(s => { bySight[s.id] = s; });
+      const ids = Object.keys(bySight);
+      if (!ids.length) { pfNotes = []; pfPaintNoteBadge(); if (!document.getElementById('pf-notes').hidden) pfPaintNotes(); return; }
+      const comments = [];
+      const likes = [];
+      for (let i = 0; i < ids.length; i += 60) {
+        const slice = ids.slice(i, i + 60);
+        const c = await supabaseClient.from('sighting_comments').select('id,sighting_id,user_id,body,created_at').in('sighting_id', slice).order('created_at', { ascending: false }).limit(80);
+        const l = await supabaseClient.from('sighting_likes').select('sighting_id,user_id,created_at').in('sighting_id', slice);
+        if (!c.error) comments.push.apply(comments, c.data || []);
+        if (!l.error) likes.push.apply(likes, l.data || []);
+      }
+      const whoIds = {};
+      comments.forEach(c => { if (c.user_id && c.user_id !== pfUser.id) whoIds[c.user_id] = 1; });
+      likes.forEach(l => { if (l.user_id && l.user_id !== pfUser.id) whoIds[l.user_id] = 1; });
+      const profs = await pfProfiles(Object.keys(whoIds));
+      const who = {};
+      profs.forEach(p => { who[p.id] = p.display_name || p.username || 'Someone'; });
+      const events = [];
+      comments.forEach(c => {
+        if (!c.user_id || c.user_id === pfUser.id || !bySight[c.sighting_id]) return;
+        const s = bySight[c.sighting_id];
+        events.push({
+          id: 'c:' + c.id, kind: 'comment', at: c.created_at || '', who: who[c.user_id] || 'Someone',
+          body: String(c.body || '').slice(0, 90), bird: s.species_name || 'bird', photo: s.photo_url || '', sighting: s
+        });
+      });
+      likes.forEach(l => {
+        if (!l.user_id || l.user_id === pfUser.id || !bySight[l.sighting_id]) return;
+        const s = bySight[l.sighting_id];
+        events.push({
+          id: 'l:' + l.sighting_id + ':' + l.user_id, kind: 'like', at: l.created_at || '', who: who[l.user_id] || 'Someone',
+          body: '', bird: s.species_name || 'bird', photo: s.photo_url || '', sighting: s
+        });
+      });
+      events.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+      pfNotes = events.slice(0, 60);
+      pfPaintNoteBadge();
+      const panel = document.getElementById('pf-notes');
+      if (panel && !panel.hidden) pfPaintNotes();
+    }
+    window.pfToggleNotes = pfToggleNotes;
+
+    function openProfile() {
+      pfCloseNotes();
+      document.getElementById('profile-modal').classList.add('on');
+      document.body.classList.add('pf-open');
+      document.getElementById('pf-body').innerHTML = '<div class="pf-empty">Loading…</div>';
+      pfOther = null;
+      pfEditing = false;
+      pfPreview = false;
+      pfRefreshUser().then(() => { if (pfUser) renderSelf(); else renderAuth(); });
+    }
+    function closeProfile() {
+      pfCloseDetail();
+      pfCloseCrop();
+      document.getElementById('profile-modal').classList.remove('on');
+      document.body.classList.remove('pf-open');
+      pfKillMap();
+    }
+    function profileBack() {
+      pfOther = null;
+      pfPreview = false;
+      pfTab = 'feed';
+      renderSelf();
+    }
+    window.openProfile = openProfile;
+    window.closeProfile = closeProfile;
+    window.profileBack = profileBack;
+
+    function pfReadFile(file) {
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+    }
+    let pfCrop = null;
+    function pfCloseCrop() {
+      pfCrop = null;
+      const root = document.getElementById('pf-crop');
+      if (root) root.hidden = true;
+    }
+    function pfCropRect() {
+      if (!pfCrop) return null;
+      if (pfCrop.kind === 'cover') {
+        const frame = document.getElementById('pf-cover-frame');
+        if (!frame) return null;
+        const r = frame.getBoundingClientRect();
+        if (r.width < 20) return null;
+        return { left: r.left, top: r.top, width: r.width, height: r.height, radius: '22px 22px 0 0' };
+      }
+      const modal = document.getElementById('profile-modal');
+      const r = modal.getBoundingClientRect();
+      const size = Math.min(280, Math.max(180, r.width - 64));
+      return {
+        left: r.left + (r.width - size) / 2,
+        top: Math.max(72, r.top + (r.height - size) / 2 - 36),
+        width: size,
+        height: size,
+        radius: '28px'
+      };
+    }
+    function pfDrawCrop() {
+      if (!pfCrop) return;
+      const rect = pfCropRect();
+      if (!rect) return;
+      pfCrop.rect = rect;
+      const stage = document.getElementById('pf-crop-stage');
+      const img = document.getElementById('pf-crop-img');
+      const iw = pfCrop.img.naturalWidth || pfCrop.img.width;
+      const ih = pfCrop.img.naturalHeight || pfCrop.img.height;
+      if (!iw || !ih) return;
+      stage.style.left = rect.left + 'px';
+      stage.style.top = rect.top + 'px';
+      stage.style.width = rect.width + 'px';
+      stage.style.height = rect.height + 'px';
+      stage.style.borderRadius = rect.radius;
+      const base = (pfCrop.kind === 'cover' ? Math.min : Math.max)(rect.width / iw, rect.height / ih);
+      const scale = base * pfCrop.scale;
+      const dw = iw * scale;
+      const dh = ih * scale;
+      const maxX = Math.max(0, (dw - rect.width) / 2);
+      const maxY = Math.max(0, (dh - rect.height) / 2);
+      pfCrop.x = Math.max(-maxX, Math.min(maxX, pfCrop.x));
+      pfCrop.y = Math.max(-maxY, Math.min(maxY, pfCrop.y));
+      img.style.width = dw + 'px';
+      img.style.height = dh + 'px';
+      img.style.left = ((rect.width - dw) / 2 + pfCrop.x) + 'px';
+      img.style.top = ((rect.height - dh) / 2 + pfCrop.y) + 'px';
+    }
+    function pfBeginCrop(kind, src) {
+      const view = document.getElementById('pf-crop-img');
+      const open = () => {
+        pfCrop = { kind: kind, img: view, scale: 1, x: 0, y: 0, drag: null, pinch: null };
+        const root = document.getElementById('pf-crop');
+        if (root) root.hidden = false;
+        const frame = kind === 'cover' ? document.getElementById('pf-cover-frame') : null;
+        if (frame) frame.scrollIntoView({ block: 'center', inline: 'nearest' });
+        requestAnimationFrame(() => requestAnimationFrame(pfDrawCrop));
+      };
+      view.onload = open;
+      view.onerror = () => pfMsg('Could not open that photo.');
+      view.removeAttribute('src');
+      view.src = src;
+    }
+    function pfExportCrop() {
+      if (!pfCrop || !pfCrop.rect) return null;
+      const rect = pfCrop.rect;
+      const aspect = rect.width / Math.max(1, rect.height);
+      let outW = pfCrop.kind === 'avatar' ? 512 : 1400;
+      let outH = pfCrop.kind === 'avatar' ? 512 : Math.max(1, Math.round(outW / aspect));
+      if (pfCrop.kind !== 'avatar' && outH > 1600) {
+        outH = 1600;
+        outW = Math.max(1, Math.round(outH * aspect));
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = outW;
+      canvas.height = outH;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0, 0, outW, outH);
+      const iw = pfCrop.img.naturalWidth || pfCrop.img.width;
+      const ih = pfCrop.img.naturalHeight || pfCrop.img.height;
+      const base = (pfCrop.kind === 'cover' ? Math.min : Math.max)(rect.width / iw, rect.height / ih);
+      const scale = base * pfCrop.scale;
+      const dw = iw * scale;
+      const dh = ih * scale;
+      const left = (rect.width - dw) / 2 + pfCrop.x;
+      const top = (rect.height - dh) / 2 + pfCrop.y;
+      const k = outW / rect.width;
+      ctx.drawImage(pfCrop.img, left * k, top * k, dw * k, dh * k);
+      const maxLen = pfCrop.kind === 'avatar' ? 70000 : 110000;
+      let q = 0.82;
+      let out = canvas.toDataURL('image/jpeg', q);
+      while (out.length > maxLen && q > 0.45) {
+        q -= 0.08;
+        out = canvas.toDataURL('image/jpeg', q);
+      }
+      return out;
+    }
+    async function pfCommitCrop() {
+      if (!pfCrop || !pfUser || !pfSelf) return;
+      const kind = pfCrop.kind;
+      const fitted = pfExportCrop();
+      if (!fitted) { pfMsg('Could not use that photo.'); return; }
+      const stats = Object.assign({}, pfSelf.public_stats || {});
+      stats[kind] = fitted;
+      const up = await supabaseClient.from('profiles').update({
+        public_stats: stats,
+        updated_at: new Date().toISOString()
+      }).eq('id', pfUser.id).select().single();
+      if (up.error) { pfMsg(up.error.message); return; }
+      pfCloseCrop();
+      pfSelf = up.data;
+      syncProfileButton();
+      if (!pfOther) renderSelf();
+    }
+    const pfAvatarFile = document.getElementById('pf-avatar-file');
+    const pfCoverFile = document.getElementById('pf-cover-file');
+    if (pfAvatarFile) pfAvatarFile.addEventListener('change', e => {
+      const file = e.target.files && e.target.files[0];
+      e.target.value = '';
+      if (file) pfReadFile(file).then(raw => { if (raw) pfBeginCrop('avatar', raw); });
+    });
+    if (pfCoverFile) pfCoverFile.addEventListener('change', e => {
+      const file = e.target.files && e.target.files[0];
+      e.target.value = '';
+      if (file) pfReadFile(file).then(raw => { if (raw) pfBeginCrop('cover', raw); });
+    });
+    const pfCropStage = document.getElementById('pf-crop-stage');
+    const pfCropPts = new Map();
+    function pfPinchDist() {
+      const pts = Array.from(pfCropPts.values());
+      if (pts.length < 2) return 1;
+      return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
+    }
+    if (pfCropStage) {
+      pfCropStage.addEventListener('pointerdown', e => {
+        if (!pfCrop) return;
+        pfCropPts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        try { pfCropStage.setPointerCapture(e.pointerId); } catch (err) {}
+        if (pfCropPts.size >= 2) {
+          pfCrop.drag = null;
+          pfCrop.pinch = { dist: pfPinchDist(), scale: pfCrop.scale };
+        } else {
+          pfCrop.drag = { x: e.clientX, y: e.clientY, ox: pfCrop.x, oy: pfCrop.y };
+        }
+      });
+      pfCropStage.addEventListener('pointermove', e => {
+        if (!pfCrop || !pfCropPts.has(e.pointerId)) return;
+        pfCropPts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (pfCropPts.size >= 2 && pfCrop.pinch) {
+          pfCrop.scale = Math.max(1, Math.min(8, pfCrop.pinch.scale * (pfPinchDist() / pfCrop.pinch.dist)));
+          pfDrawCrop();
+          return;
+        }
+        if (!pfCrop.drag) return;
+        pfCrop.x = pfCrop.drag.ox + (e.clientX - pfCrop.drag.x);
+        pfCrop.y = pfCrop.drag.oy + (e.clientY - pfCrop.drag.y);
+        pfDrawCrop();
+      });
+      const pfCropPointerEnd = e => {
+        pfCropPts.delete(e.pointerId);
+        if (!pfCrop) return;
+        if (pfCropPts.size >= 2) {
+          pfCrop.pinch = { dist: pfPinchDist(), scale: pfCrop.scale };
+          pfCrop.drag = null;
+        } else if (pfCropPts.size === 1) {
+          const p = Array.from(pfCropPts.values())[0];
+          pfCrop.pinch = null;
+          pfCrop.drag = { x: p.x, y: p.y, ox: pfCrop.x, oy: pfCrop.y };
+        } else {
+          pfCrop.drag = null;
+          pfCrop.pinch = null;
+        }
+      };
+      pfCropStage.addEventListener('pointerup', pfCropPointerEnd);
+      pfCropStage.addEventListener('pointercancel', pfCropPointerEnd);
+      pfCropStage.addEventListener('wheel', e => {
+        if (!pfCrop) return;
+        e.preventDefault();
+        pfCrop.scale = Math.max(1, Math.min(8, pfCrop.scale + (e.deltaY < 0 ? 0.08 : -0.08)));
+        pfDrawCrop();
+      }, { passive: false });
+    }
+    const pfDetailBack = document.getElementById('pf-detail-back');
+    if (pfDetailBack) pfDetailBack.addEventListener('click', pfCloseDetail);
+    const pfDetailRoot = document.getElementById('pf-detail');
+    if (pfDetailRoot) pfDetailRoot.addEventListener('click', function (e) {
+      const t = e.target.closest('[data-act]');
+      if (!t || !pfDetailRoot.contains(t)) return;
+      const act = t.getAttribute('data-act');
+      if (act === 'detail-photo' && pfDetail) {
+        const s = pfDetail.s;
+        const src = pfSafeSrc(s.photo_full || s.photo_url);
+        try { openLightboxImage(src, s.species_name || pfSpName(s.species_code), pfDate(s.date)); } catch (err) {}
+      } else if (act === 'card') {
+        const id = t.getAttribute('data-id');
+        if (id) pfOpenCard(id);
+      } else if (act === 'more-photo') {
+        const sid = t.getAttribute('data-id');
+        const local = sid && (typeof sightings !== 'undefined' ? sightings : []).find(x => x.id === sid);
+        const img = t.querySelector('img');
+        const src = local ? pfSafeSrc(local.photo_full || local.photo_url) : (img ? img.getAttribute('src') : '');
+        try { openLightboxImage(src, t.getAttribute('data-name') || '', ''); } catch (err) {}
+      } else if (act === 'comment') pfPostComment();
+      else if (act === 'like') pfToggleLike();
+      else if (act === 'pin') pfTogglePin(t.getAttribute('data-id'));
+      else if (act === 'delete-comment') pfDeleteComment(t.getAttribute('data-id'));
+    });
+    const pfCropCancel = document.getElementById('pf-crop-cancel');
+    const pfCropSave = document.getElementById('pf-crop-save');
+    if (pfCropCancel) pfCropCancel.addEventListener('click', pfCloseCrop);
+    if (pfCropSave) pfCropSave.addEventListener('click', () => { pfCommitCrop(); });
+    window.addEventListener('resize', () => { if (pfCrop) pfDrawCrop(); });
+
+    const pfNotesClear = document.getElementById('pf-notes-clear');
+    if (pfNotesClear) pfNotesClear.addEventListener('click', pfClearAllNotes);
+    const pfNotesList = document.getElementById('pf-notes-list');
+    if (pfNotesList) pfNotesList.addEventListener('click', e => {
+      const t = e.target.closest('[data-act]');
+      if (!t) return;
+      const id = t.getAttribute('data-id');
+      if (t.getAttribute('data-act') === 'clear-note') pfClearNote(id);
+      else if (t.getAttribute('data-act') === 'open-note') pfOpenNote(id);
+    });
+    document.addEventListener('click', e => {
+      const panel = document.getElementById('pf-notes');
+      if (!panel || panel.hidden) return;
+      if (panel.contains(e.target) || (e.target.closest && e.target.closest('#pf-notes-btn'))) return;
+      pfCloseNotes();
+    });
+    function pfBootUser() {
+      pfRefreshUser().then(() => {
+        pfRefreshNotes();
+        if (pfLocalReady) pfCatchUpPublic();
+      });
+    }
+    pfBootUser();
+    supabaseClient.auth.onAuthStateChange(() => { pfBootUser(); });
+    setInterval(() => { if (pfUser) pfRefreshNotes(); }, 45000);
+  </script>
 </body>
 </html>
