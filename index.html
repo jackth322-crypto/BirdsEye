@@ -17412,6 +17412,15 @@
     let pfCatching = false;
     let pfCatchTried = false;
     let pfPublicByKey = null;
+    let pfPublicCounts = {};
+    let pfHasCounts = null;
+    let pfProfileCache = {};
+    let pfFeedCache = null;
+    let pfPhotoMiss = {};
+    let pfList = null;
+    let pfNotesAt = 0;
+    let pfNotesLoading = false;
+    const PF_PAGE = 18;
     let pfSocialCounts = {};
     let pfGen = 0;
     let pfPubTimer = null;
@@ -17608,20 +17617,29 @@
       return (stats.exact_grants || []).indexOf(pfUser.id) >= 0;
     }
     async function pfPublicRows(run, cap) {
-      const rich = 'id,user_id,species_code,species_name,date,county,state,country,location_name,awards,has_exact_location,photo_url,rarity';
-      const plain = 'id,user_id,species_code,species_name,date,county,state,has_exact_location,photo_url,rarity';
+      const rich = 'id,user_id,species_code,species_name,date,county,state,country,location_name,awards,has_exact_location,rarity';
+      const plain = 'id,user_id,species_code,species_name,date,county,state,has_exact_location,rarity';
+      const counted = rich + ',like_count,comment_count';
       const pageSize = 1000;
       const all = [];
       let from = 0;
+      let cols = pfHasCounts === false ? rich : counted;
+      let droppedCounts = pfHasCounts === false;
       let usePlain = false;
       while (from < 8000) {
-        const cols = usePlain ? plain : rich;
-        let q = await run(cols).range(from, from + pageSize - 1);
-        if (q.error && !usePlain) {
+        let q = await run(usePlain ? plain : cols).range(from, from + pageSize - 1);
+        if (q.error && !droppedCounts && /like_count|comment_count/i.test(q.error.message || '')) {
+          pfHasCounts = false;
+          droppedCounts = true;
+          cols = rich;
+          q = await run(usePlain ? plain : cols).range(from, from + pageSize - 1);
+        }
+        if (q.error && !usePlain && /column|schema cache|country|location_name|awards/i.test(q.error.message || '')) {
           usePlain = true;
           q = await run(plain).range(from, from + pageSize - 1);
         }
         if (q.error) break;
+        if (!droppedCounts && !usePlain) pfHasCounts = true;
         const chunk = q.data || [];
         all.push.apply(all, chunk);
         if (cap && all.length >= cap) return all.slice(0, cap);
@@ -17629,6 +17647,116 @@
         from += pageSize;
       }
       return all;
+    }
+    function pfIsPublicId(id) {
+      return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id || ''));
+    }
+    async function pfEnsurePhotos(rows) {
+      const need = [];
+      const seen = {};
+      (rows || []).forEach(s => {
+        if (!s || !pfIsPublicId(s.id)) return;
+        const id = String(s.id);
+        if (s.photo_url || s.photo_full || pfPhotoMiss[id] || seen[id]) return;
+        seen[id] = 1;
+        need.push(s);
+      });
+      for (let i = 0; i < need.length; i += 30) {
+        const slice = need.slice(i, i + 30);
+        const q = await supabaseClient.from('public_sightings').select('id,photo_url').in('id', slice.map(s => s.id));
+        if (q.error) return;
+        const by = {};
+        (q.data || []).forEach(r => { by[String(r.id)] = r.photo_url || ''; });
+        slice.forEach(s => {
+          const url = by[String(s.id)];
+          if (url) s.photo_url = url;
+          else pfPhotoMiss[String(s.id)] = 1;
+        });
+      }
+    }
+    async function pfPhotoIdSet(userId) {
+      const set = {};
+      let from = 0;
+      while (from < 8000) {
+        const q = await supabaseClient.from('public_sightings').select('id').eq('user_id', userId).not('photo_url', 'is', null).range(from, from + 999);
+        if (q.error) return null;
+        (q.data || []).forEach(r => { set[r.id] = 1; });
+        if (!q.data || q.data.length < 1000) break;
+        from += 1000;
+      }
+      return set;
+    }
+    async function pfLoadProfileRows(profile, trusted) {
+      const hit = pfProfileCache[profile.id];
+      if (hit && hit.trusted === !!trusted && Date.now() - hit.at < 120000) return hit;
+      const rows = await pfPublicRows(cols => {
+        const fields = trusted ? cols + ',lat,lng' : cols;
+        return supabaseClient.from('public_sightings').select(fields).eq('user_id', profile.id).order('date', { ascending: false });
+      });
+      const photoIds = await pfPhotoIdSet(profile.id);
+      const pack = { at: Date.now(), trusted: !!trusted, rows: rows || [], photoIds: photoIds };
+      pfProfileCache[profile.id] = pack;
+      return pack;
+    }
+    function pfListItem(s, kind, profile, opts) {
+      opts = opts || {};
+      if (kind === 'photo') {
+        const flag = opts.flags ? ((s.share_public !== false && s.share_public !== 0) ? 'Public' : 'Private') : '';
+        const who = opts.byId ? (opts.byId[s.user_id] || profile) : profile;
+        return pfPhotoCell(s, { profile: who, pinnable: !!opts.pinnable, flag: flag });
+      }
+      const who = opts.byId ? (opts.byId[s.user_id] || {}) : profile;
+      return pfCheckin(s, who, opts.mine ? { localId: s.id, mine: true } : {});
+    }
+    function pfListHtml(rows, kind, profile, opts) {
+      opts = opts || {};
+      const page = rows.slice(0, Math.min(rows.length, PF_PAGE));
+      const boxClass = kind === 'photo' ? 'pf-grid' : 'pf-checkins';
+      let html = '<div class="' + boxClass + '" id="pf-list">' + page.map(s => pfListItem(s, kind, profile, opts)).join('') + '</div>';
+      if (rows.length > page.length) html += '<div id="pf-more" style="height:28px"></div>';
+      pfList = { rows: rows, shown: page.length, kind: kind, profile: profile, opts: opts, busy: false };
+      return html;
+    }
+    async function pfListMore() {
+      const st = pfList;
+      if (!st || st.busy || st.shown >= st.rows.length) return;
+      st.busy = true;
+      const next = st.rows.slice(st.shown, st.shown + PF_PAGE);
+      st.shown += next.length;
+      try {
+        await pfEnsurePhotos(next);
+        if (pfList !== st) return;
+        const box = document.getElementById('pf-list');
+        if (!box) return;
+        box.insertAdjacentHTML('beforeend', next.map(s => pfListItem(s, st.kind, st.profile, st.opts)).join(''));
+        const more = document.getElementById('pf-more');
+        if (st.shown >= st.rows.length && more) more.remove();
+        pfAttachSocial(next).then(() => { if (pfList === st) pfPaintReacts(box); });
+      } finally {
+        if (pfList === st) st.busy = false;
+      }
+    }
+    function pfOnListScroll() {
+      const scroller = document.querySelector('#profile-modal .sheet-b');
+      if (!scroller || !pfList || pfList.busy) return;
+      if (scroller.scrollTop + scroller.clientHeight < scroller.scrollHeight - 520) return;
+      pfListMore();
+    }
+    async function pfFillListScreen() {
+      const scroller = document.querySelector('#profile-modal .sheet-b');
+      let guard = 0;
+      while (scroller && pfList && pfList.shown < pfList.rows.length && scroller.scrollHeight <= scroller.clientHeight + 48 && guard < 5) {
+        guard += 1;
+        await pfListMore();
+      }
+    }
+    function pfBindList() {
+      const scroller = document.querySelector('#profile-modal .sheet-b');
+      if (scroller && !scroller._pfListBound) {
+        scroller._pfListBound = true;
+        scroller.addEventListener('scroll', pfOnListScroll, { passive: true });
+      }
+      setTimeout(pfFillListScreen, 40);
     }
     function pfPlaceLine(s) {
       const loc = String((s && s.location_name) || '').trim();
@@ -17717,6 +17845,9 @@
       });
       await supabaseClient.from('public_sightings').delete().eq('user_id', pfUser.id);
       pfPublicByKey = null;
+      pfPublicCounts = {};
+      pfFeedCache = null;
+      if (pfUser) delete pfProfileCache[pfUser.id];
       if (rows.length) {
         const err = await pfInsertPublic(rows);
         if (err) { pfMsg(err.message || 'Could not publish'); return; }
@@ -18063,15 +18194,12 @@
       let body = pfHero(pfSelf, st, counts, { actions: actions, mine: true }) + pfPinsHtml(pfRecentLocal(), pfSelf) + pfTabs('self');
       if (pfTab === 'sightings') {
         const rows = pfRecentLocal();
-        body += rows.length ? '<div class="pf-checkins">' + rows.map(s => pfCheckin(s, pfSelf, { localId: s.id, mine: true })).join('') + '</div>' :
+        body += rows.length ? pfListHtml(rows, 'checkin', pfSelf, { mine: true }) :
           '<div class="pf-empty">No sightings yet. Log a bird and it will show up here.</div>';
         body += '<p class="pf-note" id="pf-msg"></p>';
       } else if (pfTab === 'photos') {
         const rows = pfRecentLocal().filter(s => s.photo_url);
-        body += rows.length ? '<div class="pf-grid">' + rows.map(s => {
-          const pub = s.share_public !== false && s.share_public !== 0;
-          return pfPhotoCell(s, { profile: pfSelf, pinnable: true, flag: pub ? 'Public' : 'Private' });
-        }).join('') + '</div>' : '<div class="pf-empty">Photos you add to a sighting show up here.</div>';
+        body += rows.length ? pfListHtml(rows, 'photo', pfSelf, { pinnable: true, flags: true }) : '<div class="pf-empty">Photos you add to a sighting show up here.</div>';
         body += '<p class="pf-note">Tap a photo to open the sighting. Pin up to three favorites for the top of your profile.</p><p class="pf-note" id="pf-msg"></p>';
       } else if (pfTab === 'map') {
         pfPrepareMap(pfRecentLocal(), true);
@@ -18099,12 +18227,14 @@
       }
       document.getElementById('pf-body').innerHTML = body;
       if (gen !== pfGen) return;
+      if (pfTab !== 'sightings' && pfTab !== 'photos' && pfTab !== 'feed') pfList = null;
+      if (pfTab === 'sightings' || pfTab === 'photos') pfBindList();
       if (pfTab === 'map') pfRenderProfileMap();
       else if (pfTab === 'feed') pfFillFeed(gen);
       else if (pfTab === 'people') pfFillPeople(gen);
       else if (pfTab === 'sightings' || pfTab === 'photos') {
-        const socialRows = pfTab === 'photos' ? pfRecentLocal().filter(s => s.photo_url) : pfRecentLocal();
-        pfAttachSocial(socialRows).then(() => { if (gen === pfGen) pfPaintReacts(); });
+        const shown = pfList ? pfList.rows.slice(0, pfList.shown) : [];
+        pfAttachSocial(shown).then(() => { if (gen === pfGen) pfPaintReacts(); });
       }
     }
 
@@ -18119,30 +18249,39 @@
       const following = pfUser ? await pfAmFollowing(pfOther.id) : false;
       if (gen !== pfGen) return;
       const trusted = pfCanSeeExact(pfOther);
-      const rows = await pfPublicRows(cols => {
-        const fields = trusted ? cols + ',lat,lng' : cols;
-        return supabaseClient.from('public_sightings').select(fields).eq('user_id', pfOther.id).order('date', { ascending: false });
-      });
+      const pack = await pfLoadProfileRows(pfOther, trusted);
+      const rows = pack.rows;
+      if (gen !== pfGen) return;
+      await pfEnsurePhotos(pfPinnedMatches(rows, pfOther));
       if (gen !== pfGen) return;
       const actions = pfUser && pfUser.id !== pfOther.id
         ? '<button type="button" class="' + (following ? 'ghost' : 'btn-em') + '" data-act="' + (following ? 'unfollow' : 'follow') + '" data-id="' + pfEsc(pfOther.id) + '">' + (following ? 'Following' : 'Follow') + '</button>'
         : '';
       let body = pfHero(pfOther, null, counts, { actions: actions }) + pfPinsHtml(rows, pfOther) + pfTabs('other');
       if (pfTab === 'photos') {
-        const photos = rows.filter(s => pfSafeSrc(s.photo_url));
-        body += photos.length ? '<div class="pf-grid">' + photos.map(s => pfPhotoCell(s, { profile: pfOther })).join('') + '</div>' : '<div class="pf-empty">No public photos yet.</div>';
+        const photos = pack.photoIds ? rows.filter(s => pack.photoIds[s.id]) : rows;
+        await pfEnsurePhotos(photos.slice(0, PF_PAGE));
+        if (gen !== pfGen) return;
+        body += photos.length ? pfListHtml(photos, 'photo', pfOther, {}) : '<div class="pf-empty">No public photos yet.</div>';
       } else if (pfTab === 'map') {
         pfPrepareMap(rows, false);
         body += pfMapChrome();
       } else {
+        await pfEnsurePhotos(rows.slice(0, PF_PAGE));
+        if (gen !== pfGen) return;
         body += pfBoard(rows, { lifers: false, all: rows, headless: true });
-        body += rows.length ? '<div class="pf-checkins">' + rows.map(s => pfCheckin(s, pfOther)).join('') + '</div>' : '<div class="pf-empty">No public sightings yet.</div>';
+        body += rows.length ? pfListHtml(rows, 'checkin', pfOther, {}) : '<div class="pf-empty">No public sightings yet.</div>';
       }
       body += '<p class="pf-note" id="pf-msg"></p>';
       document.getElementById('pf-body').innerHTML = body;
       if (gen !== pfGen) return;
+      if (pfTab !== 'sightings' && pfTab !== 'photos') pfList = null;
+      if (pfTab === 'sightings' || pfTab === 'photos') pfBindList();
       if (pfTab === 'map') pfRenderProfileMap();
-      else if (pfTab === 'sightings' || pfTab === 'photos') pfAttachSocial(rows).then(() => { if (gen === pfGen) pfPaintReacts(); });
+      else if (pfTab === 'sightings' || pfTab === 'photos') {
+        const shown = pfList ? pfList.rows.slice(0, pfList.shown) : [];
+        pfAttachSocial(shown).then(() => { if (gen === pfGen) pfPaintReacts(); });
+      }
     }
 
     function pfPinnedKeys(profile) {
@@ -18161,11 +18300,19 @@
       const looseKey = parts.slice(0, 4).join('|');
       for (let i = 0; i < (rows || []).length; i++) {
         const s = rows[i];
-        if (!s || !pfSafeSrc(s.photo_url || s.photo_full)) continue;
+        if (!s) continue;
         if (pfSightKey(s) === key) return s;
         if (!loose && [s.species_code || '', String(s.date || '').slice(0, 10), pfCountyKey(s.county), s.state || ''].join('|') === looseKey) loose = s;
       }
       return loose;
+    }
+    function pfPinnedMatches(rows, profile) {
+      const hits = [];
+      pfPinnedKeys(profile).forEach(k => {
+        const s = pfFindPinned(rows, k);
+        if (s) hits.push(s);
+      });
+      return hits;
     }
     function pfPinsHtml(rows, profile) {
       const keys = pfPinnedKeys(profile);
@@ -18200,7 +18347,7 @@
       const flag = opts.flag ? '<span class="pf-flag">' + pfEsc(opts.flag) + '</span>' : '';
       return '<div class="cell">' +
         '<button type="button" class="pf-grid-hit" data-act="card" data-id="' + pfEsc(id) + '">' +
-          (src ? '<img src="' + src + '" alt="" />' : '') +
+          (src ? '<img src="' + src + '" alt="" loading="lazy" />' : '') +
           '<span class="pf-reacts corner" data-react="' + pfEsc(id) + '"></span>' +
           flag +
         '</button>' + pin + '</div>';
@@ -18246,19 +18393,24 @@
         pfPinsHtml(rows, pfSelf) + pfTabs('other');
       if (pfTab === 'photos') {
         const photos = rows.filter(s => pfSafeSrc(s.photo_url));
-        body += photos.length ? '<div class="pf-grid">' + photos.map(s => pfPhotoCell(s, { profile: pfSelf })).join('') + '</div>' : '<div class="pf-empty">No public photos yet.</div>';
+        body += photos.length ? pfListHtml(photos, 'photo', pfSelf, {}) : '<div class="pf-empty">No public photos yet.</div>';
       } else if (pfTab === 'map') {
         pfPrepareMap(rows, false);
         body += pfMapChrome();
       } else {
         body += pfBoard(rows, { lifers: false, all: rows, headless: true });
-        body += rows.length ? '<div class="pf-checkins">' + rows.map(s => pfCheckin(s, pfSelf)).join('') + '</div>' : '<div class="pf-empty">No public sightings yet.</div>';
+        body += rows.length ? pfListHtml(rows, 'checkin', pfSelf, {}) : '<div class="pf-empty">No public sightings yet.</div>';
       }
       body += '<p class="pf-note" id="pf-msg"></p>';
       document.getElementById('pf-body').innerHTML = body;
       if (gen !== pfGen) return;
+      if (pfTab !== 'sightings' && pfTab !== 'photos') pfList = null;
+      if (pfTab === 'sightings' || pfTab === 'photos') pfBindList();
       if (pfTab === 'map') pfRenderProfileMap();
-      else if (pfTab === 'sightings' || pfTab === 'photos') pfAttachSocial(rows).then(() => { if (gen === pfGen) pfPaintReacts(); });
+      else if (pfTab === 'sightings' || pfTab === 'photos') {
+        const shown = pfList ? pfList.rows.slice(0, pfList.shown) : [];
+        pfAttachSocial(shown).then(() => { if (gen === pfGen) pfPaintReacts(); });
+      }
     }
 
     function pfGuessState(rows) {
@@ -18680,6 +18832,20 @@
         });
       });
       const usePhotos = map.getZoom() >= 10;
+      if (usePhotos) {
+        const bounds = map.getBounds ? map.getBounds() : null;
+        const want = [];
+        pfMapSourceRows().forEach(s => {
+          if (!s || s.photo_url || s.photo_full || !pfIsPublicId(s.id)) return;
+          const pos = pfSightingPos(s, places);
+          if (!pos) return;
+          if (!bounds || bounds.contains([pos.lat, pos.lng])) want.push(s);
+        });
+        if (want.length) {
+          await pfEnsurePhotos(want.slice(0, 60));
+          if (token !== pfMapToken || pfMapMode !== 'sightings' || pfMap !== map) return;
+        }
+      }
       const pts = [];
       pfMapSourceRows().forEach(s => {
         const pos = pfSightingPos(s, places);
@@ -18979,7 +19145,7 @@
         ? '<button type="button" class="pf-checkin-shot" data-act="photo"' +
             (opts.localId ? ' data-id="' + pfEsc(opts.localId) + '"' : '') +
             ' data-name="' + pfEsc(name) + '" aria-label="View photo of ' + pfEsc(name) + '">' +
-            '<img src="' + src + '" alt="" /></button>'
+            '<img src="' + src + '" alt="" loading="lazy" /></button>'
         : '';
       let tools = '';
       if (opts.mine) {
@@ -19016,19 +19182,33 @@
       const follows = await supabaseClient.from('follows').select('following_id').eq('follower_id', pfUser.id);
       const ids = (follows.data || []).map(r => r.following_id);
       if (!ids.length) {
+        pfList = null;
         if (gen === pfGen && box.isConnected) box.innerHTML = '<div class="pf-empty">Follow someone to see their latest sightings. Find them under People.</div>';
         return;
       }
-      const sight = await pfPublicRows(cols => supabaseClient.from('public_sightings')
-        .select(cols).in('user_id', ids).order('date', { ascending: false }), 100);
-      const profs = await pfProfiles(ids);
+      const key = ids.slice().sort().join(',');
+      let rows;
+      let profs;
+      if (pfFeedCache && pfFeedCache.key === key && Date.now() - pfFeedCache.at < 60000) {
+        rows = pfFeedCache.rows;
+        profs = pfFeedCache.profs;
+      } else {
+        rows = await pfPublicRows(cols => supabaseClient.from('public_sightings')
+          .select(cols).in('user_id', ids).order('date', { ascending: false }), 100);
+        profs = await pfProfiles(ids);
+        if (gen !== pfGen || !box.isConnected) return;
+        await pfEnsurePhotos((rows || []).slice(0, PF_PAGE));
+        pfFeedCache = { at: Date.now(), key: key, rows: rows || [], profs: profs || [] };
+      }
       if (gen !== pfGen || !box.isConnected) return;
       const byId = {};
-      profs.forEach(p => { byId[p.id] = p; });
-      const rows = sight || [];
-      if (!rows.length) { box.innerHTML = '<div class="pf-empty">No public sightings from people you follow yet.</div>'; return; }
-      box.innerHTML = '<div class="pf-checkins">' + rows.map(s => pfCheckin(s, byId[s.user_id] || {})).join('') + '</div>';
-      pfAttachSocial(rows).then(() => { if (gen === pfGen && box.isConnected) pfPaintReacts(box); });
+      (profs || []).forEach(p => { byId[p.id] = p; });
+      rows = rows || [];
+      if (!rows.length) { pfList = null; box.innerHTML = '<div class="pf-empty">No public sightings from people you follow yet.</div>'; return; }
+      box.innerHTML = pfListHtml(rows, 'checkin', {}, { byId: byId });
+      pfBindList();
+      const shown = rows.slice(0, PF_PAGE);
+      pfAttachSocial(shown).then(() => { if (gen === pfGen && box.isConnected) pfPaintReacts(box); });
     }
 
     async function pfLookup() {
@@ -19157,15 +19337,18 @@
       if (pfPublicByKey) return pfPublicByKey;
       if (!pfUser) return {};
       const pub = await pfPublicRows(cols => {
-        const fields = cols.indexOf('location_name') >= 0
-          ? 'id,species_code,date,county,state,location_name'
-          : 'id,species_code,date,county,state';
+        let fields = 'id,species_code,date,county,state';
+        if (cols.indexOf('location_name') >= 0) fields += ',location_name';
+        if (cols.indexOf('like_count') >= 0) fields += ',like_count,comment_count';
         return supabaseClient.from('public_sightings').select(fields).eq('user_id', pfUser.id);
       });
       const map = {};
       (pub || []).forEach(p => {
         const k = pfSightKey(p);
         (map[k] = map[k] || []).push(p.id);
+        if (p.like_count != null || p.comment_count != null) {
+          pfPublicCounts[p.id] = { likes: Number(p.like_count) || 0, comments: Number(p.comment_count) || 0 };
+        }
       });
       pfPublicByKey = map;
       return map;
@@ -19217,33 +19400,48 @@
       return counts;
     }
     async function pfAttachSocial(rows) {
-      const list = rows || [];
-      const ids = [];
-      const locals = [];
+      const list = (rows || []).filter(s => s && s.id != null);
+      const pending = [];
       list.forEach(s => {
-        if (!s || s.id == null) return;
-        if (s.user_id) ids.push(s.id);
-        else locals.push(s);
+        if (s.like_count != null || s.comment_count != null) {
+          pfSocialCounts[String(s.id)] = { likes: Number(s.like_count) || 0, comments: Number(s.comment_count) || 0 };
+        } else pending.push(s);
       });
+      if (!pending.length) return;
+      const localRow = s => !pfIsPublicId(s.id);
       let keyToPublic = null;
-      if (locals.length && pfUser) {
-        keyToPublic = await pfPublicIndex();
-        locals.forEach(s => { (keyToPublic[pfSightKey(s)] || []).forEach(id => ids.push(id)); ids.push(s.id); });
-      }
+      if (pending.some(localRow) && pfUser) keyToPublic = await pfPublicIndex();
+      const still = [];
+      pending.forEach(s => {
+        const pubs = localRow(s) ? ((keyToPublic && keyToPublic[pfSightKey(s)]) || []) : [s.id];
+        if (pubs.length && pubs.every(id => pfPublicCounts[id])) {
+          let likes = 0, comments = 0;
+          pubs.forEach(id => {
+            likes += pfPublicCounts[id].likes;
+            comments += pfPublicCounts[id].comments;
+          });
+          pfSocialCounts[String(s.id)] = { likes: likes, comments: comments };
+        } else still.push(s);
+      });
+      if (!still.length || pfHasCounts === true) return;
+      const ids = [];
+      still.forEach(s => {
+        if (!localRow(s)) ids.push(s.id);
+        else ((keyToPublic && keyToPublic[pfSightKey(s)]) || []).forEach(id => ids.push(id));
+      });
+      if (!ids.length) return;
       const counts = await pfFetchCountMap(ids);
       Object.keys(counts).forEach(id => { pfSocialCounts[id] = counts[id]; });
-      if (keyToPublic) {
-        locals.forEach(s => {
-          const pubs = keyToPublic[pfSightKey(s)] || [];
-          let likes = counts[s.id] ? counts[s.id].likes : 0;
-          let comments = counts[s.id] ? counts[s.id].comments : 0;
-          pubs.forEach(id => {
-            const c = counts[id];
-            if (c) { likes += c.likes; comments += c.comments; }
-          });
-          pfSocialCounts[s.id] = { likes: likes, comments: comments };
+      still.forEach(s => {
+        if (!localRow(s)) return;
+        const pubs = (keyToPublic && keyToPublic[pfSightKey(s)]) || [];
+        let likes = 0, comments = 0;
+        pubs.forEach(id => {
+          const c = counts[id];
+          if (c) { likes += c.likes; comments += c.comments; }
         });
-      }
+        pfSocialCounts[String(s.id)] = { likes: likes, comments: comments };
+      });
     }
     async function pfLoadSocial(id) {
       const ids = await pfSocialIds(id);
@@ -19524,6 +19722,7 @@
       if (mine) pfPaintMore(more, p);
       else if (s.user_id && s.species_code) {
         const rows = await pfPublicRows(cols => supabaseClient.from('public_sightings').select(cols).eq('user_id', s.user_id).eq('species_code', s.species_code).limit(40));
+        await pfEnsurePhotos(rows);
         const shots = rows.filter(x => x.id !== s.id && pfSafeSrc(x.photo_url));
         if (pfDetail && pfDetail.s && pfDetail.s.id === s.id) pfPaintMore(shots, p);
       } else pfPaintMore([], p);
@@ -19685,6 +19884,7 @@
       }
       pfPaintNotes();
       panel.hidden = false;
+      if (!pfNotesLoading && Date.now() - pfNotesAt > 15000) pfRefreshNotes();
     }
     function pfClearNote(id) {
       const state = pfNoteState();
@@ -19717,49 +19917,87 @@
       pfOpenCard(note.sighting.id);
     }
     async function pfRefreshNotes() {
-      if (!pfUser) { pfNotes = []; pfPaintNoteBadge(); return; }
-      const mine = await pfPublicRows(cols => supabaseClient.from('public_sightings').select(cols).eq('user_id', pfUser.id).order('date', { ascending: false }));
-      const bySight = {};
-      mine.forEach(s => { bySight[s.id] = s; });
-      const ids = Object.keys(bySight);
-      if (!ids.length) { pfNotes = []; pfPaintNoteBadge(); if (!document.getElementById('pf-notes').hidden) pfPaintNotes(); return; }
-      const comments = [];
-      const likes = [];
-      for (let i = 0; i < ids.length; i += 60) {
-        const slice = ids.slice(i, i + 60);
-        const c = await supabaseClient.from('sighting_comments').select('id,sighting_id,user_id,body,created_at').in('sighting_id', slice).order('created_at', { ascending: false }).limit(80);
-        const l = await supabaseClient.from('sighting_likes').select('sighting_id,user_id,created_at').in('sighting_id', slice);
-        if (!c.error) comments.push.apply(comments, c.data || []);
-        if (!l.error) likes.push.apply(likes, l.data || []);
+      if (!pfUser || pfNotesLoading) { if (!pfUser) { pfNotes = []; pfPaintNoteBadge(); } return; }
+      pfNotesLoading = true;
+      try {
+        let comments = [];
+        let likes = [];
+        const pair = await Promise.all([
+          supabaseClient.from('sighting_comments').select('id,sighting_id,user_id,body,created_at').eq('owner_id', pfUser.id).order('created_at', { ascending: false }).limit(60),
+          supabaseClient.from('sighting_likes').select('sighting_id,user_id,created_at').eq('owner_id', pfUser.id).order('created_at', { ascending: false }).limit(60)
+        ]);
+        const cErr = pair[0].error;
+        const lErr = pair[1].error;
+        const missing = /owner_id|column|schema cache/i.test(((cErr && cErr.message) || '') + ' ' + ((lErr && lErr.message) || ''));
+        if (!cErr && !lErr) {
+          comments = pair[0].data || [];
+          likes = pair[1].data || [];
+        } else if (!missing) {
+          return;
+        } else {
+          const idq = await supabaseClient.from('public_sightings').select('id').eq('user_id', pfUser.id).order('date', { ascending: false }).limit(240);
+          const ids = ((idq && idq.data) || []).map(r => r.id);
+          const jobs = [];
+          for (let i = 0; i < ids.length; i += 80) {
+            const slice = ids.slice(i, i + 80);
+            jobs.push(Promise.all([
+              supabaseClient.from('sighting_comments').select('id,sighting_id,user_id,body,created_at').in('sighting_id', slice).order('created_at', { ascending: false }).limit(60),
+              supabaseClient.from('sighting_likes').select('sighting_id,user_id,created_at').in('sighting_id', slice).order('created_at', { ascending: false }).limit(60)
+            ]));
+          }
+          const parts = await Promise.all(jobs);
+          parts.forEach(part => {
+            if (part[0] && !part[0].error) comments.push.apply(comments, part[0].data || []);
+            if (part[1] && !part[1].error) likes.push.apply(likes, part[1].data || []);
+          });
+          comments.sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
+          likes.sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
+          comments = comments.slice(0, 60);
+          likes = likes.slice(0, 60);
+        }
+        const sightIds = [];
+        comments.concat(likes).forEach(r => {
+          if (r.sighting_id && sightIds.indexOf(r.sighting_id) < 0) sightIds.push(r.sighting_id);
+        });
+        const bySight = {};
+        if (sightIds.length) {
+          const sq = await supabaseClient.from('public_sightings').select('id,user_id,species_code,species_name,date,county,state,location_name,rarity').in('id', sightIds);
+          const sights = sq.data || [];
+          await pfEnsurePhotos(sights);
+          sights.forEach(s => { bySight[s.id] = s; });
+        }
+        const whoIds = {};
+        comments.forEach(c => { if (c.user_id && c.user_id !== pfUser.id) whoIds[c.user_id] = 1; });
+        likes.forEach(l => { if (l.user_id && l.user_id !== pfUser.id) whoIds[l.user_id] = 1; });
+        const profs = await pfProfiles(Object.keys(whoIds));
+        const who = {};
+        profs.forEach(p => { who[p.id] = p.display_name || p.username || 'Someone'; });
+        const events = [];
+        comments.forEach(c => {
+          if (!c.user_id || c.user_id === pfUser.id || !bySight[c.sighting_id]) return;
+          const s = bySight[c.sighting_id];
+          events.push({
+            id: 'c:' + c.id, kind: 'comment', at: c.created_at || '', who: who[c.user_id] || 'Someone',
+            body: String(c.body || '').slice(0, 90), bird: s.species_name || 'bird', photo: s.photo_url || '', sighting: s
+          });
+        });
+        likes.forEach(l => {
+          if (!l.user_id || l.user_id === pfUser.id || !bySight[l.sighting_id]) return;
+          const s = bySight[l.sighting_id];
+          events.push({
+            id: 'l:' + l.sighting_id + ':' + l.user_id, kind: 'like', at: l.created_at || '', who: who[l.user_id] || 'Someone',
+            body: '', bird: s.species_name || 'bird', photo: s.photo_url || '', sighting: s
+          });
+        });
+        events.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+        pfNotes = events.slice(0, 60);
+        pfNotesAt = Date.now();
+        pfPaintNoteBadge();
+        const panel = document.getElementById('pf-notes');
+        if (panel && !panel.hidden) pfPaintNotes();
+      } finally {
+        pfNotesLoading = false;
       }
-      const whoIds = {};
-      comments.forEach(c => { if (c.user_id && c.user_id !== pfUser.id) whoIds[c.user_id] = 1; });
-      likes.forEach(l => { if (l.user_id && l.user_id !== pfUser.id) whoIds[l.user_id] = 1; });
-      const profs = await pfProfiles(Object.keys(whoIds));
-      const who = {};
-      profs.forEach(p => { who[p.id] = p.display_name || p.username || 'Someone'; });
-      const events = [];
-      comments.forEach(c => {
-        if (!c.user_id || c.user_id === pfUser.id || !bySight[c.sighting_id]) return;
-        const s = bySight[c.sighting_id];
-        events.push({
-          id: 'c:' + c.id, kind: 'comment', at: c.created_at || '', who: who[c.user_id] || 'Someone',
-          body: String(c.body || '').slice(0, 90), bird: s.species_name || 'bird', photo: s.photo_url || '', sighting: s
-        });
-      });
-      likes.forEach(l => {
-        if (!l.user_id || l.user_id === pfUser.id || !bySight[l.sighting_id]) return;
-        const s = bySight[l.sighting_id];
-        events.push({
-          id: 'l:' + l.sighting_id + ':' + l.user_id, kind: 'like', at: l.created_at || '', who: who[l.user_id] || 'Someone',
-          body: '', bird: s.species_name || 'bird', photo: s.photo_url || '', sighting: s
-        });
-      });
-      events.sort((a, b) => String(b.at).localeCompare(String(a.at)));
-      pfNotes = events.slice(0, 60);
-      pfPaintNoteBadge();
-      const panel = document.getElementById('pf-notes');
-      if (panel && !panel.hidden) pfPaintNotes();
     }
     window.pfToggleNotes = pfToggleNotes;
 
@@ -20042,7 +20280,6 @@
     }
     pfBootUser();
     supabaseClient.auth.onAuthStateChange(() => { pfBootUser(); });
-    setInterval(() => { if (pfUser) pfRefreshNotes(); }, 45000);
   </script>
 </body>
 </html>
