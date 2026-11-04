@@ -205,6 +205,7 @@
     }
     .log-pop button:hover { background: var(--line); }
     .nav-btn {
+      position: relative;
       background: none; border: 0; color: var(--muted);
       font-size: 10px; font-weight: 650; letter-spacing: .02em;
       display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center;
@@ -322,7 +323,7 @@
     .icon-btn:hover { color: var(--em3); border-color: var(--em-dim); }
     .pf-avatar-slot { position: relative; }
     .pf-notes-btn {
-      position: absolute; top: -7px; right: -7px; z-index: 2;
+      position: absolute; top: 2px; right: 4px; z-index: 2; cursor: pointer;
       min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
       border: 2px solid var(--bg); background: #e11d48; color: #fff;
       font-size: 10px; font-weight: 800; line-height: 14px;
@@ -2101,15 +2102,19 @@
     }
     #profile-modal #pf-body {
       width: min(920px, 100%); margin: 0 auto;
-      padding: 18px 28px 80px;
-      padding-left: max(28px, env(safe-area-inset-left));
-      padding-right: max(28px, env(safe-area-inset-right));
+      padding: 10px 14px 64px;
+      padding-left: max(14px, env(safe-area-inset-left));
+      padding-right: max(14px, env(safe-area-inset-right));
     }
     .pf-banner {
-      position: relative; border: 1px solid var(--line-2); border-radius: 22px;
-      background: var(--panel); overflow: hidden; margin-bottom: 14px;
+      position: relative; border: 0; border-radius: 0; background: transparent;
+      margin: -10px -14px 10px; overflow: hidden;
     }
-    .pf-banner-bg { position: relative; height: 168px; background: var(--ribbon); overflow: hidden; }
+    .pf-banner-bg { position: relative; height: 248px; background: var(--ribbon); overflow: hidden; }
+    .pf-banner-bg::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(to bottom, transparent 28%, var(--bg) 92%);
+    }
     .pf-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
     .pf-banner-hit {
       position: absolute; inset: 0; border: 0; padding: 0; background: transparent; cursor: pointer;
@@ -2130,7 +2135,7 @@
     .pf-avatar-btn .pf-cam {
       right: 6px; bottom: 6px; padding: 0; width: 26px; height: 26px; justify-content: center;
     }
-    .pf-under { background: var(--panel); padding: 14px 16px 16px; }
+    .pf-under { background: transparent; padding: 0 14px 8px; margin-top: -96px; position: relative; z-index: 1; }
     .pf-bio-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: 8px; }
     .pf-under-actions { margin-left: auto; flex: none; display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
     .pf-under-actions .btn-em, .pf-under-actions .ghost { padding: 6px 10px; font-size: 12px; white-space: nowrap; }
@@ -2173,11 +2178,11 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 28px; font-weight: 800; letter-spacing: -.04em;
       background: var(--em-bg); color: var(--em3);
-      border: 3px solid var(--panel); box-shadow: 0 10px 24px rgba(0,0,0,.28);
+      border: 3px solid var(--bg); box-shadow: 0 8px 20px rgba(0,0,0,.35);
     }
     .pf-name { font-size: 26px; font-weight: 800; letter-spacing: -.04em; line-height: 1.05; }
-    .pf-handle { font-size: 13px; color: var(--muted); margin-top: 3px; }
-    .pf-social { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .pf-handle { font-size: 13px; color: var(--muted); margin-top: 1px; }
+    .pf-social { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
     .pf-social span {
       font-size: 12px; color: var(--muted); background: var(--panel-2);
       border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px; line-height: 1.3;
@@ -2201,23 +2206,42 @@
     .pf-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; padding-bottom: 6px; }
     .pf-tabs {
       position: sticky; top: 0; z-index: 3;
-      display: flex; align-items: center; gap: 6px; padding: 4px 0 12px; overflow-x: auto;
+      display: flex; align-items: center; gap: 4px; padding: 2px 0 6px; overflow-x: auto;
       background: linear-gradient(180deg, var(--bg) 72%, transparent);
     }
-    .pf-tabs .pf-seg { margin-left: auto; flex: none; }
+    .pf-tabs .pf-seg, .pf-tabs .pf-range-row { margin-left: auto; flex: none; }
+    .pf-board { margin-bottom: 14px; }
     .pf-board.headless .pf-metrics { margin-top: 0; }
     .pf-tabs button {
       background: var(--panel); border: 1px solid var(--line); color: var(--muted);
-      border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 750; white-space: nowrap;
+      border-radius: 999px; padding: 4px 9px; font-size: 11px; font-weight: 700; white-space: nowrap;
     }
     .pf-tabs button.on { color: #fff; background: var(--em); border-color: var(--em); }
+    
+    .pf-range-row {
+      display: inline-flex; gap: 0; margin: 2px 0 10px; padding: 2px;
+      background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px;
+    }
+    .pf-range-row button {
+      background: transparent; border: 0; color: var(--muted);
+      border-radius: 6px; padding: 4px 12px; font-size: 12px; font-weight: 650;
+    }
+    .pf-range-row button.on { color: var(--text); background: var(--panel); box-shadow: 0 1px 2px rgba(0,0,0,.18); }
+    .pf-icon-stack { position: absolute; top: 12px; right: 12px; z-index: 2; display: flex; flex-direction: column; gap: 6px; }
+    .pf-edit-mini {
+      width: 28px; height: 28px; border-radius: 999px;
+      border: 1px solid var(--line-2); background: color-mix(in srgb, var(--bg) 70%, transparent); color: var(--text);
+      display: inline-flex; align-items: center; justify-content: center; padding: 0; flex: none;
+    }
+    .pf-edit-mini svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .pf-name-row { display: flex; align-items: center; gap: 6px; }
     .pf-board-h { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin: 4px 2px 0; }
     .pf-kicker { font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--em3); }
     .pf-board-title { font-size: 20px; font-weight: 800; letter-spacing: -.03em; margin-top: 2px; }
     .pf-seg { display: flex; background: var(--panel); border: 1px solid var(--line-2); border-radius: 999px; padding: 3px; }
-    .pf-seg button { border: 0; background: transparent; color: var(--muted); border-radius: 999px; padding: 6px 11px; font-size: 12px; font-weight: 750; }
+    .pf-seg button { border: 0; background: transparent; color: var(--muted); border-radius: 999px; padding: 4px 9px; font-size: 11px; font-weight: 700; }
     .pf-seg button.on { background: var(--em); color: #fff; }
-    .pf-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+    .pf-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 6px 0; }
     .pf-metric {
       position: relative; overflow: hidden; background: var(--panel);
       border: 1px solid var(--line-2); border-radius: 18px; padding: 14px 14px 12px;
@@ -2225,21 +2249,22 @@
     .pf-metric b { position: relative; font-size: 32px; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
     .pf-metric span {
       position: relative; display: block; margin-top: 6px;
-      font-size: 11px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+      font-size: 11px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .pf-metric::after {
       content: ""; position: absolute; right: -16px; top: -22px; width: 84px; height: 84px; border-radius: 50%;
       background: radial-gradient(circle, rgba(16,185,129,.28), transparent 68%);
     }
     .pf-card {
-      background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
-      padding: 12px 14px 14px; margin-top: 8px;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+      padding: 8px 10px 6px; margin-top: 8px;
     }
     .pf-card-h { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
     .pf-swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
     .pf-swatch.em { background: #34d399; }
     .pf-swatch.gold { background: #fbbf24; }
-    .pf-chart { width: 100%; height: 128px; display: block; }
+    .pf-chart { width: 100%; height: auto; display: block; }
     .pf-heat { display: flex; flex-direction: column; gap: 3px; }
     .pf-heat-row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 3px; }
     .pf-heat-cell { display: block; aspect-ratio: 1; border-radius: 3px; background: var(--line); }
@@ -2256,82 +2281,134 @@
     html[data-theme="light"] .pf-heat-cell.lv2 { background: #34d399; }
     html[data-theme="light"] .pf-heat-cell.lv3 { background: #059669; }
     html[data-theme="light"] .pf-heat-cell.lv4 { background: #065f46; }
-    .pf-section { font-size: 13px; font-weight: 800; letter-spacing: -.02em; margin: 18px 2px 8px; }
-    .pf-checkins { display: flex; flex-direction: column; gap: 14px; }
-    .pf-checkin {
-      background: var(--panel); border: 1px solid var(--line-2); border-radius: 22px;
-      padding: 12px 12px 8px; box-shadow: 0 12px 28px rgba(0,0,0,.14);
+
+    .pf-follow-mini {
+      position: absolute; top: 12px; right: 12px; z-index: 2;
+      width: 32px; height: 32px; border-radius: 999px;
+      border: 1px solid var(--line-2); background: color-mix(in srgb, var(--bg) 70%, transparent);
+      color: var(--text); display: inline-flex; align-items: center; justify-content: center; padding: 0;
     }
-    .pf-checkin-who {
-      display: flex; gap: 10px; align-items: center; width: 100%; text-align: left; color: inherit;
-      background: none; border: 0; padding: 2px 2px 8px;
+    .pf-follow-mini svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .pf-follow-mini.on { color: var(--em3); border-color: var(--em); }
+
+    .pf-photo-choice {
+      position: fixed; z-index: 80; display: flex; flex-direction: column; gap: 4px;
+      background: var(--panel); border: 1px solid var(--line-2); border-radius: 12px;
+      padding: 6px; box-shadow: 0 16px 40px rgba(0,0,0,.4); min-width: 180px;
     }
-    .pf-checkin-av {
-      width: 42px; height: 42px; border-radius: 50%; flex: none; overflow: hidden;
-      background: var(--em-bg); color: var(--em3);
+    .pf-photo-choice[hidden] { display: none; }
+    .pf-photo-choice button {
+      background: none; border: 0; color: var(--text); text-align: left;
+      border-radius: 8px; padding: 8px 10px; font-size: 13px; font-weight: 650;
+    }
+    .pf-photo-choice button:hover { background: var(--line); }
+    .pf-section {
+      display: flex; align-items: center; gap: 10px;
+      margin: 16px 2px 8px; font-size: 11px; font-weight: 800;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--em3);
+    }
+    .pf-section::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    .pf-section span { flex: none; }
+
+    .bn-stack, .pf-checkins { display: flex; flex-direction: column; gap: 16px; }
+    .bn-card {
+      background: #141311;
+      border-radius: 22px;
+      overflow: hidden;
+      color: #fafaf9;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 16px 40px rgba(0,0,0,.28);
+    }
+    html[data-theme="light"] .bn-card {
+      background: #fff; color: #1c1917;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 12px 32px rgba(0,0,0,.06);
+    }
+    .bn-card { cursor: pointer; }
+    .bn-frame {
+      position: relative; display: block; width: 100%; padding: 0; border: 0;
+      aspect-ratio: 4 / 3; background: #1c1917; overflow: hidden;
+    }
+    .bn-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .bn-veil {
+      position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(to bottom, transparent 42%, #141311 96%);
+    }
+    html[data-theme="light"] .bn-veil { background: linear-gradient(to bottom, transparent 42%, #fff 96%); }
+    .bn-onphoto {
+      position: absolute; left: 16px; right: 16px; bottom: 2px;
+      display: flex; align-items: center; justify-content: flex-start;
+      pointer-events: none;
+    }
+    .bn-name-row { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; min-width: 0; }
+    html[data-theme="light"] .bn-onphoto .bn-sp { color: #1c1917; }
+    .bn-sp {
+      font-size: 20px; font-weight: 600; letter-spacing: -.03em; line-height: 1.05;
+      color: #fff; text-shadow: none;
+      text-align: left; white-space: nowrap; overflow: hidden; min-width: 0;
+    }
+    .bn-rar {
+      flex: none; width: 7px; height: 7px; border-radius: 50%; margin-top: 3px; margin-left: 2px;
+      background: #34d399;
+      box-shadow: 0 0 0 3px rgba(52,211,153,.28), 0 0 8px rgba(52,211,153,.45);
+    }
+    .bn-rar.rar-u { background: #fb923c; box-shadow: 0 0 0 3px rgba(251,146,60,.28), 0 0 8px rgba(251,146,60,.45); }
+    .bn-rar.rar-r { background: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,.28), 0 0 8px rgba(167,139,250,.45); }
+    .bn-rar.rar-p { background: #fbbf24; box-shadow: 0 0 0 3px rgba(251,191,36,.28), 0 0 8px rgba(251,191,36,.45); }
+    .bn-plate { padding: 6px 16px 14px; }
+    .bn-nophoto .bn-plate { padding-top: 16px; }
+    .bn-headline { display: none; }
+    .bn-nophoto .bn-headline {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      margin-bottom: 12px;
+    }
+    .bn-nophoto .bn-headline .bn-sp { color: inherit; text-shadow: none; font-size: 22px; }
+    .bn-who { display: flex; align-items: flex-start; gap: 12px; }
+    .bn-av {
+      width: 38px; height: 38px; border-radius: 50%; overflow: hidden; flex: none;
+      background: #292524; color: #e7e5e4;
       display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 800;
+      font-size: 13px; font-weight: 650; letter-spacing: -.02em;
     }
-    .pf-checkin-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .pf-checkin-id { min-width: 0; flex: 1; }
-    .pf-checkin-name {
-      display: block; font-size: 15px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2;
+    .bn-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .bn-meta { min-width: 0; flex: 1; }
+    .bn-name {
+      font-size: 15px; font-weight: 640; letter-spacing: -.02em; line-height: 1.15;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .pf-checkin-handle { font-weight: 650; color: var(--muted); margin-left: 5px; }
-    .pf-checkin-place {
-      display: block; margin-top: 1px; font-size: 13px; color: var(--text-2); font-weight: 650;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    .bn-user { margin-top: 2px; font-size: 13px; font-weight: 500; color: #a8a29e; line-height: 1.2; }
+    .bn-sub { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-top: 8px; }
+    .bn-place {
+      display: flex; align-items: flex-start; gap: 5px; min-width: 0; flex: 1;
+      font-size: 12.5px; font-weight: 500; color: #a8a29e; line-height: 1.35;
     }
-    .pf-checkin-place b { font-weight: 800; color: var(--text); }
-    .pf-checkin-sp {
-      padding: 2px 4px 10px; font-size: 20px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15;
+    .bn-place svg { width: 13px; height: 13px; margin-top: 1px; stroke: currentColor; fill: none; stroke-width: 1.6; flex: none; opacity: .7; }
+    .bn-place span { white-space: normal; }
+    .bn-date {
+      flex: none; margin-left: auto; padding-top: 1px;
+      font-size: 12px; font-weight: 500; color: #a8a29e; letter-spacing: -.01em;
     }
-    .pf-checkin-shot {
-      display: block; width: 100%; padding: 0; border: 0; border-radius: 16px; overflow: hidden;
-      position: relative; background: #1c1917; aspect-ratio: 16 / 11; cursor: zoom-in;
+    .bn-acts {
+      display: flex; align-items: center; gap: 18px;
+      margin-top: 10px; padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,.06);
     }
-    .pf-checkin-shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .pf-checkin { cursor: pointer; }
-    .pf-checkin-foot {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 2px 2px; font-size: 12px; color: var(--muted); font-weight: 650;
+    html[data-theme="light"] .bn-acts { border-top-color: rgba(0,0,0,.06); }
+    .bn-act {
+      display: inline-flex; align-items: center; gap: 6px; height: 18px;
+      color: #d6d3d1;
     }
-    .pf-rar {
-      display: inline-flex; align-items: center; gap: 5px;
-      background: rgba(18,16,14,.88); color: #fff;
-      border-radius: 999px; padding: 2px 8px 2px 3px;
-      font-size: 11px; font-weight: 750; letter-spacing: 0; line-height: 1;
+    html[data-theme="light"] .bn-act { color: #57534e; }
+    .bn-act svg {
+      width: 16px; height: 16px; display: block; flex: none;
+      stroke: currentColor; fill: none; stroke-width: 1.7;
+      stroke-linecap: round; stroke-linejoin: round;
     }
-    .pf-rar i { width: 12px; height: 12px; border-radius: 50%; display: block; background: #34d399; }
-    .pf-rar i.rar-u { background: #fb923c; }
-    .pf-rar i.rar-r { background: #a78bfa; }
-    .pf-rar i.rar-p { background: #fbbf24; }
-    .pf-checkin-date { font-size: 13px; font-weight: 650; }
-    .pf-checkin-end { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; }
-    .pf-reacts { display: inline-flex; align-items: center; gap: 10px; }
-    .pf-reacts:empty { display: none; }
-    .pf-react {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 14px; font-weight: 750; color: var(--text-2); line-height: 1;
+    .bn-act em {
+      font-style: normal; font-size: 13px; font-weight: 600;
+      line-height: 18px; height: 18px; display: inline-flex; align-items: center;
+      font-variant-numeric: tabular-nums; letter-spacing: -.01em;
     }
-    .pf-react b { font-weight: 800; line-height: 1; }
-    .pf-react.like { color: #fb7185; }
-    .pf-react svg { width: 18px; height: 18px; display: block; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
-    .pf-react.like svg { fill: currentColor; stroke: none; }
-    .pf-reacts.corner {
-      position: absolute; top: 8px; right: 8px; z-index: 1; margin: 0; gap: 6px;
-      display: inline-flex; align-items: center;
-    }
-    .pf-reacts.corner .pf-react {
-      background: rgba(0,0,0,.62); color: #fff; border-radius: 999px;
-      height: 26px; padding: 0 8px; font-size: 13px; gap: 4px;
-    }
-    .pf-reacts.corner .pf-react svg { width: 15px; height: 15px; }
-    .pf-reacts.corner .pf-react.like { color: #fff; }
-    .pf-checkin-tools { display: flex; gap: 4px; flex: none; }
-    .pf-checkin.slim .pf-checkin-sp { padding-bottom: 0; font-size: 16px; }
-    .pf-checkin.slim { padding-bottom: 6px; }
+    .bn-tools { display: flex; gap: 4px; margin-left: 8px; }
+
     #pf-detail[hidden] { display: none !important; }
     #pf-detail {
       position: fixed; inset: 0; z-index: 70; background: var(--bg); color: var(--text);
@@ -2342,7 +2419,23 @@
       padding: 0 16px; background: var(--header); border-bottom: 1px solid var(--line);
     }
     .pf-detail-bar button { background: none; border: 0; color: var(--em3); font-weight: 750; padding: 0; }
-    .pf-detail-body { flex: 1; overflow: auto; width: min(720px, 100%); margin: 0 auto; padding: 0 16px 64px; }
+    .pf-detail-body { flex: 1; overflow: auto; width: min(720px, 100%); margin: 0 auto; padding: 0 0 64px; }
+    .pf-detail-body { padding: 0 0 64px; }
+    .pf-detail-shot.bn-frame { width: 100%; margin: 0; aspect-ratio: 4 / 3; cursor: zoom-in; border-radius: 0; }
+    .pf-detail-shot.bn-frame img { object-fit: cover; max-height: none; background: #141311; }
+    .pf-detail-plate { border-radius: 0; }
+    .pf-spbox {
+      margin: 12px 16px 0; display: flex; align-items: center; gap: 12px;
+      background: #1c1b19; border: 1px solid rgba(255,255,255,.06); border-radius: 16px; padding: 10px 12px;
+    }
+    html[data-theme="light"] .pf-spbox { background: #f5f5f4; border-color: rgba(0,0,0,.06); }
+    .pf-detail-block { margin: 8px 16px 0; }
+    .pf-detail-block .pf-section { margin-top: 18px; }
+    .pf-like {
+      border: 0; background: transparent; color: #d6d3d1; padding: 0; font-weight: 600; font-size: 13px;
+    }
+    .pf-like.on { background: transparent; border: 0; color: #fb7185; }
+
     .pf-detail-shot {
       display: block; width: calc(100% + 32px); margin: 0 -16px 14px; padding: 0; border: 0;
       background: #111; cursor: zoom-in;
@@ -2351,25 +2444,26 @@
     .pf-detail-dn { font-size: 20px; font-weight: 800; letter-spacing: -.03em; }
     .pf-detail-un { font-size: 13px; color: var(--muted); margin-top: 2px; }
     .pf-detail-loc { font-size: 14px; font-weight: 700; margin-top: 4px; }
-    .pf-spbox {
-      position: relative; display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center;
-      margin-top: 14px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 18px; padding: 12px;
-    }
     .pf-spbox img, .pf-stock {
-      width: 64px; height: 64px; border-radius: 14px; object-fit: cover; background: var(--photo);
-      display: flex; align-items: center; justify-content: center; font-size: 26px; overflow: hidden;
+      width: 52px; height: 52px; border-radius: 12px; object-fit: cover; background: #292524; flex: none;
+      display: flex; align-items: center; justify-content: center; font-size: 22px; overflow: hidden;
     }
     .pf-stock img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 0; }
-    .pf-sp-name { font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
-    .pf-sp-sci { font-size: 13px; font-style: italic; color: var(--muted); margin: 2px 0 6px; }
+    .pf-sp-copy { min-width: 0; flex: 1; }
+    .pf-sp-name { font-size: 16px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+    .pf-sp-sci { font-size: 13px; font-style: italic; color: #a8a29e; margin-top: 2px; }
+    .pf-sp-rar { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; font-weight: 600; color: #34d399; }
+    .pf-sp-rar i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; display: block; }
+    .pf-sp-rar.rar-u { color: #fb923c; }
+    .pf-sp-rar.rar-r { color: #a78bfa; }
+    .pf-sp-rar.rar-p { color: #fbbf24; }
     .pf-got {
-      position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%;
-      background: color-mix(in srgb, var(--em) 14%, var(--panel));
-      color: var(--em3);
+      flex: none; width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(16,185,129,.16); color: #34d399;
       display: flex; align-items: center; justify-content: center;
-      border: 1px solid color-mix(in srgb, var(--em3) 65%, var(--line-2));
+      border: 1.5px solid #34d399;
     }
-    .pf-got svg { width: 13px; height: 13px; display: block; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .pf-got svg { width: 14px; height: 14px; display: block; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
     .pf-detail-block { margin-top: 18px; }
     .pf-detail-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 800; margin-bottom: 8px; }
     .pf-like {
@@ -2412,6 +2506,15 @@
       padding: 0; border: 0; border-radius: 16px; overflow: hidden; background: #111; cursor: pointer;
     }
     .pf-pin img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pf-pin-more img { filter: grayscale(.55) brightness(.55); }
+    .pf-pin-veil {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px; color: #fff;
+      background: rgba(0,0,0,.28);
+    }
+    .pf-pin-veil svg { width: 28px; height: 28px; stroke: #fff; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .pf-pin-veil b { font-size: 13px; font-weight: 800; letter-spacing: -.01em; }
+
     .pf-pin .pf-more-cap { padding: 28px 8px 8px; }
     .pf-pin .pf-more-cap b { font-size: 12px; }
     .pf-pin .pf-more-cap span {
@@ -2515,11 +2618,14 @@
     .rar-c { color: var(--em3); } .rar-u { color: var(--text-2); } .rar-r { color: var(--warn); } .rar-p { color: var(--gold-ink); }
     .pf-back { background: none; border: 0; color: var(--em3); font-weight: 700; font-size: 12px; padding: 0; }
     @media (max-width: 720px) {
+      .pf-banner { margin: -8px -12px 8px; }
+      .pf-banner-bg { height: 220px; }
+      .pf-under { margin-top: -84px; padding: 0 12px 6px; }
       #profile-modal .sheet-h { padding: 0 22px; }
       #profile-modal #pf-body {
-        padding: 14px 20px 72px;
-        padding-left: max(20px, env(safe-area-inset-left));
-        padding-right: max(20px, env(safe-area-inset-right));
+        padding: 8px 12px 60px;
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
       }
       .pf-name { font-size: 22px; }
       .pf-id { flex-wrap: wrap; }
@@ -2551,16 +2657,7 @@
     </div>
     <div style="display:flex;gap:8px;align-items:center">
       <button type="button" id="checklist-back" class="checklist-back" hidden onclick="returnToChecklist()">← Checklist</button>
-      <span class="pf-avatar-slot">
-      <button class="icon-btn profile-btn" type="button" id="btn-profile" onclick="openProfile()" title="Profile" aria-label="Profile">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="8" r="3.2"/>
-          <path d="M5.5 19.2c1.4-3 3.7-4.4 6.5-4.4s5.1 1.4 6.5 4.4"/>
-        </svg>
-        <span class="pf-initials" id="profile-btn-initials"></span>
-      </button>
-      <button type="button" id="pf-notes-btn" class="pf-notes-btn" hidden onclick="event.stopPropagation(); pfToggleNotes(event)">0</button>
-      </span>
+
       <button class="icon-btn" type="button" onclick="openKeyModal()" title="Settings" aria-label="Settings">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="12" r="3"/>
@@ -2981,6 +3078,11 @@
   </main>
 
   <nav>
+    <button class="nav-btn" id="nav-btn-feed" onclick="openProfile()" title="Feed" aria-label="Feed">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="6" rx="1.6"/><rect x="3.5" y="13.5" width="17" height="6" rx="1.6"/></svg>
+      Feed
+      <span id="pf-notes-btn" class="pf-notes-btn" hidden role="button" tabindex="0" onclick="event.stopPropagation(); pfToggleNotes(event)">0</span>
+    </button>
     <button class="nav-btn on" id="nav-btn-map" onclick="switchTab('map')">
       <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="3 6.5 9 4 15 6.5 21 4 21 17.5 15 20 9 17.5 3 20"/><line x1="9" y1="4" x2="9" y2="17.5"/><line x1="15" y1="6.5" x2="15" y2="20"/></svg>
       Map
@@ -17358,6 +17460,7 @@
       <div class="pf-notes-list" id="pf-notes-list"></div>
     </div>
   </div>
+  <div id="pf-photo-choice" class="pf-photo-choice" hidden></div>
   <div id="profile-modal" class="modal" onclick="if(event.target===this)closeProfile()">
     <div class="sheet">
       <div class="sheet-h">
@@ -17919,7 +18022,13 @@
           lifers++;
         }
       });
-      return { logs: rows.length, species: species.size, lifers: lifers, photos: rows.filter(s => s.photo_url).length };
+      const states = new Set();
+      const countries = new Set();
+      rows.forEach(s => {
+        if (s.state) states.add(s.state);
+        if (s.country) countries.add(s.country);
+      });
+      return { logs: rows.length, species: species.size, lifers: lifers, photos: rows.filter(s => s.photo_url).length, locations: states.size + countries.size };
     }
     function pfBuckets(rows, first, mode) {
       const now = new Date();
@@ -17983,20 +18092,21 @@
         buckets: buckets.map(b => ({ label: b.label, species: b.species.size, lifers: b.lifers.size }))
       };
     }
-    function pfChartSvg(buckets, showLifers) {
-      const w = 640, h = 118, pad = 2;
+    function pfChartSvg(buckets, showLifers, allTime) {
+      const w = 640, h = 150, pad = 2;
       const n = Math.max(1, buckets.length);
       const gap = n > 20 ? 3 : 8;
       const bw = (w - pad * 2 - gap * (n - 1)) / n;
-      const max = Math.max(1, ...buckets.map(b => Math.max(b.species, showLifers ? b.lifers : 0)));
-      const inner = h - 16;
+      const max = Math.max(1, ...buckets.map(b => allTime ? b.lifers : Math.max(b.species, showLifers ? b.lifers : 0)));
+      const inner = h - 12;
       let body = '';
       buckets.forEach((b, i) => {
         const x = pad + i * (bw + gap);
-        const sh = b.species ? Math.max(3, (b.species / max) * inner) : 0;
-        const slot = showLifers ? bw * 0.46 : bw;
-        if (sh) body += '<rect x="' + x.toFixed(1) + '" y="' + (inner - sh).toFixed(1) + '" width="' + slot.toFixed(1) + '" height="' + sh.toFixed(1) + '" rx="2.5" fill="#34d399"><title>' + pfEsc(b.label) + ' · ' + b.species + ' species</title></rect>';
-        if (showLifers && b.lifers) {
+        const val = allTime ? b.lifers : b.species;
+        const sh = val ? Math.max(3, (val / max) * inner) : 0;
+        const slot = (!allTime && showLifers) ? bw * 0.46 : bw;
+        if (sh) body += '<rect x="' + x.toFixed(1) + '" y="' + (inner - sh).toFixed(1) + '" width="' + slot.toFixed(1) + '" height="' + sh.toFixed(1) + '" rx="2.5" fill="' + (allTime ? '#fbbf24' : '#34d399') + '"><title>' + pfEsc(b.label) + ' · ' + val + (allTime ? ' lifers' : ' species') + '</title></rect>';
+        if (!allTime && showLifers && b.lifers) {
           const lh = Math.max(3, (b.lifers / max) * inner);
           body += '<rect x="' + (x + slot + 2).toFixed(1) + '" y="' + (inner - lh).toFixed(1) + '" width="' + Math.max(2, bw - slot - 2).toFixed(1) + '" height="' + lh.toFixed(1) + '" rx="2.5" fill="#fbbf24"><title>' + pfEsc(b.label) + ' · ' + b.lifers + ' lifers</title></rect>';
         }
@@ -18047,30 +18157,29 @@
     }
     function pfBoard(rows, opts) {
       opts = opts || {};
-      const showLifers = opts.lifers !== false;
+      const days = pfRange === '365' ? 365 : pfRange === '0' ? 0 : 30;
+      const showLifers = opts.lifers !== false && days !== 0;
       const all = opts.all || rows;
       const first = showLifers ? pfFirstDates(all) : null;
-      const days = pfRange === '365' ? 365 : pfRange === '0' ? 0 : 30;
       const windowRows = pfWindow(rows, days);
       const sum = pfSummarize(windowRows, first);
       const mode = days === 30 ? 'day' : days === 365 ? 'month' : 'all';
       const packed = pfBuckets(windowRows, first, mode);
       const chartLabel = mode === 'day' ? 'Each day' : packed.yearly ? 'Each year' : 'Each month';
       const rangeName = days === 30 ? '30 days' : days === 365 ? 'Year' : 'All time';
-      const metrics = [
-        ['Logs', sum.logs],
-        ['Species', sum.species],
-        showLifers ? ['Lifers', sum.lifers] : ['Photos', sum.photos]
-      ];
+      const allTime = days === 0;
+      const metrics = allTime
+        ? [['Photos', sum.photos], ['Lifers', sum.lifers], ['Locations', sum.locations]]
+        : [['Photos', sum.photos], ['Species', sum.species], ['Lifers', sum.lifers]];
       const ranges = [['30', '30 days'], ['365', 'Year'], ['0', 'All time']];
-      const head = opts.headless ? '' :
-        '<div class="pf-board-h"><div><div class="pf-kicker">Field activity</div><div class="pf-board-title">' + pfEsc(opts.title || 'Your recent pace') + '</div></div>' +
-        '<div class="pf-seg">' + ranges.map(it => '<button type="button" data-act="range" data-range="' + it[0] + '" class="' + (pfRange === it[0] ? 'on' : '') + '">' + it[1] + '</button>').join('') + '</div></div>';
+      const head = opts.noRange ? '' : '<div class="pf-range-row">' + ranges.map(it => '<button type="button" data-act="range" data-range="' + it[0] + '" class="' + (pfRange === it[0] ? 'on' : '') + '">' + it[1] + '</button>').join('') + '</div>';
       return '<section class="pf-board' + (opts.headless ? ' headless' : '') + '">' + head +
-        '<div class="pf-metrics">' + metrics.map(m => '<div class="pf-metric"><b>' + m[1] + '</b><span>' + m[0] + ' · ' + rangeName + '</span></div>').join('') + '</div>' +
-        '<div class="pf-card"><div class="pf-card-h"><span>' + chartLabel + '</span><span class="pf-swatch em"></span><span>Species</span>' +
-          (showLifers ? '<span class="pf-swatch gold"></span><span>Lifers</span>' : '') + '</div>' +
-          pfChartSvg(packed.buckets, showLifers) + '</div>' +
+        '<div class="pf-metrics">' + metrics.map(m => '<div class="pf-metric"><b>' + m[1] + '</b><span>' + m[0] + '</span></div>').join('') + '</div>' +
+        '<div class="pf-card"><div class="pf-card-h"><span>' + chartLabel + '</span>' +
+          (allTime
+            ? '<span class="pf-swatch gold"></span><span>Lifers</span>'
+            : '<span class="pf-swatch em"></span><span>Species</span>' + (showLifers ? '<span class="pf-swatch gold"></span><span>Lifers</span>' : '')) +
+          '</div>' + pfChartSvg(packed.buckets, showLifers, allTime) + '</div>' +
         '<div class="pf-card"><div class="pf-card-h"><span>Last 3 months</span><span class="pf-heat-legend"><i></i><i class="lv2"></i><i class="lv4"></i></span></div>' +
           pfCalendars(rows) + '</div></section>';
     }
@@ -18087,11 +18196,11 @@
     }
     function pfTabs(which) {
       const items = which === 'self'
-        ? [['feed','Feed'],['sightings','Sightings'],['photos','Photos'],['map','Map'],['awards','Awards'],['people','People']]
-        : [['sightings','Sightings'],['photos','Photos'],['map','Map']];
+        ? [['feed','Feed'],['sightings','Sightings'],['map','Map'],['awards','Awards'],['people','People']]
+        : [['sightings','Sightings'],['map','Map']];
       return '<div class="pf-tabs">' + items.map(it =>
         '<button type="button" data-act="tab" data-tab="' + it[0] + '" class="' + (pfTab === it[0] ? 'on' : '') + '">' + it[1] + '</button>'
-      ).join('') + (which === 'other' ? pfRangeSeg() : '') + '</div>';
+      ).join('') + '</div>';
     }
     function pfHero(profile, stats, counts, opts) {
       opts = opts || {};
@@ -18121,7 +18230,11 @@
           ? '<button type="button" class="pf-banner-hit" data-act="pick-cover" aria-label="' + (cover ? 'Change cover photo' : 'Add cover photo') + '"></button>' + (cover ? '' : '<span class="pf-cam">' + cam + 'Cover</span>')
           : '');
       const underActions = opts.actions ? '<div class="pf-under-actions">' + opts.actions + '</div>' : '';
-      return '<section class="pf-banner">' +
+      const followIcon = opts.followBtn || '';
+      const iconStack = mine
+        ? '<div class="pf-icon-stack"><button type="button" class="pf-edit-mini" data-act="edit" aria-label="Edit profile" title="Edit profile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10.5-10.5a1.5 1.5 0 0 0 0-2.1l-1.9-1.9a1.5 1.5 0 0 0-2.1 0L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button><button type="button" class="pf-edit-mini" data-act="preview" aria-label="Public View" title="Public View"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>'
+        : '';
+      return '<section class="pf-banner">' + iconStack + followIcon +
         '<div class="pf-banner-bg" id="pf-cover-frame">' + coverEl + '</div>' +
         '<div class="pf-under">' +
         '<div class="pf-id">' +
@@ -18189,8 +18302,7 @@
           '<p class="pf-note" id="pf-msg"></p>';
         return;
       }
-      const actions = '<button type="button" class="ghost" data-act="preview">View as others</button>' +
-        '<button type="button" class="btn-em" data-act="edit">Edit profile</button>';
+      const actions = '';
       let body = pfHero(pfSelf, st, counts, { actions: actions, mine: true }) + pfPinsHtml(pfRecentLocal(), pfSelf) + pfTabs('self');
       if (pfTab === 'sightings') {
         const rows = pfRecentLocal();
@@ -18221,11 +18333,15 @@
           '<button type="button" class="btn-em" data-act="awards">Open awards</button>' +
           '<p class="pf-note">Awards live with your profile now. State and country lists still follow the stats mode in Settings.</p></div>';
       } else {
-        body += pfBoard(pfLocalRows(), { title: 'How the field has been' });
-        body += '<div class="pf-section">From people you follow</div>';
+        body += '<div class="pf-section"><span>Activity</span></div>';
+        body += pfBoard(pfLocalRows());
+        body += '<div class="pf-section"><span>Photos</span></div>';
+        body += pfRecentPhotosStrip(pfRecentLocal(), pfSelf);
+        body += '<div class="pf-section"><span>From people you follow</span></div>';
         body += '<div id="pf-feed"><div class="pf-empty">Loading feed…</div></div><p class="pf-note" id="pf-msg"></p>';
       }
       document.getElementById('pf-body').innerHTML = body;
+      pfFitSpecies();
       if (gen !== pfGen) return;
       if (pfTab !== 'sightings' && pfTab !== 'photos' && pfTab !== 'feed') pfList = null;
       if (pfTab === 'sightings' || pfTab === 'photos') pfBindList();
@@ -18254,10 +18370,15 @@
       if (gen !== pfGen) return;
       await pfEnsurePhotos(pfPinnedMatches(rows, pfOther));
       if (gen !== pfGen) return;
-      const actions = pfUser && pfUser.id !== pfOther.id
-        ? '<button type="button" class="' + (following ? 'ghost' : 'btn-em') + '" data-act="' + (following ? 'unfollow' : 'follow') + '" data-id="' + pfEsc(pfOther.id) + '">' + (following ? 'Following' : 'Follow') + '</button>'
+      const actions = '';
+      const followBtn = pfUser && pfUser.id !== pfOther.id
+        ? '<button type="button" class="pf-follow-mini' + (following ? ' on' : '') + '" data-act="' + (following ? 'unfollow' : 'follow') + '" data-id="' + pfEsc(pfOther.id) + '" aria-label="' + (following ? 'Following' : 'Follow') + '" title="' + (following ? 'Following' : 'Follow') + '">' +
+            (following
+              ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7.5"/></svg>'
+              : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.2"/><path d="M19 8v6M16 11h6"/></svg>') +
+          '</div>'
         : '';
-      let body = pfHero(pfOther, null, counts, { actions: actions }) + pfPinsHtml(rows, pfOther) + pfTabs('other');
+      let body = pfHero(pfOther, null, counts, { actions: actions, followBtn: followBtn }) + pfPinsHtml(rows, pfOther) + pfTabs('other');
       if (pfTab === 'photos') {
         const photos = pack.photoIds ? rows.filter(s => pack.photoIds[s.id]) : rows;
         await pfEnsurePhotos(photos.slice(0, PF_PAGE));
@@ -18269,11 +18390,16 @@
       } else {
         await pfEnsurePhotos(rows.slice(0, PF_PAGE));
         if (gen !== pfGen) return;
-        body += pfBoard(rows, { lifers: false, all: rows, headless: true });
+        body += '<div class="pf-section"><span>Activity</span></div>';
+        body += pfBoard(rows, { all: rows });
+        body += '<div class="pf-section"><span>Photos</span></div>';
+        body += pfRecentPhotosStrip(rows, pfOther);
+        body += '<div class="pf-section"><span>Sightings</span></div>';
         body += rows.length ? pfListHtml(rows, 'checkin', pfOther, {}) : '<div class="pf-empty">No public sightings yet.</div>';
       }
       body += '<p class="pf-note" id="pf-msg"></p>';
       document.getElementById('pf-body').innerHTML = body;
+      pfFitSpecies();
       if (gen !== pfGen) return;
       if (pfTab !== 'sightings' && pfTab !== 'photos') pfList = null;
       if (pfTab === 'sightings' || pfTab === 'photos') pfBindList();
@@ -18313,6 +18439,25 @@
         if (s) hits.push(s);
       });
       return hits;
+    }
+
+    function pfRecentPhotosStrip(rows, profile) {
+      const photos = (rows || []).filter(s => s && pfSafeSrc(s.photo_url || s.photo_full));
+      if (!photos.length) return '';
+      const shown = photos.slice(0, 3);
+      const cards = shown.map((s, i) => {
+        const src = pfSafeSrc(s.photo_full || s.photo_url);
+        if (s.id) pfCardIndex[s.id] = { s: s, p: profile || pfSelf || {} };
+        const last = i === 2 && photos.length > 2;
+        if (last) {
+          return '<button type="button" class="pf-pin pf-pin-more" data-act="view-all-photos">' +
+            '<img src="' + pfEsc(src) + '" alt="" />' +
+            '<span class="pf-pin-veil"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.4"/><path d="M3.5 16.2l4.6-4.2 3.2 2.8 3.1-3.6 6.1 5"/></svg><b>View All</b></span></button>';
+        }
+        return '<button type="button" class="pf-pin" data-act="card" data-id="' + pfEsc(s.id) + '">' +
+          '<img src="' + pfEsc(src) + '" alt="" /></button>';
+      }).join('');
+      return '<div class="pf-pins pf-recent-photos">' + cards + '</div>';
     }
     function pfPinsHtml(rows, profile) {
       const keys = pfPinnedKeys(profile);
@@ -18398,11 +18543,16 @@
         pfPrepareMap(rows, false);
         body += pfMapChrome();
       } else {
-        body += pfBoard(rows, { lifers: false, all: rows, headless: true });
+        body += '<div class="pf-section"><span>Activity</span></div>';
+        body += pfBoard(rows, { all: rows });
+        body += '<div class="pf-section"><span>Photos</span></div>';
+        body += pfRecentPhotosStrip(rows, pfSelf);
+        body += '<div class="pf-section"><span>Sightings</span></div>';
         body += rows.length ? pfListHtml(rows, 'checkin', pfSelf, {}) : '<div class="pf-empty">No public sightings yet.</div>';
       }
       body += '<p class="pf-note" id="pf-msg"></p>';
       document.getElementById('pf-body').innerHTML = body;
+      pfFitSpecies();
       if (gen !== pfGen) return;
       if (pfTab !== 'sightings' && pfTab !== 'photos') pfList = null;
       if (pfTab === 'sightings' || pfTab === 'photos') pfBindList();
@@ -19126,6 +19276,20 @@
       if (!rar) return '';
       return '<span class="pf-rar"><i class="' + pfRarClass(rar) + '"></i>' + pfEsc(rar) + '</span>';
     }
+
+    function pfFitSpecies() {
+      document.querySelectorAll('.bn-sp').forEach(el => {
+        el.style.fontSize = '';
+        const max = el.closest('.bn-onphoto') ? 20 : 20;
+        const min = 15;
+        let size = max;
+        el.style.fontSize = size + 'px';
+        while (el.scrollWidth > el.clientWidth + 1 && size > min) {
+          size -= 0.5;
+          el.style.fontSize = size + 'px';
+        }
+      });
+    }
     function pfCheckin(s, p, opts) {
       opts = opts || {};
       p = p || {};
@@ -19138,44 +19302,44 @@
       const name = s.species_name || pfSpName(s.species_code);
       const rar = s.rarity || (opts.mine ? pfRarity(s.species_code, s.state) : '');
       const src = pfSafeSrc(s.photo_url);
-      const place = where
-        ? '<span class="pf-checkin-place">at <b>' + pfEsc(where) + '</b></span>'
-        : '<span class="pf-checkin-place">shared a sighting</span>';
-      const shot = src
-        ? '<button type="button" class="pf-checkin-shot" data-act="photo"' +
-            (opts.localId ? ' data-id="' + pfEsc(opts.localId) + '"' : '') +
-            ' data-name="' + pfEsc(name) + '" aria-label="View photo of ' + pfEsc(name) + '">' +
-            '<img src="' + src + '" alt="" loading="lazy" /></button>'
+      const pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5c.2 0 5.2-4.6 5.2-9.3a5.2 5.2 0 0 0-10.4 0c0 4.7 5 9.3 5.2 9.3z"/><circle cx="12" cy="11.1" r="1.6"/></svg>';
+      const rarHtml = rar ? '<span class="bn-rar ' + pfRarClass(rar) + '" title="' + pfEsc(rar) + '"></span>' : '';
+      const frame = src
+        ? '<div class="bn-frame">' +
+            '<img src="' + src + '" alt="" loading="lazy" />' +
+            '<span class="bn-veil"></span>' +
+            '<span class="bn-onphoto"><span class="bn-name-row"><span class="bn-sp">' + pfEsc(name) + '</span>' + rarHtml + '</span></span>' +
+          '</div>'
         : '';
+      const headline = src ? '' : '<div class="bn-headline"><span class="bn-name-row"><span class="bn-sp">' + pfEsc(name) + '</span>' + rarHtml + '</span></div>';
+      const place = where ? '<div class="bn-place">' + pin + '<span>' + pfEsc(where) + '</span></div>' : '';
       let tools = '';
       if (opts.mine) {
         const pub = s.share_public !== false && s.share_public !== 0;
-        tools = '<span class="pf-checkin-tools">' +
-          (s.photo_url ? '<button type="button" class="pf-ib' + (pub ? ' on' : '') + '" data-act="share-public" data-id="' + pfEsc(s.id) + '" title="' + (pub ? 'Photo is public' : 'Photo is private') + '" aria-label="' + (pub ? 'Photo is public' : 'Photo is private') + '">' + pfSvg(pub ? 'eye' : 'eyeoff') + '</button>' : '') +
-          '<button type="button" class="pf-ib' + (s.share_exact ? ' on' : '') + '" data-act="share-exact" data-id="' + pfEsc(s.id) + '" title="' + (s.share_exact ? 'Exact pin on' : 'County only') + '" aria-label="' + (s.share_exact ? 'Exact pin on' : 'County only') + '">' + pfSvg('pin') + '</button>' +
+        tools = '<span class="bn-tools">' +
+          (s.photo_url ? '<button type="button" class="pf-ib' + (pub ? ' on' : '') + '" data-act="share-public" data-id="' + pfEsc(s.id) + '" title="' + (pub ? 'Photo is public' : 'Photo is private') + '">' + pfSvg(pub ? 'eye' : 'eyeoff') + '</button>' : '') +
+          '<button type="button" class="pf-ib' + (s.share_exact ? ' on' : '') + '" data-act="share-exact" data-id="' + pfEsc(s.id) + '" title="' + (s.share_exact ? 'Exact pin on' : 'County only') + '">' + pfSvg('pin') + '</button>' +
           '</span>';
       }
-      const exact = (!opts.mine && s.lat != null && s.lng != null) ? '<span class="pf-checkin-exact">Exact</span>' : '';
-      return '<article class="pf-checkin' + (src ? '' : ' slim') + '" data-act="card" data-id="' + pfEsc(s.id || '') + '">' +
-        '<div class="pf-checkin-who">' +
-          '<span class="pf-checkin-av">' + face + '</span>' +
-          '<span class="pf-checkin-id">' +
-            '<span class="pf-checkin-name">' + pfEsc(who) + (handle ? '<span class="pf-checkin-handle">' + pfEsc(handle) + '</span>' : '') + '</span>' +
-            place +
-          '</span></div>' +
-        '<div class="pf-checkin-sp">' + pfEsc(name) + '</div>' +
-        shot +
-        '<div class="pf-checkin-foot">' +
-          pfRarPill(rar) +
-          exact +
-          '<span class="pf-checkin-end">' +
-            '<span class="pf-reacts" data-react="' + pfEsc(s.id || '') + '"></span>' +
-            '<span class="pf-checkin-date">' + pfEsc(pfDate(s.date) || '') + '</span>' +
-            tools +
-          '</span>' +
+      return '<article class="bn-card' + (src ? '' : ' bn-nophoto') + '" data-act="card" data-id="' + pfEsc(s.id || '') + '">' +
+        frame +
+        '<div class="bn-plate">' +
+          headline +
+          '<div class="bn-who">' +
+            '<span class="bn-av">' + face + '</span>' +
+            '<div class="bn-meta">' +
+              '<div class="bn-name">' + pfEsc(who) + '</div>' +
+              (handle ? '<div class="bn-user">' + pfEsc(handle) + '</div>' : '') +
+            '</div>' +
+            '<time class="bn-date">' + pfEsc(pfDate(s.date) || '') + '</time>' +
+          '</div>' +
+          (place ? '<div class="bn-sub">' + place + '</div>' : '') +
+          '<div class="bn-acts" data-react="' + pfEsc(s.id || '') + '"></div>' +
+          tools +
         '</div>' +
       '</article>';
     }
+
     async function pfFillFeed(gen) {
       const box = document.getElementById('pf-feed');
       if (!box) return;
@@ -19206,6 +19370,7 @@
       rows = rows || [];
       if (!rows.length) { pfList = null; box.innerHTML = '<div class="pf-empty">No public sightings from people you follow yet.</div>'; return; }
       box.innerHTML = pfListHtml(rows, 'checkin', {}, { byId: byId });
+      pfFitSpecies();
       pfBindList();
       const shown = rows.slice(0, PF_PAGE);
       pfAttachSocial(shown).then(() => { if (gen === pfGen && box.isConnected) pfPaintReacts(box); });
@@ -19363,19 +19528,28 @@
       return ids;
     }
     function pfHeartSvg() {
-      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-9a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 4.6-7 9-7 9z"/></svg>';
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19.4s-6.4-3.9-6.4-8.2A3.6 3.6 0 0 1 12 8.6a3.6 3.6 0 0 1 6.4 2.6c0 4.3-6.4 8.2-6.4 8.2z"/></svg>';
     }
     function pfBubbleSvg() {
-      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H10l-4 3v-3H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/></svg>';
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5h11a1.5 1.5 0 0 1 1.5 1.5v6.2a1.5 1.5 0 0 1-1.5 1.5H11l-3.6 2.6v-2.6H6.5A1.5 1.5 0 0 1 5 14.2V8a1.5 1.5 0 0 1 1.5-1.5z"/></svg>';
     }
     function pfPaintReacts(root) {
       const scope = root || document.getElementById('pf-body');
       if (!scope) return;
       scope.querySelectorAll('[data-react]').forEach(el => {
         const c = pfSocialCounts[el.getAttribute('data-react')] || { likes: 0, comments: 0 };
+        if (el.classList.contains('bn-acts')) {
+          if (!c.likes && !c.comments) { el.hidden = true; el.innerHTML = ''; return; }
+          el.hidden = false;
+          let html = '';
+          if (c.likes) html += '<span class="bn-act">' + pfHeartSvg() + '<em>' + c.likes + '</em></span>';
+          if (c.comments) html += '<span class="bn-act">' + pfBubbleSvg() + '<em>' + c.comments + '</em></span>';
+          el.innerHTML = html;
+          return;
+        }
         let html = '';
-        if (c.likes > 0) html += '<span class="pf-react like"><b>' + c.likes + '</b>' + pfHeartSvg() + '</span>';
-        if (c.comments > 0) html += '<span class="pf-react comment"><b>' + c.comments + '</b>' + pfBubbleSvg() + '</span>';
+        if (c.likes > 0) html += '<span class="pf-react like">' + pfHeartSvg() + '<b>' + c.likes + '</b></span>';
+        if (c.comments > 0) html += '<span class="pf-react comment">' + pfBubbleSvg() + '<b>' + c.comments + '</b></span>';
         el.innerHTML = html;
       });
     }
@@ -19662,27 +19836,44 @@
       const root = document.getElementById('pf-detail');
       const body = document.getElementById('pf-detail-body');
       if (!root || !body) return;
+      const av = pfSafeSrc(p.public_stats && p.public_stats.avatar);
+      const face = av ? '<img src="' + av + '" alt="" />' : pfEsc(pfInitials(who));
+      const pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5c.2 0 5.2-4.6 5.2-9.3a5.2 5.2 0 0 0-10.4 0c0 4.7 5 9.3 5.2 9.3z"/><circle cx="12" cy="11.1" r="1.6"/></svg>';
+      const rarDot = rar ? '<span class="bn-rar ' + pfRarClass(rar) + '" title="' + pfEsc(rar) + '"></span>' : '';
+      const shot = src
+        ? '<button type="button" class="bn-frame pf-detail-shot" data-act="detail-photo" aria-label="Open full photo"><img src="' + src + '" alt="" /></button>'
+        : '';
       body.innerHTML =
-        (src ? '<button type="button" class="pf-detail-shot" data-act="detail-photo" aria-label="Open full photo"><img src="' + src + '" alt="" /></button>' : '') +
-        '<div class="pf-detail-un">' + pfEsc(handle || 'Birder') + '</div>' +
-        '<div class="pf-detail-dn">' + pfEsc(who) + '</div>' +
-        (where ? '<div class="pf-detail-loc">' + pfEsc(where) + '</div>' : '') +
-        pinRow +
+        shot +
+        '<div class="bn-plate pf-detail-plate">' +
+          '<div class="bn-who">' +
+            '<span class="bn-av">' + face + '</span>' +
+            '<div class="bn-meta">' +
+              '<div class="bn-name">' + pfEsc(who) + '</div>' +
+              (handle ? '<div class="bn-user">' + pfEsc(handle) + '</div>' : '') +
+            '</div>' +
+            '<time class="bn-date">' + pfEsc(pfDate(s.date) || '') + '</time>' +
+          '</div>' +
+          (where ? '<div class="bn-sub"><div class="bn-place">' + pin + '<span>' + pfEsc(where) + '</span></div></div>' : '') +
+          pinRow +
+        '</div>' +
         '<section class="pf-spbox">' +
-          (got ? '<span class="pf-got" title="On your list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7.5"/></svg></span>' : '') +
           '<div class="pf-stock" id="pf-stock">🐦</div>' +
-          '<div><div class="pf-sp-name">' + pfEsc(tax.comName || name) + '</div>' +
+          '<div class="pf-sp-copy">' +
+            '<div class="pf-sp-name">' + pfEsc(tax.comName || name) + '</div>' +
             (sci ? '<div class="pf-sp-sci">' + pfEsc(sci) + '</div>' : '') +
-            pfRarPill(rar) +
-          '</div></section>' +
-        '<section class="pf-detail-block"><div class="pf-detail-h"><span>Comments</span>' +
+            (rar ? '<div class="pf-sp-rar ' + pfRarClass(rar) + '"><i></i>' + pfEsc(rar) + '</div>' : '') +
+          '</div>' +
+          (got ? '<span class="pf-got" title="On your list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7.5"/></svg></span>' : '') +
+        '</section>' +
+        '<section class="pf-detail-block"><div class="pf-section"><span>Comments</span></div><div class="pf-detail-h">' +
           '<button type="button" class="pf-like" id="pf-like" data-act="like">♡ 0</button></div>' +
           '<div id="pf-comments"><div class="pf-empty">Loading…</div></div>' +
           (pfUser ? '<div class="pf-comment-row"><input id="pf-comment-in" maxlength="500" placeholder="Add a comment" /><button type="button" class="btn-em" data-act="comment">Post</button></div>' : '<p class="pf-note">Sign in to comment or like this photo.</p>') +
         '</section>' +
-        '<section class="pf-detail-block"><div class="pf-detail-h">Awards this log moved</div><div id="pf-awards"><div class="pf-empty">Checking awards…</div></div></section>' +
-        '<section class="pf-detail-block"><div class="pf-detail-h">Where</div><div id="pf-pin-map"></div><p class="pf-note" id="pf-pin-note" hidden></p></section>' +
-        '<section class="pf-detail-block"><div class="pf-detail-h">More of this species</div><div id="pf-more"><div class="pf-empty">Loading photos…</div></div></section>';
+        '<section class="pf-detail-block"><div class="pf-section"><span>Awards</span></div><div id="pf-awards"><div class="pf-empty">Checking awards…</div></div></section>' +
+        '<section class="pf-detail-block"><div class="pf-section"><span>Where</span></div><div id="pf-pin-map"></div><p class="pf-note" id="pf-pin-note" hidden></p></section>' +
+        '<section class="pf-detail-block"><div class="pf-section"><span>More of this species</span></div><div id="pf-more"><div class="pf-empty">Loading photos…</div></div></section>';
       root.hidden = false;
       body.scrollTop = 0;
       pfMountPin(s.lat, s.lng, name);
@@ -19721,10 +19912,14 @@
         : [];
       if (mine) pfPaintMore(more, p);
       else if (s.user_id && s.species_code) {
-        const rows = await pfPublicRows(cols => supabaseClient.from('public_sightings').select(cols).eq('user_id', s.user_id).eq('species_code', s.species_code).limit(40));
-        await pfEnsurePhotos(rows);
-        const shots = rows.filter(x => x.id !== s.id && pfSafeSrc(x.photo_url));
-        if (pfDetail && pfDetail.s && pfDetail.s.id === s.id) pfPaintMore(shots, p);
+        try {
+          const rows = await pfPublicRows(cols => supabaseClient.from('public_sightings').select(cols).eq('user_id', s.user_id).eq('species_code', s.species_code).limit(40));
+          await pfEnsurePhotos(rows || []);
+          const shots = (rows || []).filter(x => x.id !== s.id && pfSafeSrc(x.photo_url));
+          if (pfDetail && pfDetail.s && pfDetail.s.id === s.id) pfPaintMore(shots, p);
+        } catch (err) {
+          if (pfDetail && pfDetail.s && pfDetail.s.id === s.id) pfPaintMore([], p);
+        }
       } else pfPaintMore([], p);
     }
 
@@ -19752,6 +19947,7 @@
       else if (act === 'edit') { pfPreview = false; pfEditing = true; renderSelf(); }
       else if (act === 'cancel-edit') { pfEditing = false; renderSelf(); }
       else if (act === 'preview') { pfPreview = true; pfEditing = false; renderSelf(); }
+      else if (act === 'view-all-photos') { pfTab = 'photos'; pfOther ? renderOther() : renderSelf(); }
       else if (act === 'save') pfSave();
       else if (act === 'publish') publishPublic();
       else if (act === 'signout') supabaseClient.auth.signOut().then(() => { pfUser = null; pfSelf = null; pfOther = null; pfPreview = false; syncProfileButton(); renderAuth(); });
@@ -19773,8 +19969,8 @@
       else if (act === 'share-public') pfToggleShare(id, 'share_public');
       else if (act === 'share-exact') pfToggleShare(id, 'share_exact');
       else if (act === 'pin') pfTogglePin(id);
-      else if (act === 'pick-avatar') { const el = document.getElementById('pf-avatar-file'); if (el) el.click(); }
-      else if (act === 'pick-cover') { const el = document.getElementById('pf-cover-file'); if (el) el.click(); }
+      else if (act === 'pick-avatar') pfPhotoChoice('avatar', t);
+      else if (act === 'pick-cover') pfPhotoChoice('cover', t);
       else if (act === 'awards') { try { openAchModal(); } catch (err) {} }
       else if (act === 'card' && id) pfOpenCard(id);
       else if (act === 'photo') {
@@ -19874,13 +20070,14 @@
       const panel = document.getElementById('pf-notes');
       if (!panel) return;
       if (!panel.hidden) { pfCloseNotes(); return; }
-      const anchor = document.getElementById('btn-profile');
+      const anchor = document.getElementById('nav-btn-feed') || document.getElementById('pf-notes-btn');
       if (anchor) {
         const r = anchor.getBoundingClientRect();
         const width = Math.min(380, window.innerWidth - 20);
         panel.style.width = width + 'px';
-        panel.style.top = (r.bottom + 8) + 'px';
-        panel.style.left = Math.max(10, Math.min(r.right - width, window.innerWidth - width - 10)) + 'px';
+        panel.style.top = 'auto';
+        panel.style.bottom = (window.innerHeight - r.top + 8) + 'px';
+        panel.style.left = Math.max(10, Math.min(r.left + (r.width - width) / 2, window.innerWidth - width - 10)) + 'px';
       }
       pfPaintNotes();
       panel.hidden = false;
@@ -20157,6 +20354,42 @@
       syncProfileButton();
       if (!pfOther) renderSelf();
     }
+
+    function pfPhotoChoice(kind, anchor) {
+      const box = document.getElementById('pf-photo-choice');
+      if (!box) return;
+      const current = pfSelf && pfSelf.public_stats && pfSafeSrc(kind === 'cover' ? pfSelf.public_stats.cover : pfSelf.public_stats.avatar);
+      if (!current) {
+        const el = document.getElementById(kind === 'cover' ? 'pf-cover-file' : 'pf-avatar-file');
+        if (el) el.click();
+        return;
+      }
+      box.innerHTML =
+        '<button type="button" data-photo-act="adjust">Adjust current photo</button>' +
+        '<button type="button" data-photo-act="new">Choose new photo</button>';
+      box.hidden = false;
+      const r = anchor.getBoundingClientRect();
+      box.style.top = Math.min(r.bottom + 6, window.innerHeight - 100) + 'px';
+      box.style.left = Math.max(10, Math.min(r.left, window.innerWidth - 200)) + 'px';
+      box.onclick = e => {
+        const b = e.target.closest('[data-photo-act]');
+        if (!b) return;
+        box.hidden = true;
+        if (b.getAttribute('data-photo-act') === 'adjust') {
+          fetch(current).then(r => r.blob()).then(blob => pfReadFile(blob)).then(raw => pfBeginCrop(kind, raw || current)).catch(() => pfBeginCrop(kind, current));
+        }
+        else {
+          const el = document.getElementById(kind === 'cover' ? 'pf-cover-file' : 'pf-avatar-file');
+          if (el) el.click();
+        }
+      };
+    }
+    document.addEventListener('click', e => {
+      const box = document.getElementById('pf-photo-choice');
+      if (!box || box.hidden) return;
+      if (box.contains(e.target) || (e.target.closest && e.target.closest('[data-act="pick-avatar"],[data-act="pick-cover"]'))) return;
+      box.hidden = true;
+    });
     const pfAvatarFile = document.getElementById('pf-avatar-file');
     const pfCoverFile = document.getElementById('pf-cover-file');
     if (pfAvatarFile) pfAvatarFile.addEventListener('change', e => {
