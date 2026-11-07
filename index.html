@@ -322,11 +322,17 @@
     .icon-btn svg { width: 18px; height: 18px; display: block; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .icon-btn:hover { color: var(--em3); border-color: var(--em-dim); }
     .pf-avatar-slot { position: relative; }
+    .nav-ico { position: relative; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex: none; }
+    .nav-ico svg { width: 20px; height: 20px; }
     .pf-notes-btn {
-      position: absolute; top: 2px; right: 4px; z-index: 2; cursor: pointer;
-      min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
-      border: 2px solid var(--bg); background: #e11d48; color: #fff;
-      font-size: 10px; font-weight: 800; line-height: 14px;
+      position: absolute; top: -4px; right: -7px; z-index: 2; cursor: pointer;
+      min-width: 15px; height: 15px; padding: 0 3px; box-sizing: border-box;
+      border-radius: 999px; border: 1.5px solid var(--header);
+      background: #e11d48; color: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; line-height: 1; letter-spacing: -.03em;
+      font-variant-numeric: tabular-nums;
+      box-shadow: 0 1px 3px rgba(0,0,0,.28);
     }
     .pf-notes-btn[hidden] { display: none; }
     #pf-notes[hidden] { display: none; }
@@ -338,33 +344,49 @@
       box-shadow: 0 22px 60px rgba(0,0,0,.4); overflow: hidden;
     }
     .pf-notes-h {
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
-      padding: 14px 14px 12px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 10px 12px 16px;
+      border-bottom: 1px solid var(--line);
     }
-    .pf-notes-h b { font-size: 16px; letter-spacing: -.03em; }
-    .pf-notes-h button { background: none; border: 0; color: var(--muted); font-size: 12px; font-weight: 750; margin-left: auto; }
+    .pf-notes-h b { flex: 1; font-size: 15px; font-weight: 650; letter-spacing: -.02em; }
+    .pf-notes-tools { display: flex; align-items: center; gap: 2px; flex: none; }
+    .pf-notes-h button { background: none; border: 0; color: var(--muted); font-size: 12px; font-weight: 600; margin: 0; padding: 6px 8px; }
+    #pf-notes-close {
+      width: 28px; height: 28px; padding: 0; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--panel-2); color: var(--text-2);
+    }
+    #pf-notes-close svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; }
     .pf-notes-list { max-height: min(460px, 70vh); overflow: auto; }
     .pf-note-row {
-      display: flex; gap: 10px; align-items: center; width: 100%; text-align: left;
-      padding: 10px 12px; border: 0; border-top: 1px solid var(--line);
-      background: transparent; color: inherit; cursor: pointer;
+      display: flex; align-items: center; gap: 2px;
+      padding: 11px 8px 11px 14px; border-top: 1px solid var(--line);
     }
-    .pf-note-row.unread { background: color-mix(in srgb, var(--em) 8%, transparent); }
-    .pf-note-shot, .pf-note-ph {
-      width: 54px; height: 54px; border-radius: 12px; object-fit: cover; flex: none; background: var(--photo);
+    .pf-note-row:first-child { border-top: 0; }
+    .pf-note-open {
+      display: flex; align-items: center; gap: 11px; flex: 1; min-width: 0;
+      background: none; border: 0; padding: 0; color: inherit; text-align: left; cursor: pointer;
     }
-    .pf-note-ph { display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .pf-note-ph {
+      width: 40px; height: 40px; border-radius: 12px; flex: none;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--panel-2); color: #d6d3d1;
+    }
+    .pf-note-ph svg { width: 18px; height: 18px; display: block; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .pf-note-ph.like { color: #fb7185; background: rgba(251,113,133,.14); }
+    .pf-note-ph.like svg { fill: currentColor; stroke: none; }
+    .pf-note-ph.comment { color: #a8a29e; }
+    html[data-theme="light"] .pf-note-ph { color: #44403c; }
     .pf-note-copy { min-width: 0; flex: 1; }
-    .pf-note-copy b { display: block; font-size: 13px; letter-spacing: -.02em; }
-    .pf-note-copy span { display: block; margin-top: 2px; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pf-note-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; font-size: 11px; font-weight: 750; }
-    .pf-note-kind { color: var(--em3); }
-    .pf-note-kind.like { color: #fb7185; }
+    .pf-note-line { display: block; font-size: 13.5px; line-height: 1.35; color: var(--text-2); }
+    .pf-note-line b { color: var(--text); font-weight: 650; }
+    .pf-note-body { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pf-note-when { flex: none; font-size: 12px; font-weight: 500; color: var(--muted-2); }
     .pf-note-x {
-      flex: none; width: 26px; height: 26px; border-radius: 999px; border: 0;
-      background: transparent; color: var(--muted); font-size: 14px;
+      flex: none; width: 24px; height: 24px; border-radius: 999px; border: 0;
+      background: transparent; color: var(--muted-2); font-size: 13px; line-height: 1;
     }
-    .pf-notes-empty { padding: 28px 16px 32px; text-align: center; color: var(--muted); font-size: 13px; }
+    .pf-notes-empty { padding: 32px 16px 36px; text-align: center; color: var(--muted); font-size: 13px; }
     .ach-btn { position: relative; width: auto; padding: 0 8px 0 6px; gap: 5px; }
     .ach-btn .ach-count {
       font-family: ui-monospace, monospace; font-size: 11px; font-weight: 800;
@@ -2115,6 +2137,14 @@
       content: ""; position: absolute; inset: 0; pointer-events: none;
       background: linear-gradient(to bottom, transparent 28%, var(--bg) 92%);
     }
+
+    .pf-avatar.empty { background: #292524; color: #d6d3d1; }
+    .pf-avatar .pf-ph { font-size: 16px; font-weight: 700; letter-spacing: -.02em; }
+    .pf-cover-empty {
+      position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: flex-start;
+      padding: 16px; color: #a8a29e; font-size: 13px; font-weight: 600;
+      background: linear-gradient(160deg, #292524, #1c1917 60%);
+    }
     .pf-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
     .pf-banner-hit {
       position: absolute; inset: 0; border: 0; padding: 0; background: transparent; cursor: pointer;
@@ -2204,6 +2234,30 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .pf-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; padding-bottom: 6px; }
+
+    .pf-publish-note {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      margin: 8px 0 12px; padding: 10px 12px; border-radius: 12px;
+      background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.28);
+      color: #d1fae5; font-size: 13px;
+    }
+    html[data-theme="light"] .pf-publish-note { color: #065f46; background: rgba(16,185,129,.08); }
+    .pf-publish-note button { flex: none; }
+    .pf-lookup-wrap { position: relative; margin-bottom: 12px; }
+    .pf-lookup-wrap input {
+      width: 100%; background: var(--input); border: 1px solid var(--line-2);
+      border-radius: 12px; padding: 10px 12px; color: var(--text); font-size: 14px;
+    }
+    .pf-lookup-results { margin-top: 8px; }
+
+    .pf-send svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .pf-like.bn-act { background: none; border: 0; padding: 0; color: #d6d3d1; cursor: pointer; }
+    .pf-like.bn-act.on { color: #fb7185; }
+    .pf-like.bn-act.on svg { fill: currentColor; stroke: none; }
+    .bn-act { cursor: pointer; }
+    .bn-act.on { color: #fb7185; }
+    .bn-act.on svg { fill: currentColor; stroke: none; }
+    .pf-tabs button { padding: 6px 12px; font-size: 12px; font-weight: 650; }
     .pf-tabs {
       position: sticky; top: 0; z-index: 3;
       display: flex; align-items: center; gap: 4px; padding: 2px 0 6px; overflow-x: auto;
@@ -2264,7 +2318,12 @@
     .pf-swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
     .pf-swatch.em { background: #34d399; }
     .pf-swatch.gold { background: #fbbf24; }
-    .pf-chart { width: 100%; height: auto; display: block; }
+    .pf-chart { width: 100%; height: auto; display: block; overflow: visible; }
+    .pf-chart .area { transition: opacity .2s; }
+    .pf-chart .pt { transition: r .15s, opacity .15s; cursor: pointer; }
+    .pf-chart .pt:hover { r: 6; }
+    .pf-chart .tip { pointer-events: none; }
+    .pf-chart text { font-family: system-ui, -apple-system, sans-serif; }
     .pf-heat { display: flex; flex-direction: column; gap: 3px; }
     .pf-heat-row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 3px; }
     .pf-heat-cell { display: block; aspect-ratio: 1; border-radius: 3px; background: var(--line); }
@@ -2330,18 +2389,35 @@
     .bn-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .bn-veil {
       position: absolute; inset: 0; pointer-events: none;
-      background: linear-gradient(to bottom, transparent 42%, #141311 96%);
+      background: linear-gradient(to bottom, transparent 58%, rgba(20,19,17,.45) 78%, #141311 100%);
     }
-    html[data-theme="light"] .bn-veil { background: linear-gradient(to bottom, transparent 42%, #fff 96%); }
+    html[data-theme="light"] .bn-veil { background: linear-gradient(to bottom, transparent 58%, rgba(255,255,255,.5) 78%, #fff 100%); }
+
+    .bn-badges {
+      position: absolute; top: 10px; right: 10px; z-index: 2;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .bn-lifer {
+      display: inline-flex; align-items: center; height: 22px; padding: 0 8px;
+      border-radius: 999px; background: rgba(12,10,9,.72); color: #fcd34d;
+      border: 1px solid rgba(252,211,77,.45);
+      font-size: 11px; font-weight: 700; letter-spacing: .02em;
+    }
+    .bn-cover {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(12,10,9,.72); border: 1px solid rgba(251,191,36,.5); color: #fbbf24;
+    }
+    .bn-cover svg { width: 12px; height: 12px; display: block; fill: currentColor; }
     .bn-onphoto {
-      position: absolute; left: 16px; right: 16px; bottom: 2px;
+      position: absolute; left: 12px; right: 14px; bottom: 10px;
       display: flex; align-items: center; justify-content: flex-start;
       pointer-events: none;
     }
     .bn-name-row { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; min-width: 0; }
     html[data-theme="light"] .bn-onphoto .bn-sp { color: #1c1917; }
     .bn-sp {
-      font-size: 20px; font-weight: 600; letter-spacing: -.03em; line-height: 1.05;
+      font-size: 20px; font-weight: 600; letter-spacing: -.03em; line-height: 1.25; padding-bottom: 2px;
       color: #fff; text-shadow: none;
       text-align: left; white-space: nowrap; overflow: hidden; min-width: 0;
     }
@@ -2353,7 +2429,7 @@
     .bn-rar.rar-u { background: #fb923c; box-shadow: 0 0 0 3px rgba(251,146,60,.28), 0 0 8px rgba(251,146,60,.45); }
     .bn-rar.rar-r { background: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,.28), 0 0 8px rgba(167,139,250,.45); }
     .bn-rar.rar-p { background: #fbbf24; box-shadow: 0 0 0 3px rgba(251,191,36,.28), 0 0 8px rgba(251,191,36,.45); }
-    .bn-plate { padding: 6px 16px 14px; }
+    .bn-plate { padding: 8px 16px 12px; }
     .bn-nophoto .bn-plate { padding-top: 16px; }
     .bn-headline { display: none; }
     .bn-nophoto .bn-headline {
@@ -2361,6 +2437,12 @@
       margin-bottom: 12px;
     }
     .bn-nophoto .bn-headline .bn-sp { color: inherit; text-shadow: none; font-size: 22px; }
+
+    .bn-person { display: flex; align-items: flex-start; gap: 12px; min-width: 0; flex: 1; background: none; border: 0; padding: 0; color: inherit; text-align: left; cursor: pointer; }
+    .bn-person .bn-name { display: block; }
+    .pf-detail-acts { margin: 0 0 12px; padding-top: 0; border-top: 0; }
+    .pf-comment-hit { background: rgba(16,185,129,.12); border-radius: 10px; }
+    .pf-like.bn-act { height: 22px; }
     .bn-who { display: flex; align-items: flex-start; gap: 12px; }
     .bn-av {
       width: 38px; height: 38px; border-radius: 50%; overflow: hidden; flex: none;
@@ -2386,19 +2468,31 @@
       flex: none; margin-left: auto; padding-top: 1px;
       font-size: 12px; font-weight: 500; color: #a8a29e; letter-spacing: -.01em;
     }
+
+    .bn-acts { border-top: 0; margin-top: 12px; padding-top: 0; gap: 16px; }
+    .bn-act svg { width: 22px; height: 22px; }
+    .bn-like-line { margin-top: 8px; font-size: 13px; font-weight: 650; letter-spacing: -.01em; }
+    .pf-thread { margin: 4px 16px 0; }
+    .pf-comment { display: block; border: 0; padding: 3px 0; font-size: 14px; line-height: 1.4; }
+    .pf-comment b { font-weight: 650; margin-right: 4px; }
+    .pf-comment button { background: none; border: 0; color: #78716c; font-size: 11px; padding: 0 0 0 6px; }
+    .pf-comment-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,.06); padding-top: 8px; }
+    html[data-theme="light"] .pf-comment-row { border-top-color: rgba(0,0,0,.06); }
+    .pf-comment-row input { flex: 1; background: transparent; border: 0; border-radius: 0; padding: 6px 0; color: var(--text); font-size: 14px; }
+    .pf-send { width: auto; height: auto; border-radius: 0; background: none; color: var(--em3); font-weight: 700; font-size: 13px; padding: 0; }
     .bn-acts {
-      display: flex; align-items: center; gap: 18px;
-      margin-top: 10px; padding-top: 8px;
-      border-top: 1px solid rgba(255,255,255,.06);
+      display: flex; align-items: center; gap: 16px;
+      margin-top: 10px; padding-top: 2px; border: 0;
     }
     html[data-theme="light"] .bn-acts { border-top-color: rgba(0,0,0,.06); }
     .bn-act {
-      display: inline-flex; align-items: center; gap: 6px; height: 18px;
-      color: #d6d3d1;
+      display: inline-flex; align-items: center; gap: 5px; height: 22px;
+      background: none; border: 0; padding: 0; margin: 0;
+      color: #e7e5e4; cursor: pointer; -webkit-appearance: none; appearance: none;
     }
     html[data-theme="light"] .bn-act { color: #57534e; }
     .bn-act svg {
-      width: 16px; height: 16px; display: block; flex: none;
+      width: 20px; height: 20px; display: block; flex: none;
       stroke: currentColor; fill: none; stroke-width: 1.7;
       stroke-linecap: round; stroke-linejoin: round;
     }
@@ -2466,19 +2560,12 @@
     .pf-got svg { width: 14px; height: 14px; display: block; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
     .pf-detail-block { margin-top: 18px; }
     .pf-detail-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 800; margin-bottom: 8px; }
-    .pf-like {
-      display: inline-flex; align-items: center; gap: 5px; border-radius: 999px;
-      border: 1px solid var(--line-2); background: var(--panel); color: var(--text); padding: 4px 10px; font-weight: 750;
-    }
-    .pf-like.on { background: #9f1239; border-color: #9f1239; color: #fff; }
-    .pf-comment { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
-    .pf-comment-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .pf-comment b { display: block; font-size: 12px; margin-bottom: 2px; }
-    .pf-comment-top button { background: none; border: 0; color: var(--muted); font-size: 11px; font-weight: 750; padding: 0; }
-    .pf-comment-row { display: flex; gap: 8px; margin-top: 10px; }
-    .pf-comment-row input {
-      flex: 1; background: var(--input); border: 1px solid var(--line-2); border-radius: 10px; padding: 8px 10px;
-    }
+
+    .pf-comment { display: block; border: 0; padding: 3px 0; font-size: 14px; line-height: 1.4; }
+    .pf-comment b { display: inline; font-size: 14px; font-weight: 650; margin-right: 4px; }
+    .pf-comment button { background: none; border: 0; color: #78716c; font-size: 11px; }
+    .pf-comment-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    .pf-comment-row input { flex: 1; background: transparent; border: 0; padding: 6px 0; color: var(--text); }
     .pf-hscroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
     .pf-award {
       flex: none; width: 168px; scroll-snap-align: start;
@@ -2573,6 +2660,17 @@
     }
     .pf-grid img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .pf-grid-hit { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; cursor: pointer; }
+
+    .pf-detail-frame { position: relative; }
+    .pf-pin-ico {
+      position: absolute; top: 10px; right: 10px; z-index: 2;
+      width: 32px; height: 32px; border-radius: 999px; border: 0; padding: 0;
+      background: rgba(0,0,0,.55); color: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .pf-pin-ico svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+    .pf-pin-ico.on { background: var(--em); color: #fff; }
+    .pf-pin-ico.on svg { fill: currentColor; stroke: none; }
     .pf-pin-mini {
       position: absolute; top: 6px; left: 6px; z-index: 2;
       height: 22px; padding: 0 7px; border: 0; border-radius: 999px;
@@ -2634,6 +2732,57 @@
       .pf-metric b { font-size: 26px; }
     }
     .search-status { font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .settings-sheet { max-width: 920px !important; width: min(920px, 96vw); height: 84vh !important; min-height: 680px !important; max-height: 94vh; }
+    .settings-body {
+      display: grid; grid-template-columns: 240px 1fr; flex: 1; min-height: 0; height: calc(84vh - 52px);
+    }
+    .settings-nav {
+      border-right: 1px solid var(--line); padding: 8px 0; display: flex; flex-direction: column;
+      justify-content: flex-start; gap: 2px; overflow: visible; height: 100%;
+    }
+    .settings-nav button {
+      display: block; text-align: left; padding: 12px 20px; background: none; border: 0;
+      color: var(--text-2); font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 0;
+      flex: none;
+    }
+    .settings-nav button.on { background: var(--panel-2); color: var(--em3); }
+    .settings-nav button:hover { background: var(--panel-2); }
+    .settings-content { overflow-y: auto; padding: 20px 24px 28px; min-height: 0; height: 100%; }
+    .settings-section { display: none; }
+    .settings-section.on { display: block; }
+    .settings-section .field { margin-top: 16px; }
+    .settings-section .field:first-child { margin-top: 0; }
+    .settings-group { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .settings-group:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+    .settings-group h4 { margin: 0 0 8px; font-size: 13px; font-weight: 700; letter-spacing: .02em; }
+    .map-preview-wrap { margin-top: 12px; border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; height: 180px; background: var(--panel-2); position: relative; }
+    #map-tiles-preview { width: 100%; height: 100%; }
+    #settings-areas-map { width: 100%; height: 220px; background: var(--panel-2); }
+    #settings-areas-map .leaflet-container { height: 220px !important; width: 100% !important; }
+    #settings-areas-wrap .map-preview-wrap { height: 220px; overflow: hidden; }
+    .area-bar { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+    .area-bar[hidden] { display: none !important; }
+    .area-bar input { flex: 1; min-width: 0; }
+    .area-bar .ghost, .area-bar .btn-em { flex-shrink: 0; white-space: nowrap; }
+    #settings-area-editing-label { flex: 1; font-size: 13px; font-weight: 650; color: var(--text); letter-spacing: -.01em; }
+    .area-list { margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+    .area-row {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+      background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px;
+    }
+    .area-row b { flex: 1; font-size: 13px; font-weight: 650; cursor: pointer; }
+    .area-row b:hover { color: var(--em3); }
+    .area-row .ghost { padding: 4px 10px; font-size: 11px; }
+    .area-empty { font-size: 12px; color: var(--muted); padding: 8px 2px; }
+    @media (max-width: 720px) {
+      .settings-body { display: flex; flex-direction: column; height: auto; grid-template-columns: none; }
+      .settings-nav {
+        width: 100%; height: auto; flex-direction: row; overflow-x: auto; border-right: 0;
+        border-bottom: 1px solid var(--line); padding: 6px 4px; gap: 0;
+      }
+      .settings-nav button { white-space: nowrap; padding: 8px 14px; }
+      .settings-content { max-height: 62vh; height: auto; }
+    }
 </style>
 </head>
 <body>
@@ -3079,9 +3228,11 @@
 
   <nav>
     <button class="nav-btn" id="nav-btn-feed" onclick="openProfile()" title="Feed" aria-label="Feed">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="6" rx="1.6"/><rect x="3.5" y="13.5" width="17" height="6" rx="1.6"/></svg>
+      <span class="nav-ico">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="6" rx="1.6"/><rect x="3.5" y="13.5" width="17" height="6" rx="1.6"/></svg>
+        <span id="pf-notes-btn" class="pf-notes-btn" hidden role="button" tabindex="0" onclick="event.stopPropagation(); pfToggleNotes(event)">0</span>
+      </span>
       Feed
-      <span id="pf-notes-btn" class="pf-notes-btn" hidden role="button" tabindex="0" onclick="event.stopPropagation(); pfToggleNotes(event)">0</span>
     </button>
     <button class="nav-btn on" id="nav-btn-map" onclick="switchTab('map')">
       <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="3 6.5 9 4 15 6.5 21 4 21 17.5 15 20 9 17.5 3 20"/><line x1="9" y1="4" x2="9" y2="17.5"/><line x1="15" y1="6.5" x2="15" y2="20"/></svg>
@@ -3440,74 +3591,213 @@
   </div>
 
   <div id="key-modal" class="modal">
-    <div class="sheet">
+    <div class="sheet settings-sheet">
       <div class="sheet-h"><strong>Settings</strong><button class="x" onclick="closeKeyModal()">✕</button></div>
-      <div class="sheet-b">
-        <p class="hint">Radar and nearby targets call eBird from this browser. The key stays on this device.</p>
-        <div class="field">
-          <label>eBird API key</label>
-          <input type="text" id="form-ebird-key" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" />
-        </div>
-        <p class="hint">Get a key at ebird.org/api/keygen</p>
-        <div class="field" style="margin-top:14px">
-          <label>Photo ratings</label>
-          <div class="seg" role="group" aria-label="Show ratings">
-            <button type="button" id="btn-ratings-on" class="on" onclick="setRatingsDisplay(true)">On</button>
-            <button type="button" id="btn-ratings-off" onclick="setRatingsDisplay(false)">Off</button>
+      <div class="settings-body">
+        <nav class="settings-nav" id="settings-nav">
+          <button type="button" data-section="profile" class="on">Profile</button>
+          <button type="button" data-section="privacy">Privacy</button>
+          <button type="button" data-section="appearance">Appearance</button>
+          <button type="button" data-section="statistics">Statistics</button>
+          <button type="button" data-section="data">Data</button>
+        </nav>
+        <div class="settings-content">
+          <div id="settings-profile" class="settings-section on">
+            <div id="settings-profile-guest">
+              <p class="hint">Sign in from the feed to manage your public profile here.</p>
+            </div>
+            <div id="settings-profile-form" hidden>
+              <div class="field">
+                <label>Display name</label>
+                <input type="text" id="settings-dn" autocomplete="name" />
+              </div>
+              <div class="field">
+                <label>Username</label>
+                <input type="text" id="settings-un" autocomplete="username" />
+              </div>
+              <div class="field">
+                <label>Home region</label>
+                <input type="text" id="settings-rg" placeholder="North Carolina" />
+              </div>
+              <div class="field">
+                <label>Bio</label>
+                <textarea id="settings-bio" rows="3"></textarea>
+              </div>
+              <div class="field">
+                <label class="pf-switch" style="border:0;padding:4px 0">
+                  <span>Always update my public list when I log a bird or add a photo</span>
+                  <input id="settings-auto" type="checkbox" />
+                </label>
+                <p class="hint">Every sighting stays public: species, date, and county. Photos go with them unless you mark one private. Exact pins stay off until you turn them on for someone under Privacy.</p>
+              </div>
+              <div class="two" style="margin-top:18px">
+                <button type="button" class="btn-em" onclick="saveSettingsProfile()">Save profile</button>
+                <button type="button" class="ghost" onclick="signOutFromSettings()">Sign out</button>
+              </div>
+              <div class="settings-group" style="margin-top:22px">
+                <h4>Password</h4>
+                <div class="field">
+                  <label>New password</label>
+                  <input type="password" id="settings-new-pass" autocomplete="new-password" placeholder="At least 6 characters" />
+                </div>
+                <div class="field">
+                  <label>Confirm new password</label>
+                  <input type="password" id="settings-confirm-pass" autocomplete="new-password" />
+                </div>
+                <div class="two" style="margin-top:10px">
+                  <button type="button" class="ghost" onclick="changeSettingsPassword()">Change password</button>
+                </div>
+                <p class="hint" id="settings-pass-msg" style="margin-top:6px"></p>
+              </div>
+              <p class="hint" id="settings-profile-msg" style="margin-top:8px"></p>
+            </div>
           </div>
-          <div class="weight-box" id="rating-weights">
-            <span class="weight-k">Weights</span>
-            <label class="weight-row">Technical
-              <input type="range" id="w-tech" min="0" max="100" step="1" value="34" oninput="onRatingWeightInput()" />
-              <b id="w-tech-pct">34%</b>
-            </label>
-            <label class="weight-row">Aesthetic
-              <input type="range" id="w-aes" min="0" max="100" step="1" value="33" oninput="onRatingWeightInput()" />
-              <b id="w-aes-pct">33%</b>
-            </label>
-            <label class="weight-row">Vibes
-              <input type="range" id="w-vibes" min="0" max="100" step="1" value="33" oninput="onRatingWeightInput()" />
-              <b id="w-vibes-pct">33%</b>
-            </label>
+
+          <div id="settings-privacy" class="settings-section">
+            <div id="settings-privacy-guest">
+              <p class="hint">Sign in from the feed to manage privacy.</p>
+            </div>
+            <div id="settings-privacy-body" hidden>
+              <div class="settings-group">
+                <h4>Profile</h4>
+                <div class="field">
+                  <label>Who can see your activity</label>
+                  <div class="seg" id="settings-profile-vis">
+                    <button type="button" data-val="everyone">Everyone</button>
+                    <button type="button" data-val="following">People I follow</button>
+                    <button type="button" data-val="onlyme">Only me</button>
+                  </div>
+                  <p class="hint">Sightings and photos. People I follow means mutual follows — someone who only follows you cannot see them. If someone can’t see your activity they still see your name and photo with a short note.</p>
+                </div>
+              </div>
+              <div class="settings-group">
+                <h4>Protected locations</h4>
+                <div class="field">
+                  <label>Protect</label>
+                  <div class="seg" id="settings-loc-protect">
+                    <button type="button" data-val="none">None</button>
+                    <button type="button" data-val="everywhere">Everywhere</button>
+                    <button type="button" data-val="select">Select areas</button>
+                  </div>
+                  <p class="hint">Protected locations are shown as a random point within 30 km of the real spot. County stays accurate. The same sighting always uses the same offset.</p>
+                </div>
+                <div id="settings-areas-wrap" hidden>
+                  <div class="map-preview-wrap" style="height:220px;margin-top:12px;border-radius:12px">
+                    <div id="settings-areas-map"></div>
+                  </div>
+                  <div id="settings-area-idle" class="area-bar">
+                    <input type="text" id="settings-area-name" placeholder="Name this area" />
+                    <button type="button" class="ghost" id="settings-area-draw">Draw box</button>
+                  </div>
+                  <div id="settings-area-drawing" class="area-bar" hidden>
+                    <input type="text" id="settings-area-name-draw" placeholder="Name this area" />
+                    <button type="button" class="ghost" id="settings-area-cancel">Cancel</button>
+                    <button type="button" class="btn-em" id="settings-area-save" disabled>Save</button>
+                  </div>
+                  <div id="settings-area-editing" class="area-bar" hidden>
+                    <span id="settings-area-editing-label">Editing area</span>
+                    <button type="button" class="ghost" id="settings-area-discard">Discard</button>
+                    <button type="button" class="btn-em" id="settings-area-save-edit">Save changes</button>
+                  </div>
+                  <div id="settings-areas-list" class="area-list"></div>
+                </div>
+              </div>
+              <div class="settings-group">
+                <h4>Who can see exact locations</h4>
+                <div class="field">
+                  <label>Inside protected areas</label>
+                  <div class="seg" id="settings-exact-vis">
+                    <button type="button" data-val="everyone">Everyone</button>
+                    <button type="button" data-val="following">People I follow</button>
+                    <button type="button" data-val="onlyme">Only me</button>
+                  </div>
+                  <p class="hint">You can share exact pins with everyone except protected areas (home, etc.), then still share those areas with specific people.</p>
+                </div>
+                <div id="settings-people-list" style="margin-top:10px"></div>
+              </div>
+            </div>
           </div>
-          <p class="hint">Each score is 0 to 5, in half steps. Composite is the weighted mix of Technical, Aesthetic, and Vibes. Off hides every score and the Display Ratings button. Ratings stay on the photos.</p>
-        </div>
-        <div class="field" style="margin-top:14px">
-          <label>Stats mode</label>
-          <div class="seg">
-            <button type="button" id="btn-stats-state" class="on" onclick="setStatsMode('state')">State</button>
-            <button type="button" id="btn-stats-country" onclick="setStatsMode('country')">Country</button>
-            <button type="button" id="btn-stats-globe" onclick="setStatsMode('globe')">Globe</button>
+
+          <div id="settings-statistics" class="settings-section">
+            <div class="field">
+              <label>Stats mode</label>
+              <div class="seg">
+                <button type="button" id="btn-stats-state" class="on" onclick="setStatsMode('state')">State</button>
+                <button type="button" id="btn-stats-country" onclick="setStatsMode('country')">Country</button>
+                <button type="button" id="btn-stats-globe" onclick="setStatsMode('globe')">Globe</button>
+              </div>
+              <p class="hint">State: a lifer counts only in the state where you logged it. Country: a lifer counts if logged anywhere in that country. Globe: all lifers count. Foreign countries use country-level tallies in both State and Country mode.</p>
+            </div>
+            <div class="settings-group">
+              <h4>Photo ratings</h4>
+              <div class="field">
+                <label>Show ratings</label>
+                <div class="seg" role="group" aria-label="Show ratings">
+                  <button type="button" id="btn-ratings-on" class="on" onclick="setRatingsDisplay(true)">On</button>
+                  <button type="button" id="btn-ratings-off" onclick="setRatingsDisplay(false)">Off</button>
+                </div>
+                <div class="weight-box" id="rating-weights">
+                  <span class="weight-k">Weights</span>
+                  <label class="weight-row">Technical
+                    <input type="range" id="w-tech" min="0" max="100" step="1" value="34" oninput="onRatingWeightInput()" />
+                    <b id="w-tech-pct">34%</b>
+                  </label>
+                  <label class="weight-row">Aesthetic
+                    <input type="range" id="w-aes" min="0" max="100" step="1" value="33" oninput="onRatingWeightInput()" />
+                    <b id="w-aes-pct">33%</b>
+                  </label>
+                  <label class="weight-row">Vibes
+                    <input type="range" id="w-vibes" min="0" max="100" step="1" value="33" oninput="onRatingWeightInput()" />
+                    <b id="w-vibes-pct">33%</b>
+                  </label>
+                </div>
+                <p class="hint">Each score is 0 to 5, in half steps. Composite is the weighted mix of Technical, Aesthetic, and Vibes. Off hides every score and the Display Ratings button. Ratings stay on the photos.</p>
+              </div>
+            </div>
           </div>
-          <p class="hint">State: a lifer counts only in the state where you logged it. Country: a lifer counts if logged anywhere in that country. Globe: all lifers count. Foreign countries use country-level tallies in both State and Country mode.</p>
-        </div>
-        <div class="field" style="margin-top:14px">
-          <label>Appearance</label>
-          <div class="seg">
-            <button type="button" id="btn-theme-light" onclick="setUiTheme('light')">Light</button>
-            <button type="button" id="btn-theme-dark" class="on" onclick="setUiTheme('dark')">Dark</button>
+
+          <div id="settings-appearance" class="settings-section">
+            <div class="field">
+              <label>Appearance</label>
+              <div class="seg">
+                <button type="button" id="btn-theme-light" onclick="setUiTheme('light')">Light</button>
+                <button type="button" id="btn-theme-dark" class="on" onclick="setUiTheme('dark')">Dark</button>
+              </div>
+              <p class="hint">Light uses a white workspace. Type, chips, and graphs keep contrast in both modes.</p>
+            </div>
+            <div class="field">
+              <label>Map tiles</label>
+              <select id="map-tiles" class="mini" onchange="setMapTiles(this.value)">
+                <option value="osm">OpenStreetMap</option>
+                <option value="gray">Esri Dark Gray</option>
+                <option value="topo">Esri World Topo</option>
+                <option value="imagery">Esri Imagery</option>
+                <option value="usgs">USGS Topo</option>
+                <option value="opentopo">OpenTopoMap</option>
+              </select>
+              <div class="map-preview-wrap">
+                <div id="map-tiles-preview"></div>
+              </div>
+              <p class="hint">Applies to every map. Gaps and Places fill counties on top of whichever base you pick.</p>
+            </div>
           </div>
-          <p class="hint">Light uses a white workspace. Type, chips, and graphs keep contrast in both modes.</p>
+
+          <div id="settings-data" class="settings-section">
+            <p class="hint">Radar and nearby targets call eBird from this browser. The key stays on this device.</p>
+            <div class="field">
+              <label>eBird API key</label>
+              <input type="text" id="form-ebird-key" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" />
+            </div>
+            <p class="hint">Get a key at ebird.org/api/keygen</p>
+            <div class="two" style="margin-top:18px">
+              <button class="ghost" type="button" onclick="exportLogs()">Export logs</button>
+              <button class="ghost" type="button" onclick="document.getElementById('import-logs').click()">Import logs</button>
+            </div>
+            <button class="ghost" type="button" style="width:100%;margin-top:8px" onclick="exportLogsSlim()">Export list only (no full photos)</button>
+            <p class="hint" id="last-export-stamp" style="margin-top:8px">No export yet</p>
+            <div id="export-parts" class="export-parts" hidden></div>
+          </div>
         </div>
-        <div class="field" style="margin-top:14px">
-          <label>Map tiles</label>
-          <select id="map-tiles" class="mini" onchange="setMapTiles(this.value)">
-            <option value="osm">OpenStreetMap</option>
-            <option value="gray">Esri Dark Gray</option>
-            <option value="topo">Esri World Topo</option>
-            <option value="imagery">Esri Imagery</option>
-            <option value="usgs">USGS Topo</option>
-            <option value="opentopo">OpenTopoMap</option>
-          </select>
-          <p class="hint">Applies to every map. Gaps and Places fill counties on top of whichever base you pick.</p>
-        </div>
-        <div class="two" style="margin-top:16px">
-          <button class="ghost" type="button" onclick="exportLogs()">Export logs</button>
-          <button class="ghost" type="button" onclick="document.getElementById('import-logs').click()">Import logs</button>
-        </div>
-        <button class="ghost" type="button" style="width:100%;margin-top:8px" onclick="exportLogsSlim()">Export list only (no full photos)</button>
-        <p class="hint" id="last-export-stamp" style="margin-top:8px">No export yet</p>
-        <div id="export-parts" class="export-parts" hidden></div>
       </div>
     </div>
   </div>
@@ -4473,6 +4763,25 @@
       mapTiles = id;
       localStorage.setItem('avian_map_tiles', id);
       applyMapTiles();
+      refreshMapTilesPreview();
+    }
+    let mapTilesPreview = null;
+    let mapTilesPreviewOverlay = null;
+    function refreshMapTilesPreview() {
+      const el = document.getElementById('map-tiles-preview');
+      if (!el || typeof L === 'undefined') return;
+      const spec = MAP_TILES[mapTiles] || MAP_TILES.osm;
+      if (!mapTilesPreview) {
+        mapTilesPreview = L.map(el, { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, keyboard: false });
+        mapTilesPreview.setView([36.1, -80.24], 8);
+      }
+      mapTilesPreview.eachLayer(l => { if (l instanceof L.TileLayer) mapTilesPreview.removeLayer(l); });
+      if (mapTilesPreviewOverlay) { try { mapTilesPreview.removeLayer(mapTilesPreviewOverlay); } catch (e) {} mapTilesPreviewOverlay = null; }
+      const layer = L.tileLayer(spec.url, { maxZoom: spec.maxZoom, attribution: '' }).addTo(mapTilesPreview);
+      if (mapTiles === 'imagery') {
+        mapTilesPreviewOverlay = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 }).addTo(mapTilesPreview);
+      }
+      setTimeout(() => { if (mapTilesPreview) mapTilesPreview.invalidateSize(); }, 60);
     }
     function cssVar(name, fallback) {
       const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -4604,6 +4913,8 @@
       setStatsMode(statsMode);
       applyMapTiles();
       applyUiTheme();
+      const last = localStorage.getItem('avian_settings_section') || 'profile';
+      switchSettingsSection(last);
       document.getElementById('key-modal').classList.add('on');
     }
     function closeKeyModal() {
@@ -4622,6 +4933,438 @@
       clearExportParts();
       document.getElementById('key-modal').classList.remove('on');
     }
+
+    function switchSettingsSection(section) {
+      const allowed = ['profile', 'privacy', 'appearance', 'statistics', 'data'];
+      if (allowed.indexOf(section) < 0) section = 'profile';
+      document.querySelectorAll('.settings-nav button').forEach(btn => {
+        btn.classList.toggle('on', btn.getAttribute('data-section') === section);
+      });
+      document.querySelectorAll('.settings-section').forEach(sec => {
+        sec.classList.toggle('on', sec.id === 'settings-' + section);
+      });
+      try { localStorage.setItem('avian_settings_section', section); } catch (e) {}
+      if (section === 'profile') refreshSettingsProfile();
+      if (section === 'privacy') refreshSettingsPrivacy();
+      if (section === 'appearance') refreshMapTilesPreview();
+    }
+    document.getElementById('settings-nav').addEventListener('click', function (e) {
+      const btn = e.target.closest('button[data-section]');
+      if (!btn) return;
+      switchSettingsSection(btn.getAttribute('data-section'));
+    });
+
+    function refreshSettingsProfile() {
+      const guest = document.getElementById('settings-profile-guest');
+      const form = document.getElementById('settings-profile-form');
+      if (!guest || !form) return;
+      if (!pfUser || !pfSelf) {
+        guest.hidden = false;
+        form.hidden = true;
+        return;
+      }
+      guest.hidden = true;
+      form.hidden = false;
+      const dn = document.getElementById('settings-dn');
+      const un = document.getElementById('settings-un');
+      const rg = document.getElementById('settings-rg');
+      const bio = document.getElementById('settings-bio');
+      const auto = document.getElementById('settings-auto');
+      if (dn) dn.value = pfSelf.display_name || '';
+      if (un) un.value = pfSelf.username || '';
+      if (rg) rg.value = pfSelf.home_region || '';
+      if (bio) bio.value = pfSelf.bio || '';
+      if (auto) auto.checked = localStorage.getItem('avian_auto_publish') === '1';
+    }
+    async function saveSettingsProfile() {
+      if (!pfUser || !pfSelf) return;
+      const username = (document.getElementById('settings-un').value || '').trim().replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
+      const display_name = (document.getElementById('settings-dn').value || '').trim() || username;
+      const home_region = (document.getElementById('settings-rg').value || '').trim();
+      const bio = (document.getElementById('settings-bio').value || '').trim();
+      const auto = !!document.getElementById('settings-auto').checked;
+      try { localStorage.setItem('avian_auto_publish', auto ? '1' : '0'); } catch (e) {}
+      const msg = document.getElementById('settings-profile-msg');
+      if (msg) msg.textContent = 'Saving…';
+      const up = await supabaseClient.from('profiles').update({
+        username: username, display_name: display_name, home_region: home_region, bio: bio,
+        updated_at: new Date().toISOString()
+      }).eq('id', pfUser.id).select().single();
+      if (up.error) {
+        if (msg) msg.textContent = up.error.message;
+        return;
+      }
+      pfSelf = up.data;
+      if (typeof syncProfileButton === 'function') syncProfileButton();
+      if (msg) msg.textContent = 'Saved.';
+      if (auto && typeof publishPublic === 'function') publishPublic({ silent: true });
+    }
+    function signOutFromSettings() {
+      if (typeof supabaseClient === 'undefined' || !supabaseClient.auth) return;
+      supabaseClient.auth.signOut().then(() => {
+        pfUser = null; pfSelf = null; pfOther = null; pfPreview = false;
+        if (typeof syncProfileButton === 'function') syncProfileButton();
+        if (typeof renderAuth === 'function') renderAuth();
+        refreshSettingsProfile();
+        refreshSettingsPrivacy();
+      });
+    }
+    async function changeSettingsPassword() {
+      const msg = document.getElementById('settings-pass-msg');
+      const a = (document.getElementById('settings-new-pass') || {}).value || '';
+      const b = (document.getElementById('settings-confirm-pass') || {}).value || '';
+      if (a.length < 6) { if (msg) msg.textContent = 'Password must be at least 6 characters.'; return; }
+      if (a !== b) { if (msg) msg.textContent = 'Passwords do not match.'; return; }
+      if (msg) msg.textContent = 'Updating…';
+      const res = await supabaseClient.auth.updateUser({ password: a });
+      if (res.error) { if (msg) msg.textContent = res.error.message; return; }
+      if (msg) msg.textContent = 'Password updated.';
+      document.getElementById('settings-new-pass').value = '';
+      document.getElementById('settings-confirm-pass').value = '';
+    }
+    async function sendSettingsResetEmail() {
+      const msg = document.getElementById('settings-pass-msg');
+      if (!pfUser || !pfUser.email) { if (msg) msg.textContent = 'No email on this account.'; return; }
+      if (msg) msg.textContent = 'Sending…';
+      const res = await supabaseClient.auth.resetPasswordForEmail(pfUser.email);
+      if (res.error) { if (msg) msg.textContent = res.error.message; return; }
+      if (msg) msg.textContent = 'Reset link sent to ' + pfUser.email + '.';
+    }
+
+    async function refreshSettingsPrivacy() {
+      const guest = document.getElementById('settings-privacy-guest');
+      const body = document.getElementById('settings-privacy-body');
+      if (!guest || !body) return;
+      if (!pfUser || !pfSelf) {
+        guest.hidden = false;
+        body.hidden = true;
+        return;
+      }
+      guest.hidden = true;
+      body.hidden = false;
+      const stats = pfSelf.public_stats || {};
+      const pVis = stats.profile_visibility || 'everyone';
+      const eVis = stats.exact_visibility || 'onlyme';
+      const locProt = stats.location_protection || 'none';
+      document.querySelectorAll('#settings-profile-vis button').forEach(btn => {
+        btn.classList.toggle('on', btn.getAttribute('data-val') === pVis);
+      });
+      document.querySelectorAll('#settings-exact-vis button').forEach(btn => {
+        btn.classList.toggle('on', btn.getAttribute('data-val') === eVis);
+      });
+      document.querySelectorAll('#settings-loc-protect button').forEach(btn => {
+        btn.classList.toggle('on', btn.getAttribute('data-val') === locProt);
+      });
+      const areasWrap = document.getElementById('settings-areas-wrap');
+      if (areasWrap) areasWrap.hidden = locProt !== 'select';
+      if (locProt === 'select') refreshProtectedAreas();
+      const list = document.getElementById('settings-people-list');
+      if (!list) return;
+      list.innerHTML = '<div class="pf-empty">Loading people…</div>';
+      try {
+        const follows = await supabaseClient.from('follows').select('following_id').eq('follower_id', pfUser.id);
+        const fans = await supabaseClient.from('follows').select('follower_id').eq('following_id', pfUser.id);
+        const followingIds = (follows.data || []).map(r => r.following_id);
+        const followerIds = (fans.data || []).map(r => r.follower_id);
+        const mutual = followingIds.filter(id => followerIds.indexOf(id) >= 0);
+        const profs = await (typeof pfProfiles === 'function' ? pfProfiles(mutual) : Promise.resolve([]));
+        const byId = {};
+        (profs || []).forEach(p => { byId[p.id] = p; });
+        const grants = new Set(stats.exact_grants || []);
+        const pin = id => '<button type="button" class="pf-ib' + (grants.has(id) ? ' on' : '') + '" data-act="' + (grants.has(id) ? 'ungrant' : 'grant') + '" data-id="' + (typeof pfEsc === 'function' ? pfEsc(id) : id) + '" title="' + (grants.has(id) ? 'Can see exact pins in protected areas' : 'Fuzzed in protected areas') + '">' + (typeof pfSvg === 'function' ? pfSvg('pin') : '📍') + '</button>';
+        let html = '<div class="pf-note" style="margin-bottom:6px">People I follow</div>';
+        html += mutual.length ? mutual.map(id => byId[id] ? (typeof pfPersonRow === 'function' ? pfPersonRow(byId[id], pin(id)) : '') : '').join('') : '<div class="pf-empty">No mutual follows yet. Follow someone who follows you back to grant exact access.</div>';
+        list.innerHTML = html;
+      } catch (err) {
+        list.innerHTML = '<div class="pf-empty">Could not load people.</div>';
+      }
+    }
+    async function savePrivacyPref(key, val) {
+      if (!pfUser || !pfSelf) return;
+      const stats = Object.assign({}, pfSelf.public_stats || {});
+      stats[key] = val;
+      const up = await supabaseClient.from('profiles').update({ public_stats: stats }).eq('id', pfUser.id).select().single();
+      if (up.data) pfSelf = up.data;
+      refreshSettingsPrivacy();
+    }
+    let settingsAreasMap = null;
+    let settingsAreasLayer = null;
+    let settingsAreasDrawing = false;
+    let settingsAreasStart = null;
+    let settingsAreasRect = null;
+    let settingsAreasEditing = null;
+    let settingsAreasHandles = [];
+    function clearAreaHandles() {
+      settingsAreasHandles.forEach(h => { if (settingsAreasMap) settingsAreasMap.removeLayer(h); });
+      settingsAreasHandles = [];
+    }
+    function refreshProtectedAreas() {
+      const el = document.getElementById('settings-areas-map');
+      if (!el || typeof L === 'undefined') return;
+      if (!settingsAreasMap) {
+        settingsAreasMap = L.map(el, {
+          zoomControl: false,
+          attributionControl: false,
+          zoomSnap: 0,
+          zoomDelta: 1,
+          wheelPxPerZoomLevel: 45,
+          inertia: true
+        }).setView([36.1, -80.24], 7);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(settingsAreasMap);
+        settingsAreasLayer = L.layerGroup().addTo(settingsAreasMap);
+        settingsAreasMap.on('mousedown', function (e) {
+          if (!settingsAreasDrawing) return;
+          settingsAreasMap.dragging.disable();
+          settingsAreasStart = e.latlng;
+          if (settingsAreasRect) settingsAreasMap.removeLayer(settingsAreasRect);
+          settingsAreasRect = L.rectangle(L.latLngBounds(e.latlng, e.latlng), { color: '#10b981', weight: 2, fillOpacity: 0.2, interactive: false }).addTo(settingsAreasMap);
+        });
+        settingsAreasMap.on('mousemove', function (e) {
+          if (!settingsAreasDrawing || !settingsAreasStart || !settingsAreasRect) return;
+          settingsAreasRect.setBounds(L.latLngBounds(settingsAreasStart, e.latlng));
+        });
+        settingsAreasMap.on('mouseup', function () {
+          if (!settingsAreasDrawing) return;
+          settingsAreasDrawing = false;
+          settingsAreasMap.dragging.enable();
+          const save = document.getElementById('settings-area-save');
+          if (save && settingsAreasRect) save.disabled = false;
+          const mapEl = document.getElementById('settings-areas-map');
+          if (mapEl) mapEl.style.cursor = '';
+        });
+      }
+      settingsAreasLayer.clearLayers();
+      clearAreaHandles();
+      const areas = (pfSelf.public_stats && pfSelf.public_stats.protected_areas) || [];
+      areas.forEach((a, i) => {
+        if (!a || !a.bounds) return;
+        const b = a.bounds;
+        const rect = L.rectangle([[b[0], b[1]], [b[2], b[3]]], { color: '#10b981', weight: 2, fillOpacity: 0.15 }).addTo(settingsAreasLayer);
+        rect.bindTooltip(a.name || 'Protected', { permanent: false });
+        rect.on('click', () => {
+          settingsAreasMap.fitBounds(rect.getBounds(), { padding: [20, 20], maxZoom: 12 });
+        });
+      });
+      const list = document.getElementById('settings-areas-list');
+      if (list) {
+        list.innerHTML = areas.length ? areas.map((a, i) =>
+          '<div class="area-row"><b data-pan-area="' + i + '">' + (typeof pfEsc === 'function' ? pfEsc(a.name || 'Area ' + (i + 1)) : (a.name || 'Area')) + '</b><button type="button" class="ghost" data-edit-area="' + i + '">Edit</button><button type="button" class="ghost" data-del-area="' + i + '">Delete</button></div>'
+        ).join('') : '<div class="area-empty">No protected areas yet.</div>';
+      }
+      setTimeout(() => { if (settingsAreasMap) settingsAreasMap.invalidateSize(); }, 50);
+      setTimeout(() => { if (settingsAreasMap) settingsAreasMap.invalidateSize(); }, 250);
+    }
+    function setAreaMode(mode) {
+      const idle = document.getElementById('settings-area-idle');
+      const drawing = document.getElementById('settings-area-drawing');
+      const editing = document.getElementById('settings-area-editing');
+      if (idle) idle.hidden = mode !== 'idle';
+      if (drawing) drawing.hidden = mode !== 'drawing';
+      if (editing) editing.hidden = mode !== 'editing';
+    }
+    function startEditArea(idx) {
+      const areas = (pfSelf.public_stats && pfSelf.public_stats.protected_areas) || [];
+      const a = areas[idx];
+      if (!a || !settingsAreasMap) return;
+      settingsAreasEditing = idx;
+      settingsAreasEditOrig = a.bounds.slice();
+      setAreaMode('editing');
+      const label = document.getElementById('settings-area-editing-label');
+      if (label) label.textContent = 'Editing ' + (a.name || 'area');
+      clearAreaHandles();
+      const b = a.bounds.slice();
+      const corners = [
+        [b[0], b[1]], [b[0], b[3]], [b[2], b[1]], [b[2], b[3]]
+      ];
+      const center = [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2];
+      const rects = settingsAreasLayer.getLayers().filter(l => l.getBounds);
+      const rect = rects.find(l => {
+        const rb = l.getBounds();
+        return Math.abs(rb.getSouth() - b[0]) < 0.001 && Math.abs(rb.getWest() - b[1]) < 0.001;
+      }) || rects[idx];
+      function placeHandles(nb) {
+        const cs = [[nb[0], nb[1]], [nb[0], nb[3]], [nb[2], nb[1]], [nb[2], nb[3]]];
+        settingsAreasHandles.forEach((h, i) => {
+          if (i < 4) h.setLatLng(cs[i]);
+          else h.setLatLng([(nb[0] + nb[2]) / 2, (nb[1] + nb[3]) / 2]);
+        });
+        if (rect) rect.setBounds([[nb[0], nb[1]], [nb[2], nb[3]]]);
+      }
+      corners.forEach((c, ci) => {
+        const m = L.circleMarker(c, { radius: 7, color: '#fff', fillColor: '#10b981', fillOpacity: 1, weight: 2 }).addTo(settingsAreasMap);
+        m.on('mousedown', function (e) {
+          L.DomEvent.stopPropagation(e);
+          L.DomEvent.preventDefault(e);
+          settingsAreasMap.dragging.disable();
+          settingsAreasMap.scrollWheelZoom.disable();
+          const fixedLat = ci < 2 ? b[2] : b[0];
+          const fixedLng = (ci === 0 || ci === 2) ? b[3] : b[1];
+          const move = ev => {
+            const lat = ev.latlng.lat, lng = ev.latlng.lng;
+            const newB = [Math.min(fixedLat, lat), Math.min(fixedLng, lng), Math.max(fixedLat, lat), Math.max(fixedLng, lng)];
+            a.bounds = newB;
+            placeHandles(newB);
+          };
+          const up = () => {
+            settingsAreasMap.off('mousemove', move);
+            settingsAreasMap.off('mouseup', up);
+            settingsAreasMap.dragging.enable();
+            settingsAreasMap.scrollWheelZoom.enable();
+            b[0] = a.bounds[0]; b[1] = a.bounds[1]; b[2] = a.bounds[2]; b[3] = a.bounds[3];
+            saveAreasNow();
+          };
+          settingsAreasMap.on('mousemove', move);
+          settingsAreasMap.on('mouseup', up);
+        });
+        settingsAreasHandles.push(m);
+      });
+      const cm = L.circleMarker(center, { radius: 6, color: '#10b981', fillColor: '#fff', fillOpacity: 1, weight: 2 }).addTo(settingsAreasMap);
+      cm.on('mousedown', function (e) {
+        L.DomEvent.stopPropagation(e);
+        L.DomEvent.preventDefault(e);
+        settingsAreasMap.dragging.disable();
+        settingsAreasMap.scrollWheelZoom.disable();
+        const start = e.latlng;
+        const orig = a.bounds.slice();
+        const move = ev => {
+          const dLat = ev.latlng.lat - start.lat;
+          const dLng = ev.latlng.lng - start.lng;
+          const newB = [orig[0] + dLat, orig[1] + dLng, orig[2] + dLat, orig[3] + dLng];
+          a.bounds = newB;
+          placeHandles(newB);
+        };
+        const up = () => {
+          settingsAreasMap.off('mousemove', move);
+          settingsAreasMap.off('mouseup', up);
+          settingsAreasMap.dragging.enable();
+          settingsAreasMap.scrollWheelZoom.enable();
+          b[0] = a.bounds[0]; b[1] = a.bounds[1]; b[2] = a.bounds[2]; b[3] = a.bounds[3];
+          saveAreasNow();
+        };
+        settingsAreasMap.on('mousemove', move);
+        settingsAreasMap.on('mouseup', up);
+      });
+      settingsAreasHandles.push(cm);
+    }
+    function saveAreasNow() {
+      if (!pfUser || !pfSelf) return;
+      const stats = JSON.parse(JSON.stringify(pfSelf.public_stats || {}));
+      supabaseClient.from('profiles').update({ public_stats: stats }).eq('id', pfUser.id).then(() => {});
+    }
+    document.getElementById('settings-area-save-edit').addEventListener('click', function () {
+      if (settingsAreasEditing == null) return;
+      saveAreasNow();
+      settingsAreasEditing = null;
+      settingsAreasEditOrig = null;
+      clearAreaHandles();
+      setAreaMode('idle');
+    });
+    document.getElementById('settings-area-discard').addEventListener('click', function () {
+      if (settingsAreasEditing == null || !settingsAreasEditOrig) return;
+      const areas = (pfSelf.public_stats && pfSelf.public_stats.protected_areas) || [];
+      const a = areas[settingsAreasEditing];
+      if (a) a.bounds = settingsAreasEditOrig.slice();
+      settingsAreasEditing = null;
+      settingsAreasEditOrig = null;
+      clearAreaHandles();
+      setAreaMode('idle');
+      refreshProtectedAreas();
+    });
+    document.getElementById('settings-area-draw').addEventListener('click', function () {
+      settingsAreasDrawing = true;
+      settingsAreasEditing = null;
+      settingsAreasEditOrig = null;
+      setAreaMode('drawing');
+      clearAreaHandles();
+      if (settingsAreasRect && settingsAreasMap) { settingsAreasMap.removeLayer(settingsAreasRect); settingsAreasRect = null; }
+      const save = document.getElementById('settings-area-save');
+      if (save) save.disabled = true;
+      const nameInput = document.getElementById('settings-area-name-draw');
+      if (nameInput) nameInput.value = document.getElementById('settings-area-name').value || '';
+      const el = document.getElementById('settings-areas-map');
+      if (el) el.style.cursor = 'crosshair';
+    });
+    document.getElementById('settings-area-cancel').addEventListener('click', function () {
+      settingsAreasDrawing = false;
+      if (settingsAreasRect && settingsAreasMap) { settingsAreasMap.removeLayer(settingsAreasRect); settingsAreasRect = null; }
+      document.getElementById('settings-area-save').disabled = true;
+      document.getElementById('settings-area-name-draw').value = '';
+      const el = document.getElementById('settings-areas-map');
+      if (el) el.style.cursor = '';
+      if (settingsAreasMap) settingsAreasMap.dragging.enable();
+      setAreaMode('idle');
+    });
+    document.getElementById('settings-area-save').addEventListener('click', function () {
+      if (!settingsAreasRect || !pfUser) return;
+      const name = (document.getElementById('settings-area-name-draw').value || '').trim() || 'Protected area';
+      const b = settingsAreasRect.getBounds();
+      const area = { id: Date.now().toString(36), name: name, bounds: [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()] };
+      const stats = Object.assign({}, pfSelf.public_stats || {});
+      stats.protected_areas = (stats.protected_areas || []).concat([area]);
+      supabaseClient.from('profiles').update({ public_stats: stats }).eq('id', pfUser.id).select().single().then(up => {
+        if (up.data) pfSelf = up.data;
+        if (settingsAreasRect && settingsAreasMap) { settingsAreasMap.removeLayer(settingsAreasRect); settingsAreasRect = null; }
+        document.getElementById('settings-area-name').value = '';
+        document.getElementById('settings-area-name-draw').value = '';
+        document.getElementById('settings-area-save').disabled = true;
+        const el = document.getElementById('settings-areas-map');
+        if (el) el.style.cursor = '';
+        setAreaMode('idle');
+        refreshProtectedAreas();
+      });
+    });
+    document.getElementById('settings-areas-list').addEventListener('click', function (e) {
+      const pan = e.target.closest('[data-pan-area]');
+      const edit = e.target.closest('[data-edit-area]');
+      const del = e.target.closest('[data-del-area]');
+      if (!pfUser) return;
+      const areas = (pfSelf.public_stats && pfSelf.public_stats.protected_areas) || [];
+      if (pan) {
+        const i = Number(pan.getAttribute('data-pan-area'));
+        const a = areas[i];
+        if (a && settingsAreasMap) settingsAreasMap.fitBounds([[a.bounds[0], a.bounds[1]], [a.bounds[2], a.bounds[3]]], { padding: [20, 20], maxZoom: 12 });
+      } else if (edit) {
+        startEditArea(Number(edit.getAttribute('data-edit-area')));
+      } else if (del) {
+        const idx = Number(del.getAttribute('data-del-area'));
+        const stats = Object.assign({}, pfSelf.public_stats || {});
+        const list = (stats.protected_areas || []).slice();
+        if (idx >= 0 && idx < list.length) list.splice(idx, 1);
+        stats.protected_areas = list;
+        supabaseClient.from('profiles').update({ public_stats: stats }).eq('id', pfUser.id).select().single().then(up => {
+          if (up.data) pfSelf = up.data;
+          settingsAreasEditing = null;
+          settingsAreasEditOrig = null;
+          clearAreaHandles();
+          setAreaMode('idle');
+          refreshProtectedAreas();
+        });
+      }
+    });
+    document.getElementById('settings-profile-vis').addEventListener('click', function (e) {
+      const btn = e.target.closest('button[data-val]');
+      if (!btn || !pfUser) return;
+      savePrivacyPref('profile_visibility', btn.getAttribute('data-val'));
+    });
+    document.getElementById('settings-exact-vis').addEventListener('click', function (e) {
+      const btn = e.target.closest('button[data-val]');
+      if (!btn || !pfUser) return;
+      savePrivacyPref('exact_visibility', btn.getAttribute('data-val'));
+    });
+    document.getElementById('settings-loc-protect').addEventListener('click', function (e) {
+      const btn = e.target.closest('button[data-val]');
+      if (!btn || !pfUser) return;
+      savePrivacyPref('location_protection', btn.getAttribute('data-val'));
+    });
+    document.getElementById('settings-people-list').addEventListener('click', function (e) {
+      const t = e.target.closest('[data-act]');
+      if (!t || !pfUser) return;
+      const act = t.getAttribute('data-act');
+      const id = t.getAttribute('data-id');
+      if (act === 'grant' && typeof pfSetGrant === 'function') pfSetGrant(id, true).then(() => refreshSettingsPrivacy());
+      else if (act === 'ungrant' && typeof pfSetGrant === 'function') pfSetGrant(id, false).then(() => refreshSettingsPrivacy());
+    });
+
     function saveEbirdKey() { closeKeyModal(); }
     function requireEbirdKey() {
       if (getEbirdKey()) return true;
@@ -7296,6 +8039,8 @@
       const b = document.getElementById('btn-ratings-off');
       if (a) a.classList.toggle('on', on);
       if (b) b.classList.toggle('on', !on);
+      const weights = document.getElementById('rating-weights');
+      if (weights) weights.hidden = !on;
     }
     function setRatingsDisplay(on) {
       try { localStorage.setItem('avian_ratings_on', on ? '1' : '0'); } catch (e) {}
@@ -17456,7 +18201,7 @@
 
   <div id="pf-notes" hidden>
     <div class="pf-notes-card">
-      <div class="pf-notes-h"><b>Notifications</b><button type="button" id="pf-notes-clear">Clear all</button></div>
+      <div class="pf-notes-h"><b>Notifications</b><span class="pf-notes-tools"><button type="button" id="pf-notes-clear">Clear</button><button type="button" id="pf-notes-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span></div>
       <div class="pf-notes-list" id="pf-notes-list"></div>
     </div>
   </div>
@@ -17529,6 +18274,8 @@
     let pfPubTimer = null;
     let pfCardIndex = {};
     let pfDetail = null;
+    let pfOpenAtComments = false;
+    let pfOpenCommentId = '';
     let pfPinMap = null;
     let pfSocialRemote = false;
     let pfAwardSql = false;
@@ -17652,6 +18399,36 @@
       const el = document.getElementById('pf-msg');
       if (el) el.textContent = text || '';
     }
+
+    function pfDataToBlob(dataUrl) {
+      const src = String(dataUrl || '');
+      const m = src.match(/^data:([^;]+);base64,(.+)$/);
+      if (!m) return null;
+      const bin = atob(m[2]);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return new Blob([bytes], { type: m[1] || 'image/jpeg' });
+    }
+    async function pfUploadImage(dataUrl, path) {
+      const src = String(dataUrl || '');
+      if (src.startsWith('http')) return src.split('?')[0];
+      const blob = pfDataToBlob(src);
+      if (!blob || !pfUser) return null;
+      const up = await supabaseClient.storage.from('public-photos').upload(path, blob, {
+        contentType: blob.type || 'image/jpeg',
+        upsert: true,
+        cacheControl: '31536000'
+      });
+      if (up.error) return { error: up.error };
+      const pub = supabaseClient.storage.from('public-photos').getPublicUrl(path);
+      return (pub && pub.data && pub.data.publicUrl) || null;
+    }
+    function pfStorageSql() {
+      return 'Create a public Storage bucket named public-photos, then run: ' +
+        "create policy \"read\" on storage.objects for select using (bucket_id = 'public-photos'); " +
+        "create policy \"write\" on storage.objects for insert with check (bucket_id = 'public-photos' and auth.uid()::text = (storage.foldername(name))[1]); " +
+        "create policy \"replace\" on storage.objects for update using (bucket_id = 'public-photos' and auth.uid()::text = (storage.foldername(name))[1]);";
+    }
     function shrinkDataUrl(dataUrl) {
       return new Promise(resolve => {
         const src = String(dataUrl || '');
@@ -17716,11 +18493,60 @@
       if (!profile || !pfUser) return false;
       if (profile.id === pfUser.id) return true;
       const stats = profile.public_stats || {};
-      if (stats.exact_public) return true;
-      return (stats.exact_grants || []).indexOf(pfUser.id) >= 0;
+      const grants = stats.exact_grants || [];
+      if (grants.indexOf(pfUser.id) >= 0) return true;
+      const vis = stats.exact_visibility || 'onlyme';
+      if (vis === 'everyone') return true;
+      if (vis === 'following') return !!pfMutualCache[profile.id];
+      return false;
+    }
+    const pfMutualCache = {};
+    async function pfIsMutual(otherId) {
+      if (!pfUser || !otherId || otherId === pfUser.id) return false;
+      if (pfMutualCache[otherId] != null) return pfMutualCache[otherId];
+      const a = await supabaseClient.from('follows').select('follower_id').eq('follower_id', pfUser.id).eq('following_id', otherId).maybeSingle();
+      const b = await supabaseClient.from('follows').select('follower_id').eq('follower_id', otherId).eq('following_id', pfUser.id).maybeSingle();
+      const mutual = !!(a.data && b.data);
+      pfMutualCache[otherId] = mutual;
+      return mutual;
+    }
+    function pfCanSeeProfile(profile) {
+      if (!profile || !pfUser) return false;
+      if (profile.id === pfUser.id) return true;
+      const stats = profile.public_stats || {};
+      const vis = stats.profile_visibility || 'everyone';
+      if (vis === 'everyone') return true;
+      if (vis === 'following') return !!pfMutualCache[profile.id];
+      return false;
+    }
+    function pfIsProtected(lat, lng, profile) {
+      if (lat == null || lng == null || !profile) return false;
+      const stats = profile.public_stats || {};
+      const mode = stats.location_protection || 'none';
+      if (mode === 'none') return false;
+      if (mode === 'everywhere') return true;
+      if (mode === 'select') {
+        const areas = stats.protected_areas || [];
+        return areas.some(a => {
+          if (!a || !a.bounds) return false;
+          const b = a.bounds;
+          return lat >= b[0] && lat <= b[2] && lng >= b[1] && lng <= b[3];
+        });
+      }
+      return false;
+    }
+    function pfFuzzPoint(lat, lng, id) {
+      const seed = String(id || lat + ',' + lng);
+      let h = 0;
+      for (let i = 0; i < seed.length; i++) h = ((h << 5) - h + seed.charCodeAt(i)) | 0;
+      const ang = ((h >>> 0) % 360) * Math.PI / 180;
+      const dist = 5000 + ((h >>> 8) % 25000);
+      const dLat = (dist / 111320) * Math.cos(ang);
+      const dLng = (dist / (111320 * Math.cos(lat * Math.PI / 180))) * Math.sin(ang);
+      return { lat: lat + dLat, lng: lng + dLng };
     }
     async function pfPublicRows(run, cap) {
-      const rich = 'id,user_id,species_code,species_name,date,county,state,country,location_name,awards,has_exact_location,rarity';
+      const rich = 'id,user_id,species_code,species_name,date,county,state,country,location_name,awards,has_exact_location,rarity,is_cover,is_lifer';
       const plain = 'id,user_id,species_code,species_name,date,county,state,has_exact_location,rarity';
       const counted = rich + ',like_count,comment_count';
       const pageSize = 1000;
@@ -17737,7 +18563,7 @@
           cols = rich;
           q = await run(usePlain ? plain : cols).range(from, from + pageSize - 1);
         }
-        if (q.error && !usePlain && /column|schema cache|country|location_name|awards/i.test(q.error.message || '')) {
+        if (q.error && !usePlain && /column|schema cache|country|location_name|awards|is_cover|is_lifer/i.test(q.error.message || '')) {
           usePlain = true;
           q = await run(plain).range(from, from + pageSize - 1);
         }
@@ -17878,6 +18704,8 @@
         const c = Object.assign({}, r);
         delete c.awards;
         delete c.location_name;
+        delete c.is_cover;
+        delete c.is_lifer;
         return c;
       });
       let strip = false;
@@ -17885,7 +18713,7 @@
       for (let i = 0; i < rows.length; i += size) {
         let chunk = rows.slice(i, i + size);
         let ins = await send(strip ? stripExtra(chunk) : chunk);
-        if (ins.error && !strip && /column|schema cache|awards|location_name/i.test(ins.error.message || '')) {
+        if (ins.error && !strip && /column|schema cache|awards|location_name|is_cover|is_lifer/i.test(ins.error.message || '')) {
           strip = true;
           ins = await send(stripExtra(chunk));
         }
@@ -17914,7 +18742,19 @@
         const s = recent[i];
         if (i === 0 || i % 25 === 0) pfMsg((opts.catchup ? 'Updating your public list' : 'Publishing') + ' ' + (i + 1) + ' / ' + recent.length + '…');
         const pubPhoto = s.share_public !== false && s.share_public !== 0 && !!s.photo_url;
-        const photo = pubPhoto ? await shrinkDataUrl(s.photo_url) : null;
+        let photo = null;
+        if (pubPhoto) {
+          const shrunk = await shrinkDataUrl(s.photo_url);
+          if (shrunk) {
+            const safeId = String(s.id || (s.species_code + '-' + (s.date || i))).replace(/[^a-zA-Z0-9_-]/g, '');
+            const uploaded = await pfUploadImage(shrunk, pfUser.id + '/' + safeId + '.jpg');
+            if (uploaded && uploaded.error) {
+              pfMsg('Photo storage is not ready. ' + pfStorageSql());
+              return;
+            }
+            photo = uploaded || null;
+          }
+        }
         const exact = !!(s.share_exact && s.lat != null && s.lng != null);
         rows.push({
           user_id: pfUser.id,
@@ -17929,12 +18769,22 @@
           has_exact_location: exact,
           photo_url: photo,
           rarity: pfRarity(s.species_code, s.state),
+          is_cover: Number(s.is_cover) ? 1 : 0,
+          is_lifer: (typeof isLiferOnDay === 'function' && isLiferOnDay(s.species_code, s.date ? String(s.date).slice(0, 10) : '')) ? 1 : 0,
           awards: (awardMap && awardMap[s.id]) || []
         });
       }
       const st = pfStats();
       const prev = (pfSelf && pfSelf.public_stats) || {};
       const grants = prev.exact_grants || [];
+      if (prev.avatar && String(prev.avatar).startsWith('data:')) {
+        const upA = await pfUploadImage(prev.avatar, pfUser.id + '/avatar.jpg');
+        if (upA && !upA.error) prev.avatar = upA + '?v=' + Date.now();
+      }
+      if (prev.cover && String(prev.cover).startsWith('data:')) {
+        const upC = await pfUploadImage(prev.cover, pfUser.id + '/cover.jpg');
+        if (upC && !upC.error) prev.cover = upC + '?v=' + Date.now();
+      }
       const stats = Object.assign({}, prev, {
         species: st.species,
         photos: rows.filter(r => r.photo_url).length,
@@ -18093,31 +18943,48 @@
       };
     }
     function pfChartSvg(buckets, showLifers, allTime) {
-      const w = 640, h = 150, pad = 2;
+      const w = 640, h = 200, padL = 36, padR = 16, padT = 20, padB = 32;
       const n = Math.max(1, buckets.length);
-      const gap = n > 20 ? 3 : 8;
-      const bw = (w - pad * 2 - gap * (n - 1)) / n;
+      const innerW = w - padL - padR;
+      const innerH = h - padT - padB;
       const max = Math.max(1, ...buckets.map(b => allTime ? b.lifers : Math.max(b.species, showLifers ? b.lifers : 0)));
-      const inner = h - 12;
-      let body = '';
+      const xAt = i => padL + (n === 1 ? innerW / 2 : (i / (n - 1)) * innerW);
+      const yAt = v => padT + innerH - (v / max) * innerH;
+      const base = padT + innerH;
+      let defs = '<defs>' +
+        '<linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#34d399" stop-opacity=".4"/><stop offset="100%" stop-color="#34d399" stop-opacity=".02"/></linearGradient>' +
+        '<linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fbbf24" stop-opacity=".45"/><stop offset="100%" stop-color="#fbbf24" stop-opacity=".02"/></linearGradient>' +
+        '</defs>';
+      function buildPath(key) {
+        let line = '', area = '';
+        buckets.forEach((b, i) => {
+          const v = allTime ? b.lifers : b[key];
+          const x = xAt(i), y = yAt(v);
+          line += (i ? ' L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1);
+          area += (i ? ' L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1);
+        });
+        area += ' L' + xAt(n - 1).toFixed(1) + ',' + base + ' L' + xAt(0).toFixed(1) + ',' + base + ' Z';
+        return { line, area };
+      }
+      const sp = buildPath('species');
+      let body = '<line x1="' + padL + '" y1="' + base + '" x2="' + (w - padR) + '" y2="' + base + '" stroke="rgba(168,162,158,.2)" stroke-width="1"/>';
+      if (!allTime) {
+        body += '<path class="area" d="' + sp.area + '" fill="url(#gArea)"/>';
+        body += '<path d="' + sp.line + '" fill="none" stroke="#34d399" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+      }
+      if (allTime || showLifers) {
+        const lf = buildPath('lifers');
+        body += '<path class="area" d="' + lf.area + '" fill="url(#gGold)"/>';
+        body += '<path d="' + lf.line + '" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+      }
       buckets.forEach((b, i) => {
-        const x = pad + i * (bw + gap);
-        const val = allTime ? b.lifers : b.species;
-        const sh = val ? Math.max(3, (val / max) * inner) : 0;
-        const slot = (!allTime && showLifers) ? bw * 0.46 : bw;
-        if (sh) body += '<rect x="' + x.toFixed(1) + '" y="' + (inner - sh).toFixed(1) + '" width="' + slot.toFixed(1) + '" height="' + sh.toFixed(1) + '" rx="2.5" fill="' + (allTime ? '#fbbf24' : '#34d399') + '"><title>' + pfEsc(b.label) + ' · ' + val + (allTime ? ' lifers' : ' species') + '</title></rect>';
-        if (!allTime && showLifers && b.lifers) {
-          const lh = Math.max(3, (b.lifers / max) * inner);
-          body += '<rect x="' + (x + slot + 2).toFixed(1) + '" y="' + (inner - lh).toFixed(1) + '" width="' + Math.max(2, bw - slot - 2).toFixed(1) + '" height="' + lh.toFixed(1) + '" rx="2.5" fill="#fbbf24"><title>' + pfEsc(b.label) + ' · ' + b.lifers + ' lifers</title></rect>';
-        }
+        const x = xAt(i);
+        const label = n > 16 ? (i % Math.ceil(n / 8) === 0 ? b.label : '') : b.label;
+        if (label) body += '<text x="' + x.toFixed(1) + '" y="' + (h - 10) + '" text-anchor="middle" fill="#a8a29e" font-size="10" font-weight="600">' + pfEsc(label) + '</text>';
+        if (!allTime && b.species) body += '<circle class="pt" cx="' + x.toFixed(1) + '" cy="' + yAt(b.species).toFixed(1) + '" r="3" fill="#34d399" stroke="#0c0a09" stroke-width="1.5"><title>' + pfEsc(b.label) + ' · ' + b.species + ' species</title></circle>';
+        if ((allTime || showLifers) && b.lifers) body += '<circle class="pt" cx="' + x.toFixed(1) + '" cy="' + yAt(b.lifers).toFixed(1) + '" r="3" fill="#fbbf24" stroke="#0c0a09" stroke-width="1.5"><title>' + pfEsc(b.label) + ' · ' + b.lifers + ' lifers</title></circle>';
       });
-      [0, Math.floor((n - 1) / 2), n - 1].filter((v, i, a) => a.indexOf(v) === i).forEach(i => {
-        const b = buckets[i];
-        if (!b) return;
-        const x = pad + i * (bw + gap) + bw / 2;
-        body += '<text x="' + x.toFixed(1) + '" y="' + (h - 2) + '" text-anchor="middle" fill="#a8a29e" font-size="11" font-family="system-ui,sans-serif">' + pfEsc(b.label) + '</text>';
-      });
-      return '<svg viewBox="0 0 ' + w + ' ' + h + '" class="pf-chart" role="img">' + body + '</svg>';
+      return '<svg viewBox="0 0 ' + w + ' ' + h + '" class="pf-chart" role="img">' + defs + body + '</svg>';
     }
     function pfCalendars(rows) {
       const counts = {};
@@ -18158,16 +19025,16 @@
     function pfBoard(rows, opts) {
       opts = opts || {};
       const days = pfRange === '365' ? 365 : pfRange === '0' ? 0 : 30;
-      const showLifers = opts.lifers !== false && days !== 0;
+      const allTime = days === 0;
+      const showLifers = opts.lifers !== false;
       const all = opts.all || rows;
-      const first = showLifers ? pfFirstDates(all) : null;
+      const first = pfFirstDates(all);
       const windowRows = pfWindow(rows, days);
       const sum = pfSummarize(windowRows, first);
+      if (allTime) sum.lifers = sum.species;
       const mode = days === 30 ? 'day' : days === 365 ? 'month' : 'all';
       const packed = pfBuckets(windowRows, first, mode);
       const chartLabel = mode === 'day' ? 'Each day' : packed.yearly ? 'Each year' : 'Each month';
-      const rangeName = days === 30 ? '30 days' : days === 365 ? 'Year' : 'All time';
-      const allTime = days === 0;
       const metrics = allTime
         ? [['Photos', sum.photos], ['Lifers', sum.lifers], ['Locations', sum.locations]]
         : [['Photos', sum.photos], ['Species', sum.species], ['Lifers', sum.lifers]];
@@ -18224,8 +19091,8 @@
       const avatarInner = avatar ? '<img src="' + avatar + '" alt="" />' : pfEsc(pfInitials(name));
       const avatarEl = mine
         ? '<button type="button" class="pf-avatar pf-avatar-btn" data-act="pick-avatar" aria-label="' + (avatar ? 'Change profile photo' : 'Add profile photo') + '">' + avatarInner + (avatar ? '' : '<span class="pf-cam">' + cam + '</span>') + '</button>'
-        : '<div class="pf-avatar">' + avatarInner + '</div>';
-      const coverEl = (cover ? '<img class="pf-cover" src="' + cover + '" alt="" />' : '') +
+        : '<div class="pf-avatar' + (avatar ? '' : ' empty') + '">' + (avatar ? avatarInner : '<span class="pf-ph">' + pfEsc(pfInitials(name)) + '</span>') + '</div>';
+      const coverEl = (cover ? '<img class="pf-cover" src="' + cover + '" alt="" />' : (mine ? '' : '<div class="pf-cover-empty"><span>No cover photo</span></div>')) +
         (mine
           ? '<button type="button" class="pf-banner-hit" data-act="pick-cover" aria-label="' + (cover ? 'Change cover photo' : 'Add cover photo') + '"></button>' + (cover ? '' : '<span class="pf-cam">' + cam + 'Cover</span>')
           : '');
@@ -18243,10 +19110,10 @@
             '<div class="pf-name-row"><div class="pf-name">' + pfEsc(name) + '</div>' + rank + '</div>' +
             '<div class="pf-handle">' + pfEsc(handle) + (region ? ' · ' + pfEsc(region) : '') + '</div>' +
             '<div class="pf-social"><span><b>' + followers + '</b>followers</span><span><b>' + following + '</b>following</span></div>' +
-            '<div class="pf-bio-row">' +
-              (profile.bio ? '<div class="pf-bio">' + pfEsc(profile.bio) + '</div>' : '<div class="pf-bio"></div>') +
+            (profile.bio || underActions ? '<div class="pf-bio-row">' +
+              (profile.bio ? '<div class="pf-bio">' + pfEsc(profile.bio) + '</div>' : '') +
               underActions +
-            '</div>' +
+            '</div>' : '') +
           '</div>' +
         '</div></div>' +
       '</section>';
@@ -18267,10 +19134,24 @@
             '<button type="button" class="btn-em" data-act="signin">Sign in</button>' +
             '<button type="button" class="ghost" data-act="signup">Create account</button>' +
           '</div>' +
+          '<p class="pf-note" style="margin-top:8px"><button type="button" class="pf-back" data-act="forgot" style="font-size:12px">Forgot password?</button></p>' +
           '<p class="pf-note" id="pf-msg"></p>' +
         '</div>';
     }
 
+
+    async function pfPublishBanner() {
+      const slot = document.getElementById('pf-publish-slot');
+      if (!slot || !pfUser) return;
+      const localN = pfRecentLocal().length;
+      if (!localN) return;
+      const q = await supabaseClient.from('public_sightings').select('id', { count: 'exact', head: true }).eq('user_id', pfUser.id);
+      if (q.error) return;
+      const missing = localN - (q.count || 0);
+      if (missing <= 0) { slot.innerHTML = ''; return; }
+      slot.innerHTML = '<div class="pf-publish-note"><span>' + missing + ' sighting' + (missing === 1 ? '' : 's') + ' not public yet</span>' +
+        '<button type="button" class="btn-em" data-act="publish">Publish</button></div>';
+    }
     async function renderSelf() {
       if (pfPreview) return renderPreview();
       const gen = ++pfGen;
@@ -18303,7 +19184,7 @@
         return;
       }
       const actions = '';
-      let body = pfHero(pfSelf, st, counts, { actions: actions, mine: true }) + pfPinsHtml(pfRecentLocal(), pfSelf) + pfTabs('self');
+      let body = pfHero(pfSelf, st, counts, { actions: actions, mine: true }) + '<div id="pf-publish-slot"></div>' + pfPinsHtml(pfRecentLocal(), pfSelf) + pfTabs('self');
       if (pfTab === 'sightings') {
         const rows = pfRecentLocal();
         body += rows.length ? pfListHtml(rows, 'checkin', pfSelf, { mine: true }) :
@@ -18318,9 +19199,9 @@
         body += pfMapChrome();
         body += '<p class="pf-note" id="pf-msg"></p>';
       } else if (pfTab === 'people') {
-        body += '<div style="display:flex;gap:8px;margin-bottom:10px">' +
-          '<input id="pf-lookup" placeholder="Find a username" style="flex:1;background:var(--input);border:1px solid var(--line-2);border-radius:10px;padding:8px 10px" />' +
-          '<button type="button" class="btn-em" data-act="lookup">View</button></div>' +
+        body += '<div class="pf-lookup-wrap">' +
+          '<input id="pf-lookup" placeholder="Search usernames" autocomplete="off" />' +
+          '<div id="pf-lookup-results" class="pf-lookup-results"></div></div>' +
           '<div id="pf-people"><div class="pf-empty">Loading people…</div></div><p class="pf-note" id="pf-msg"></p>';
       } else if (pfTab === 'awards') {
         const L = st.level;
@@ -18342,6 +19223,7 @@
       }
       document.getElementById('pf-body').innerHTML = body;
       pfFitSpecies();
+      pfPublishBanner();
       if (gen !== pfGen) return;
       if (pfTab !== 'sightings' && pfTab !== 'photos' && pfTab !== 'feed') pfList = null;
       if (pfTab === 'sightings' || pfTab === 'photos') pfBindList();
@@ -18364,9 +19246,19 @@
       const counts = await pfCounts(pfOther.id);
       const following = pfUser ? await pfAmFollowing(pfOther.id) : false;
       if (gen !== pfGen) return;
-      const trusted = pfCanSeeExact(pfOther);
+      await pfIsMutual(pfOther.id);
+      const canSee = pfCanSeeProfile(pfOther);
+      const trusted = canSee && pfCanSeeExact(pfOther);
       const pack = await pfLoadProfileRows(pfOther, trusted);
-      const rows = pack.rows;
+      let rows = pack.rows || [];
+      if (canSee && !trusted) {
+        rows = rows.map(s => {
+          if (s.lat == null || s.lng == null) return s;
+          if (!pfIsProtected(Number(s.lat), Number(s.lng), pfOther)) return s;
+          const fuzz = pfFuzzPoint(Number(s.lat), Number(s.lng), s.id);
+          return Object.assign({}, s, { lat: fuzz.lat, lng: fuzz.lng, has_exact_location: false });
+        });
+      }
       if (gen !== pfGen) return;
       await pfEnsurePhotos(pfPinnedMatches(rows, pfOther));
       if (gen !== pfGen) return;
@@ -18376,35 +19268,40 @@
             (following
               ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7.5"/></svg>'
               : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.2"/><path d="M19 8v6M16 11h6"/></svg>') +
-          '</div>'
+          '</button>'
         : '';
-      let body = pfHero(pfOther, null, counts, { actions: actions, followBtn: followBtn }) + pfPinsHtml(rows, pfOther) + pfTabs('other');
-      if (pfTab === 'photos') {
-        const photos = pack.photoIds ? rows.filter(s => pack.photoIds[s.id]) : rows;
-        await pfEnsurePhotos(photos.slice(0, PF_PAGE));
-        if (gen !== pfGen) return;
-        body += photos.length ? pfListHtml(photos, 'photo', pfOther, {}) : '<div class="pf-empty">No public photos yet.</div>';
-      } else if (pfTab === 'map') {
-        pfPrepareMap(rows, false);
-        body += pfMapChrome();
+      let body = pfHero(pfOther, null, counts, { actions: actions, followBtn: followBtn });
+      if (!canSee) {
+        body += '<p class="pf-note" style="margin-top:12px">This user hasn’t shared their activity with you.</p>';
       } else {
-        await pfEnsurePhotos(rows.slice(0, PF_PAGE));
-        if (gen !== pfGen) return;
-        body += '<div class="pf-section"><span>Activity</span></div>';
-        body += pfBoard(rows, { all: rows });
-        body += '<div class="pf-section"><span>Photos</span></div>';
-        body += pfRecentPhotosStrip(rows, pfOther);
-        body += '<div class="pf-section"><span>Sightings</span></div>';
-        body += rows.length ? pfListHtml(rows, 'checkin', pfOther, {}) : '<div class="pf-empty">No public sightings yet.</div>';
+        body += pfPinsHtml(rows, pfOther) + pfTabs('other');
+        if (pfTab === 'photos') {
+          const photos = pack.photoIds ? rows.filter(s => pack.photoIds[s.id]) : rows;
+          await pfEnsurePhotos(photos.slice(0, PF_PAGE));
+          if (gen !== pfGen) return;
+          body += photos.length ? pfListHtml(photos, 'photo', pfOther, {}) : '<div class="pf-empty">No public photos yet.</div>';
+        } else if (pfTab === 'map') {
+          pfPrepareMap(rows, false);
+          body += pfMapChrome();
+        } else {
+          await pfEnsurePhotos(rows.slice(0, PF_PAGE));
+          if (gen !== pfGen) return;
+          body += '<div class="pf-section"><span>Activity</span></div>';
+          body += pfBoard(rows, { all: rows });
+          body += '<div class="pf-section"><span>Photos</span></div>';
+          body += pfRecentPhotosStrip(rows, pfOther);
+          body += '<div class="pf-section"><span>Sightings</span></div>';
+          body += rows.length ? pfListHtml(rows, 'checkin', pfOther, {}) : '<div class="pf-empty">No public sightings yet.</div>';
+        }
       }
       body += '<p class="pf-note" id="pf-msg"></p>';
       document.getElementById('pf-body').innerHTML = body;
       pfFitSpecies();
       if (gen !== pfGen) return;
-      if (pfTab !== 'sightings' && pfTab !== 'photos') pfList = null;
-      if (pfTab === 'sightings' || pfTab === 'photos') pfBindList();
-      if (pfTab === 'map') pfRenderProfileMap();
-      else if (pfTab === 'sightings' || pfTab === 'photos') {
+      if (!canSee || (pfTab !== 'sightings' && pfTab !== 'photos')) pfList = null;
+      if (canSee && (pfTab === 'sightings' || pfTab === 'photos')) pfBindList();
+      if (canSee && pfTab === 'map') pfRenderProfileMap();
+      else if (canSee && (pfTab === 'sightings' || pfTab === 'photos')) {
         const shown = pfList ? pfList.rows.slice(0, pfList.shown) : [];
         pfAttachSocial(shown).then(() => { if (gen === pfGen) pfPaintReacts(); });
       }
@@ -18487,7 +19384,7 @@
       let pin = '';
       if (opts.pinnable) {
         const on = pfPinnedKeys(pfSelf).indexOf(pfSightKey(s)) >= 0;
-        pin = '<button type="button" class="pf-pin-mini' + (on ? ' on' : '') + '" data-act="pin" data-id="' + pfEsc(id) + '">' + (on ? 'Pinned' : 'Pin') + '</button>';
+        pin = '<button type="button" class="pf-pin-ico' + (on ? ' on' : '') + '" data-act="pin" data-id="' + pfEsc(id) + '" aria-label="' + (on ? 'Unpin' : 'Pin') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 7h3l-5 9-5-9h3z"/></svg></button>';
       }
       const flag = opts.flag ? '<span class="pf-flag">' + pfEsc(opts.flag) + '</span>' : '';
       return '<div class="cell">' +
@@ -18518,6 +19415,8 @@
           photo_url: pub && s.photo_url ? s.photo_url : null,
           photo_full: pub ? (s.photo_full || s.photo_url || null) : null,
           rarity: pfRarity(s.species_code, s.state),
+          is_cover: Number(s.is_cover) ? 1 : 0,
+          is_lifer: (typeof isLiferOnDay === 'function' && isLiferOnDay(s.species_code, s.date ? String(s.date).slice(0, 10) : '')) ? 1 : 0,
           awards: (s.id && pfAwardMemo[s.id] && pfAwardMemo[s.id].awards) || []
         };
       });
@@ -19247,6 +20146,15 @@
     }
     async function pfFillPeople(gen) {
       const box = document.getElementById('pf-people');
+      const lookup = document.getElementById('pf-lookup');
+      if (lookup && !lookup._pfBound) {
+        lookup._pfBound = true;
+        lookup.addEventListener('input', () => {
+          clearTimeout(pfSearchTimer);
+          const q = lookup.value;
+          pfSearchTimer = setTimeout(() => pfSearchPeople(q), 180);
+        });
+      }
       if (!box) return;
       const follows = await supabaseClient.from('follows').select('following_id').eq('follower_id', pfUser.id);
       const fans = await supabaseClient.from('follows').select('follower_id').eq('following_id', pfUser.id);
@@ -19267,9 +20175,9 @@
         '<button type="button" data-act="exact-public" data-on="1"' + (everyone ? ' class="on"' : '') + '>Everyone</button>' +
         '</div></div>';
       html += '<div class="pf-note" style="margin-bottom:6px">Followed</div>';
-      html += followingIds.length ? followingIds.map(id => byId[id] ? pfPersonRow(byId[id], pin(id)) : '').join('') : '<div class="pf-empty">You’re not following anyone yet.</div>';
+      html += followingIds.length ? followingIds.map(id => byId[id] ? pfPersonRow(byId[id], pin(id)) : '').join('') : '<div class="pf-empty">You’re not following anyone yet. Search a username above.</div>';
       html += '<div class="pf-note" style="margin:12px 0 6px">Followed by</div>';
-      html += followerIds.length ? followerIds.map(id => byId[id] ? pfPersonRow(byId[id], pin(id)) : '').join('') : '<div class="pf-empty">No followers yet.</div>';
+      html += followerIds.length ? followerIds.map(id => byId[id] ? pfPersonRow(byId[id], pin(id)) : '').join('') : '<div class="pf-empty">No followers yet. They’ll show up here.</div>';
       box.innerHTML = html;
     }
     function pfRarPill(rar) {
@@ -19304,10 +20212,21 @@
       const src = pfSafeSrc(s.photo_url);
       const pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5c.2 0 5.2-4.6 5.2-9.3a5.2 5.2 0 0 0-10.4 0c0 4.7 5 9.3 5.2 9.3z"/><circle cx="12" cy="11.1" r="1.6"/></svg>';
       const rarHtml = rar ? '<span class="bn-rar ' + pfRarClass(rar) + '" title="' + pfEsc(rar) + '"></span>' : '';
+      const day = s.date ? String(s.date).slice(0, 10) : '';
+      const isCover = Number(s.is_cover) || (opts.mine && typeof sightings !== 'undefined' && sightings.some(x => x.id === s.id && Number(x.is_cover)));
+      const isLifer = Number(s.is_lifer) || (opts.mine && typeof isLiferOnDay === 'function' && isLiferOnDay(s.species_code, day));
+      const star = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.47 6.08 6.53.55-4.96 4.22 1.53 6.37L12 16.7 6.43 19.82l1.53-6.37L3 9.23l6.53-.55z"/></svg>';
+      const badges = (isLifer || isCover)
+        ? '<span class="bn-badges">' +
+            (isLifer ? '<span class="bn-lifer">Lifer</span>' : '') +
+            (isCover ? '<span class="bn-cover" title="Cover photo">' + star + '</span>' : '') +
+          '</span>'
+        : '';
       const frame = src
         ? '<div class="bn-frame">' +
             '<img src="' + src + '" alt="" loading="lazy" />' +
             '<span class="bn-veil"></span>' +
+            badges +
             '<span class="bn-onphoto"><span class="bn-name-row"><span class="bn-sp">' + pfEsc(name) + '</span>' + rarHtml + '</span></span>' +
           '</div>'
         : '';
@@ -19326,11 +20245,13 @@
         '<div class="bn-plate">' +
           headline +
           '<div class="bn-who">' +
-            '<span class="bn-av">' + face + '</span>' +
-            '<div class="bn-meta">' +
-              '<div class="bn-name">' + pfEsc(who) + '</div>' +
-              (handle ? '<div class="bn-user">' + pfEsc(handle) + '</div>' : '') +
-            '</div>' +
+            '<button type="button" class="bn-person" data-act="user" data-id="' + pfEsc(p.id || s.user_id || '') + '">' +
+              '<span class="bn-av">' + face + '</span>' +
+              '<span class="bn-meta">' +
+                '<span class="bn-name">' + pfEsc(who) + '</span>' +
+                (handle ? '<span class="bn-user">' + pfEsc(handle) + '</span>' : '') +
+              '</span>' +
+            '</button>' +
             '<time class="bn-date">' + pfEsc(pfDate(s.date) || '') + '</time>' +
           '</div>' +
           (place ? '<div class="bn-sub">' + place + '</div>' : '') +
@@ -19347,7 +20268,7 @@
       const ids = (follows.data || []).map(r => r.following_id);
       if (!ids.length) {
         pfList = null;
-        if (gen === pfGen && box.isConnected) box.innerHTML = '<div class="pf-empty">Follow someone to see their latest sightings. Find them under People.</div>';
+        if (gen === pfGen && box.isConnected) box.innerHTML = '<div class="pf-empty">Follow someone to see their sightings. Open People and search a username.</div>';
         return;
       }
       const key = ids.slice().sort().join(',');
@@ -19376,18 +20297,21 @@
       pfAttachSocial(shown).then(() => { if (gen === pfGen && box.isConnected) pfPaintReacts(box); });
     }
 
+    let pfSearchTimer = null;
+    async function pfSearchPeople(q) {
+      const box = document.getElementById('pf-lookup-results');
+      if (!box) return;
+      q = String(q || '').trim().replace(/^@/, '');
+      if (q.length < 2) { box.innerHTML = ''; return; }
+      const { data } = await supabaseClient.from('profiles').select('id,username,display_name,home_region,public_stats').ilike('username', '%' + q + '%').limit(8);
+      const rows = (data || []).filter(p => !pfUser || p.id !== pfUser.id);
+      box.innerHTML = rows.length ? rows.map(p => pfPersonRow(p)).join('') : '<div class="pf-empty">No one matches @' + pfEsc(q) + '.</div>';
+    }
     async function pfLookup() {
       const input = document.getElementById('pf-lookup');
       const name = input ? input.value.trim().replace(/^@/, '') : '';
       if (!name) return;
-      pfMsg('Looking up @' + name + '…');
-      const { data, error } = await supabaseClient.from('profiles').select('*').eq('username', name).maybeSingle();
-      if (error || !data) { pfMsg('No profile named @' + name); return; }
-      if (data.id === pfUser.id) { pfMsg('That’s you'); return; }
-      pfPreview = false;
-      pfOther = data;
-      pfTab = 'sightings';
-      renderOther();
+      pfSearchPeople(name);
     }
     async function pfSave() {
       const username = (document.getElementById('pf-un').value || '').trim().replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
@@ -19445,13 +20369,18 @@
       if (pfPreview) await renderPreview();
       else if (!pfOther) await renderSelf();
       pfPinStatus(note);
-      const btn = document.querySelector('#pf-detail [data-act="pin"]');
-      if (btn && pfDetail && String(pfDetail.s.id) === String(id)) btn.textContent = at >= 0 ? 'Pin to profile' : 'Unpin from profile';
+      document.querySelectorAll('[data-act="pin"][data-id="' + id + '"]').forEach(btn => {
+        const nowOn = at < 0;
+        btn.classList.toggle('on', nowOn);
+        btn.setAttribute('aria-label', nowOn ? 'Unpin' : 'Pin');
+        btn.title = nowOn ? 'Unpin' : 'Pin to profile';
+      });
     }
     async function pfSetFollow(id, on) {
       if (!pfUser || id === pfUser.id) return;
       if (on) await supabaseClient.from('follows').insert({ follower_id: pfUser.id, following_id: id });
       else await supabaseClient.from('follows').delete().eq('follower_id', pfUser.id).eq('following_id', id);
+      if (pfMutualCache) delete pfMutualCache[id];
       if (pfOther && pfOther.id === id) renderOther();
       else renderSelf();
     }
@@ -19539,12 +20468,12 @@
       scope.querySelectorAll('[data-react]').forEach(el => {
         const c = pfSocialCounts[el.getAttribute('data-react')] || { likes: 0, comments: 0 };
         if (el.classList.contains('bn-acts')) {
-          if (!c.likes && !c.comments) { el.hidden = true; el.innerHTML = ''; return; }
           el.hidden = false;
-          let html = '';
-          if (c.likes) html += '<span class="bn-act">' + pfHeartSvg() + '<em>' + c.likes + '</em></span>';
-          if (c.comments) html += '<span class="bn-act">' + pfBubbleSvg() + '<em>' + c.comments + '</em></span>';
-          el.innerHTML = html;
+          const sid = el.getAttribute('data-react') || '';
+          const liked = !!(c.liked);
+          el.innerHTML =
+            '<button type="button" class="bn-act' + (liked ? ' on' : '') + '" data-act="card-like" data-id="' + pfEsc(sid) + '">' + pfHeartSvg() + '<em>' + (c.likes || 0) + '</em></button>' +
+            '<button type="button" class="bn-act" data-act="card-comment" data-id="' + pfEsc(sid) + '">' + pfBubbleSvg() + '<em>' + (c.comments || 0) + '</em></button>';
           return;
         }
         let html = '';
@@ -19661,7 +20590,11 @@
         const n = social && social.likes ? social.likes.length : 0;
         const on = pfUser && social && social.likes && social.likes.indexOf(pfUser.id) >= 0;
         like.classList.toggle('on', !!on);
-        like.innerHTML = (on ? '♥' : '♡') + ' ' + n;
+        like.innerHTML = pfHeartSvg() + '<em>' + n + '</em>';
+        const line = document.getElementById('pf-like-line');
+        if (line) line.textContent = n ? (n === 1 ? '1 like' : n + ' likes') : '';
+        const cc = document.getElementById('pf-comment-count');
+        if (cc) cc.textContent = String((social && social.comments) ? social.comments.length : 0);
       }
       if (pfDetail && pfDetail.s) {
         pfSocialCounts[String(pfDetail.s.id)] = {
@@ -19699,8 +20632,25 @@
       if (input) input.value = '';
       pfPaintSocial(await pfLoadSocial(id));
     }
+
+    async function pfToggleLikeFor(id) {
+      if (!pfUser) { pfMsg('Sign in to like a sighting.'); return; }
+      const key = String(id);
+      const social = await pfLoadSocial(key);
+      const on = (social.likes || []).indexOf(pfUser.id) >= 0;
+      const target = pfSocialRemote ? (await pfSocialIds(key)).slice(-1)[0] : key;
+      if (pfSocialRemote && target) {
+        if (on) await supabaseClient.from('sighting_likes').delete().eq('sighting_id', target).eq('user_id', pfUser.id);
+        else await supabaseClient.from('sighting_likes').insert({ sighting_id: target, user_id: pfUser.id });
+      }
+      const next = await pfLoadSocial(key);
+      pfSocialCounts[key] = { likes: (next.likes || []).length, comments: (next.comments || []).length, liked: (next.likes || []).indexOf(pfUser.id) >= 0 };
+      pfPaintReacts();
+      if (pfDetail && String(pfDetail.s.id) === key) pfPaintSocial(next);
+    }
     async function pfToggleLike() {
       if (!pfDetail || !pfUser) return;
+      return pfToggleLikeFor(pfDetail.s.id);
       const id = String(pfDetail.s.id);
       const social = await pfLoadSocial(id);
       const on = social.likes.indexOf(pfUser.id) >= 0;
@@ -19796,7 +20746,9 @@
           '</span></button>';
       }).join('') + '</div>';
     }
-    async function pfOpenCard(id) {
+    async function pfOpenCard(id, opts) {
+      pfOpenAtComments = !!(opts && opts.comments);
+      pfOpenCommentId = (opts && opts.commentId) || '';
       const rec = pfCardIndex[id];
       if (!rec) return;
       const s = Object.assign({}, rec.s);
@@ -19830,8 +20782,8 @@
       const got = pfHasSpecies(s.species_code);
       const canPin = !!(mine && !pfPreview && src);
       const pinnedOn = canPin && pfPinnedKeys(pfSelf).indexOf(pfSightKey(s)) >= 0;
-      const pinRow = canPin
-        ? '<div class="pf-detail-pinrow"><button type="button" class="ghost" data-act="pin" data-id="' + pfEsc(s.id) + '">' + (pinnedOn ? 'Unpin from profile' : 'Pin to profile') + '</button><p class="pf-note" id="pf-pin-status"></p></div>'
+      const pinIco = canPin
+        ? '<button type="button" class="pf-pin-ico' + (pinnedOn ? ' on' : '') + '" data-act="pin" data-id="' + pfEsc(s.id) + '" aria-label="' + (pinnedOn ? 'Unpin' : 'Pin') + '" title="' + (pinnedOn ? 'Unpin' : 'Pin to profile') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 7h3l-5 9-5-9h3z"/></svg></button>'
         : '';
       const root = document.getElementById('pf-detail');
       const body = document.getElementById('pf-detail-body');
@@ -19841,21 +20793,27 @@
       const pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5c.2 0 5.2-4.6 5.2-9.3a5.2 5.2 0 0 0-10.4 0c0 4.7 5 9.3 5.2 9.3z"/><circle cx="12" cy="11.1" r="1.6"/></svg>';
       const rarDot = rar ? '<span class="bn-rar ' + pfRarClass(rar) + '" title="' + pfEsc(rar) + '"></span>' : '';
       const shot = src
-        ? '<button type="button" class="bn-frame pf-detail-shot" data-act="detail-photo" aria-label="Open full photo"><img src="' + src + '" alt="" /></button>'
+        ? '<div class="pf-detail-frame"><button type="button" class="bn-frame pf-detail-shot" data-act="detail-photo" aria-label="Open full photo"><img src="' + src + '" alt="" /></button>' + pinIco + '</div>'
         : '';
       body.innerHTML =
         shot +
         '<div class="bn-plate pf-detail-plate">' +
           '<div class="bn-who">' +
-            '<span class="bn-av">' + face + '</span>' +
-            '<div class="bn-meta">' +
-              '<div class="bn-name">' + pfEsc(who) + '</div>' +
-              (handle ? '<div class="bn-user">' + pfEsc(handle) + '</div>' : '') +
-            '</div>' +
+            '<button type="button" class="bn-person" data-act="user" data-id="' + pfEsc(p.id || s.user_id || '') + '">' +
+              '<span class="bn-av">' + face + '</span>' +
+              '<span class="bn-meta">' +
+                '<span class="bn-name">' + pfEsc(who) + '</span>' +
+                (handle ? '<span class="bn-user">' + pfEsc(handle) + '</span>' : '') +
+              '</span>' +
+            '</button>' +
             '<time class="bn-date">' + pfEsc(pfDate(s.date) || '') + '</time>' +
           '</div>' +
           (where ? '<div class="bn-sub"><div class="bn-place">' + pin + '<span>' + pfEsc(where) + '</span></div></div>' : '') +
-          pinRow +
+          '<div class="bn-acts">' +
+            '<button type="button" class="bn-act pf-like" id="pf-like" data-act="like">' + pfHeartSvg() + '<em>0</em></button>' +
+            '<button type="button" class="bn-act" data-act="jump-comments">' + pfBubbleSvg() + '<em id="pf-comment-count">0</em></button>' +
+          '</div>' +
+          '<div id="pf-like-line" class="bn-like-line"></div>' +
         '</div>' +
         '<section class="pf-spbox">' +
           '<div class="pf-stock" id="pf-stock">🐦</div>' +
@@ -19866,16 +20824,22 @@
           '</div>' +
           (got ? '<span class="pf-got" title="On your list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7.5"/></svg></span>' : '') +
         '</section>' +
-        '<section class="pf-detail-block"><div class="pf-section"><span>Comments</span></div><div class="pf-detail-h">' +
-          '<button type="button" class="pf-like" id="pf-like" data-act="like">♡ 0</button></div>' +
-          '<div id="pf-comments"><div class="pf-empty">Loading…</div></div>' +
-          (pfUser ? '<div class="pf-comment-row"><input id="pf-comment-in" maxlength="500" placeholder="Add a comment" /><button type="button" class="btn-em" data-act="comment">Post</button></div>' : '<p class="pf-note">Sign in to comment or like this photo.</p>') +
+        '<section class="pf-thread" id="pf-comments-block">' +
+          '<div id="pf-comments"></div>' +
+          (pfUser ? '<div class="pf-comment-row"><input id="pf-comment-in" maxlength="500" placeholder="Add a comment…" />' +
+            '<button type="button" class="pf-send" data-act="comment">Post</button></div>'
+            : '<p class="pf-note">Sign in to comment or like.</p>') +
         '</section>' +
         '<section class="pf-detail-block"><div class="pf-section"><span>Awards</span></div><div id="pf-awards"><div class="pf-empty">Checking awards…</div></div></section>' +
         '<section class="pf-detail-block"><div class="pf-section"><span>Where</span></div><div id="pf-pin-map"></div><p class="pf-note" id="pf-pin-note" hidden></p></section>' +
         '<section class="pf-detail-block"><div class="pf-section"><span>More of this species</span></div><div id="pf-more"><div class="pf-empty">Loading photos…</div></div></section>';
       root.hidden = false;
       body.scrollTop = 0;
+      if (pfOpenAtComments) {
+        const target = (pfOpenCommentId && document.getElementById('c-' + pfOpenCommentId)) || document.getElementById('pf-comments-block');
+        if (target) target.scrollIntoView({ block: 'center' });
+        if (target && pfOpenCommentId) target.classList.add('pf-comment-hit');
+      }
       pfMountPin(s.lat, s.lng, name);
       if (typeof resolveSpeciesPhoto === 'function') {
         resolveSpeciesPhoto(s.species_code, tax.comName || name).then(url => {
@@ -19952,13 +20916,22 @@
       else if (act === 'publish') publishPublic();
       else if (act === 'signout') supabaseClient.auth.signOut().then(() => { pfUser = null; pfSelf = null; pfOther = null; pfPreview = false; syncProfileButton(); renderAuth(); });
       else if (act === 'signin' || act === 'signup') pfAuth(act === 'signup');
+      else if (act === 'forgot') {
+        const email = (document.getElementById('pf-email') || {}).value || '';
+        if (!email.trim()) { pfMsg('Enter your email first.'); return; }
+        supabaseClient.auth.resetPasswordForEmail(email.trim()).then(res => {
+          pfMsg(res.error ? res.error.message : 'Reset link sent to ' + email.trim() + '.');
+        });
+      }
       else if (act === 'lookup') pfLookup();
       else if (act === 'user' && id) {
         pfPreview = false;
-        if (pfUser && id === pfUser.id) { pfOther = null; pfTab = 'feed'; renderSelf(); }
+        pfCloseDetail();
+        const top = () => { const b = document.getElementById('pf-body'); if (b) b.scrollTop = 0; };
+        if (pfUser && id === pfUser.id) { pfOther = null; pfTab = 'feed'; Promise.resolve(renderSelf()).then(top); }
         else supabaseClient.from('profiles').select('*').eq('id', id).maybeSingle().then(res => {
           if (!res.data) return;
-          pfOther = res.data; pfTab = 'sightings'; renderOther();
+          pfOther = res.data; pfTab = 'sightings'; Promise.resolve(renderOther()).then(top);
         });
       }
       else if (act === 'follow') pfSetFollow(id, true);
@@ -19972,6 +20945,8 @@
       else if (act === 'pick-avatar') pfPhotoChoice('avatar', t);
       else if (act === 'pick-cover') pfPhotoChoice('cover', t);
       else if (act === 'awards') { try { openAchModal(); } catch (err) {} }
+      else if (act === 'card-like' && id) { e.preventDefault(); e.stopPropagation(); pfToggleLikeFor(id); }
+      else if (act === 'card-comment' && id) { e.preventDefault(); e.stopPropagation(); pfOpenCard(id, { comments: true }); }
       else if (act === 'card' && id) pfOpenCard(id);
       else if (act === 'photo') {
         const id = t.getAttribute('data-id');
@@ -20048,18 +21023,26 @@
         return;
       }
       box.innerHTML = rows.map(n => {
-        const shot = pfSafeSrc(n.photo);
         const who = n.who || 'Someone';
         const bird = n.bird || 'a bird';
-        const line = n.kind === 'like'
-          ? 'liked your ' + bird
+        const line = n.kind === 'follow' ? 'started following you'
+          : n.kind === 'like' ? 'liked your ' + bird
           : 'commented on ' + bird;
+        const plus = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5v11M6.5 12h11"/></svg>';
+        const face = n.kind === 'like'
+          ? '<span class="pf-note-ph like">' + pfHeartSvg() + '</span>'
+          : n.kind === 'follow'
+            ? '<span class="pf-note-ph follow">' + plus + '</span>'
+            : '<span class="pf-note-ph comment">' + pfBubbleSvg() + '</span>';
         return '<div class="pf-note-row">' +
-          '<button type="button" data-act="open-note" data-id="' + pfEsc(n.id) + '" style="display:flex;gap:10px;align-items:center;flex:1;min-width:0;background:none;border:0;padding:0;color:inherit;text-align:left">' +
-            (shot ? '<img class="pf-note-shot" src="' + pfEsc(shot) + '" alt="" />' : '<span class="pf-note-ph">🐦</span>') +
-            '<span class="pf-note-copy"><b>' + pfEsc(who) + '</b><span>' + pfEsc(line) + (n.body ? ' · ' + pfEsc(n.body) : '') + '</span>' +
-              '<span class="pf-note-meta"><span class="pf-note-kind ' + (n.kind === 'like' ? 'like' : '') + '">' + (n.kind === 'like' ? 'Like' : 'Comment') + '</span><span>' + pfEsc(pfAgo(n.at)) + '</span></span></span></button>' +
-          '<button type="button" class="pf-note-x" data-act="clear-note" data-id="' + pfEsc(n.id) + '" aria-label="Clear">✕</button></div>';
+          '<button type="button" class="pf-note-open" data-act="open-note" data-id="' + pfEsc(n.id) + '">' +
+            face +
+            '<span class="pf-note-copy"><span class="pf-note-line"><b>' + pfEsc(who) + '</b> ' + pfEsc(line) + '</span>' +
+              (n.body ? '<span class="pf-note-body">' + pfEsc(n.body) + '</span>' : '') +
+            '</span>' +
+            '<span class="pf-note-when">' + pfEsc(pfAgo(n.at)) + '</span>' +
+          '</button>' +
+          '<button type="button" class="pf-note-x" data-act="clear-note" data-id="' + pfEsc(n.id) + '" aria-label="Dismiss">×</button></div>';
       }).join('');
     }
     function pfCloseNotes() {
@@ -20100,8 +21083,16 @@
     }
     async function pfOpenNote(id) {
       const note = pfNotes.find(n => n.id === id);
+      if (!note) return;
       pfCloseNotes();
-      if (!note || !note.sighting) return;
+      if (note.kind === 'follow' && note.userId) {
+        document.getElementById('profile-modal').classList.add('on');
+        document.body.classList.add('pf-open');
+        const res = await supabaseClient.from('profiles').select('*').eq('id', note.userId).maybeSingle();
+        if (res.data) { pfOther = res.data; pfTab = 'sightings'; renderOther(); }
+        return;
+      }
+      if (!note.sighting) return;
       pfCardIndex[note.sighting.id] = { s: note.sighting, p: pfSelf || {} };
       document.getElementById('profile-modal').classList.add('on');
       document.body.classList.add('pf-open');
@@ -20111,7 +21102,7 @@
       await pfRefreshUser();
       if (!pfUser) { renderAuth(); return; }
       await renderSelf();
-      pfOpenCard(note.sighting.id);
+      pfOpenCard(note.sighting.id, { comments: true, commentId: note.commentId || '' });
     }
     async function pfRefreshNotes() {
       if (!pfUser || pfNotesLoading) { if (!pfUser) { pfNotes = []; pfPaintNoteBadge(); } return; }
@@ -20163,9 +21154,17 @@
           await pfEnsurePhotos(sights);
           sights.forEach(s => { bySight[s.id] = s; });
         }
+        let follows = [];
+        const fq = await supabaseClient.from('follows').select('follower_id,created_at').eq('following_id', pfUser.id).order('created_at', { ascending: false }).limit(40);
+        if (!fq.error) follows = fq.data || [];
+        else {
+          const fq2 = await supabaseClient.from('follows').select('follower_id').eq('following_id', pfUser.id).limit(40);
+          if (!fq2.error) follows = fq2.data || [];
+        }
         const whoIds = {};
         comments.forEach(c => { if (c.user_id && c.user_id !== pfUser.id) whoIds[c.user_id] = 1; });
         likes.forEach(l => { if (l.user_id && l.user_id !== pfUser.id) whoIds[l.user_id] = 1; });
+        follows.forEach(f => { if (f.follower_id) whoIds[f.follower_id] = 1; });
         const profs = await pfProfiles(Object.keys(whoIds));
         const who = {};
         profs.forEach(p => { who[p.id] = p.display_name || p.username || 'Someone'; });
@@ -20174,7 +21173,7 @@
           if (!c.user_id || c.user_id === pfUser.id || !bySight[c.sighting_id]) return;
           const s = bySight[c.sighting_id];
           events.push({
-            id: 'c:' + c.id, kind: 'comment', at: c.created_at || '', who: who[c.user_id] || 'Someone',
+            id: 'c:' + c.id, kind: 'comment', commentId: c.id, at: c.created_at || '', who: who[c.user_id] || 'Someone',
             body: String(c.body || '').slice(0, 90), bird: s.species_name || 'bird', photo: s.photo_url || '', sighting: s
           });
         });
@@ -20184,6 +21183,13 @@
           events.push({
             id: 'l:' + l.sighting_id + ':' + l.user_id, kind: 'like', at: l.created_at || '', who: who[l.user_id] || 'Someone',
             body: '', bird: s.species_name || 'bird', photo: s.photo_url || '', sighting: s
+          });
+        });
+        follows.forEach(f => {
+          if (!f.follower_id || f.follower_id === pfUser.id) return;
+          events.push({
+            id: 'f:' + f.follower_id, kind: 'follow', at: f.created_at || '', who: who[f.follower_id] || 'Someone',
+            body: '', bird: '', photo: '', userId: f.follower_id
           });
         });
         events.sort((a, b) => String(b.at).localeCompare(String(a.at)));
@@ -20342,8 +21348,10 @@
       const kind = pfCrop.kind;
       const fitted = pfExportCrop();
       if (!fitted) { pfMsg('Could not use that photo.'); return; }
+      const uploaded = await pfUploadImage(fitted, pfUser.id + '/' + kind + '.jpg');
+      if (!uploaded || uploaded.error) { pfMsg('Photo storage is not ready. ' + pfStorageSql()); return; }
       const stats = Object.assign({}, pfSelf.public_stats || {});
-      stats[kind] = fitted;
+      stats[kind] = uploaded + '?v=' + Date.now();
       const up = await supabaseClient.from('profiles').update({
         public_stats: stats,
         updated_at: new Date().toISOString()
@@ -20480,6 +21488,8 @@
         try { openLightboxImage(src, t.getAttribute('data-name') || '', ''); } catch (err) {}
       } else if (act === 'comment') pfPostComment();
       else if (act === 'like') pfToggleLike();
+      else if (act === 'jump-comments') { const b = document.getElementById('pf-comments-block'); if (b) b.scrollIntoView({ block: 'start' }); const i = document.getElementById('pf-comment-in'); if (i) i.focus(); }
+      else if (act === 'user') { const uid = t.getAttribute('data-id'); if (uid) { const top = () => { const b = document.getElementById('pf-body'); if (b) b.scrollTop = 0; }; pfCloseDetail(); if (pfUser && uid === pfUser.id) { pfOther = null; pfTab = 'feed'; Promise.resolve(renderSelf()).then(top); } else supabaseClient.from('profiles').select('*').eq('id', uid).maybeSingle().then(res => { if (res.data) { pfOther = res.data; pfTab = 'sightings'; Promise.resolve(renderOther()).then(top); } }); } }
       else if (act === 'pin') pfTogglePin(t.getAttribute('data-id'));
       else if (act === 'delete-comment') pfDeleteComment(t.getAttribute('data-id'));
     });
@@ -20495,10 +21505,13 @@
     if (pfNotesList) pfNotesList.addEventListener('click', e => {
       const t = e.target.closest('[data-act]');
       if (!t) return;
+      e.stopPropagation();
       const id = t.getAttribute('data-id');
       if (t.getAttribute('data-act') === 'clear-note') pfClearNote(id);
       else if (t.getAttribute('data-act') === 'open-note') pfOpenNote(id);
     });
+    const pfNotesClose = document.getElementById('pf-notes-close');
+    if (pfNotesClose) pfNotesClose.addEventListener('click', e => { e.stopPropagation(); pfCloseNotes(); });
     document.addEventListener('click', e => {
       const panel = document.getElementById('pf-notes');
       if (!panel || panel.hidden) return;
