@@ -2204,7 +2204,7 @@
     .pf-crop-tools span { font-size: 12px; font-weight: 750; color: var(--muted); flex: 1; min-width: 140px; }
     .pf-id-copy { min-width: 0; flex: 1; padding-bottom: 4px; }
     .pf-avatar {
-      width: 86px; height: 86px; border-radius: 24px; flex: none;
+      width: 86px; height: 86px; border-radius: 24px; flex: none; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
       font-size: 28px; font-weight: 800; letter-spacing: -.04em;
       background: var(--em-bg); color: var(--em3);
@@ -2283,11 +2283,18 @@
     .pf-range-row button.on { color: var(--text); background: var(--panel); box-shadow: 0 1px 2px rgba(0,0,0,.18); }
     .pf-icon-stack { position: absolute; top: 12px; right: 12px; z-index: 2; display: flex; flex-direction: column; gap: 6px; }
     .pf-edit-mini {
-      width: 28px; height: 28px; border-radius: 999px;
-      border: 1px solid var(--line-2); background: color-mix(in srgb, var(--bg) 70%, transparent); color: var(--text);
+      width: 32px; height: 32px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.25); background: rgba(0,0,0,.45); color: #fff;
       display: inline-flex; align-items: center; justify-content: center; padding: 0; flex: none;
+      backdrop-filter: blur(4px);
     }
-    .pf-edit-mini svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .pf-edit-mini svg { width: 16px; height: 16px; display: block; }
+    .pf-inline { background: var(--input); border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 10px; font: inherit; color: var(--text); width: 100%; }
+    .pf-inline-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+    .pf-inline-row .pf-inline { width: auto; flex: 1; }
+    .pf-inline-row span { color: var(--muted); font-size: 13px; }
+    .pf-edit-bar { display: flex; gap: 8px; margin-top: 10px; }
+    .pf-name-row .pf-inline { font-size: 20px; font-weight: 800; letter-spacing: -.03em; }
     .pf-name-row { display: flex; align-items: center; gap: 6px; }
     .pf-board-h { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin: 4px 2px 0; }
     .pf-kicker { font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--em3); }
@@ -2456,30 +2463,42 @@
       font-size: 15px; font-weight: 640; letter-spacing: -.02em; line-height: 1.15;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .bn-user { margin-top: 2px; font-size: 13px; font-weight: 500; color: #a8a29e; line-height: 1.2; }
-    .bn-sub { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-top: 8px; }
+    .bn-user { display: block; margin-top: 2px; font-size: 13px; font-weight: 500; color: #a8a29e; line-height: 1.2; }
+    .bn-sub { display: flex; align-items: flex-start; gap: 10px; margin-top: 0; padding-left: 50px; }
+    .bn-date { font-size: 13px; font-weight: 500; color: #a8a29e; letter-spacing: -.01em; line-height: 1.2; }
     .bn-place {
       display: flex; align-items: flex-start; gap: 5px; min-width: 0; flex: 1;
-      font-size: 12.5px; font-weight: 500; color: #a8a29e; line-height: 1.35;
+      font-size: 13px; font-weight: 500; color: #a8a29e; line-height: 1.35;
     }
+    .bn-meta .bn-place { margin-top: 3px; }
     .bn-place svg { width: 13px; height: 13px; margin-top: 1px; stroke: currentColor; fill: none; stroke-width: 1.6; flex: none; opacity: .7; }
     .bn-place span { white-space: normal; }
-    .bn-date {
-      flex: none; margin-left: auto; padding-top: 1px;
-      font-size: 12px; font-weight: 500; color: #a8a29e; letter-spacing: -.01em;
-    }
+    .bn-right { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex: none; }
+    .bn-right .bn-date { margin-left: 0; color: #a8a29e; font-size: 13px; font-weight: 500; }
+    .bn-right .bn-acts { margin-top: 0; padding-top: 0; }
 
     .bn-acts { border-top: 0; margin-top: 12px; padding-top: 0; gap: 16px; }
     .bn-act svg { width: 22px; height: 22px; }
     .bn-like-line { margin-top: 8px; font-size: 13px; font-weight: 650; letter-spacing: -.01em; }
-    .pf-thread { margin: 4px 16px 0; }
-    .pf-comment { display: block; border: 0; padding: 3px 0; font-size: 14px; line-height: 1.4; }
-    .pf-comment b { font-weight: 650; margin-right: 4px; }
-    .pf-comment button { background: none; border: 0; color: #78716c; font-size: 11px; padding: 0 0 0 6px; }
-    .pf-comment-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,.06); padding-top: 8px; }
+    .pf-thread {
+      margin: 0; background: #1c1b19; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px; padding: 4px 14px 12px;
+    }
+    html[data-theme="light"] .pf-thread { background: #f5f5f4; border-color: rgba(0,0,0,.06); }
+    .pf-comment { display: block; border: 0; padding: 10px 0; font-size: 14px; line-height: 1.45; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .pf-comment:last-child { border-bottom: 0; }
+    .pf-comment-top { display: flex; align-items: baseline; gap: 8px; }
+    .pf-comment b { font-weight: 650; margin-right: 0; }
+    .pf-comment-when { margin-left: auto; font-size: 11px; color: #a8a29e; font-weight: 500; white-space: nowrap; }
+    .pf-comment button { background: none; border: 0; color: #78716c; font-size: 11px; padding: 0; }
+    .pf-comment-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.06); }
     html[data-theme="light"] .pf-comment-row { border-top-color: rgba(0,0,0,.06); }
-    .pf-comment-row input { flex: 1; background: transparent; border: 0; border-radius: 0; padding: 6px 0; color: var(--text); font-size: 14px; }
-    .pf-send { width: auto; height: auto; border-radius: 0; background: none; color: var(--em3); font-weight: 700; font-size: 13px; padding: 0; }
+    .pf-comment-row input {
+      flex: 1; background: #292524; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 999px; padding: 9px 14px; color: var(--text); font-size: 14px;
+    }
+    html[data-theme="light"] .pf-comment-row input { background: #fff; border-color: rgba(0,0,0,.12); color: #1c1917; }
+    .pf-send { background: var(--em); color: #fff; border: 0; border-radius: 999px; padding: 8px 16px; font-weight: 700; font-size: 13px; flex: none; }
     .bn-acts {
       display: flex; align-items: center; gap: 16px;
       margin-top: 10px; padding-top: 2px; border: 0;
@@ -2561,11 +2580,12 @@
     .pf-detail-block { margin-top: 18px; }
     .pf-detail-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 800; margin-bottom: 8px; }
 
-    .pf-comment { display: block; border: 0; padding: 3px 0; font-size: 14px; line-height: 1.4; }
-    .pf-comment b { display: inline; font-size: 14px; font-weight: 650; margin-right: 4px; }
+    .pf-comment { display: block; padding: 10px 0; font-size: 14px; line-height: 1.45; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .pf-comment:last-of-type { border-bottom: 0; }
+    .pf-comment-when { margin-left: auto; font-size: 11px; color: #a8a29e; font-weight: 500; }
     .pf-comment button { background: none; border: 0; color: #78716c; font-size: 11px; }
-    .pf-comment-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-    .pf-comment-row input { flex: 1; background: transparent; border: 0; padding: 6px 0; color: var(--text); }
+    .pf-comment-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; padding-top: 10px; }
+    .pf-comment-row input { flex: 1; background: #292524; border: 1px solid rgba(255,255,255,.1); border-radius: 999px; padding: 9px 14px; color: var(--text); font-size: 14px; }
     .pf-hscroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
     .pf-award {
       flex: none; width: 168px; scroll-snap-align: start;
@@ -2653,6 +2673,15 @@
     }
     .pf-ib svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .pf-ib.on { color: #ecfdf5; background: var(--em); border-color: var(--em); }
+    .pf-person > button.pf-grant {
+      flex: none; width: auto; margin-left: auto;
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 34px; padding: 0 12px; border-radius: 999px;
+      border: 1px solid var(--line-2); background: var(--panel-2); color: var(--muted);
+      font-size: 12px; font-weight: 700; white-space: nowrap; text-align: left;
+    }
+    .pf-person > button.pf-grant svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .pf-person > button.pf-grant.on { background: var(--em); border-color: var(--em); color: #fff; }
     .pf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .pf-grid > button, .pf-grid > .cell {
       aspect-ratio: 1; border-radius: 14px; overflow: hidden; border: 1px solid var(--line);
@@ -2662,29 +2691,34 @@
     .pf-grid-hit { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; cursor: pointer; }
 
     .pf-detail-frame { position: relative; }
-    .pf-pin-ico {
-      position: absolute; top: 10px; right: 10px; z-index: 2;
-      width: 32px; height: 32px; border-radius: 999px; border: 0; padding: 0;
-      background: rgba(0,0,0,.55); color: #fff;
+    .pf-pin-ico, .pf-lock {
+      position: absolute; top: 6px; z-index: 2;
+      width: 28px; height: 28px; border-radius: 999px; border: 0; padding: 0;
+      background: rgba(0,0,0,.45); color: #fff;
       display: inline-flex; align-items: center; justify-content: center;
     }
-    .pf-pin-ico svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+    .pf-lock { left: 6px; }
+    .pf-pin-ico { right: 6px; }
+    .pf-pin-ico svg, .pf-lock svg {
+      width: 14px; height: 14px; display: block;
+      stroke: currentColor; fill: none; stroke-width: 1.8;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
     .pf-pin-ico.on { background: var(--em); color: #fff; }
-    .pf-pin-ico.on svg { fill: currentColor; stroke: none; }
-    .pf-pin-mini {
-      position: absolute; top: 6px; left: 6px; z-index: 2;
-      height: 22px; padding: 0 7px; border: 0; border-radius: 999px;
-      background: rgba(0,0,0,.62); color: #fff;
-      font-size: 10px; font-weight: 800; letter-spacing: .02em;
+    .pf-pin-ico.on svg { fill: none; stroke: currentColor; }
+    .pf-lock.on { background: rgba(12,10,9,.82); box-shadow: inset 0 0 0 1px rgba(255,255,255,.22); }
+    .pf-photo-group {
+      grid-column: 1 / -1; display: flex; align-items: center; gap: 10px;
+      margin: 14px 2px 2px; font-size: 11px; font-weight: 800;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--em3);
     }
-    .pf-pin-mini.on { background: var(--em); }
-    .pf-flag {
-      position: absolute; left: 6px; bottom: 6px; font-size: 9px; font-weight: 800;
-      letter-spacing: .04em; text-transform: uppercase; background: rgba(0,0,0,.62);
-      color: #fff; border-radius: 999px; padding: 3px 7px;
-    }
+    .pf-photo-group:first-child { margin-top: 2px; }
+    .pf-photo-group::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    .cell.is-private .pf-grid-hit img { filter: brightness(.78) saturate(.9); }
     .pf-empty { padding: 28px 8px; text-align: center; color: var(--muted); font-size: 13px; }
-    #pf-map { height: min(68vh, 640px); border-radius: 18px; overflow: hidden; border: 1px solid var(--line-2); position: relative; z-index: 0; isolation: isolate; }
+    #pf-map { height: min(68vh, 640px); min-height: 420px; border-radius: 18px; overflow: hidden; border: 1px solid var(--line-2); position: relative; z-index: 0; background: var(--panel-2); }
+    .leaflet-zoom-box, #pf-map .leaflet-zoom-box { display: none !important; visibility: hidden !important; opacity: 0 !important; width: 0 !important; height: 0 !important; border: 0 !important; }
+    #pf-map, #pf-map * { outline: none !important; }
     .pf-map-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 10px; }
     .pf-map-tools select {
       background: var(--input); color: var(--text); border: 1px solid var(--line-2);
@@ -3624,10 +3658,6 @@
                 <textarea id="settings-bio" rows="3"></textarea>
               </div>
               <div class="field">
-                <label class="pf-switch" style="border:0;padding:4px 0">
-                  <span>Always update my public list when I log a bird or add a photo</span>
-                  <input id="settings-auto" type="checkbox" />
-                </label>
                 <p class="hint">Every sighting stays public: species, date, and county. Photos go with them unless you mark one private. Exact pins stay off until you turn them on for someone under Privacy.</p>
               </div>
               <div class="two" style="margin-top:18px">
@@ -3703,17 +3733,21 @@
                 </div>
               </div>
               <div class="settings-group">
-                <h4>Who can see exact locations</h4>
+                <h4>Who can see inside protected locations?</h4>
                 <div class="field">
-                  <label>Inside protected areas</label>
+                  <p class="hint" id="settings-exact-closed" hidden>Nobody can see your sightings yet. This applies once you open them up.</p>
                   <div class="seg" id="settings-exact-vis">
                     <button type="button" data-val="everyone">Everyone</button>
                     <button type="button" data-val="following">People I follow</button>
                     <button type="button" data-val="onlyme">Only me</button>
                   </div>
-                  <p class="hint">You can share exact pins with everyone except protected areas (home, etc.), then still share those areas with specific people.</p>
+                  <p class="hint" id="settings-exact-note"></p>
                 </div>
-                <div id="settings-people-list" style="margin-top:10px"></div>
+                <div class="pf-lookup-wrap" style="margin-top:10px">
+                  <input id="settings-exact-search" placeholder="Add a person" autocomplete="off" />
+                  <div id="settings-exact-results" class="pf-lookup-results"></div>
+                </div>
+                <div id="settings-people-list"></div>
               </div>
             </div>
           </div>
@@ -4969,12 +5003,10 @@
       const un = document.getElementById('settings-un');
       const rg = document.getElementById('settings-rg');
       const bio = document.getElementById('settings-bio');
-      const auto = document.getElementById('settings-auto');
       if (dn) dn.value = pfSelf.display_name || '';
       if (un) un.value = pfSelf.username || '';
       if (rg) rg.value = pfSelf.home_region || '';
       if (bio) bio.value = pfSelf.bio || '';
-      if (auto) auto.checked = localStorage.getItem('avian_auto_publish') === '1';
     }
     async function saveSettingsProfile() {
       if (!pfUser || !pfSelf) return;
@@ -4982,8 +5014,6 @@
       const display_name = (document.getElementById('settings-dn').value || '').trim() || username;
       const home_region = (document.getElementById('settings-rg').value || '').trim();
       const bio = (document.getElementById('settings-bio').value || '').trim();
-      const auto = !!document.getElementById('settings-auto').checked;
-      try { localStorage.setItem('avian_auto_publish', auto ? '1' : '0'); } catch (e) {}
       const msg = document.getElementById('settings-profile-msg');
       if (msg) msg.textContent = 'Saving…';
       const up = await supabaseClient.from('profiles').update({
@@ -4997,7 +5027,7 @@
       pfSelf = up.data;
       if (typeof syncProfileButton === 'function') syncProfileButton();
       if (msg) msg.textContent = 'Saved.';
-      if (auto && typeof publishPublic === 'function') publishPublic({ silent: true });
+      if (typeof publishPublic === 'function') publishPublic({ silent: true });
     }
     function signOutFromSettings() {
       if (typeof supabaseClient === 'undefined' || !supabaseClient.auth) return;
@@ -5058,30 +5088,60 @@
       const areasWrap = document.getElementById('settings-areas-wrap');
       if (areasWrap) areasWrap.hidden = locProt !== 'select';
       if (locProt === 'select') refreshProtectedAreas();
+      const closed = document.getElementById('settings-exact-closed');
+      if (closed) closed.hidden = pVis !== 'onlyme';
+      const note = document.getElementById('settings-exact-note');
+      if (note) {
+        note.textContent = eVis === 'everyone'
+          ? 'Shared with everyone. Turn someone off to hide protected locations from them.'
+          : eVis === 'following'
+            ? 'Shared with people you follow who follow you back. Turn someone off to hide them, or add someone.'
+            : 'Only you. Turn someone on to share protected locations with them.';
+      }
       const list = document.getElementById('settings-people-list');
       if (!list) return;
       list.innerHTML = '<div class="pf-empty">Loading people…</div>';
       try {
-        const follows = await supabaseClient.from('follows').select('following_id').eq('follower_id', pfUser.id);
-        const fans = await supabaseClient.from('follows').select('follower_id').eq('following_id', pfUser.id);
-        const followingIds = (follows.data || []).map(r => r.following_id);
-        const followerIds = (fans.data || []).map(r => r.follower_id);
-        const mutual = followingIds.filter(id => followerIds.indexOf(id) >= 0);
-        const profs = await (typeof pfProfiles === 'function' ? pfProfiles(mutual) : Promise.resolve([]));
-        const byId = {};
-        (profs || []).forEach(p => { byId[p.id] = p; });
+        const mutual = typeof pfMutualIds === 'function' ? await pfMutualIds() : [];
+        const mutualSet = new Set(mutual);
         const grants = new Set(stats.exact_grants || []);
-        const pin = id => '<button type="button" class="pf-ib' + (grants.has(id) ? ' on' : '') + '" data-act="' + (grants.has(id) ? 'ungrant' : 'grant') + '" data-id="' + (typeof pfEsc === 'function' ? pfEsc(id) : id) + '" title="' + (grants.has(id) ? 'Can see exact pins in protected areas' : 'Fuzzed in protected areas') + '">' + (typeof pfSvg === 'function' ? pfSvg('pin') : '📍') + '</button>';
-        let html = '<div class="pf-note" style="margin-bottom:6px">People I follow</div>';
-        html += mutual.length ? mutual.map(id => byId[id] ? (typeof pfPersonRow === 'function' ? pfPersonRow(byId[id], pin(id)) : '') : '').join('') : '<div class="pf-empty">No mutual follows yet. Follow someone who follows you back to grant exact access.</div>';
-        list.innerHTML = html;
+        const denies = new Set(stats.exact_denies || []);
+        const ids = [];
+        const add = id => { if (id && id !== (pfUser && pfUser.id) && ids.indexOf(id) < 0) ids.push(id); };
+        mutual.forEach(add);
+        Object.keys(settingsExactAdded).forEach(add);
+        grants.forEach(add);
+        denies.forEach(add);
+        const profs = typeof pfProfiles === 'function' ? await pfProfiles(ids) : [];
+        const byId = Object.assign({}, settingsExactAdded);
+        (profs || []).forEach(p => { if (p && p.id) byId[p.id] = p; });
+        const rows = ids.map(id => {
+          const def = typeof pfExactDefault === 'function' ? pfExactDefault(eVis, mutualSet.has(id)) : false;
+          let on = def;
+          if (denies.has(id)) on = false;
+          else if (grants.has(id)) on = true;
+          return { id: id, on: on, exception: on !== def, p: byId[id] };
+        }).filter(r => r.p);
+        rows.sort((a, b) => (b.exception - a.exception) || String(a.p.display_name || a.p.username || '').localeCompare(String(b.p.display_name || b.p.username || '')));
+        const pin = row => {
+          const label = row.on ? 'Location Shared' : 'Location Not Shared';
+          return '<button type="button" class="pf-grant' + (row.on ? ' on' : '') + '" data-act="' + (row.on ? 'ungrant' : 'grant') + '" data-id="' + (typeof pfEsc === 'function' ? pfEsc(row.id) : row.id) + '" title="' + label + '">' +
+            (typeof pfSvg === 'function' ? pfSvg('pin') : '') + '<span>' + label + '</span></button>';
+        };
+        list.innerHTML = rows.length
+          ? rows.map(row => typeof pfPersonRow === 'function' ? pfPersonRow(row.p, pin(row)) : '').join('')
+          : '<div class="pf-empty">Search to add someone.</div>';
       } catch (err) {
         list.innerHTML = '<div class="pf-empty">Could not load people.</div>';
       }
     }
+    let settingsExactAdded = {};
+    let settingsExactHits = [];
+    let settingsExactTimer = null;
     async function savePrivacyPref(key, val) {
       if (!pfUser || !pfSelf) return;
       const stats = Object.assign({}, pfSelf.public_stats || {});
+      if (key === 'exact_visibility' && typeof pfPruneExact === 'function') await pfPruneExact(stats, val);
       stats[key] = val;
       const up = await supabaseClient.from('profiles').update({ public_stats: stats }).eq('id', pfUser.id).select().single();
       if (up.data) pfSelf = up.data;
@@ -5131,6 +5191,31 @@
           if (save && settingsAreasRect) save.disabled = false;
           const mapEl = document.getElementById('settings-areas-map');
           if (mapEl) mapEl.style.cursor = '';
+        });
+        const mapEl = settingsAreasMap.getContainer();
+        mapEl.addEventListener('touchstart', function (e) {
+          if (!settingsAreasDrawing || !e.touches.length) return;
+          e.preventDefault();
+          settingsAreasMap.dragging.disable();
+          const t = e.touches[0];
+          const ll = settingsAreasMap.mouseEventToLatLng(t);
+          settingsAreasStart = ll;
+          if (settingsAreasRect) settingsAreasMap.removeLayer(settingsAreasRect);
+          settingsAreasRect = L.rectangle(L.latLngBounds(ll, ll), { color: '#10b981', weight: 2, fillOpacity: 0.2, interactive: false }).addTo(settingsAreasMap);
+        }, { passive: false });
+        mapEl.addEventListener('touchmove', function (e) {
+          if (!settingsAreasDrawing || !settingsAreasStart || !settingsAreasRect || !e.touches.length) return;
+          e.preventDefault();
+          const t = e.touches[0];
+          const ll = settingsAreasMap.mouseEventToLatLng(t);
+          settingsAreasRect.setBounds(L.latLngBounds(settingsAreasStart, ll));
+        }, { passive: false });
+        mapEl.addEventListener('touchend', function () {
+          if (!settingsAreasDrawing) return;
+          settingsAreasDrawing = false;
+          settingsAreasMap.dragging.enable();
+          const save = document.getElementById('settings-area-save');
+          if (save && settingsAreasRect) save.disabled = false;
         });
       }
       settingsAreasLayer.clearLayers();
@@ -5192,9 +5277,9 @@
       }
       corners.forEach((c, ci) => {
         const m = L.circleMarker(c, { radius: 7, color: '#fff', fillColor: '#10b981', fillOpacity: 1, weight: 2 }).addTo(settingsAreasMap);
-        m.on('mousedown', function (e) {
+        m.on('mousedown touchstart', function (e) {
+          if (e.originalEvent) L.DomEvent.preventDefault(e.originalEvent);
           L.DomEvent.stopPropagation(e);
-          L.DomEvent.preventDefault(e);
           settingsAreasMap.dragging.disable();
           settingsAreasMap.scrollWheelZoom.disable();
           const fixedLat = ci < 2 ? b[2] : b[0];
@@ -5206,22 +5291,22 @@
             placeHandles(newB);
           };
           const up = () => {
-            settingsAreasMap.off('mousemove', move);
-            settingsAreasMap.off('mouseup', up);
+            settingsAreasMap.off('mousemove touchmove', move);
+            settingsAreasMap.off('mouseup touchend', up);
             settingsAreasMap.dragging.enable();
             settingsAreasMap.scrollWheelZoom.enable();
             b[0] = a.bounds[0]; b[1] = a.bounds[1]; b[2] = a.bounds[2]; b[3] = a.bounds[3];
             saveAreasNow();
           };
-          settingsAreasMap.on('mousemove', move);
-          settingsAreasMap.on('mouseup', up);
+          settingsAreasMap.on('mousemove touchmove', move);
+          settingsAreasMap.on('mouseup touchend', up);
         });
         settingsAreasHandles.push(m);
       });
       const cm = L.circleMarker(center, { radius: 6, color: '#10b981', fillColor: '#fff', fillOpacity: 1, weight: 2 }).addTo(settingsAreasMap);
-      cm.on('mousedown', function (e) {
+      cm.on('mousedown touchstart', function (e) {
+        if (e.originalEvent) L.DomEvent.preventDefault(e.originalEvent);
         L.DomEvent.stopPropagation(e);
-        L.DomEvent.preventDefault(e);
         settingsAreasMap.dragging.disable();
         settingsAreasMap.scrollWheelZoom.disable();
         const start = e.latlng;
@@ -5234,15 +5319,15 @@
           placeHandles(newB);
         };
         const up = () => {
-          settingsAreasMap.off('mousemove', move);
-          settingsAreasMap.off('mouseup', up);
+          settingsAreasMap.off('mousemove touchmove', move);
+          settingsAreasMap.off('mouseup touchend', up);
           settingsAreasMap.dragging.enable();
           settingsAreasMap.scrollWheelZoom.enable();
           b[0] = a.bounds[0]; b[1] = a.bounds[1]; b[2] = a.bounds[2]; b[3] = a.bounds[3];
           saveAreasNow();
         };
-        settingsAreasMap.on('mousemove', move);
-        settingsAreasMap.on('mouseup', up);
+        settingsAreasMap.on('mousemove touchmove', move);
+        settingsAreasMap.on('mouseup touchend', up);
       });
       settingsAreasHandles.push(cm);
     }
@@ -5361,9 +5446,45 @@
       if (!t || !pfUser) return;
       const act = t.getAttribute('data-act');
       const id = t.getAttribute('data-id');
-      if (act === 'grant' && typeof pfSetGrant === 'function') pfSetGrant(id, true).then(() => refreshSettingsPrivacy());
-      else if (act === 'ungrant' && typeof pfSetGrant === 'function') pfSetGrant(id, false).then(() => refreshSettingsPrivacy());
+      if (act === 'grant' && typeof pfSetExactException === 'function') pfSetExactException(id, true).then(() => refreshSettingsPrivacy());
+      else if (act === 'ungrant' && typeof pfSetExactException === 'function') pfSetExactException(id, false).then(() => refreshSettingsPrivacy());
     });
+    const settingsExactSearch = document.getElementById('settings-exact-search');
+    const settingsExactResults = document.getElementById('settings-exact-results');
+    if (settingsExactSearch) {
+      settingsExactSearch.addEventListener('input', function () {
+        clearTimeout(settingsExactTimer);
+        const q = settingsExactSearch.value;
+        settingsExactTimer = setTimeout(async () => {
+          if (!settingsExactResults) return;
+          const name = String(q || '').trim().replace(/^@/, '');
+          if (name.length < 2) { settingsExactResults.innerHTML = ''; return; }
+          const { data } = await supabaseClient.from('profiles').select('id,username,display_name,home_region,public_stats').ilike('username', '%' + name + '%').limit(8);
+          const rows = (data || []).filter(p => !pfUser || p.id !== pfUser.id);
+          settingsExactHits = rows;
+          settingsExactResults.innerHTML = rows.length ? rows.map(p => {
+            const av = p.public_stats && p.public_stats.avatar;
+            const face = av && typeof pfSafeSrc === 'function' && pfSafeSrc(av) ? '<img src="' + pfSafeSrc(av) + '" alt="" />' : (typeof pfInitials === 'function' ? pfEsc(pfInitials(p.display_name || p.username)) : '');
+            return '<div class="pf-person" data-add-exact="' + p.id + '" style="cursor:pointer">' +
+              '<div class="pf-avatar">' + face + '</div>' +
+              '<div style="flex:1;min-width:0"><div class="pf-log-name">' + pfEsc(p.display_name || p.username || 'Birder') + '</div>' +
+              '<div class="pf-handle">@' + pfEsc(p.username || '') + '</div></div></div>';
+          }).join('') : '<div class="pf-empty">No one matches.</div>';
+        }, 180);
+      });
+    }
+    if (settingsExactResults) {
+      settingsExactResults.addEventListener('click', function (e) {
+        const t = e.target.closest('[data-add-exact]');
+        if (!t) return;
+        const id = t.getAttribute('data-add-exact');
+        const p = settingsExactHits.find(x => x.id === id);
+        if (p) settingsExactAdded[id] = p;
+        if (settingsExactSearch) settingsExactSearch.value = '';
+        settingsExactResults.innerHTML = '';
+        refreshSettingsPrivacy();
+      });
+    }
 
     function saveEbirdKey() { closeKeyModal(); }
     function requireEbirdKey() {
@@ -18493,12 +18614,36 @@
       if (!profile || !pfUser) return false;
       if (profile.id === pfUser.id) return true;
       const stats = profile.public_stats || {};
+      const denies = stats.exact_denies || [];
+      if (denies.indexOf(pfUser.id) >= 0) return false;
       const grants = stats.exact_grants || [];
       if (grants.indexOf(pfUser.id) >= 0) return true;
       const vis = stats.exact_visibility || 'onlyme';
       if (vis === 'everyone') return true;
       if (vis === 'following') return !!pfMutualCache[profile.id];
       return false;
+    }
+    function pfExactDefault(vis, mutual) {
+      if (vis === 'everyone') return true;
+      if (vis === 'following') return !!mutual;
+      return false;
+    }
+    async function pfMutualIds() {
+      if (!pfUser) return [];
+      const follows = await supabaseClient.from('follows').select('following_id').eq('follower_id', pfUser.id);
+      const fans = await supabaseClient.from('follows').select('follower_id').eq('following_id', pfUser.id);
+      const followingIds = (follows.data || []).map(r => r.following_id);
+      const followerIds = (fans.data || []).map(r => r.follower_id);
+      return followingIds.filter(id => followerIds.indexOf(id) >= 0);
+    }
+    async function pfPruneExact(stats, vis) {
+      const mutual = new Set(await pfMutualIds());
+      const grants = new Set(stats.exact_grants || []);
+      const denies = new Set(stats.exact_denies || []);
+      grants.forEach(id => { if (pfExactDefault(vis, mutual.has(id))) grants.delete(id); });
+      denies.forEach(id => { if (!pfExactDefault(vis, mutual.has(id))) denies.delete(id); });
+      stats.exact_grants = Array.from(grants);
+      stats.exact_denies = Array.from(denies);
     }
     const pfMutualCache = {};
     async function pfIsMutual(otherId) {
@@ -18627,37 +18772,78 @@
       pfProfileCache[profile.id] = pack;
       return pack;
     }
+    function pfPinMark() {
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.5V21"/><path d="M8.5 4h7"/><path d="M9.5 4v4.2L7 12.2h10l-2.5-4V4"/><path d="M8.2 12.2h7.6"/></svg>';
+    }
+    function pfLockMark(open) {
+      return open
+        ? '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="1.6"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0"/></svg>'
+        : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="1.6"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>';
+    }
+    function pfListChunk(rows, from, to, kind, profile, opts) {
+      if (!opts.marks || !opts.marks.length) {
+        return rows.slice(from, to).map(s => pfListItem(s, kind, profile, opts)).join('');
+      }
+      let html = '';
+      for (let i = from; i < to; i++) {
+        opts.marks.forEach(m => {
+          if (m.at === i) html += '<div class="pf-photo-group"><span>' + pfEsc(m.label) + '</span></div>';
+        });
+        html += pfListItem(rows[i], kind, profile, opts);
+      }
+      return html;
+    }
+    function pfOwnPhotoOrder(rows) {
+      const pins = pfPinnedMatches(rows, pfSelf);
+      const pinned = {};
+      pins.forEach(s => { if (s && s.id) pinned[s.id] = 1; });
+      const rest = (rows || []).filter(s => s && !pinned[s.id]);
+      const isPrivate = s => s.share_public === false || s.share_public === 0;
+      const priv = rest.filter(isPrivate);
+      const pub = rest.filter(s => !isPrivate(s));
+      const ordered = [];
+      const marks = [];
+      function add(label, list) {
+        if (!list.length) return;
+        marks.push({ at: ordered.length, label: label });
+        list.forEach(s => ordered.push(s));
+      }
+      add('Pinned', pins);
+      add('Private', priv);
+      add('Public', pub);
+      return { rows: ordered, marks: marks };
+    }
     function pfListItem(s, kind, profile, opts) {
       opts = opts || {};
       if (kind === 'photo') {
-        const flag = opts.flags ? ((s.share_public !== false && s.share_public !== 0) ? 'Public' : 'Private') : '';
         const who = opts.byId ? (opts.byId[s.user_id] || profile) : profile;
-        return pfPhotoCell(s, { profile: who, pinnable: !!opts.pinnable, flag: flag });
+        return pfPhotoCell(s, { profile: who, pinnable: !!opts.pinnable, lockable: !!opts.lockable });
       }
       const who = opts.byId ? (opts.byId[s.user_id] || {}) : profile;
       return pfCheckin(s, who, opts.mine ? { localId: s.id, mine: true } : {});
     }
     function pfListHtml(rows, kind, profile, opts) {
       opts = opts || {};
-      const page = rows.slice(0, Math.min(rows.length, PF_PAGE));
+      const pageEnd = Math.min(rows.length, PF_PAGE);
       const boxClass = kind === 'photo' ? 'pf-grid' : 'pf-checkins';
-      let html = '<div class="' + boxClass + '" id="pf-list">' + page.map(s => pfListItem(s, kind, profile, opts)).join('') + '</div>';
-      if (rows.length > page.length) html += '<div id="pf-more" style="height:28px"></div>';
-      pfList = { rows: rows, shown: page.length, kind: kind, profile: profile, opts: opts, busy: false };
+      let html = '<div class="' + boxClass + '" id="pf-list">' + pfListChunk(rows, 0, pageEnd, kind, profile, opts) + '</div>';
+      if (rows.length > pageEnd) html += '<div id="pf-more" style="height:28px"></div>';
+      pfList = { rows: rows, shown: pageEnd, kind: kind, profile: profile, opts: opts, busy: false };
       return html;
     }
     async function pfListMore() {
       const st = pfList;
       if (!st || st.busy || st.shown >= st.rows.length) return;
       st.busy = true;
-      const next = st.rows.slice(st.shown, st.shown + PF_PAGE);
+      const from = st.shown;
+      const next = st.rows.slice(from, from + PF_PAGE);
       st.shown += next.length;
       try {
         await pfEnsurePhotos(next);
         if (pfList !== st) return;
         const box = document.getElementById('pf-list');
         if (!box) return;
-        box.insertAdjacentHTML('beforeend', next.map(s => pfListItem(s, st.kind, st.profile, st.opts)).join(''));
+        box.insertAdjacentHTML('beforeend', pfListChunk(st.rows, from, st.shown, st.kind, st.profile, st.opts));
         const more = document.getElementById('pf-more');
         if (st.shown >= st.rows.length && more) more.remove();
         pfAttachSocial(next).then(() => { if (pfList === st) pfPaintReacts(box); });
@@ -18792,6 +18978,7 @@
         band: st.level ? st.level.band : '',
         earned: st.earned,
         exact_grants: grants,
+        exact_denies: prev.exact_denies || [],
         exact_public: !!prev.exact_public,
         avatar: prev.avatar || null,
         cover: prev.cover || null
@@ -18819,7 +19006,6 @@
       }
     }
     window.avianMaybePublish = function () {
-      try { if (localStorage.getItem('avian_auto_publish') !== '1') return; } catch (e) { return; }
       clearTimeout(pfPubTimer);
       pfPubTimer = setTimeout(() => { publishPublic({ silent: true }); }, 900);
     };
@@ -19099,7 +19285,20 @@
       const underActions = opts.actions ? '<div class="pf-under-actions">' + opts.actions + '</div>' : '';
       const followIcon = opts.followBtn || '';
       const iconStack = mine
-        ? '<div class="pf-icon-stack"><button type="button" class="pf-edit-mini" data-act="edit" aria-label="Edit profile" title="Edit profile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10.5-10.5a1.5 1.5 0 0 0 0-2.1l-1.9-1.9a1.5 1.5 0 0 0-2.1 0L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button><button type="button" class="pf-edit-mini" data-act="preview" aria-label="Public View" title="Public View"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>'
+        ? '<div class="pf-icon-stack"><button type="button" class="pf-edit-mini" data-act="edit" aria-label="Edit profile" title="Edit profile"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5-10.5a1.5 1.5 0 0 0 0-2.1l-1.9-1.9a1.5 1.5 0 0 0-2.1 0L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button><button type="button" class="pf-edit-mini" data-act="preview" aria-label="Public View" title="Public View"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>'
+        : '';
+      const editing = !!opts.editing;
+      const nameHtml = editing
+        ? '<input class="pf-inline" id="pf-dn" value="' + pfEsc(name) + '" placeholder="Display name" />'
+        : '<div class="pf-name">' + pfEsc(name) + '</div>';
+      const handleHtml = editing
+        ? '<div class="pf-inline-row"><span>@</span><input class="pf-inline" id="pf-un" value="' + pfEsc(profile.username || '') + '" placeholder="username" /><span>·</span><input class="pf-inline" id="pf-rg" value="' + pfEsc(region) + '" placeholder="Home region" /></div>'
+        : '<div class="pf-handle">' + pfEsc(handle) + (region ? ' · ' + pfEsc(region) : '') + '</div>';
+      const bioHtml = editing
+        ? '<textarea class="pf-inline" id="pf-bio" rows="2" placeholder="Bio">' + pfEsc(profile.bio || '') + '</textarea>'
+        : (profile.bio ? '<div class="pf-bio">' + pfEsc(profile.bio) + '</div>' : '');
+      const editBar = editing
+        ? '<div class="pf-edit-bar"><button type="button" class="btn-em" data-act="save">Save</button><button type="button" class="ghost" data-act="cancel-edit">Cancel</button></div>'
         : '';
       return '<section class="pf-banner">' + iconStack + followIcon +
         '<div class="pf-banner-bg" id="pf-cover-frame">' + coverEl + '</div>' +
@@ -19107,13 +19306,11 @@
         '<div class="pf-id">' +
           avatarEl +
           '<div class="pf-id-copy">' +
-            '<div class="pf-name-row"><div class="pf-name">' + pfEsc(name) + '</div>' + rank + '</div>' +
-            '<div class="pf-handle">' + pfEsc(handle) + (region ? ' · ' + pfEsc(region) : '') + '</div>' +
+            '<div class="pf-name-row">' + nameHtml + rank + '</div>' +
+            handleHtml +
             '<div class="pf-social"><span><b>' + followers + '</b>followers</span><span><b>' + following + '</b>following</span></div>' +
-            (profile.bio || underActions ? '<div class="pf-bio-row">' +
-              (profile.bio ? '<div class="pf-bio">' + pfEsc(profile.bio) + '</div>' : '') +
-              underActions +
-            '</div>' : '') +
+            (bioHtml || underActions ? '<div class="pf-bio-row">' + bioHtml + underActions + '</div>' : '') +
+            editBar +
           '</div>' +
         '</div></div>' +
       '</section>';
@@ -19162,29 +19359,8 @@
       const counts = await pfCounts(pfUser.id);
       if (gen !== pfGen) return;
       const st = pfStats();
-      if (pfEditing) {
-        const auto = localStorage.getItem('avian_auto_publish') === '1';
-        document.getElementById('pf-body').innerHTML =
-          '<div class="pf-form">' +
-            '<label>Display name</label><input id="pf-dn" value="' + pfEsc(pfSelf.display_name || '') + '" />' +
-            '<label>Username</label><input id="pf-un" value="' + pfEsc(pfSelf.username || '') + '" />' +
-            '<label>Home region</label><input id="pf-rg" value="' + pfEsc(pfSelf.home_region || '') + '" placeholder="North Carolina" />' +
-            '<label>Bio</label><textarea id="pf-bio" rows="3">' + pfEsc(pfSelf.bio || '') + '</textarea>' +
-            '<div class="pf-switch"><span>Always update my public list when I log a bird or add a photo</span>' +
-              '<input id="pf-auto" type="checkbox" ' + (auto ? 'checked' : '') + ' /></div>' +
-            '<p class="pf-note">Every sighting stays public: species, date, and county. Photos go with them unless you mark one private. Exact pins stay off until you turn them on for someone under People.</p>' +
-          '</div>' +
-          '<div class="pf-actions">' +
-            '<button type="button" class="btn-em" data-act="save">Save</button>' +
-            '<button type="button" class="ghost" data-act="publish">Publish now</button>' +
-            '<button type="button" class="ghost" data-act="cancel-edit">Cancel</button>' +
-            '<button type="button" class="ghost" data-act="signout">Sign out</button>' +
-          '</div>' +
-          '<p class="pf-note" id="pf-msg"></p>';
-        return;
-      }
       const actions = '';
-      let body = pfHero(pfSelf, st, counts, { actions: actions, mine: true }) + '<div id="pf-publish-slot"></div>' + pfPinsHtml(pfRecentLocal(), pfSelf) + pfTabs('self');
+      let body = pfHero(pfSelf, st, counts, { actions: actions, mine: true, editing: pfEditing }) + '<div id="pf-publish-slot"></div>' + pfPinsHtml(pfRecentLocal(), pfSelf) + pfTabs('self');
       if (pfTab === 'sightings') {
         const rows = pfRecentLocal();
         body += rows.length ? pfListHtml(rows, 'checkin', pfSelf, { mine: true }) :
@@ -19192,8 +19368,9 @@
         body += '<p class="pf-note" id="pf-msg"></p>';
       } else if (pfTab === 'photos') {
         const rows = pfRecentLocal().filter(s => s.photo_url);
-        body += rows.length ? pfListHtml(rows, 'photo', pfSelf, { pinnable: true, flags: true }) : '<div class="pf-empty">Photos you add to a sighting show up here.</div>';
-        body += '<p class="pf-note">Tap a photo to open the sighting. Pin up to three favorites for the top of your profile.</p><p class="pf-note" id="pf-msg"></p>';
+        const ordered = pfOwnPhotoOrder(rows);
+        body += ordered.rows.length ? pfListHtml(ordered.rows, 'photo', pfSelf, { pinnable: true, lockable: true, marks: ordered.marks }) : '<div class="pf-empty">Photos you add to a sighting show up here.</div>';
+        body += '<p class="pf-note">Pin up to three for the top of your profile. The lock hides a photo from everyone else.</p><p class="pf-note" id="pf-msg"></p>';
       } else if (pfTab === 'map') {
         pfPrepareMap(pfRecentLocal(), true);
         body += pfMapChrome();
@@ -19384,15 +19561,17 @@
       let pin = '';
       if (opts.pinnable) {
         const on = pfPinnedKeys(pfSelf).indexOf(pfSightKey(s)) >= 0;
-        pin = '<button type="button" class="pf-pin-ico' + (on ? ' on' : '') + '" data-act="pin" data-id="' + pfEsc(id) + '" aria-label="' + (on ? 'Unpin' : 'Pin') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 7h3l-5 9-5-9h3z"/></svg></button>';
+        pin = '<button type="button" class="pf-pin-ico' + (on ? ' on' : '') + '" data-act="pin" data-id="' + pfEsc(id) + '" aria-label="' + (on ? 'Unpin' : 'Pin') + '" title="' + (on ? 'Unpin' : 'Pin to profile') + '">' + pfPinMark() + '</button>';
       }
-      const flag = opts.flag ? '<span class="pf-flag">' + pfEsc(opts.flag) + '</span>' : '';
-      return '<div class="cell">' +
+      const pub = s.share_public !== false && s.share_public !== 0;
+      const lock = opts.lockable
+        ? '<button type="button" class="pf-lock' + (pub ? '' : ' on') + '" data-act="share-public" data-id="' + pfEsc(id) + '" aria-label="' + (pub ? 'Make private' : 'Make public') + '" title="' + (pub ? 'Public. Tap to hide.' : 'Private. Tap to show.') + '">' + pfLockMark(pub) + '</button>'
+        : '';
+      return '<div class="cell' + (opts.lockable && !pub ? ' is-private' : '') + '">' +
         '<button type="button" class="pf-grid-hit" data-act="card" data-id="' + pfEsc(id) + '">' +
           (src ? '<img src="' + src + '" alt="" loading="lazy" />' : '') +
           '<span class="pf-reacts corner" data-react="' + pfEsc(id) + '"></span>' +
-          flag +
-        '</button>' + pin + '</div>';
+        '</button>' + lock + pin + '</div>';
     }
     function pfAsOthers(rows) {
       const everyone = !!(pfSelf && pfSelf.public_stats && pfSelf.public_stats.exact_public);
@@ -19425,7 +19604,7 @@
       const gen = ++pfGen;
       pfKillMap();
       if (!pfUser || !pfSelf) { pfPreview = false; renderAuth(); return; }
-      document.getElementById('pf-title').textContent = 'How others see you';
+      document.getElementById('pf-title').textContent = 'Public Profile';
       const back = document.getElementById('pf-back');
       if (back) back.hidden = false;
       if (pfTab !== 'sightings' && pfTab !== 'photos' && pfTab !== 'map') pfTab = 'sightings';
@@ -19433,7 +19612,6 @@
       if (gen !== pfGen) return;
       const rows = pfAsOthers(pfRecentLocal());
       let body = pfHero(pfSelf, null, counts, { mine: false }) +
-        '<p class="pf-note">This is what other people see. Exact pins show only when that sighting is shared exactly and exact locations are on for everyone. Private photos stay off this page.</p>' +
         pfPinsHtml(rows, pfSelf) + pfTabs('other');
       if (pfTab === 'photos') {
         const photos = rows.filter(s => pfSafeSrc(s.photo_url));
@@ -19626,23 +19804,8 @@
       return Object.keys(map).map(name => ({ name: name, n: map[name] })).sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
     }
     function pfMapToolsHtml() {
-      const on = m => pfMapMode === m ? ' on' : '';
-      const sc = m => pfMapScope === m ? ' on' : '';
-      let extra = '';
-      if (pfMapMode === 'activity') {
-        const names = (typeof STATE_CODES !== 'undefined' ? Object.keys(STATE_CODES) : []).sort((a, b) => a.localeCompare(b));
-        const opts = names.map(n => '<option value="' + pfEsc(n) + '"' + (n === pfMapState ? ' selected' : '') + '>' + pfEsc(n) + '</option>').join('');
-        extra = '<div class="pf-seg">' +
-          '<button type="button" data-act="map-scope" data-scope="state" class="' + sc('state') + '">State</button>' +
-          '<button type="button" data-act="map-scope" data-scope="us" class="' + sc('us') + '">United States</button>' +
-          '<button type="button" data-act="map-scope" data-scope="world" class="' + sc('world') + '">World</button>' +
-          '</div>' + (pfMapScope === 'state' ? '<select id="pf-map-state" aria-label="State">' + opts + '</select>' : '');
-      }
       const range = (pfMapMine && !pfPreview) ? pfRangeSeg() : '';
-      return '<div class="pf-map-tools" id="pf-map-tools"><div class="pf-seg">' +
-        '<button type="button" data-act="map-mode" data-mode="sightings" class="' + on('sightings') + '">Sightings</button>' +
-        '<button type="button" data-act="map-mode" data-mode="activity" class="' + on('activity') + '">Activity</button>' +
-        '</div>' + range + extra + '</div>';
+      return '<div class="pf-map-tools" id="pf-map-tools">' + range + '</div>';
     }
     function pfMapChrome() {
       return pfMapToolsHtml() + '<div id="pf-map"></div><p class="pf-note" id="pf-map-hint"></p><div id="pf-map-birds"></div>';
@@ -19692,7 +19855,13 @@
     function pfClearMapOverlays() {
       pfCloseCycle();
       if (pfMap && pfMapCluster) { try { pfMap.removeLayer(pfMapCluster); } catch (e) {} }
-      if (pfMap && pfMapShapes) { try { pfMap.removeLayer(pfMapShapes); } catch (e) {} }
+      if (pfMap) {
+        const drop = [];
+        pfMap.eachLayer(function (l) {
+          if (l instanceof L.GeoJSON || l === pfMapShapes || l === pfMapCluster) drop.push(l);
+        });
+        drop.forEach(function (l) { try { pfMap.removeLayer(l); } catch (e) {} });
+      }
       pfMapCluster = null;
       pfMapShapes = null;
     }
@@ -19704,7 +19873,15 @@
       pfMapCluster = null;
       pfMapShapes = null;
       pfMapFit = true;
-      pfMap = L.map(el, { zoomControl: true, attributionControl: true });
+      pfMap = L.map(el, { zoomControl: true, attributionControl: true, boxZoom: false });
+      if (pfMap.boxZoom) { try { pfMap.boxZoom.disable(); pfMap.boxZoom._container = null; } catch (e) {} }
+      pfMap.on('boxzoomstart', function (e) { if (e && e.boxZoomBounds) {} });
+      const killBox = function () {
+        const boxes = el.querySelectorAll('.leaflet-zoom-box');
+        boxes.forEach(function (b) { b.remove(); });
+      };
+      el.addEventListener('mousedown', killBox);
+      el.addEventListener('mouseup', killBox);
       let url = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
       let opts = { maxZoom: 19, attribution: '&copy; OpenStreetMap' };
       try {
@@ -19716,6 +19893,9 @@
         }
       } catch (e) {}
       L.tileLayer(url, opts).addTo(pfMap);
+      pfMap.setView([39.5, -96], 4);
+      setTimeout(function () { if (pfMap) pfMap.invalidateSize(); }, 50);
+      setTimeout(function () { if (pfMap) pfMap.invalidateSize(); }, 300);
       try {
         if (typeof mapTiles !== 'undefined' && mapTiles === 'imagery') {
           L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
@@ -19724,18 +19904,6 @@
         }
         if (typeof paintMapChrome === 'function') paintMapChrome(pfMap);
       } catch (e) {}
-      let lastZoom = pfMap.getZoom();
-      pfMap.on('zoomend', () => {
-        if (pfMapDrawing || pfMapMode !== 'sightings' || !pfMap) return;
-        const z = pfMap.getZoom();
-        const crossed = (lastZoom >= 10) !== (z >= 10);
-        lastZoom = z;
-        if (crossed) {
-          pfMapFit = false;
-          pfMapToken++;
-          pfRenderSightingMap(pfMap);
-        }
-      });
       return pfMap;
     }
     function pfFitBox(map, box) {
@@ -19774,16 +19942,19 @@
       }
       if (typeof clearChitFocus === 'function') clearChitFocus();
     }
+    let pfSpiderPeers = [];
     function pfPeersFor(marker) {
-      if (!marker || !marker.getLatLng) return marker ? [marker] : [];
+      if (!marker) return [];
+      if (pfSpiderPeers.length > 1 && pfSpiderPeers.indexOf(marker) >= 0) return pfSpiderPeers.slice();
       if (pfCyclePeers.indexOf(marker) >= 0 && pfCyclePeers.length > 1) return pfCyclePeers.slice();
       if (!pfMapCluster) return [marker];
-      const ll = marker.getLatLng();
+      const ll = marker.getLatLng && marker.getLatLng();
+      if (!ll) return [marker];
       const out = [];
       pfMapCluster.eachLayer(function (m) {
         if (!m.getLatLng) return;
         const p = m.getLatLng();
-        if (Math.abs(p.lat - ll.lat) < 0.0004 && Math.abs(p.lng - ll.lng) < 0.0004) out.push(m);
+        if (Math.abs(p.lat - ll.lat) < 0.0008 && Math.abs(p.lng - ll.lng) < 0.0008) out.push(m);
       });
       return out.length ? out : [marker];
     }
@@ -19811,7 +19982,9 @@
         });
       } else here = pfCyclePopup.getLatLng();
       if (marker.closePopup) marker.closePopup();
+      pfMapDrawing = true;
       pfCyclePopup.setLatLng(here).setContent(html).openOn(pfMap);
+      setTimeout(function () { pfMapDrawing = false; }, 700);
       const root = pfCyclePopup.getElement();
       if (!root) return;
       L.DomEvent.disableClickPropagation(root);
@@ -20090,17 +20263,304 @@
       }
       pfSetMapHint('Counties in ' + pfMapState + '. Darker green means more sightings. Tap a county to list its birds. Showing ' + pfRangeLabel() + '.');
     }
+    let pfMapDrill = null;
+    let pfMapDrillZoom = 0;
+    function pfMapLayerForZoom(z) {
+      if (pfMapDrill && pfMapDrill.kind === 'country') return 'world';
+      if (z < 4) return 'world';
+      if (z < 7) return 'us';
+      return 'county';
+    }
     function pfRenderProfileMap() {
       const map = pfEnsureMap();
       if (!map) return;
       const token = ++pfMapToken;
-      pfBindMapChrome();
-      const run = pfMapMode === 'activity' ? pfRenderActivityMap(map) : Promise.resolve(pfRenderSightingMap(map));
-      Promise.resolve(run).then(() => {
+      if (!map._pfZoomBound) {
+        map._pfZoomBound = true;
+        map.on('zoomend moveend', function () {
+          if (pfMapDrawing) return;
+          if (pfCyclePopup && pfMap && pfMap.hasLayer(pfCyclePopup)) return;
+          if (pfSpiderPeers && pfSpiderPeers.length) return;
+          const z = map.getZoom();
+          const layer = pfMapLayerForZoom(z);
+          if (pfMapDrill && pfMapDrill.kind === 'country') {
+            if (z < pfMapDrillZoom - 2) {
+              pfMapDrill = null;
+              pfMapDrillZoom = 0;
+              pfShowBirds('', []);
+              pfMapLastLayer = '';
+              pfRenderZoomMap(map);
+            }
+            return;
+          }
+          if (pfMapDrill && z < pfMapDrillZoom - 1.2) {
+            pfMapDrill = null;
+            pfMapDrillZoom = 0;
+            pfShowBirds('', []);
+            pfMapLastLayer = '';
+            pfRenderZoomMap(map);
+            return;
+          }
+          if (layer === 'county') {
+            const bounds = map.getBounds();
+            const vis = [];
+            if (typeof STATE_BOUNDS !== 'undefined') {
+              Object.keys(STATE_BOUNDS).forEach(name => {
+                const b = STATE_BOUNDS[name];
+                if (bounds.intersects(L.latLngBounds([[b[1], b[0]], [b[3], b[2]]]))) vis.push(name);
+              });
+            }
+            const key = vis.sort().join('|');
+            if (key && key !== pfMapLastState) {
+              pfMapLastState = key;
+              pfMapLastLayer = layer;
+              pfRenderZoomMap(map);
+              return;
+            }
+          }
+          if (layer !== pfMapLastLayer) {
+            pfMapLastLayer = layer;
+            pfMapLastState = '';
+            pfRenderZoomMap(map);
+          }
+        });
+      }
+      pfRenderZoomMap(map).then(() => {
         if (token !== pfMapToken || !pfMap) return;
         setTimeout(() => { if (pfMap && token === pfMapToken) pfMap.invalidateSize(); }, 80);
-        setTimeout(() => { if (pfMap && token === pfMapToken) pfMap.invalidateSize(); }, 320);
       });
+    }
+    async function pfRenderZoomMap(map) {
+      const token = ++pfMapToken;
+      const z = map.getZoom();
+      const layer = pfMapLayerForZoom(z);
+      pfMapLastLayer = layer;
+      const rows = pfMapSourceRows();
+      pfClearMapOverlays();
+      if (pfMapDrill) {
+        await pfRenderDrillChits(map, rows);
+        if (token !== pfMapToken) return;
+      }
+      if (layer === 'world') {
+        try { if (typeof loadCountryShapes === 'function') await loadCountryShapes(); } catch (e) {}
+        if (token !== pfMapToken) return;
+        const feats = (typeof countryShapes !== 'undefined' && countryShapes) || [];
+        const counts = {};
+        rows.forEach(s => { const c = pfRowCountry(s); if (c) counts[c] = (counts[c] || 0) + 1; });
+        const max = Math.max(0, ...Object.values(counts));
+        if (token !== pfMapToken) return;
+        pfMapShapes = L.geoJSON({ type: 'FeatureCollection', features: feats }, {
+          style: function (f) {
+            const name = (f.properties && f.properties.name) || '';
+            const hidden = pfMapDrill && pfMapDrill.kind === 'country' && pfMapDrill.name === name;
+            const n = hidden ? 0 : (counts[name] || 0);
+            return { color: n ? '#064e3b' : '#a8a29e', weight: 1, fillColor: pfHeatFill(max > 0 ? n / max : 0, !n), fillOpacity: hidden ? 0 : (n ? 0.82 : 0.22), interactive: !hidden };
+          },
+          onEachFeature: function (f, lyr) {
+            const name = (f.properties && f.properties.name) || '';
+            const n = counts[name] || 0;
+            lyr.bindTooltip(name + (n ? ' · ' + n : ''), { sticky: true });
+            lyr.on('click', function () {
+              if (name === 'United States') { map.setView([39.5, -96], 4, { animate: true }); return; }
+              pfMapDrill = { kind: 'country', name: name };
+              pfMapDrillZoom = 8;
+              pfMapDrawing = true;
+              const hit = rows.filter(s => pfRowCountry(s) === name);
+              pfShowBirds(name, pfSpeciesCounts(hit));
+              pfRenderZoomMap(map).then(function () {
+                if (pfMapCluster && pfMapCluster.getBounds && pfMapCluster.getBounds().isValid()) {
+                  try { map.fitBounds(pfMapCluster.getBounds(), { padding: [40, 40], maxZoom: 8, animate: true }); } catch (e) {}
+                } else {
+                  try { map.fitBounds(lyr.getBounds(), { padding: [20, 20], maxZoom: 6, animate: true }); } catch (e) {}
+                }
+                setTimeout(function () { pfMapDrawing = false; }, 500);
+              });
+            });
+          }
+        }).addTo(map);
+        if (pfMapCluster && pfMapCluster.bringToFront) { try { pfMapCluster.bringToFront(); } catch (e) {} }
+        pfSetMapHint('Countries shaded by sightings. Zoom in for states, or tap a country for its photos.');
+      } else if (layer === 'us') {
+        try { if (typeof loadStateShapes === 'function') await loadStateShapes(); } catch (e) {}
+        try { if (typeof loadCountryShapes === 'function') await loadCountryShapes(); } catch (e) {}
+        if (token !== pfMapToken) return;
+        const feats = (typeof stateShapes !== 'undefined' && stateShapes) || [];
+        const counts = {};
+        rows.forEach(s => { if (s.state) counts[s.state] = (counts[s.state] || 0) + 1; });
+        const max = Math.max(0, ...Object.values(counts));
+        if (token !== pfMapToken) return;
+        pfAddShapes(map, feats, f => counts[(f.properties && (f.properties.name || f.properties.NAME)) || ''] || 0, max, function (name) {
+          map.setView(typeof STATE_BOUNDS !== 'undefined' && STATE_BOUNDS[name] ? [(STATE_BOUNDS[name][1] + STATE_BOUNDS[name][3]) / 2, (STATE_BOUNDS[name][0] + STATE_BOUNDS[name][2]) / 2] : [39, -96], 7, { animate: true });
+        });
+        const cFeats = ((typeof countryShapes !== 'undefined' && countryShapes) || []).filter(f => (f.properties && f.properties.name) !== 'United States');
+        const cCounts = {};
+        rows.forEach(s => { const c = pfRowCountry(s); if (c && c !== 'United States') cCounts[c] = (cCounts[c] || 0) + 1; });
+        const cMax = Math.max(0, ...Object.values(cCounts));
+        if (cFeats.length) {
+          const countryLayer = L.geoJSON({ type: 'FeatureCollection', features: cFeats }, {
+            style: function (f) {
+              const name = (f.properties && f.properties.name) || '';
+              const hidden = pfMapDrill && pfMapDrill.kind === 'country' && pfMapDrill.name === name;
+              const n = hidden ? 0 : (cCounts[name] || 0);
+              return { color: n ? '#064e3b' : '#a8a29e', weight: 1, fillColor: pfHeatFill(cMax > 0 ? n / cMax : 0, !n), fillOpacity: hidden ? 0 : (n ? 0.82 : 0.18), interactive: !hidden };
+            },
+            onEachFeature: function (f, lyr) {
+              const name = (f.properties && f.properties.name) || '';
+              const n = cCounts[name] || 0;
+              lyr.bindTooltip(name + (n ? ' · ' + n : ''), { sticky: true });
+              lyr.on('click', function () {
+                pfMapDrill = { kind: 'country', name: name };
+                pfMapDrillZoom = 8;
+                pfMapDrawing = true;
+                const hit = rows.filter(s => pfRowCountry(s) === name);
+                pfShowBirds(name, pfSpeciesCounts(hit));
+                pfRenderZoomMap(map).then(function () {
+                  if (pfMapCluster && pfMapCluster.getBounds && pfMapCluster.getBounds().isValid()) {
+                    try { map.fitBounds(pfMapCluster.getBounds(), { padding: [40, 40], maxZoom: 8, animate: true }); } catch (e) {}
+                  }
+                  setTimeout(function () { pfMapDrawing = false; }, 500);
+                });
+              });
+            }
+          }).addTo(map);
+          if (pfMapDrill && pfMapDrill.kind === 'country') {
+            countryLayer.eachLayer(function (l) {
+              if (l._path) l._path.style.pointerEvents = 'none';
+            });
+          }
+          if (!pfMapShapes) pfMapShapes = countryLayer;
+        }
+        pfSetMapHint('States and countries shaded by sightings. Tap a country for its photos.');
+      } else {
+        let index = null;
+        try { if (typeof loadCountyShapes === 'function') index = await loadCountyShapes(); } catch (e) {}
+        if (token !== pfMapToken) return;
+        const bounds = map.getBounds();
+        const states = [];
+        if (typeof STATE_BOUNDS !== 'undefined') {
+          Object.keys(STATE_BOUNDS).forEach(name => {
+            const b = STATE_BOUNDS[name];
+            const sb = L.latLngBounds([[b[1], b[0]], [b[3], b[2]]]);
+            if (bounds.intersects(sb)) states.push(name);
+          });
+        }
+        pfMapLastState = states.join('|');
+        let allFeats = [];
+        states.forEach(st => {
+          const sf = (index && index.byState && index.byState[st]) || [];
+          sf.forEach(f => { f._pfState = st; allFeats.push(f); });
+        });
+        const counts = {};
+        rows.forEach(s => {
+          if (states.indexOf(s.state) < 0) return;
+          const k = s.state + '|' + pfCountyKey(s.county);
+          if (pfCountyKey(s.county)) counts[k] = (counts[k] || 0) + 1;
+        });
+        const max = Math.max(0, ...Object.values(counts));
+        if (token !== pfMapToken) return;
+        if (allFeats.length) {
+          pfMapShapes = L.geoJSON({ type: 'FeatureCollection', features: allFeats }, {
+            style: function (f) {
+              const st = f._pfState || '';
+              const key = st + '|' + pfCountyKey(f.properties && f.properties.NAME);
+              const hidden = pfMapDrill && pfMapDrill.kind === 'county' && pfMapDrill.county === pfCountyKey(f.properties && f.properties.NAME) && pfMapDrill.state === st;
+              const n = hidden ? 0 : (counts[key] || 0);
+              return { color: n ? '#064e3b' : '#a8a29e', weight: 1, fillColor: pfHeatFill(max > 0 ? n / max : 0, !n), fillOpacity: hidden ? 0 : (n ? 0.82 : 0.22), interactive: !hidden };
+            },
+            onEachFeature: function (f, lyr) {
+              const st = f._pfState || '';
+              const label = (f.properties && f.properties.NAME) || 'County';
+              const ck = pfCountyKey(label);
+              const key = st + '|' + ck;
+              const n = counts[key] || 0;
+              lyr.bindTooltip(label + (st ? ', ' + st : '') + (n ? ' · ' + n : ''), { sticky: true });
+              lyr.on('click', function () {
+                if (pfMapDrill && pfMapDrill.kind === 'county' && pfMapDrill.county === ck && pfMapDrill.state === st) return;
+                pfMapDrill = { kind: 'county', state: st, county: ck, label: label };
+                pfMapDrillZoom = 11;
+                pfMapDrawing = true;
+                try { map.fitBounds(lyr.getBounds(), { padding: [30, 30], maxZoom: 11, animate: true }); } catch (e) {}
+                setTimeout(function () { pfMapDrawing = false; }, 400);
+                const hit = rows.filter(s => s.state === st && pfCountyKey(s.county) === ck);
+                pfShowBirds(label + (st ? ', ' + st : ''), pfSpeciesCounts(hit));
+                pfRenderZoomMap(map);
+              });
+            }
+          }).addTo(map);
+          if (pfMapCluster) { try { pfMapCluster.bringToFront(); } catch (e) {} }
+        }
+        pfSetMapHint(states.length ? 'Counties in view. Tap a county for its photos.' : 'Zoom to a state to see counties.');
+      }
+    }
+    let pfMapLastState = '';
+    let pfMapLastLayer = '';
+    async function pfRenderDrillChits(map, rows) {
+      const hit = pfMapDrill.kind === 'county'
+        ? rows.filter(s => s.state === pfMapDrill.state && pfCountyKey(s.county) === pfMapDrill.county)
+        : rows.filter(s => pfRowCountry(s) === pfMapDrill.name);
+      if (!hit.length) return;
+      const places = await pfEnsurePlaces();
+      const clusterOpts = { showCoverageOnHover: false, maxClusterRadius: 32, spiderfyOnMaxZoom: true, disableClusteringAtZoom: 18, zoomToBoundsOnClick: false, iconCreateFunction: typeof rarityClusterIcon === 'function' ? rarityClusterIcon : undefined };
+      pfMapCluster = L.markerClusterGroup(clusterOpts);
+      pfMapCluster.on('spiderfied', function (e) { pfSpiderPeers = e.markers || []; });
+      pfMapCluster.on('unspiderfied', function () { pfSpiderPeers = []; });
+      pfMapCluster.on('clusterclick', function (e) {
+        if (!map) return;
+        const cluster = e.layer;
+        let bounds = cluster.getBounds();
+        if (!bounds.isValid() || bounds.getNorthEast().distanceTo(bounds.getSouthWest()) < 8) {
+          cluster.spiderfy();
+          const kids = cluster.getAllChildMarkers ? cluster.getAllChildMarkers() : [];
+          if (kids.length > 1) { pfSpiderPeers = kids; }
+          return;
+        }
+        bounds = bounds.pad(0.4);
+        const padTL = L.point(60, 70);
+        const padBR = L.point(60, 140);
+        const nextZoom = map.getBoundsZoom(bounds, false, padTL.add(padBR));
+        const target = Math.min(17, Math.max(nextZoom, map.getZoom() + 2));
+        if (map.getZoom() >= target) {
+          cluster.spiderfy();
+          const kids = cluster.getAllChildMarkers ? cluster.getAllChildMarkers() : [];
+          if (kids.length > 1) { pfSpiderPeers = kids; }
+          return;
+        }
+        pfMapDrawing = true;
+        map.fitBounds(bounds, {
+          paddingTopLeft: padTL,
+          paddingBottomRight: padBR,
+          maxZoom: target,
+          animate: true
+        });
+        setTimeout(function () { pfMapDrawing = false; }, 600);
+      });
+      hit.forEach(s => {
+        const pt = pfExactPoint(s) || pfRegionPoint(s, places);
+        if (!pt) return;
+        const src = s.photo_url || s.photo_full || '';
+        const name = (typeof taxName === 'function' ? taxName(s.species_code).comName : s.species_code) || '';
+        const color = typeof photoColor === 'function' ? photoColor(s.species_code, s.state) : '#34d399';
+        const icon = src
+          ? L.divIcon({ className: 'bird-chit', html: '<img src="' + String(src).replace(/"/g, '"') + '" alt="" style="border:3px solid ' + color + '" />', iconSize: [40, 40], iconAnchor: [20, 20] })
+          : null;
+        const m = icon
+          ? L.marker([pt.lat, pt.lng], { icon: icon })
+          : L.circleMarker([pt.lat, pt.lng], { radius: 8, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.95 });
+        m._pfSight = s;
+        m._beCard = '<div class="popup-open" data-sid="' + (s.id || '') + '">' +
+          (src ? '<img src="' + src + '" alt="" />' : '') +
+          '<div class="pop-card-top"><b>' + pfEsc(name) + '</b></div>' +
+          '<div class="muted">' + pfEsc((s.location_name || s.county || '') + (s.date ? ' · ' + s.date : '')) + '</div>' +
+          '<div class="hint" style="margin-top:4px;text-align:center">Tap for details</div></div>';
+        m.on('click', function (e) {
+          if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+          L.DomEvent.stopPropagation(e);
+          const peers = typeof pfPeersFor === 'function' ? pfPeersFor(m) : [m];
+          pfOpenCycle(peers.length ? peers : [m], Math.max(0, peers.indexOf(m)));
+        });
+        pfMapCluster.addLayer(m);
+      });
+      map.addLayer(pfMapCluster);
     }
     async function pfCatchUpPublic() {
       if (pfCatchTried || pfCatching || !pfLocalReady || !pfUser) return;
@@ -20165,19 +20625,10 @@
       if (gen !== pfGen || !box.isConnected) return;
       const byId = {};
       profs.forEach(p => { byId[p.id] = p; });
-      const grants = new Set((pfSelf.public_stats && pfSelf.public_stats.exact_grants) || []);
-      const everyone = !!(pfSelf.public_stats && pfSelf.public_stats.exact_public);
-      const pin = id => '<button type="button" class="pf-ib' + (grants.has(id) ? ' on' : '') + '" data-act="' + (grants.has(id) ? 'ungrant' : 'grant') + '" data-id="' + pfEsc(id) + '" title="' + (grants.has(id) ? 'Can see your exact pins' : 'County only') + '" aria-label="' + (grants.has(id) ? 'Can see your exact pins' : 'County only') + '">' + pfSvg('pin') + '</button>';
-      let html = '<div class="pf-perm"><div><b>Exact locations</b><p>' +
-        (everyone ? 'Everyone can see the pins you mark exact.' : 'Everyone sees the county. Turn the pin on for a person, or for everyone.') +
-        '</p></div><div class="pf-perm-choices">' +
-        '<button type="button" data-act="exact-public" data-on="0"' + (everyone ? '' : ' class="on"') + '>Chosen people</button>' +
-        '<button type="button" data-act="exact-public" data-on="1"' + (everyone ? ' class="on"' : '') + '>Everyone</button>' +
-        '</div></div>';
-      html += '<div class="pf-note" style="margin-bottom:6px">Followed</div>';
-      html += followingIds.length ? followingIds.map(id => byId[id] ? pfPersonRow(byId[id], pin(id)) : '').join('') : '<div class="pf-empty">You’re not following anyone yet. Search a username above.</div>';
+      let html = '<div class="pf-note" style="margin-bottom:6px">Followed</div>';
+      html += followingIds.length ? followingIds.map(id => byId[id] ? pfPersonRow(byId[id]) : '').join('') : '<div class="pf-empty">You’re not following anyone yet. Search a username above.</div>';
       html += '<div class="pf-note" style="margin:12px 0 6px">Followed by</div>';
-      html += followerIds.length ? followerIds.map(id => byId[id] ? pfPersonRow(byId[id], pin(id)) : '').join('') : '<div class="pf-empty">No followers yet. They’ll show up here.</div>';
+      html += followerIds.length ? followerIds.map(id => byId[id] ? pfPersonRow(byId[id]) : '').join('') : '<div class="pf-empty">No followers yet. They’ll show up here.</div>';
       box.innerHTML = html;
     }
     function pfRarPill(rar) {
@@ -20318,7 +20769,8 @@
       const display_name = (document.getElementById('pf-dn').value || '').trim() || username;
       const home_region = (document.getElementById('pf-rg').value || '').trim();
       const bio = (document.getElementById('pf-bio').value || '').trim();
-      const auto = !!document.getElementById('pf-auto').checked;
+      const autoEl = document.getElementById('pf-auto');
+      const auto = autoEl ? !!autoEl.checked : localStorage.getItem('avian_auto_publish') === '1';
       try { localStorage.setItem('avian_auto_publish', auto ? '1' : '0'); } catch (e) {}
       const up = await supabaseClient.from('profiles').update({
         username: username, display_name: display_name, home_region: home_region, bio: bio,
@@ -20384,13 +20836,26 @@
       if (pfOther && pfOther.id === id) renderOther();
       else renderSelf();
     }
-    async function pfSetGrant(id, on) {
-      const stats = Object.assign({}, (pfSelf && pfSelf.public_stats) || {});
+    async function pfSetExactException(id, want) {
+      if (!pfUser || !pfSelf || !id) return;
+      const stats = Object.assign({}, pfSelf.public_stats || {});
+      const vis = stats.exact_visibility || 'onlyme';
+      const mutual = await pfMutualIds();
       const grants = new Set(stats.exact_grants || []);
-      if (on) grants.add(id); else grants.delete(id);
+      const denies = new Set(stats.exact_denies || []);
+      grants.delete(id);
+      denies.delete(id);
+      if (!!want !== pfExactDefault(vis, mutual.indexOf(id) >= 0)) {
+        if (want) grants.add(id);
+        else denies.add(id);
+      }
       stats.exact_grants = Array.from(grants);
+      stats.exact_denies = Array.from(denies);
       const up = await supabaseClient.from('profiles').update({ public_stats: stats }).eq('id', pfUser.id).select().single();
       if (up.data) pfSelf = up.data;
+    }
+    async function pfSetGrant(id, on) {
+      await pfSetExactException(id, on);
       renderSelf();
     }
     async function pfSetExactPublic(on) {
@@ -20569,10 +21034,20 @@
           id: r.id,
           user_id: r.user_id,
           body: r.body,
+          created_at: r.created_at,
           display_name: (by[r.user_id] && (by[r.user_id].display_name || by[r.user_id].username)) || 'Birder'
         })),
         likes: likeIds
       };
+    }
+    function pfCommentWhen(ts) {
+      if (!ts) return '';
+      const d = new Date(ts);
+      if (isNaN(d.getTime())) return '';
+      const now = new Date();
+      const same = d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+      if (same) return 'Today · ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + (d.getFullYear() !== now.getFullYear() ? ', ' + d.getFullYear() : '');
     }
     function pfPaintSocial(social) {
       const box = document.getElementById('pf-comments');
@@ -20581,7 +21056,9 @@
         const rows = (social && social.comments) || [];
         box.innerHTML = rows.length ? rows.map(c => {
           const mine = pfUser && c.user_id === pfUser.id;
+          const when = pfCommentWhen(c.created_at || c.ts);
           return '<div class="pf-comment"><div class="pf-comment-top"><b>' + pfEsc(c.display_name || 'Birder') + '</b>' +
+            (when ? '<span class="pf-comment-when">' + pfEsc(when) + '</span>' : '') +
             (mine ? '<button type="button" data-act="delete-comment" data-id="' + pfEsc(c.id) + '">Delete</button>' : '') +
             '</div><span>' + pfEsc(c.body) + '</span></div>';
         }).join('') : '<div class="pf-empty">No comments yet.</div>';
@@ -20624,7 +21101,8 @@
           id: String(Date.now()),
           user_id: pfUser.id,
           body: text.slice(0, 500),
-          display_name: (pfSelf && (pfSelf.display_name || pfSelf.username)) || 'You'
+          display_name: (pfSelf && (pfSelf.display_name || pfSelf.username)) || 'You',
+          created_at: new Date().toISOString()
         });
         bag[id] = row;
         pfSocialWrite(bag);
@@ -20730,7 +21208,7 @@
       ).join('') + '</div>';
     }
     function pfPaintMore(rows, profile) {
-      const box = document.getElementById('pf-more');
+      const box = document.getElementById('pf-species-more');
       if (!box) return;
       const shots = (rows || []).filter(s => s && pfSafeSrc(s.photo_url));
       if (!shots.length) { box.innerHTML = '<div class="pf-empty">No other photos of this species.</div>'; return; }
@@ -20783,7 +21261,7 @@
       const canPin = !!(mine && !pfPreview && src);
       const pinnedOn = canPin && pfPinnedKeys(pfSelf).indexOf(pfSightKey(s)) >= 0;
       const pinIco = canPin
-        ? '<button type="button" class="pf-pin-ico' + (pinnedOn ? ' on' : '') + '" data-act="pin" data-id="' + pfEsc(s.id) + '" aria-label="' + (pinnedOn ? 'Unpin' : 'Pin') + '" title="' + (pinnedOn ? 'Unpin' : 'Pin to profile') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 7h3l-5 9-5-9h3z"/></svg></button>'
+        ? '<button type="button" class="pf-pin-ico' + (pinnedOn ? ' on' : '') + '" data-act="pin" data-id="' + pfEsc(s.id) + '" aria-label="' + (pinnedOn ? 'Unpin' : 'Pin') + '" title="' + (pinnedOn ? 'Unpin' : 'Pin to profile') + '">' + pfPinMark() + '</button>'
         : '';
       const root = document.getElementById('pf-detail');
       const body = document.getElementById('pf-detail-body');
@@ -20804,18 +21282,20 @@
               '<span class="bn-meta">' +
                 '<span class="bn-name">' + pfEsc(who) + '</span>' +
                 (handle ? '<span class="bn-user">' + pfEsc(handle) + '</span>' : '') +
+                (where ? '<span class="bn-place">' + pin + '<span>' + pfEsc(where) + '</span></span>' : '') +
               '</span>' +
             '</button>' +
-            '<time class="bn-date">' + pfEsc(pfDate(s.date) || '') + '</time>' +
-          '</div>' +
-          (where ? '<div class="bn-sub"><div class="bn-place">' + pin + '<span>' + pfEsc(where) + '</span></div></div>' : '') +
-          '<div class="bn-acts">' +
-            '<button type="button" class="bn-act pf-like" id="pf-like" data-act="like">' + pfHeartSvg() + '<em>0</em></button>' +
-            '<button type="button" class="bn-act" data-act="jump-comments">' + pfBubbleSvg() + '<em id="pf-comment-count">0</em></button>' +
+            '<div class="bn-right">' +
+              '<time class="bn-date">' + pfEsc(pfDate(s.date) || '') + '</time>' +
+              '<div class="bn-acts">' +
+                '<button type="button" class="bn-act pf-like" id="pf-like" data-act="like">' + pfHeartSvg() + '<em>0</em></button>' +
+                '<button type="button" class="bn-act" data-act="jump-comments">' + pfBubbleSvg() + '<em id="pf-comment-count">0</em></button>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
           '<div id="pf-like-line" class="bn-like-line"></div>' +
         '</div>' +
-        '<section class="pf-spbox">' +
+        '<section class="pf-spbox" data-act="open-search" data-code="' + pfEsc(s.species_code || '') + '" style="cursor:pointer">' +
           '<div class="pf-stock" id="pf-stock">🐦</div>' +
           '<div class="pf-sp-copy">' +
             '<div class="pf-sp-name">' + pfEsc(tax.comName || name) + '</div>' +
@@ -20824,15 +21304,18 @@
           '</div>' +
           (got ? '<span class="pf-got" title="On your list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7.5"/></svg></span>' : '') +
         '</section>' +
-        '<section class="pf-thread" id="pf-comments-block">' +
-          '<div id="pf-comments"></div>' +
-          (pfUser ? '<div class="pf-comment-row"><input id="pf-comment-in" maxlength="500" placeholder="Add a comment…" />' +
-            '<button type="button" class="pf-send" data-act="comment">Post</button></div>'
-            : '<p class="pf-note">Sign in to comment or like.</p>') +
+        '<section class="pf-detail-block" id="pf-comments-block">' +
+          '<div class="pf-section"><span>Comments</span></div>' +
+          '<div class="pf-thread">' +
+            '<div id="pf-comments"></div>' +
+            (pfUser ? '<div class="pf-comment-row"><input id="pf-comment-in" maxlength="500" placeholder="Add a comment…" />' +
+              '<button type="button" class="pf-send" data-act="comment">Post</button></div>'
+              : '<p class="pf-note">Sign in to comment or like.</p>') +
+          '</div>' +
         '</section>' +
         '<section class="pf-detail-block"><div class="pf-section"><span>Awards</span></div><div id="pf-awards"><div class="pf-empty">Checking awards…</div></div></section>' +
         '<section class="pf-detail-block"><div class="pf-section"><span>Where</span></div><div id="pf-pin-map"></div><p class="pf-note" id="pf-pin-note" hidden></p></section>' +
-        '<section class="pf-detail-block"><div class="pf-section"><span>More of this species</span></div><div id="pf-more"><div class="pf-empty">Loading photos…</div></div></section>';
+        '<section class="pf-detail-block"><div class="pf-section"><span>More of this species</span></div><div id="pf-species-more"><div class="pf-empty">Loading photos…</div></div></section>';
       root.hidden = false;
       body.scrollTop = 0;
       if (pfOpenAtComments) {
@@ -20858,33 +21341,27 @@
           pfPaintAwards(moved);
         }, 30);
       } else pfPaintAwards([]);
-      const more = mine
-        ? (typeof sightings !== 'undefined' ? sightings : []).filter(x => x && x.species_code === s.species_code && x.id !== s.id && pfSafeSrc(x.photo_url || x.photo_full)).map(x => ({
-            id: x.id,
-            user_id: pfUser ? pfUser.id : '',
-            species_code: x.species_code,
-            species_name: pfSpName(x.species_code),
-            photo_url: x.photo_url || x.photo_full,
-            date: x.date,
-            county: x.county,
-            state: x.state,
-            location_name: x.location_name,
-            rarity: pfRarity(x.species_code, x.state),
-            lat: x.lat,
-            lng: x.lng
-          }))
-        : [];
-      if (mine) pfPaintMore(more, p);
-      else if (s.user_id && s.species_code) {
+      const ownerId = String(s.user_id || (p && p.id) || '');
+      (async function () {
         try {
-          const rows = await pfPublicRows(cols => supabaseClient.from('public_sightings').select(cols).eq('user_id', s.user_id).eq('species_code', s.species_code).limit(40));
-          await pfEnsurePhotos(rows || []);
-          const shots = (rows || []).filter(x => x.id !== s.id && pfSafeSrc(x.photo_url));
+          let shots = [];
+          if (ownerId && pfIsPublicId(ownerId) && s.species_code) {
+            const rows = await pfPublicRows(cols => supabaseClient.from('public_sightings').select(cols).eq('user_id', ownerId).eq('species_code', s.species_code).limit(40));
+            if (rows && rows.length) await pfEnsurePhotos(rows);
+            shots = (rows || []).filter(x => String(x.id) !== String(s.id) && pfSafeSrc(x.photo_url));
+          }
+          if (pfUser && ownerId && ownerId === pfUser.id && typeof sightings !== 'undefined') {
+            const local = sightings.filter(x => x && x.species_code === s.species_code && String(x.id) !== String(s.id) && pfSafeSrc(x.photo_url || x.photo_full)).map(x => ({
+              id: x.id, user_id: pfUser.id, species_code: x.species_code, photo_url: x.photo_url || x.photo_full,
+              date: x.date, county: x.county, state: x.state, location_name: x.location_name
+            }));
+            shots = local.concat(shots.filter(x => !local.some(l => String(l.id) === String(x.id))));
+          }
           if (pfDetail && pfDetail.s && pfDetail.s.id === s.id) pfPaintMore(shots, p);
         } catch (err) {
           if (pfDetail && pfDetail.s && pfDetail.s.id === s.id) pfPaintMore([], p);
         }
-      } else pfPaintMore([], p);
+      })();
     }
 
     document.getElementById('pf-body').addEventListener('click', function (e) {
@@ -21487,6 +21964,15 @@
         const src = local ? pfSafeSrc(local.photo_full || local.photo_url) : (img ? img.getAttribute('src') : '');
         try { openLightboxImage(src, t.getAttribute('data-name') || '', ''); } catch (err) {}
       } else if (act === 'comment') pfPostComment();
+      else if (act === 'open-search') {
+        const code = t.getAttribute('data-code');
+        if (code && typeof openSearchDossier === 'function') {
+          pfCloseDetail();
+          if (typeof closeProfile === 'function') closeProfile();
+          if (typeof switchTab === 'function') switchTab('search');
+          setTimeout(function () { openSearchDossier(code); }, 50);
+        }
+      }
       else if (act === 'like') pfToggleLike();
       else if (act === 'jump-comments') { const b = document.getElementById('pf-comments-block'); if (b) b.scrollIntoView({ block: 'start' }); const i = document.getElementById('pf-comment-in'); if (i) i.focus(); }
       else if (act === 'user') { const uid = t.getAttribute('data-id'); if (uid) { const top = () => { const b = document.getElementById('pf-body'); if (b) b.scrollTop = 0; }; pfCloseDetail(); if (pfUser && uid === pfUser.id) { pfOther = null; pfTab = 'feed'; Promise.resolve(renderSelf()).then(top); } else supabaseClient.from('profiles').select('*').eq('id', uid).maybeSingle().then(res => { if (res.data) { pfOther = res.data; pfTab = 'sightings'; Promise.resolve(renderOther()).then(top); } }); } }
