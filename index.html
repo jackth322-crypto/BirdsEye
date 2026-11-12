@@ -2317,6 +2317,30 @@
       content: ""; position: absolute; right: -16px; top: -22px; width: 84px; height: 84px; border-radius: 50%;
       background: radial-gradient(circle, rgba(16,185,129,.28), transparent 68%);
     }
+    button.pf-metric { appearance: none; -webkit-appearance: none; text-align: left; color: inherit; font: inherit; cursor: pointer; width: 100%; }
+    button.pf-metric.on { border-color: var(--em); box-shadow: 0 0 0 1px var(--em); }
+    .pf-cmp-line { font-size: 16px; font-weight: 800; letter-spacing: -.03em; margin: 12px 2px 2px; }
+    .pf-cmp-sub { color: var(--muted); font-size: 12px; line-height: 1.45; margin: 0 2px 12px; }
+    .pf-cmp-bar { height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; display: flex; margin: 0 2px 14px; }
+    .pf-cmp-bar i { display: block; height: 100%; }
+    .pf-cmp-bar .shared { background: var(--em); }
+    .pf-cmp-bar .mine { background: var(--gold, #d6b25e); }
+    .pf-cmp-bar .theirs { background: color-mix(in srgb, var(--muted) 70%, var(--line)); }
+    .pf-cmp-list { display: flex; flex-direction: column; gap: 6px; }
+    .pf-cmp-row {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 8px 12px 8px 8px;
+    }
+    .pf-cmp-ph {
+      width: 42px; height: 42px; border-radius: 11px; overflow: hidden; flex: none;
+      background: var(--photo); display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: var(--muted);
+    }
+    .pf-cmp-ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pf-cmp-copy { min-width: 0; flex: 1; }
+    .pf-cmp-copy b { display: block; font-size: 14px; font-weight: 750; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pf-cmp-copy span { display: block; margin-top: 2px; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pf-cmp-tag { flex: none; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--em3); }
     .pf-card {
       background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
       padding: 8px 10px 6px; margin-top: 8px;
@@ -2720,6 +2744,7 @@
     .leaflet-zoom-box, #pf-map .leaflet-zoom-box { display: none !important; visibility: hidden !important; opacity: 0 !important; width: 0 !important; height: 0 !important; border: 0 !important; }
     #pf-map, #pf-map * { outline: none !important; }
     .pf-map-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 10px; }
+    .pf-map-tools .pf-range-row { margin: 0; }
     .pf-map-tools select {
       background: var(--input); color: var(--text); border: 1px solid var(--line-2);
       border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 750;
@@ -3263,7 +3288,7 @@
   <nav>
     <button class="nav-btn" id="nav-btn-feed" onclick="openProfile()" title="Feed" aria-label="Feed">
       <span class="nav-ico">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="6" rx="1.6"/><rect x="3.5" y="13.5" width="17" height="6" rx="1.6"/></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span id="pf-notes-btn" class="pf-notes-btn" hidden role="button" tabindex="0" onclick="event.stopPropagation(); pfToggleNotes(event)">0</span>
       </span>
       Feed
@@ -3273,7 +3298,7 @@
       Map
     </button>
     <button class="nav-btn" id="nav-btn-lifelist" onclick="switchTab('lifelist')">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="8" y1="7" x2="20" y2="7"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="17" x2="20" y2="17"/><circle cx="4.5" cy="7" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="17" r="1"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>
       Life List
     </button>
     <button class="nav-btn" id="nav-btn-gallery" onclick="switchTab('gallery')">
@@ -3831,6 +3856,7 @@
             <button class="ghost" type="button" style="width:100%;margin-top:8px" onclick="exportLogsSlim()">Export list only (no full photos)</button>
             <p class="hint" id="last-export-stamp" style="margin-top:8px">No export yet</p>
             <div id="export-parts" class="export-parts" hidden></div>
+            <button id="btn-delete-all-logs" class="ghost" type="button" style="width:100%;margin-top:18px;color:#ef4444;border-color:#ef4444">Delete all logs</button>
           </div>
         </div>
       </div>
@@ -4475,6 +4501,38 @@
       });
       renderExportParts();
     }
+
+    function deleteAllLogs() {
+      if (!confirm('Delete all local logs and photos on this device? This cannot be undone.')) return;
+      sightings.length = 0;
+      try { persistSightings(); } catch (e) {}
+      try { localStorage.removeItem(sightingsStorageKey()); } catch (e) {}
+      try { localStorage.removeItem('avian_sightings'); } catch (e) {}
+      if (window.indexedDB) {
+        try {
+          const req = indexedDB.open('birdseye', 1);
+          req.onsuccess = function () {
+            try {
+              const tx = req.result.transaction('logs', 'readwrite');
+              tx.objectStore('logs').clear();
+            } catch (e) {}
+          };
+        } catch (e) {}
+      }
+      if (typeof renderGallery === 'function') renderGallery();
+      if (typeof renderLifeList === 'function') renderLifeList();
+      if (typeof refreshUI === 'function') refreshUI();
+      if (typeof plotPhotoChits === 'function') plotPhotoChits();
+      alert('All local logs deleted.');
+    }
+    (function bindDeleteAllLogs() {
+      const btn = document.getElementById('btn-delete-all-logs');
+      if (btn) btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        deleteAllLogs();
+      });
+    })();
 
     function mergeImportedPlaces(list) {
       if (!Array.isArray(list) || !list.length) return;
@@ -18387,6 +18445,8 @@
     let pfOther = null;
     let pfTab = 'feed';
     let pfRange = '30';
+    let pfCompareLens = 'shared';
+    let pfCompareRange = '0';
     let pfEditing = false;
     let pfPreview = false;
     let pfMap = null;
@@ -18531,30 +18591,106 @@
       } catch (e) { return url; }
     }
 
+    function pfNormLoc(s) {
+      return String((s && s.location_name) || '').trim().toLowerCase();
+    }
+    function pfHasCoords(s) {
+      if (!s || s.lat == null || s.lng == null || s.lat === '' || s.lng === '') return false;
+      return !isNaN(Number(s.lat)) && !isNaN(Number(s.lng));
+    }
+    function pfSameSpot(a, b) {
+      if (!a || !b) return false;
+      if (String(a.species_code || '') !== String(b.species_code || '')) return false;
+      if (String(a.date || '').slice(0, 10) !== String(b.date || '').slice(0, 10)) return false;
+      if (pfHasCoords(a) && pfHasCoords(b)) {
+        return Math.abs(Number(a.lat) - Number(b.lat)) < 0.02 && Math.abs(Number(a.lng) - Number(b.lng)) < 0.02;
+      }
+      return pfNormLoc(a) === pfNormLoc(b);
+    }
+    function dedupeSightings() {
+      const out = [];
+      sightings.forEach(s => {
+        if (!s || !s.id) return;
+        let hit = -1;
+        for (let i = 0; i < out.length; i++) {
+          if (String(out[i].id) === String(s.id) || pfSameSpot(out[i], s)) { hit = i; break; }
+        }
+        if (hit < 0) { out.push(s); return; }
+        const prev = out[hit];
+        const prevLocal = prev.photo_url && String(prev.photo_url).startsWith('data:');
+        const curLocal = s.photo_url && String(s.photo_url).startsWith('data:');
+        if ((curLocal && !prevLocal) || (!prev.photo_url && s.photo_url)) {
+          prev.photo_url = s.photo_url;
+          prev.photo_full = s.photo_full || s.photo_url;
+        }
+        if (!pfHasCoords(prev) && pfHasCoords(s)) { prev.lat = s.lat; prev.lng = s.lng; }
+        ['county','state','country','notes','location_name'].forEach(k => {
+          if ((prev[k] == null || prev[k] === '') && s[k]) prev[k] = s[k];
+        });
+      });
+      if (out.length !== sightings.length) {
+        sightings.length = 0;
+        out.forEach(s => sightings.push(s));
+        return true;
+      }
+      return false;
+    }
+
+    async function pfFetchOwnPublic() {
+      const tries = [
+        'id,species_code,date,lat,lng,location_name,county,state,country,notes,photo_url,is_cover,rarity',
+        'id,species_code,date,lat,lng,location_name,county,state,photo_url,is_cover,rarity'
+      ];
+      let lastError = null;
+      for (let t = 0; t < tries.length; t++) {
+        const all = [];
+        let from = 0;
+        let failed = false;
+        while (from < 20000) {
+          const q = await supabaseClient.from('public_sightings').select(tries[t]).eq('user_id', pfUser.id).order('date', { ascending: false }).range(from, from + 999);
+          if (q.error) { lastError = q.error; failed = true; break; }
+          (q.data || []).forEach(r => all.push(r));
+          if (!q.data || q.data.length < 1000) return all;
+          from += 1000;
+        }
+        if (!failed) return all;
+      }
+      if (lastError) return null;
+      return [];
+    }
+
     async function syncPublicSightingsToLocal() {
       if (!pfUser || !pfUser.id || typeof supabaseClient === 'undefined') return;
       try {
-        const q = await supabaseClient.from('public_sightings')
-          .select('id,species_code,date,lat,lng,location_name,state,country,notes,photo_url,is_cover,rarity')
-          .eq('user_id', pfUser.id)
-          .order('date', { ascending: false })
-          .limit(500);
-        if (q.error || !Array.isArray(q.data)) return;
+        const remote = await pfFetchOwnPublic();
+        if (!remote) return;
+        if (dedupeSightings()) {}
         const byId = {};
-        sightings.forEach(s => { if (s && s.id) byId[s.id] = s; });
+        sightings.forEach(s => { if (s && s.id) byId[String(s.id)] = s; });
         let changed = false;
-        for (const row of q.data) {
+        for (const row of remote) {
           if (!row || !row.id) continue;
-          let local = byId[row.id];
+          let local = byId[String(row.id)];
           if (!local) {
-            local = { id: row.id, species_code: row.species_code || '' };
+            for (let i = 0; i < sightings.length; i++) {
+              if (pfSameSpot(sightings[i], row)) { local = sightings[i]; break; }
+            }
+          }
+          if (!local) {
+            local = { id: row.id, species_code: row.species_code || '', share_public: true };
             sightings.push(local);
-            byId[row.id] = local;
+            byId[String(row.id)] = local;
             changed = true;
           }
-          ['species_code','date','lat','lng','location_name','state','country','notes','is_cover','rarity'].forEach(k => {
-            if (row[k] != null && local[k] !== row[k]) { local[k] = row[k]; changed = true; }
+          ['species_code','date','location_name','county','state','country','notes','is_cover','rarity'].forEach(k => {
+            if (row[k] == null || row[k] === '') return;
+            if (local[k] == null || local[k] === '') { local[k] = row[k]; changed = true; }
           });
+          if (!pfHasCoords(local) && pfHasCoords(row)) {
+            local.lat = Number(row.lat);
+            local.lng = Number(row.lng);
+            changed = true;
+          }
           if (row.photo_url && (!local.photo_url || !String(local.photo_url).startsWith('data:'))) {
             const cached = await cacheRemotePhoto(row.photo_url);
             if (cached && cached !== local.photo_url) {
@@ -18564,6 +18700,7 @@
             }
           }
         }
+        if (dedupeSightings()) changed = true;
         if (changed) {
           ensureFullPhotos();
           persistSightings();
@@ -18587,6 +18724,7 @@
           if (Array.isArray(saved)) saved.forEach(s => sightings.push(s));
         } catch (e) {}
       }
+      if (dedupeSightings()) persistSightings();
       // Only use stock seed data when there is no signed-in user and no local data.
       if (!sightings.length && !(typeof pfUser !== 'undefined' && pfUser && pfUser.id)) {
         SEED.forEach(r => sightings.push({
@@ -19034,7 +19172,12 @@
       pfAwardSql = false;
       if (!opts.silent) pfMsg('Publishing your sightings…');
       const SEED_IDS = new Set(SEED.map(r => r[0]));
-      const recent = pfRecentLocal().filter(s => s && !SEED_IDS.has(s.id));
+      const recentRaw = pfRecentLocal().filter(s => s && !SEED_IDS.has(s.id));
+      const recent = [];
+      recentRaw.forEach(s => {
+        if (recent.some(k => String(k.id) === String(s.id) || pfSameSpot(k, s))) return;
+        recent.push(s);
+      });
       const awardMap = {};
       recent.forEach(s => {
         const hit = s && pfAwardMemo[s.id];
@@ -19060,6 +19203,7 @@
         }
         const exact = !!(s.share_exact && s.lat != null && s.lng != null);
         rows.push({
+          id: s.id,
           user_id: pfUser.id,
           species_code: s.species_code,
           species_name: pfSpName(s.species_code),
@@ -19367,7 +19511,9 @@
     function pfTabs(which) {
       const items = which === 'self'
         ? [['feed','Feed'],['sightings','Sightings'],['map','Map'],['awards','Awards'],['people','People']]
-        : [['sightings','Sightings'],['map','Map']];
+        : which === 'pair'
+          ? [['sightings','Sightings'],['map','Map'],['compare','Compare']]
+          : [['sightings','Sightings'],['map','Map']];
       return '<div class="pf-tabs">' + items.map(it =>
         '<button type="button" data-act="tab" data-tab="' + it[0] + '" class="' + (pfTab === it[0] ? 'on' : '') + '">' + it[1] + '</button>'
       ).join('') + '</div>';
@@ -19461,15 +19607,8 @@
 
     async function pfPublishBanner() {
       const slot = document.getElementById('pf-publish-slot');
-      if (!slot || !pfUser) return;
-      const localN = pfRecentLocal().length;
-      if (!localN) return;
-      const q = await supabaseClient.from('public_sightings').select('id', { count: 'exact', head: true }).eq('user_id', pfUser.id);
-      if (q.error) return;
-      const missing = localN - (q.count || 0);
-      if (missing <= 0) { slot.innerHTML = ''; return; }
-      slot.innerHTML = '<div class="pf-publish-note"><span>' + missing + ' sighting' + (missing === 1 ? '' : 's') + ' not public yet</span>' +
-        '<button type="button" class="btn-em" data-act="publish">Publish</button></div>';
+      if (!slot) return;
+      slot.innerHTML = '';
     }
     async function renderSelf() {
       if (pfPreview) return renderPreview();
@@ -19535,13 +19674,101 @@
       }
     }
 
+    function pfSpeciesIndex(rows) {
+      const map = {};
+      (rows || []).forEach(s => {
+        const code = s && s.species_code;
+        if (!code) return;
+        let rec = map[code];
+        if (!rec) rec = map[code] = { code: code, name: pfSpName(code), date: '', photo: '', n: 0 };
+        rec.n++;
+        const d = String(s.date || '').slice(0, 10);
+        if (d && d > rec.date) rec.date = d;
+        const photo = pfSafeSrc(s.photo_url || s.photo_full);
+        if (photo && (!rec.photo || Number(s.is_cover))) rec.photo = photo;
+      });
+      return map;
+    }
+    function pfCompareHtml(theirRows, myRows, other) {
+      const mine = pfSpeciesIndex(myRows);
+      const theirs = pfSpeciesIndex(theirRows);
+      const themFull = String((other && (other.display_name || other.username)) || 'Them').trim() || 'Them';
+      const them = themFull.split(/\s+/)[0] || themFull;
+      const shared = [], onlyMine = [], onlyTheirs = [];
+      Object.keys(mine).forEach(code => {
+        if (theirs[code]) shared.push({ code: code, mine: mine[code], theirs: theirs[code] });
+        else onlyMine.push({ code: code, mine: mine[code] });
+      });
+      Object.keys(theirs).forEach(code => { if (!mine[code]) onlyTheirs.push({ code: code, theirs: theirs[code] }); });
+      const byName = (a, b) => String((a.mine || a.theirs).name || '').localeCompare(String((b.mine || b.theirs).name || ''));
+      shared.sort(byName); onlyMine.sort(byName); onlyTheirs.sort(byName);
+      const union = shared.length + onlyMine.length + onlyTheirs.length;
+      const pct = union ? Math.round(shared.length / union * 100) : 0;
+      const lens = pfCompareLens === 'mine' || pfCompareLens === 'theirs' ? pfCompareLens : 'shared';
+      const list = lens === 'mine' ? onlyMine : lens === 'theirs' ? onlyTheirs : shared;
+      const ranges = [['30', '30 days'], ['365', 'Year'], ['0', 'All time']];
+      const range = '<div class="pf-range-row">' + ranges.map(it =>
+        '<button type="button" data-act="compare-range" data-range="' + it[0] + '" class="' + (pfCompareRange === it[0] ? 'on' : '') + '">' + it[1] + '</button>'
+      ).join('') + '</div>';
+      const metrics = [
+        ['shared', shared.length, 'Shared'],
+        ['mine', onlyMine.length, 'Only you'],
+        ['theirs', onlyTheirs.length, 'Only ' + themFull]
+      ];
+      const metricHtml = '<div class="pf-metrics">' + metrics.map(m =>
+        '<button type="button" class="pf-metric' + (lens === m[0] ? ' on' : '') + '" data-act="compare-lens" data-lens="' + m[0] + '"><b>' + m[1] + '</b><span>' + pfEsc(m[2]) + '</span></button>'
+      ).join('') + '</div>';
+      const line = shared.length
+        ? shared.length + ' species in common'
+        : 'No species in common' + (pfCompareRange === '0' ? ' yet' : ' in this range');
+      const sub = union
+        ? 'Together, ' + union + ' species. Overlap is ' + pct + '% of the combined list.'
+        : 'Log a bird, or wait until they share some, and this fills in.';
+      let note = 'Logged by both of you.';
+      if (lens === 'mine') note = 'On your list, not on ' + them + '’s.';
+      else if (lens === 'theirs') note = onlyTheirs.length ? them + ' has logged ' + onlyTheirs.length + ' you haven’t.' : 'Nothing here they have that you don’t.';
+      const cap = 120;
+      const shown = list.slice(0, cap);
+      const rows = shown.map(item => {
+        const a = item.mine;
+        const b = item.theirs;
+        const photo = (a && a.photo) || (b && b.photo) || '';
+        const name = (a && a.name) || (b && b.name) || item.code;
+        let meta = '';
+        if (lens === 'shared') {
+          meta = 'You ' + (a && a.date ? pfDate(a.date) : '—') + ' · ' + them + ' ' + (b && b.date ? pfDate(b.date) : '—');
+        } else if (lens === 'mine') {
+          meta = (a && a.n ? a.n + (a.n === 1 ? ' log' : ' logs') : 'Logged') + (a && a.date ? ' · ' + pfDate(a.date) : '');
+        } else {
+          meta = (b && b.n ? b.n + (b.n === 1 ? ' log' : ' logs') : 'Logged') + (b && b.date ? ' · ' + pfDate(b.date) : '');
+        }
+        const tag = lens === 'shared' ? 'Both' : lens === 'mine' ? 'You' : them;
+        const ph = photo
+          ? '<img src="' + String(photo).replace(/"/g, '') + '" alt="" />'
+          : pfEsc(String(name).charAt(0).toUpperCase() || '·');
+        return '<div class="pf-cmp-row"><div class="pf-cmp-ph">' + ph + '</div><div class="pf-cmp-copy"><b>' + pfEsc(name) + '</b><span>' + pfEsc(meta) + '</span></div><div class="pf-cmp-tag">' + pfEsc(tag) + '</div></div>';
+      }).join('');
+      const more = list.length > cap ? '<p class="pf-note">Showing ' + cap + ' of ' + list.length + '.</p>' : '';
+      const empty = list.length ? '' : '<div class="pf-empty">Nothing in this range.</div>';
+      const wShared = union ? (shared.length / union * 100) : 0;
+      const wMine = union ? (onlyMine.length / union * 100) : 0;
+      const wTheirs = union ? (onlyTheirs.length / union * 100) : 0;
+      const bar = union
+        ? '<div class="pf-cmp-bar" aria-hidden="true"><i class="shared" style="width:' + wShared + '%"></i><i class="mine" style="width:' + wMine + '%"></i><i class="theirs" style="width:' + wTheirs + '%"></i></div>'
+        : '';
+      return range + metricHtml + '<div class="pf-cmp-line">' + pfEsc(line) + '</div><p class="pf-cmp-sub">' + pfEsc(sub) + '</p>' + bar +
+        '<div class="pf-section"><span>' + pfEsc(note) + '</span></div>' +
+        (rows ? '<div class="pf-cmp-list">' + rows + '</div>' + more : empty);
+    }
+
     async function renderOther() {
       const gen = ++pfGen;
       pfKillMap();
       if (!pfOther) { renderSelf(); return; }
       document.getElementById('pf-title').textContent = pfOther.display_name || pfOther.username || 'Profile';
       document.getElementById('pf-back').hidden = false;
-      if (pfTab !== 'sightings' && pfTab !== 'photos' && pfTab !== 'map') pfTab = 'sightings';
+      const canCompare = !!(pfUser && pfUser.id && pfUser.id !== pfOther.id);
+      if (pfTab !== 'sightings' && pfTab !== 'photos' && pfTab !== 'map' && !(canCompare && pfTab === 'compare')) pfTab = 'sightings';
       const counts = await pfCounts(pfOther.id);
       const following = pfUser ? await pfAmFollowing(pfOther.id) : false;
       if (gen !== pfGen) return;
@@ -19573,7 +19800,7 @@
       if (!canSee) {
         body += '<p class="pf-note" style="margin-top:12px">This user hasn’t shared their activity with you.</p>';
       } else {
-        body += pfPinsHtml(rows, pfOther) + pfTabs('other');
+        body += pfPinsHtml(rows, pfOther) + pfTabs(canCompare ? 'pair' : 'other');
         if (pfTab === 'photos') {
           const photos = pack.photoIds ? rows.filter(s => pack.photoIds[s.id]) : rows;
           await pfEnsurePhotos(photos.slice(0, PF_PAGE));
@@ -19582,6 +19809,9 @@
         } else if (pfTab === 'map') {
           pfPrepareMap(rows, false);
           body += pfMapChrome();
+        } else if (pfTab === 'compare' && canCompare) {
+          const days = pfCompareRange === '365' ? 365 : pfCompareRange === '0' ? 0 : 30;
+          body += pfCompareHtml(pfWindow(rows, days), pfWindow(pfRecentLocal(), days), pfOther);
         } else {
           await pfEnsurePhotos(rows.slice(0, PF_PAGE));
           if (gen !== pfGen) return;
@@ -19926,7 +20156,10 @@
       return Object.keys(map).map(name => ({ name: name, n: map[name] })).sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
     }
     function pfMapToolsHtml() {
-      const range = (pfMapMine && !pfPreview) ? pfRangeSeg() : '';
+      const ranges = [['30', '30 days'], ['365', 'Year'], ['0', 'All time']];
+      const range = '<div class="pf-range-row">' + ranges.map(it =>
+        '<button type="button" data-act="range" data-range="' + it[0] + '" class="' + (pfRange === it[0] ? 'on' : '') + '">' + it[1] + '</button>'
+      ).join('') + '</div>';
       return '<div class="pf-map-tools" id="pf-map-tools">' + range + '</div>';
     }
     function pfMapChrome() {
@@ -20696,8 +20929,12 @@
       try { await publishPublic({ silent: true, catchup: true }); }
       finally { pfCatching = false; }
     }
-    window.pfAfterLocalLoad = function () {
+    window.pfAfterLocalLoad = async function () {
       pfLocalReady = true;
+      if (typeof dedupeSightings === 'function' && dedupeSightings()) {
+        try { persistSightings(); } catch (e) {}
+      }
+      if (pfUser && typeof syncPublicSightingsToLocal === 'function') await syncPublicSightingsToLocal();
       pfCatchUpPublic();
     };
 
@@ -21467,17 +21704,24 @@
       (async function () {
         try {
           let shots = [];
+          const isCurrent = x => x && (String(x.id) === String(s.id) || pfSameSpot(x, s));
           if (ownerId && pfIsPublicId(ownerId) && s.species_code) {
             const rows = await pfPublicRows(cols => supabaseClient.from('public_sightings').select(cols).eq('user_id', ownerId).eq('species_code', s.species_code).limit(40));
             if (rows && rows.length) await pfEnsurePhotos(rows);
-            shots = (rows || []).filter(x => String(x.id) !== String(s.id) && pfSafeSrc(x.photo_url));
+            shots = (rows || []).filter(x => !isCurrent(x) && pfSafeSrc(x.photo_url));
           }
           if (pfUser && ownerId && ownerId === pfUser.id && typeof sightings !== 'undefined') {
-            const local = sightings.filter(x => x && x.species_code === s.species_code && String(x.id) !== String(s.id) && pfSafeSrc(x.photo_url || x.photo_full)).map(x => ({
+            const local = sightings.filter(x => x && x.species_code === s.species_code && !isCurrent(x) && pfSafeSrc(x.photo_url || x.photo_full)).map(x => ({
               id: x.id, user_id: pfUser.id, species_code: x.species_code, photo_url: x.photo_url || x.photo_full,
-              date: x.date, county: x.county, state: x.state, location_name: x.location_name
+              date: x.date, county: x.county, state: x.state, location_name: x.location_name,
+              lat: x.lat, lng: x.lng
             }));
-            shots = local.concat(shots.filter(x => !local.some(l => String(l.id) === String(x.id))));
+            const merged = [];
+            local.concat(shots).forEach(row => {
+              if (!row || merged.some(k => String(k.id) === String(row.id) || pfSameSpot(k, row))) return;
+              merged.push(row);
+            });
+            shots = merged;
           }
           if (pfDetail && pfDetail.s && pfDetail.s.id === s.id) pfPaintMore(shots, p);
         } catch (err) {
@@ -21492,6 +21736,14 @@
       const act = t.getAttribute('data-act');
       const id = t.getAttribute('data-id');
       if (act === 'tab') { pfTab = t.getAttribute('data-tab') || 'feed'; pfOther ? renderOther() : renderSelf(); }
+      else if (act === 'compare-lens') {
+        pfCompareLens = t.getAttribute('data-lens') || 'shared';
+        if (pfOther) renderOther();
+      }
+      else if (act === 'compare-range') {
+        pfCompareRange = t.getAttribute('data-range') || '0';
+        if (pfOther) renderOther();
+      }
       else if (act === 'range') {
         pfRange = t.getAttribute('data-range') || '30';
         if (pfTab === 'map') pfMapFit = true;
