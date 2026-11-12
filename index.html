@@ -3676,6 +3676,7 @@
                 </div>
                 <div class="two" style="margin-top:10px">
                   <button type="button" class="ghost" onclick="changeSettingsPassword()">Change password</button>
+                  <button type="button" class="ghost" onclick="sendSettingsResetEmail()">Send reset link</button>
                 </div>
                 <p class="hint" id="settings-pass-msg" style="margin-top:6px"></p>
               </div>
@@ -5056,7 +5057,8 @@
       const msg = document.getElementById('settings-pass-msg');
       if (!pfUser || !pfUser.email) { if (msg) msg.textContent = 'No email on this account.'; return; }
       if (msg) msg.textContent = 'Sending…';
-      const res = await supabaseClient.auth.resetPasswordForEmail(pfUser.email);
+      const redirectTo = window.location.origin + window.location.pathname;
+      const res = await supabaseClient.auth.resetPasswordForEmail(pfUser.email, { redirectTo });
       if (res.error) { if (msg) msg.textContent = res.error.message; return; }
       if (msg) msg.textContent = 'Reset link sent to ' + pfUser.email + '.';
     }
@@ -19315,23 +19317,28 @@
         '</div></div>' +
       '</section>';
     }
-    function renderAuth() {
+    function renderAuth(mode) {
+      mode = mode === 'signup' ? 'signup' : 'signin';
       pfKillMap();
-      document.getElementById('pf-title').textContent = 'Profile';
+      document.getElementById('pf-title').textContent = mode === 'signup' ? 'Create account' : 'Sign in';
       document.getElementById('pf-back').hidden = true;
+      const isSignup = mode === 'signup';
       document.getElementById('pf-body').innerHTML =
         '<div class="pf-auth">' +
-          '<h2>Your field profile</h2>' +
-          '<p class="pf-note">Sign in to publish your list, follow people, and see their sightings. Logs and photos stay on this device either way.</p>' +
+          '<h2>' + (isSignup ? 'Create your field profile' : 'Your field profile') + '</h2>' +
+          '<p class="pf-note">' + (isSignup
+            ? 'Create an account to publish your list, follow people, and see their sightings. Your logs and photos stay on this device either way.'
+            : 'Sign in to publish your list, follow people, and see their sightings. Logs and photos stay on this device either way.') + '</p>' +
           '<div class="pf-form">' +
-            '<label>Email</label><input id="pf-email" type="email" autocomplete="username" />' +
-            '<label>Password</label><input id="pf-pass" type="password" autocomplete="current-password" />' +
+            '<label>Email</label><input id="pf-email" type="email" autocomplete="username" placeholder="you@example.com" />' +
+            '<label>Password</label><input id="pf-pass" type="password" autocomplete="' + (isSignup ? 'new-password' : 'current-password') + '" placeholder="At least 6 characters" />' +
+            (isSignup ? '<label>Confirm password</label><input id="pf-pass2" type="password" autocomplete="new-password" placeholder="Repeat password" />' : '') +
           '</div>' +
           '<div class="pf-actions">' +
-            '<button type="button" class="btn-em" data-act="signin">Sign in</button>' +
-            '<button type="button" class="ghost" data-act="signup">Create account</button>' +
+            '<button type="button" class="btn-em" data-act="' + (isSignup ? 'signup' : 'signin') + '">' + (isSignup ? 'Create account' : 'Sign in') + '</button>' +
+            '<button type="button" class="ghost" data-act="' + (isSignup ? 'show-signin' : 'show-signup') + '">' + (isSignup ? 'Already have an account?' : 'Create account') + '</button>' +
           '</div>' +
-          '<p class="pf-note" style="margin-top:8px"><button type="button" class="pf-back" data-act="forgot" style="font-size:12px">Forgot password?</button></p>' +
+          (!isSignup ? '<p class="pf-note" style="margin-top:8px"><button type="button" class="pf-back" data-act="forgot" style="font-size:12px">Forgot password?</button></p>' : '') +
           '<p class="pf-note" id="pf-msg"></p>' +
         '</div>';
     }
@@ -21393,10 +21400,13 @@
       else if (act === 'publish') publishPublic();
       else if (act === 'signout') supabaseClient.auth.signOut().then(() => { pfUser = null; pfSelf = null; pfOther = null; pfPreview = false; syncProfileButton(); renderAuth(); });
       else if (act === 'signin' || act === 'signup') pfAuth(act === 'signup');
+      else if (act === 'show-signup') renderAuth('signup');
+      else if (act === 'show-signin') renderAuth('signin');
       else if (act === 'forgot') {
         const email = (document.getElementById('pf-email') || {}).value || '';
         if (!email.trim()) { pfMsg('Enter your email first.'); return; }
-        supabaseClient.auth.resetPasswordForEmail(email.trim()).then(res => {
+        const redirectTo = window.location.origin + window.location.pathname;
+        supabaseClient.auth.resetPasswordForEmail(email.trim(), { redirectTo }).then(res => {
           pfMsg(res.error ? res.error.message : 'Reset link sent to ' + email.trim() + '.');
         });
       }
@@ -22011,7 +22021,19 @@
       });
     }
     pfBootUser();
-    supabaseClient.auth.onAuthStateChange(() => { pfBootUser(); });
+    supabaseClient.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        // User arrived via reset link — show a simple form to set a new password
+        const newPass = prompt('Set a new password (at least 6 characters):');
+        if (newPass && newPass.length >= 6) {
+          supabaseClient.auth.updateUser({ password: newPass }).then(res => {
+            if (res.error) alert('Could not update password: ' + res.error.message);
+            else alert('Password updated. You are now signed in.');
+          });
+        }
+      }
+      pfBootUser();
+    });
   </script>
 </body>
 </html>
