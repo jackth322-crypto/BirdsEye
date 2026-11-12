@@ -4652,10 +4652,13 @@
           return;
         }
       } catch (e) {}
-      SEED.forEach(r => sightings.push({
-        id: r[0], species_code: r[1], date: r[2], lat: r[3], lng: r[4],
-        location_name: r[5], state: r[6], country: r[7], notes: r[8], photo_url: r[9], photo_full: r[9], is_cover: r[10]
-      }));
+      // Stock seed data only when not signed in.
+      if (!(typeof pfUser !== 'undefined' && pfUser && pfUser.id)) {
+        SEED.forEach(r => sightings.push({
+          id: r[0], species_code: r[1], date: r[2], lat: r[3], lng: r[4],
+          location_name: r[5], state: r[6], country: r[7], notes: r[8], photo_url: r[9], photo_full: r[9], is_cover: r[10]
+        }));
+      }
     }
 
     function ensureFullPhotos() {
@@ -18584,7 +18587,8 @@
           if (Array.isArray(saved)) saved.forEach(s => sightings.push(s));
         } catch (e) {}
       }
-      if (!sightings.length) {
+      // Only use stock seed data when there is no signed-in user and no local data.
+      if (!sightings.length && !(typeof pfUser !== 'undefined' && pfUser && pfUser.id)) {
         SEED.forEach(r => sightings.push({
           id: r[0], species_code: r[1], date: r[2], lat: r[3], lng: r[4],
           location_name: r[5], state: r[6], country: r[7], notes: r[8], photo_url: r[9], photo_full: r[9], is_cover: r[10]
@@ -18606,6 +18610,8 @@
       syncProfileButton();
       if (prevId !== (pfUser && pfUser.id)) {
         await reloadSightingsForCurrentUser();
+      } else if (pfUser) {
+        await syncPublicSightingsToLocal();
       }
     }
     async function pfEnsure(user) {
@@ -19027,7 +19033,8 @@
       if (!pfUser) return;
       pfAwardSql = false;
       if (!opts.silent) pfMsg('Publishing your sightings…');
-      const recent = pfRecentLocal();
+      const SEED_IDS = new Set(SEED.map(r => r[0]));
+      const recent = pfRecentLocal().filter(s => s && !SEED_IDS.has(s.id));
       const awardMap = {};
       recent.forEach(s => {
         const hit = s && pfAwardMemo[s.id];
