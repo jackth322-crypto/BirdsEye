@@ -4162,13 +4162,30 @@
       if (typeof renderLifeList === 'function') renderLifeList();
     }
 
+    function sightingsStorageKey() {
+      return 'avian_sightings_' + (typeof pfUser !== 'undefined' && pfUser && pfUser.id ? pfUser.id : 'guest');
+    }
+    function idbSightingsKey() {
+      return (typeof pfUser !== 'undefined' && pfUser && pfUser.id) ? pfUser.id : 'guest';
+    }
+    function migrateSightingsIfNeeded() {
+      try {
+        const old = localStorage.getItem('avian_sightings');
+        if (!old) return;
+        const key = sightingsStorageKey();
+        if (!localStorage.getItem(key)) localStorage.setItem(key, old);
+      } catch (e) {}
+    }
+
     function persistSightings() {
       ensureSoloCovers();
+      migrateSightingsIfNeeded();
+      const key = sightingsStorageKey();
       const json = JSON.stringify(sightings);
-      try { localStorage.setItem('avian_sightings', json); } catch (e) {
+      try { localStorage.setItem(key, json); } catch (e) {
         try {
           const slim = sightings.map(s => Object.assign({}, s, { photo_full: s.photo_url || s.photo_full || '' }));
-          localStorage.setItem('avian_sightings', JSON.stringify(slim));
+          localStorage.setItem(key, JSON.stringify(slim));
         } catch (e2) {}
       }
       if (window.indexedDB) {
@@ -4179,7 +4196,7 @@
           };
           req.onsuccess = function () {
             const tx = req.result.transaction('logs', 'readwrite');
-            tx.objectStore('logs').put(sightings, 'all');
+            tx.objectStore('logs').put(sightings, idbSightingsKey());
           };
         } catch (e) {}
       }
@@ -4197,7 +4214,7 @@
           req.onsuccess = function () {
             try {
               const tx = req.result.transaction('logs', 'readonly');
-              const get = tx.objectStore('logs').get('all');
+              const get = tx.objectStore('logs').get(idbSightingsKey());
               get.onsuccess = function () { resolve(get.result || null); };
               get.onerror = function () { resolve(null); };
             } catch (e) { resolve(null); }
@@ -4626,8 +4643,9 @@
 
     function seedSightings() {
       sightings.length = 0;
+      migrateSightingsIfNeeded();
       try {
-        const saved = JSON.parse(localStorage.getItem('avian_sightings') || 'null');
+        const saved = JSON.parse(localStorage.getItem(sightingsStorageKey()) || 'null');
         if (Array.isArray(saved) && saved.length) {
           saved.forEach(s => sightings.push(s));
           ensureFullPhotos();
@@ -18301,6 +18319,7 @@
       });
       restoreHeatCache();
       loadSavedPlaces();
+      migrateSightingsIfNeeded();
       const idbRows = await loadSightingsFromIDB();
       if (Array.isArray(idbRows) && idbRows.length) {
         sightings.length = 0;
@@ -18494,11 +18513,100 @@
         btn.style.backgroundImage = '';
       }
     }
+    async function cacheRemotePhoto(url) {
+      if (!url || String(url).startsWith('data:')) return url;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return url;
+        const blob = await res.blob();
+        return await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result || url);
+          reader.onerror = () => resolve(url);
+          reader.readAsDataURL(blob);
+        });
+      } catch (e) { return url; }
+    }
+
+    async function syncPublicSightingsToLocal() {
+      if (!pfUser || !pfUser.id || typeof supabaseClient === 'undefined') return;
+      try {
+        const q = await supabaseClient.from('public_sightings')
+          .select('id,species_code,date,lat,lng,location_name,state,country,notes,photo_url,is_cover,rarity')
+          .eq('user_id', pfUser.id)
+          .order('date', { ascending: false })
+          .limit(500);
+        if (q.error || !Array.isArray(q.data)) return;
+        const byId = {};
+        sightings.forEach(s => { if (s && s.id) byId[s.id] = s; });
+        let changed = false;
+        for (const row of q.data) {
+          if (!row || !row.id) continue;
+          let local = byId[row.id];
+          if (!local) {
+            local = { id: row.id, species_code: row.species_code || '' };
+            sightings.push(local);
+            byId[row.id] = local;
+            changed = true;
+          }
+          ['species_code','date','lat','lng','location_name','state','country','notes','is_cover','rarity'].forEach(k => {
+            if (row[k] != null && local[k] !== row[k]) { local[k] = row[k]; changed = true; }
+          });
+          if (row.photo_url && (!local.photo_url || !String(local.photo_url).startsWith('data:'))) {
+            const cached = await cacheRemotePhoto(row.photo_url);
+            if (cached && cached !== local.photo_url) {
+              local.photo_url = cached;
+              local.photo_full = cached;
+              changed = true;
+            }
+          }
+        }
+        if (changed) {
+          ensureFullPhotos();
+          persistSightings();
+          if (typeof renderGallery === 'function') renderGallery();
+          if (typeof renderLifeList === 'function') renderLifeList();
+          if (typeof refreshUI === 'function') refreshUI();
+          if (typeof plotPhotoChits === 'function') plotPhotoChits();
+        }
+      } catch (e) {}
+    }
+
+    async function reloadSightingsForCurrentUser() {
+      migrateSightingsIfNeeded();
+      sightings.length = 0;
+      const idbRows = await loadSightingsFromIDB();
+      if (Array.isArray(idbRows) && idbRows.length) {
+        idbRows.forEach(s => sightings.push(s));
+      } else {
+        try {
+          const saved = JSON.parse(localStorage.getItem(sightingsStorageKey()) || 'null');
+          if (Array.isArray(saved)) saved.forEach(s => sightings.push(s));
+        } catch (e) {}
+      }
+      if (!sightings.length) {
+        SEED.forEach(r => sightings.push({
+          id: r[0], species_code: r[1], date: r[2], lat: r[3], lng: r[4],
+          location_name: r[5], state: r[6], country: r[7], notes: r[8], photo_url: r[9], photo_full: r[9], is_cover: r[10]
+        }));
+      }
+      ensureFullPhotos();
+      if (typeof renderGallery === 'function') renderGallery();
+      if (typeof renderLifeList === 'function') renderLifeList();
+      if (typeof refreshUI === 'function') refreshUI();
+      if (typeof plotPhotoChits === 'function') plotPhotoChits();
+      if (pfUser) await syncPublicSightingsToLocal();
+    }
+
     async function pfRefreshUser() {
       const { data } = await supabaseClient.auth.getSession();
+      const prevId = pfUser && pfUser.id;
       pfUser = (data && data.session && data.session.user) || null;
       pfSelf = pfUser ? await pfEnsure(pfUser) : null;
       syncProfileButton();
+      if (prevId !== (pfUser && pfUser.id)) {
+        await reloadSightingsForCurrentUser();
+      }
     }
     async function pfEnsure(user) {
       const existing = await supabaseClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
@@ -21452,13 +21560,25 @@
     async function pfAuth(isSignUp) {
       const email = (document.getElementById('pf-email') || {}).value || '';
       const password = (document.getElementById('pf-pass') || {}).value || '';
+      const password2 = (document.getElementById('pf-pass2') || {}).value || '';
+      if (!email.trim() || !password) { pfMsg('Enter email and password.'); return; }
+      if (isSignUp) {
+        if (password.length < 6) { pfMsg('Password must be at least 6 characters.'); return; }
+        if (password !== password2) { pfMsg('Passwords do not match.'); return; }
+      }
       pfMsg(isSignUp ? 'Creating account…' : 'Signing in…');
+      const redirectTo = window.location.origin + window.location.pathname;
       const res = isSignUp
-        ? await supabaseClient.auth.signUp({ email: email.trim(), password: password })
+        ? await supabaseClient.auth.signUp({
+            email: email.trim(),
+            password: password,
+            options: { emailRedirectTo: redirectTo }
+          })
         : await supabaseClient.auth.signInWithPassword({ email: email.trim(), password: password });
       if (res.error) { pfMsg(res.error.message); return; }
       if (isSignUp && res.data && res.data.user && !res.data.session) {
-        pfMsg('Check your email to confirm, then sign in.');
+        pfMsg('Account created. Check your email for a confirmation link, then sign in.');
+        renderAuth('signin');
         return;
       }
       await pfRefreshUser();
