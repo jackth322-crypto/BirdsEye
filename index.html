@@ -19,6 +19,8 @@
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 </script>
   <title>BirdsEye — Find what's flying.</title>
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#059669" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
@@ -2842,9 +2844,149 @@
       .settings-nav button { white-space: nowrap; padding: 8px 14px; }
       .settings-content { max-height: 62vh; height: auto; }
     }
-</style>
+
+    /* ===== Polish: toasts, confirm, onboarding, empty, skeletons ===== */
+    #toast-container {
+      position: fixed; left: 50%; bottom: 72px; transform: translateX(-50%);
+      z-index: 10000; display: flex; flex-direction: column; gap: 8px;
+      pointer-events: none; width: min(92vw, 380px);
+    }
+    .toast {
+      background: var(--panel); color: var(--text); border: 1px solid var(--line-2);
+      border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.35;
+      box-shadow: var(--shadow); pointer-events: auto;
+      display: flex; align-items: center; gap: 10px;
+      animation: toast-in .22s ease-out;
+    }
+    .toast.ok { border-color: var(--em); }
+    .toast.err { border-color: #ef4444; }
+    .toast.info { border-color: var(--cool); }
+    .toast button { margin-left: auto; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    #confirm-modal {
+      position: fixed; inset: 0; background: var(--scrim); z-index: 10001;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    #confirm-modal.on { display: flex; }
+    #confirm-box {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+      padding: 20px; max-width: 380px; width: 100%; box-shadow: var(--shadow);
+    }
+    #confirm-box h3 { margin: 0 0 8px; font-size: 17px; }
+    #confirm-box p { margin: 0 0 16px; color: var(--text-2); font-size: 14px; line-height: 1.4; }
+    #confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    #confirm-actions button { min-width: 88px; }
+
+    #onboard-overlay {
+      position: fixed; inset: 0; background: var(--scrim); z-index: 9999;
+      display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    #onboard-overlay.on { display: flex; }
+    #onboard-card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+      max-width: 440px; width: 100%; padding: 24px 22px 20px; box-shadow: var(--shadow);
+    }
+    #onboard-card h2 { margin: 0 0 6px; font-size: 22px; }
+    #onboard-card .step { display: none; }
+    #onboard-card .step.on { display: block; }
+    #onboard-card p { color: var(--text-2); font-size: 14px; line-height: 1.45; margin: 0 0 14px; }
+    #onboard-card .field { margin-bottom: 12px; }
+    #onboard-actions { display: flex; gap: 8px; justify-content: space-between; margin-top: 16px; }
+    .onboard-dots { display: flex; gap: 6px; justify-content: center; margin: 10px 0 4px; }
+    .onboard-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line-2); }
+    .onboard-dots i.on { background: var(--em); }
+
+    .empty-state {
+      text-align: center; padding: 48px 20px 40px; color: var(--muted);
+    }
+    .empty-state h3 { color: var(--text); margin: 0 0 8px; font-size: 18px; }
+    .empty-state p { margin: 0 0 16px; font-size: 14px; line-height: 1.4; max-width: 320px; margin-left: auto; margin-right: auto; }
+    .empty-state .btn-em { margin-top: 4px; }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--panel-2) 25%, var(--line) 50%, var(--panel-2) 75%);
+      background-size: 200% 100%; animation: skel 1.2s ease-in-out infinite;
+      border-radius: 8px;
+    }
+    @keyframes skel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .skel-row { height: 56px; margin: 8px 0; }
+    .skel-card { height: 140px; margin: 8px; border-radius: 12px; }
+
+    #key-banner {
+      position: fixed; top: 56px; left: 0; right: 0; z-index: 30;
+      background: var(--warn-bg); color: var(--warn);
+      border-bottom: 1px solid var(--warn-bd); padding: 8px 14px; font-size: 13px;
+      display: none; align-items: center; gap: 10px;
+      pointer-events: auto;
+    }
+    #key-banner.on { display: flex; }
+    #key-banner button { background: none; border: 1px solid currentColor; color: inherit; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+    #key-banner-btn { margin-left: auto; }
+    #key-banner-close { border: none; padding: 4px 8px; font-size: 16px; line-height: 1; opacity: .75; }
+    #key-banner-close:hover { opacity: 1; }
+
+    .ebird-status { font-size: 12px; margin-top: 4px; min-height: 1.2em; }
+    .ebird-status.ok { color: var(--em); }
+    .ebird-status.err { color: #ef4444; }
+
+  </style>
 </head>
 <body>
+
+  <div id="toast-container" aria-live="polite"></div>
+  <div id="confirm-modal" role="dialog" aria-modal="true">
+    <div id="confirm-box">
+      <h3 id="confirm-title">Confirm</h3>
+      <p id="confirm-message"></p>
+      <div id="confirm-actions">
+        <button type="button" class="ghost" id="confirm-cancel">Cancel</button>
+        <button type="button" class="btn-em" id="confirm-ok">OK</button>
+      </div>
+    </div>
+  </div>
+  <div id="onboard-overlay" role="dialog" aria-modal="true">
+    <div id="onboard-card">
+      <div class="onboard-dots" id="onboard-dots"></div>
+      <div class="step on" data-step="0">
+        <h2>Welcome to BirdsEye</h2>
+        <p>Track birds you see, chase what’s in season, and build a life list with photos. Let’s get you set up in under a minute.</p>
+      </div>
+      <div class="step" data-step="1">
+        <h2>Your home region</h2>
+        <p>Seasonality and checklists use this as your default. You can change it anytime.</p>
+        <div class="field">
+          <label>State or country</label>
+          <input type="text" id="onboard-region" placeholder="North Carolina" />
+        </div>
+      </div>
+      <div class="step" data-step="2">
+        <h2>eBird API key (optional)</h2>
+        <p>Unlock live Radar, nearby Targets, and Hunt. The key stays only on this device. Get one free at <a href="https://ebird.org/api/keygen" target="_blank" rel="noopener">ebird.org/api/keygen</a>.</p>
+        <div class="field">
+          <label>API key</label>
+          <input type="text" id="onboard-ebird" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" />
+        </div>
+      </div>
+      <div class="step" data-step="3">
+        <h2>You’re ready</h2>
+        <p>Log your first bird with the + Log button, explore the map, or check Targets for what’s flying now. You can always revisit this from Settings.</p>
+      </div>
+      <div id="onboard-actions">
+        <button type="button" class="ghost" id="onboard-skip">Skip</button>
+        <div style="display:flex;gap:8px">
+          <button type="button" class="ghost" id="onboard-back" hidden>Back</button>
+          <button type="button" class="btn-em" id="onboard-next">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="key-banner">
+    <span>Live Radar and nearby Targets need an eBird key.</span>
+    <button type="button" id="key-banner-btn">Add key</button>
+    <button type="button" id="key-banner-close" aria-label="Dismiss">✕</button>
+  </div>
+
   <header>
     <div class="brand">
       <div class="logo" aria-hidden="true">
@@ -3846,9 +3988,13 @@
             <p class="hint">Radar and nearby targets call eBird from this browser. The key stays on this device.</p>
             <div class="field">
               <label>eBird API key</label>
-              <input type="text" id="form-ebird-key" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" />
+              <div style="display:flex;gap:8px;align-items:center">
+                <input type="text" id="form-ebird-key" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" style="flex:1" />
+                <button type="button" class="ghost" id="btn-test-ebird" onclick="testEbirdKey()">Test</button>
+              </div>
+              <div class="ebird-status" id="ebird-status"></div>
             </div>
-            <p class="hint">Get a key at ebird.org/api/keygen</p>
+            <p class="hint">Get a free key at <a href="https://ebird.org/api/keygen" target="_blank" rel="noopener">ebird.org/api/keygen</a>. Used for live Radar, Hunt, and nearby Targets. Stays on this device only.</p>
             <div class="two" style="margin-top:18px">
               <button class="ghost" type="button" onclick="exportLogs()">Export logs</button>
               <button class="ghost" type="button" onclick="document.getElementById('import-logs').click()">Import logs</button>
@@ -3946,6 +4092,143 @@
     const ALPH = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const CURRENT_MONTH = new Date().getMonth();
     const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    // ===== Polish helpers: toast, confirm, onboarding, key status =====
+    function toast(msg, type) {
+      type = type || 'info';
+      let box = document.getElementById('toast-container');
+      if (!box) return;
+      const el = document.createElement('div');
+      el.className = 'toast ' + type;
+      el.innerHTML = '<span>' + String(msg).replace(/</g, '<') + '</span><button type="button" aria-label="Dismiss">✕</button>';
+      const btn = el.querySelector('button');
+      const remove = () => { if (el.parentNode) el.parentNode.removeChild(el); };
+      btn.onclick = remove;
+      box.appendChild(el);
+      setTimeout(remove, type === 'err' ? 5200 : 3200);
+    }
+
+    let confirmResolve = null;
+    function confirmAsync(message, title) {
+      return new Promise(function (resolve) {
+        confirmResolve = resolve;
+        const modal = document.getElementById('confirm-modal');
+        const msg = document.getElementById('confirm-message');
+        const ttl = document.getElementById('confirm-title');
+        if (ttl) ttl.textContent = title || 'Confirm';
+        if (msg) msg.textContent = message || '';
+        if (modal) modal.classList.add('on');
+        const ok = document.getElementById('confirm-ok');
+        const cancel = document.getElementById('confirm-cancel');
+        const done = function (v) {
+          if (modal) modal.classList.remove('on');
+          if (confirmResolve) { confirmResolve(v); confirmResolve = null; }
+        };
+        if (ok) ok.onclick = function () { done(true); };
+        if (cancel) cancel.onclick = function () { done(false); };
+        if (modal) modal.onclick = function (e) { if (e.target === modal) done(false); };
+      });
+    }
+
+    let onboardStep = 0;
+    const onboardTotal = 4;
+    function showOnboardStep(n) {
+      onboardStep = Math.max(0, Math.min(onboardTotal - 1, n));
+      document.querySelectorAll('#onboard-card .step').forEach(function (el) {
+        el.classList.toggle('on', Number(el.getAttribute('data-step')) === onboardStep);
+      });
+      const dots = document.getElementById('onboard-dots');
+      if (dots) {
+        dots.innerHTML = '';
+        for (let i = 0; i < onboardTotal; i++) {
+          const d = document.createElement('i');
+          if (i === onboardStep) d.className = 'on';
+          dots.appendChild(d);
+        }
+      }
+      const back = document.getElementById('onboard-back');
+      const next = document.getElementById('onboard-next');
+      if (back) back.hidden = onboardStep === 0;
+      if (next) next.textContent = onboardStep === onboardTotal - 1 ? 'Get started' : 'Next';
+      if (typeof navTouch === 'function') navTouch();
+    }
+    function openOnboard() {
+      const ov = document.getElementById('onboard-overlay');
+      if (!ov) return;
+      showOnboardStep(0);
+      ov.classList.add('on');
+      const reg = document.getElementById('onboard-region');
+      if (reg && !reg.value) {
+        try { reg.value = localStorage.getItem('avian_home_region') || ''; } catch (e) {}
+      }
+      const key = document.getElementById('onboard-ebird');
+      if (key) key.value = getEbirdKey() || '';
+    }
+    function closeOnboard(save) {
+      const ov = document.getElementById('onboard-overlay');
+      if (ov) ov.classList.remove('on');
+      if (save) {
+        const reg = document.getElementById('onboard-region');
+        if (reg && reg.value.trim()) {
+          try { localStorage.setItem('avian_home_region', reg.value.trim()); } catch (e) {}
+        }
+        const key = document.getElementById('onboard-ebird');
+        if (key) {
+          const k = (key.value || '').trim();
+          if (k) localStorage.setItem('avian_ebird_key', k);
+        }
+      }
+      try { localStorage.setItem('avian_onboard_done', '1'); } catch (e) {}
+      updateKeyBanner();
+    }
+    function maybeStartOnboard() {
+      try {
+        if (localStorage.getItem('avian_onboard_done') === '1') return;
+      } catch (e) { return; }
+      setTimeout(openOnboard, 600);
+    }
+    function updateKeyBanner() {
+      const b = document.getElementById('key-banner');
+      if (!b) return;
+      const has = !!(getEbirdKey && getEbirdKey());
+      let dismissed = false;
+      try { dismissed = localStorage.getItem('avian_key_banner_dismissed') === '1'; } catch (e) {}
+      b.classList.toggle('on', !has && !dismissed);
+    }
+    function dismissKeyBanner() {
+      try { localStorage.setItem('avian_key_banner_dismissed', '1'); } catch (e) {}
+      const b = document.getElementById('key-banner');
+      if (b) b.classList.remove('on');
+    }
+    async function testEbirdKey() {
+      const input = document.getElementById('form-ebird-key');
+      const status = document.getElementById('ebird-status');
+      const key = (input && input.value || '').trim();
+      if (!key) {
+        if (status) { status.textContent = 'Enter a key first.'; status.className = 'ebird-status err'; }
+        return;
+      }
+      if (status) { status.textContent = 'Testing…'; status.className = 'ebird-status'; }
+      try {
+        const res = await fetch('https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json&locale=en', {
+          headers: { 'X-eBirdApiToken': key }
+        });
+        if (res.ok) {
+          if (status) { status.textContent = 'Key works.'; status.className = 'ebird-status ok'; }
+          localStorage.setItem('avian_ebird_key', key);
+          updateKeyBanner();
+          toast('eBird key works', 'ok');
+        } else {
+          if (status) { status.textContent = 'Key rejected (' + res.status + ').'; status.className = 'ebird-status err'; }
+          toast('eBird key was rejected', 'err');
+        }
+      } catch (e) {
+        if (status) { status.textContent = 'Network error.'; status.className = 'ebird-status err'; }
+        toast('Could not reach eBird', 'err');
+      }
+    }
+
+
     const DATA = { L: [], T: {}, S: {}, C: {} };
     const COUNTRY_CODES = {
       'Canada':'CA','Mexico':'MX','Belize':'BZ','Costa Rica':'CR','El Salvador':'SV',
@@ -3966,14 +4249,14 @@
     let photoNavSource = 'species';
     let lightboxSightingId = null;
 
-    const SEED = [
-      ['s1','tuftit','2026-09-08',36.0999,-80.2442,'Reynolda Gardens','North Carolina','United States','Active in high canopy.','https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?auto=format&fit=crop&w=400&q=70',1],
-      ['s2','tuftit','2026-08-20',36.1200,-80.2600,'Backyard Feeder','North Carolina','United States','Sunflower seeds.','https://images.unsplash.com/photo-1555169062-013468b47731?auto=format&fit=crop&w=400&q=70',0],
-      ['s3','easblu','2026-07-28',36.1325,-80.2911,'Muddy Creek Greenway','North Carolina','United States','Fence post perch.','https://images.unsplash.com/photo-1588167056547-d0c30953a5c3?auto=format&fit=crop&w=400&q=70',1],
-      ['s4','norcar','2026-03-10',36.0999,-80.2442,'Reynolda Gardens','North Carolina','United States','Vibrant singing male.','https://images.unsplash.com/photo-1579273166657-97598808df31?auto=format&fit=crop&w=400&q=70',1],
-      ['s5','grnher','2026-06-21',36.0681,-80.2312,'Salem Lake','North Carolina','United States','Stalking shore minnows.','https://images.unsplash.com/photo-1612178537253-bccd437b730e?auto=format&fit=crop&w=400&q=70',1],
-      ['s6','ameavo','2025-07-04',38.9072,-77.0369,'Constitution Gardens','District of Columbia','United States','Foraging shoreline.','https://images.unsplash.com/photo-1574063413132-355dbfd83e21?auto=format&fit=crop&w=400&q=70',1]
-    ];
+    const SEED_IDS = new Set(['s1', 's2', 's3', 's4', 's5', 's6']);
+    function stripSeedSightings() {
+      const before = sightings.length;
+      for (let i = sightings.length - 1; i >= 0; i--) {
+        if (sightings[i] && SEED_IDS.has(sightings[i].id)) sightings.splice(i, 1);
+      }
+      return sightings.length !== before;
+    }
 
     let currentRegionLevel = 'state';
     let statsMode = localStorage.getItem('avian_stats_mode') || 'state';
@@ -4203,50 +4486,162 @@
       } catch (e) {}
     }
 
-    function persistSightings() {
-      ensureSoloCovers();
-      migrateSightingsIfNeeded();
-      const key = sightingsStorageKey();
-      const json = JSON.stringify(sightings);
-      try { localStorage.setItem(key, json); } catch (e) {
+    function openBirdseyeDb() {
+      return new Promise(function (resolve) {
+        if (!window.indexedDB) { resolve(null); return; }
         try {
-          const slim = sightings.map(s => Object.assign({}, s, { photo_full: s.photo_url || s.photo_full || '' }));
-          localStorage.setItem(key, JSON.stringify(slim));
-        } catch (e2) {}
-      }
-      if (window.indexedDB) {
-        try {
-          const req = indexedDB.open('birdseye', 1);
+          const req = indexedDB.open('birdseye', 2);
           req.onupgradeneeded = function () {
-            if (!req.result.objectStoreNames.contains('logs')) req.result.createObjectStore('logs');
+            const db = req.result;
+            if (!db.objectStoreNames.contains('logs')) db.createObjectStore('logs');
+            if (!db.objectStoreNames.contains('photos')) db.createObjectStore('photos');
           };
-          req.onsuccess = function () {
-            const tx = req.result.transaction('logs', 'readwrite');
-            tx.objectStore('logs').put(sightings, idbSightingsKey());
-          };
-        } catch (e) {}
+          req.onsuccess = function () { resolve(req.result); };
+          req.onerror = function () { resolve(null); };
+        } catch (e) { resolve(null); }
+      });
+    }
+    function photoStoreKey(id) {
+      return idbSightingsKey() + ':' + String(id || '');
+    }
+    function getPhotoByKey(db, key) {
+      return new Promise(function (resolve) {
+        try {
+          const tx = db.transaction('photos', 'readonly');
+          const get = tx.objectStore('photos').get(key);
+          get.onsuccess = function () { resolve(get.result || ''); };
+          get.onerror = function () { resolve(''); };
+        } catch (e) { resolve(''); }
+      });
+    }
+    function putSightingPhoto(id, dataUrl) {
+      if (!id || !dataUrl || !String(dataUrl).startsWith('data:')) return Promise.resolve();
+      return openBirdseyeDb().then(function (db) {
+        if (!db) return;
+        return new Promise(function (resolve) {
+          try {
+            const tx = db.transaction('photos', 'readwrite');
+            tx.oncomplete = function () { resolve(); };
+            tx.onerror = function () { resolve(); };
+            tx.objectStore('photos').put(String(dataUrl), photoStoreKey(id));
+          } catch (e) { resolve(); }
+        });
+      });
+    }
+    function getSightingPhoto(id) {
+      return openBirdseyeDb().then(async function (db) {
+        if (!db || !id) return '';
+        const keys = [photoStoreKey(id), 'guest:' + id, String(id)];
+        if (typeof pfUser !== 'undefined' && pfUser && pfUser.id) keys.unshift(pfUser.id + ':' + id);
+        const seen = {};
+        for (let i = 0; i < keys.length; i++) {
+          if (seen[keys[i]]) continue;
+          seen[keys[i]] = 1;
+          const hit = await getPhotoByKey(db, keys[i]);
+          if (hit && String(hit).startsWith('data:')) {
+            if (keys[i] !== photoStoreKey(id)) putSightingPhoto(id, hit);
+            return hit;
+          }
+        }
+        return '';
+      });
+    }
+    function slimSighting(s) {
+      const row = Object.assign({}, s);
+      const url = String(row.photo_url || '');
+      const full = String(row.photo_full || '');
+      if (url.startsWith('http')) row.photo_remote = url.split('?')[0];
+      if (url.startsWith('data:')) row.photo_url = row.photo_remote || '';
+      if (full.startsWith('data:') || full.startsWith('http')) row.photo_full = row.photo_remote || row.photo_url || '';
+      return row;
+    }
+    async function hydrateSightingPhotos() {
+      for (let i = 0; i < sightings.length; i++) {
+        const s = sightings[i];
+        if (!s || !s.id) continue;
+        const url = String(s.photo_url || '');
+        if (url.startsWith('data:')) continue;
+        const cached = await getSightingPhoto(s.id);
+        if (cached) {
+          s.photo_url = cached;
+          s.photo_full = cached;
+        } else if (s.photo_remote) {
+          s.photo_url = s.photo_remote;
+          s.photo_full = s.photo_remote;
+        }
       }
     }
 
-    function loadSightingsFromIDB() {
-      return new Promise(resolve => {
-        if (!window.indexedDB) { resolve(null); return; }
-        try {
-          const req = indexedDB.open('birdseye', 1);
-          req.onupgradeneeded = function () {
-            if (!req.result.objectStoreNames.contains('logs')) req.result.createObjectStore('logs');
-          };
-          req.onerror = function () { resolve(null); };
-          req.onsuccess = function () {
-            try {
-              const tx = req.result.transaction('logs', 'readonly');
-              const get = tx.objectStore('logs').get(idbSightingsKey());
-              get.onsuccess = function () { resolve(get.result || null); };
-              get.onerror = function () { resolve(null); };
-            } catch (e) { resolve(null); }
-          };
-        } catch (e) { resolve(null); }
+    let achHoldPersist = false;
+    function persistSightings() {
+      if (achHoldPersist) return;
+      ensureSoloCovers();
+      migrateSightingsIfNeeded();
+      const key = sightingsStorageKey();
+      const slim = sightings.map(slimSighting);
+      try { localStorage.setItem(key, JSON.stringify(slim)); } catch (e) {}
+      if (typeof pfScheduleSync === 'function') pfScheduleSync(800);
+      sightings.forEach(function (s) {
+        if (s && s.id && s.photo_url && String(s.photo_url).startsWith('data:')) putSightingPhoto(s.id, s.photo_url);
       });
+      openBirdseyeDb().then(function (db) {
+        if (!db) return;
+        try {
+          const tx = db.transaction('logs', 'readwrite');
+          tx.objectStore('logs').put(slim, idbSightingsKey());
+        } catch (e) {}
+      });
+    }
+
+    function loadLogsByKey(key) {
+      return openBirdseyeDb().then(function (db) {
+        if (!db) return null;
+        return new Promise(function (resolve) {
+          try {
+            const tx = db.transaction('logs', 'readonly');
+            const get = tx.objectStore('logs').get(key);
+            get.onsuccess = function () { resolve(get.result || null); };
+            get.onerror = function () { resolve(null); };
+          } catch (e) { resolve(null); }
+        });
+      });
+    }
+    function loadSightingsFromIDB() {
+      return loadLogsByKey(idbSightingsKey());
+    }
+    function readSightingList(key) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(key) || 'null');
+        return Array.isArray(saved) ? saved : [];
+      } catch (e) { return []; }
+    }
+    function mergeSightingLists(lists) {
+      const byId = {};
+      const out = [];
+      lists.forEach(function (rows) {
+        (rows || []).forEach(function (s) {
+          if (!s || !s.id || SEED_IDS.has(s.id)) return;
+          const id = String(s.id);
+          const prev = byId[id];
+          if (!prev) {
+            const copy = Object.assign({}, s);
+            byId[id] = copy;
+            out.push(copy);
+            return;
+          }
+          Object.keys(s).forEach(function (k) {
+            if (s[k] == null || s[k] === '') return;
+            if (prev[k] == null || prev[k] === '') prev[k] = s[k];
+          });
+          const prevPhoto = prev.photo_url || prev.photo_full || '';
+          const nextPhoto = s.photo_url || s.photo_full || '';
+          if (String(nextPhoto).startsWith('data:') && !String(prevPhoto).startsWith('data:')) {
+            prev.photo_url = s.photo_url || nextPhoto;
+            prev.photo_full = s.photo_full || nextPhoto;
+          }
+        });
+      });
+      return out;
     }
 
     function exportedSightingIds() {
@@ -4422,14 +4817,14 @@
       const never = !already.size && !localStorage.getItem('avian_last_export');
       const rows = sightings.filter(function (s) { return never || !already.has(s.id); });
       if (!rows.length) {
-        alert('No new logs since the last export.');
+        toast('No new logs since the last export.', 'info');
         return;
       }
       let parts;
       try {
         parts = chunkSightingsForExport(rows, savedPlaces || [], new Date().toISOString(), 'birdseye-logs-new');
       } catch (e) {
-        alert('Could not build the new-log backup. Try Export list only.');
+        toast('Could not build the new-log backup. Try Export list only.', 'err');
         return;
       }
       parts.forEach(function (part, idx) {
@@ -4469,7 +4864,7 @@
       } catch (e2) {}
       const url = URL.createObjectURL(part.blob);
       const opened = window.open(url, '_blank');
-      if (!opened) alert('Could not share or download. Long-press this export button and try Open in browser, or use Export list only.');
+      if (!opened) toast('Could not share or download. Long-press this export button and try Open in browser, or use Export list only.', 'err');
       setTimeout(function () { URL.revokeObjectURL(url); }, 20000);
     }
 
@@ -4477,7 +4872,7 @@
       try {
         exportPartFiles = chunkSightingsForExport(sightings, savedPlaces || [], new Date().toISOString());
       } catch (e) {
-        alert('Could not build the full photo backup in memory. Use Export list only, or export from Chrome/Firefox.');
+        toast('Could not build the full photo backup in memory. Use Export list only, or export from Chrome/Firefox.', 'err');
         return;
       }
       renderExportParts();
@@ -4492,7 +4887,7 @@
       try {
         exportPartFiles = chunkSightingsForExport(slim, savedPlaces || [], new Date().toISOString());
       } catch (e) {
-        alert('Could not build the list backup.');
+        toast('Could not build the list backup.', 'err');
         return;
       }
       exportPartFiles.forEach(function (part) {
@@ -4502,19 +4897,25 @@
       renderExportParts();
     }
 
-    function deleteAllLogs() {
-      if (!confirm('Delete all local logs and photos on this device? This cannot be undone.')) return;
+    async function deleteAllLogs() {
+      if (!(await confirmAsync('Delete all local logs and photos on this device? This cannot be undone.', 'Delete all logs'))) return;
       sightings.length = 0;
       try { persistSightings(); } catch (e) {}
       try { localStorage.removeItem(sightingsStorageKey()); } catch (e) {}
       try { localStorage.removeItem('avian_sightings'); } catch (e) {}
       if (window.indexedDB) {
         try {
-          const req = indexedDB.open('birdseye', 1);
+          const req = indexedDB.open('birdseye', 2);
+          req.onupgradeneeded = function () {
+            const db = req.result;
+            if (!db.objectStoreNames.contains('logs')) db.createObjectStore('logs');
+            if (!db.objectStoreNames.contains('photos')) db.createObjectStore('photos');
+          };
           req.onsuccess = function () {
             try {
-              const tx = req.result.transaction('logs', 'readwrite');
+              const tx = req.result.transaction(['logs', 'photos'], 'readwrite');
               tx.objectStore('logs').clear();
+              tx.objectStore('photos').clear();
             } catch (e) {}
           };
         } catch (e) {}
@@ -4523,7 +4924,7 @@
       if (typeof renderLifeList === 'function') renderLifeList();
       if (typeof refreshUI === 'function') refreshUI();
       if (typeof plotPhotoChits === 'function') plotPhotoChits();
-      alert('All local logs deleted.');
+      toast('All local logs deleted.', 'ok');
     }
     (function bindDeleteAllLogs() {
       const btn = document.getElementById('btn-delete-all-logs');
@@ -4584,7 +4985,7 @@
         if (data && Array.isArray(data.places)) places.push.apply(places, data.places);
       });
       if (!rows.length && !places.length) {
-        alert('No sightings found in that file.');
+        toast('No sightings found in that file.', 'err');
         return;
       }
       const stats = mergeImportedSightings(rows);
@@ -4594,12 +4995,12 @@
       renderLifeList();
       renderGallery();
       renderRadar();
-      alert('Merged ' + stats.added + ' new log' + (stats.added === 1 ? '' : 's') +
+      toast('Merged ' + stats.added + ' new log' + (stats.added === 1 ? '' : 's') +
         (stats.filled ? ' and filled ' + stats.filled + ' existing' : '') +
-        '. Total now ' + sightings.length + '.');
+        '. Total now ' + sightings.length + '.', 'ok');
     }
 
-    function importLogs(ev) {
+    async function importLogs(ev) {
       const files = ev.target.files ? Array.from(ev.target.files) : [];
       ev.target.value = '';
       if (!files.length) return;
@@ -4608,7 +5009,7 @@
       let failed = 0;
       files.forEach(function (file) {
         const reader = new FileReader();
-        reader.onload = function () {
+        reader.onload = async function () {
           try {
             parsed.push(JSON.parse(reader.result));
           } catch (e) {
@@ -4617,17 +5018,17 @@
           pending--;
           if (pending) return;
           if (!parsed.length) {
-            alert('Could not read that file.');
+            toast('Could not read that file.', 'err');
             return;
           }
           const n = parsed.reduce(function (sum, data) {
             const part = Array.isArray(data) ? data : ((data && data.sightings) || []);
             return sum + part.length;
           }, 0);
-          if (!confirm('Merge ' + n + ' sighting' + (n === 1 ? '' : 's') + ' from ' + files.length +
-              ' file' + (files.length === 1 ? '' : 's') + ' into your current log? Existing logs stay.')) return;
+          if (!(await confirmAsync('Merge ' + n + ' sighting' + (n === 1 ? '' : 's') + ' from ' + files.length +
+              ' file' + (files.length === 1 ? '' : 's') + ' into your current log? Existing logs stay.', 'Import logs'))) return;
           applyImportedBackup(parsed);
-          if (failed) alert(failed + ' file' + (failed === 1 ? '' : 's') + ' could not be read.');
+          if (failed) toast(failed + ' file' + (failed === 1 ? '' : 's') + ' could not be read.', 'err');
         };
         reader.readAsText(file);
       });
@@ -4702,21 +5103,12 @@
     function seedSightings() {
       sightings.length = 0;
       migrateSightingsIfNeeded();
-      try {
-        const saved = JSON.parse(localStorage.getItem(sightingsStorageKey()) || 'null');
-        if (Array.isArray(saved) && saved.length) {
-          saved.forEach(s => sightings.push(s));
-          ensureFullPhotos();
-          return;
-        }
-      } catch (e) {}
-      // Stock seed data only when not signed in.
-      if (!(typeof pfUser !== 'undefined' && pfUser && pfUser.id)) {
-        SEED.forEach(r => sightings.push({
-          id: r[0], species_code: r[1], date: r[2], lat: r[3], lng: r[4],
-          location_name: r[5], state: r[6], country: r[7], notes: r[8], photo_url: r[9], photo_full: r[9], is_cover: r[10]
-        }));
-      }
+      const merged = mergeSightingLists([
+        readSightingList(sightingsStorageKey()),
+        readSightingList('avian_sightings')
+      ]);
+      merged.forEach(s => sightings.push(s));
+      ensureFullPhotos();
     }
 
     function ensureFullPhotos() {
@@ -4951,7 +5343,7 @@
         gpsMarker = L.circleMarker([lat, lng], {
           radius: 7, color: '#34d399', weight: 3, fillColor: '#ecfdf5', fillOpacity: 1
         }).addTo(mapInstance);
-      }, () => alert('Couldn’t get GPS'), { enableHighAccuracy: true, timeout: 8000 });
+      }, () => toast('Couldn’t get GPS', 'err'), { enableHighAccuracy: true, timeout: 8000 });
     }
 
     function loadSavedPlaces() {
@@ -4967,8 +5359,8 @@
 
     function saveCurrentPlace() {
       const name = (document.getElementById('form-location').value || document.getElementById('form-county').value || '').trim();
-      if (!name) { alert('Add a location name first (e.g. My House).'); return; }
-      if (selectedCoords.lat == null) { alert('Set a GPS or map pin first.'); return; }
+      if (!name) { toast('Add a location name first (e.g. My House).', 'err'); return; }
+      if (selectedCoords.lat == null) { toast('Set a GPS or map pin first.', 'err'); return; }
       const place = {
         id: 'p' + Date.now(),
         name: name,
@@ -4985,13 +5377,13 @@
       if (sel) sel.value = place.id;
     }
 
-    function removeSavedPlace() {
+    async function removeSavedPlace() {
       const sel = document.getElementById('form-saved-place');
       const id = sel && sel.value;
-      if (!id) { alert('Pick a saved place first.'); return; }
+      if (!id) { toast('Pick a saved place first.', 'err'); return; }
       const place = savedPlaces.find(p => p.id === id);
       const label = (place && place.name) || 'this saved place';
-      if (!confirm('Remove "' + label + '" from saved places?')) return;
+      if (!(await confirmAsync('Remove "' + label + '" from saved places?', 'Remove place'))) return;
       savedPlaces = savedPlaces.filter(p => p.id !== id);
       localStorage.setItem('avian_saved_places', JSON.stringify(savedPlaces));
       loadSavedPlaces();
@@ -5036,12 +5428,16 @@
       if (input) {
         const key = (input.value || '').trim();
         const prev = getEbirdKey();
-        if (key) localStorage.setItem('avian_ebird_key', key);
-        else localStorage.removeItem('avian_ebird_key');
+        if (key) {
+          localStorage.setItem('avian_ebird_key', key);
+          try { localStorage.removeItem('avian_key_banner_dismissed'); } catch (e) {}
+        } else localStorage.removeItem('avian_ebird_key');
         if (key !== prev) {
           if (mapMode === 'hunt') scheduleHunt();
           if (typeof radarScope !== 'undefined' && radarScope !== 'state' && typeof renderRadar === 'function') renderRadar();
+          updateKeyBanner();
         }
+        updateKeyBanner();
       }
       if (typeof onRatingWeightInput === 'function') onRatingWeightInput();
       clearExportParts();
@@ -5061,6 +5457,11 @@
       if (section === 'profile') refreshSettingsProfile();
       if (section === 'privacy') refreshSettingsPrivacy();
       if (section === 'appearance') refreshMapTilesPreview();
+      if (section === 'data') {
+        const st = document.getElementById('ebird-status');
+        const k = getEbirdKey();
+        if (st) { st.textContent = k ? 'Key saved.' : 'No key yet.'; st.className = 'ebird-status' + (k ? ' ok' : ''); }
+      }
     }
     document.getElementById('settings-nav').addEventListener('click', function (e) {
       const btn = e.target.closest('button[data-section]');
@@ -6146,7 +6547,7 @@
 
     function toggleHeatmap() {
       if (currentSpeciesFilter === 'all') {
-        alert('Pick a species first. Heatmaps are per bird.');
+        toast('Pick a species first. Heatmaps are per bird.', 'err');
         return;
       }
       if (mapMode !== 'hunt') setMapMode('hunt');
@@ -8145,6 +8546,10 @@
       const picking = photoPick.mode === 'life';
       const grid = document.getElementById('lifelist-grid');
       grid.classList.toggle('picking', picking);
+      if (!list.length) {
+        grid.innerHTML = '<div class="empty-state"><h3>No lifers yet</h3><p>Log your first bird to start a life list. Photos and notes stay with the sighting.</p><button type="button" class="btn-em" onclick="openLogChoice()">+ Log a bird</button></div>';
+        return;
+      }
       grid.innerHTML = list.map(item =>
         '<div class="card' + (picking ? ' rpt-pick' : '') + (picking && photoPick.ids.has(item.species_code) ? ' on' : '') + '"' +
           ' data-pick="life" data-id="' + item.species_code + '"' +
@@ -9019,6 +9424,11 @@
       const grid = document.getElementById('gallery-grid');
       grid.classList.toggle('picking', picking);
       grid.classList.toggle('by-place', sort === 'location');
+      if (!photos.length) {
+        grid.innerHTML = '<div class="empty-state"><h3>No photos yet</h3><p>Log a bird with a photo using the + Log button. Photos appear here and on the map.</p><button type="button" class="btn-em" onclick="openLogChoice()">+ Log a bird</button></div>';
+        grid.classList.remove('picking', 'by-place');
+        return;
+      }
       grid.innerHTML = sort === 'location'
         ? galleryLocationHTML(photos, picking)
         : photos.map(p => galleryCardHTML(p, picking)).join('');
@@ -10042,8 +10452,8 @@
     async function downloadFieldReport() {
       const day = (document.getElementById('report-date') || {}).value || '';
       let rows = reportDayRows().filter(s => reportPickIds.has(s.id));
-      if (!day) { alert('Pick a date first.'); return; }
-      if (!rows.length) { alert('Select at least one photo.'); return; }
+      if (!day) { toast('Pick a date first.', 'err'); return; }
+      if (!rows.length) { toast('Select at least one photo.', 'err'); return; }
       if (rows.length > 20) rows = rows.slice(0, 20);
       const btn = document.getElementById('btn-download-report');
       const prev = btn ? btn.textContent : '';
@@ -10071,7 +10481,7 @@
         setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 2000);
       } catch (e) {
         console.error(e);
-        alert('Could not save the JPG. Try fewer photos.');
+        toast('Could not save the JPG. Try fewer photos.', 'err');
       } finally {
         if (btn) { btn.textContent = prev || 'Save JPG'; btn.disabled = false; }
       }
@@ -10592,15 +11002,16 @@
       }
       if (typeof noteAchTargetCodes === 'function') noteAchTargetCodes(stateTargetPool(have).map(t => t.code));
       renderTargetPlaces(have, new Set(targets.map(t => t.code)));
+      const noKey = !(typeof getEbirdKey === 'function' && getEbirdKey());
       const empty = radarLens === 'nearby' && !(huntCache.obs || []).length
-        ? '<div class="hint">No live reports in this scope yet. Pick This map, Near me, or This county — or add an eBird key in Settings.</div>'
+        ? '<div class="empty-state"><h3>No live reports</h3><p>' + (noKey ? 'Add an eBird key in Settings to see nearby and live Targets.' : 'No live reports in this scope yet. Try This map, Near me, or This county.') + '</p>' + (noKey ? '<button type="button" class="btn-em" onclick="openKeyModal();setTimeout(function(){switchSettingsSection(\'data\');},50)">Add eBird key</button>' : '') + '</div>'
         : radarLens === 'season'
-          ? '<div class="hint">Nothing in season in this filter. Try Pulse, All, or a wider scope.</div>'
+          ? '<div class="empty-state"><h3>Nothing in season</h3><p>Try Pulse, All, or a wider scope.</p></div>'
           : radarLens === 'pulse'
-            ? '<div class="hint">No pulse unlogged birds in this filter.</div>'
+            ? '<div class="empty-state"><h3>No pulse birds</h3><p>No pulse unlogged birds in this filter.</p></div>'
             : radarLens === 'leaving'
-              ? '<div class="hint">No arriving or leaving unlogged birds in this filter.</div>'
-              : '<div class="hint">All regional targets logged. Compare a neighboring state from the checklist, or tighten to a county.</div>';
+              ? '<div class="empty-state"><h3>No movers</h3><p>No arriving or leaving unlogged birds in this filter.</p></div>'
+              : '<div class="empty-state"><h3>All caught up</h3><p>All regional targets logged. Compare a neighboring state from the checklist, or tighten to a county.</p></div>';
       document.getElementById('radar-list').innerHTML = pageRows.map(t => {
         const b = seasonBucket(t);
         const photo = speciesPhotoCache[t.code] || '';
@@ -12870,7 +13281,6 @@
     function markChecklistExit() {
       if (checklistReturn) return;
       checklistReturn = snapshotChecklist();
-      try { history.pushState({ avianChecklistBack: 1 }, ''); } catch (e) {}
       syncChecklistBack();
     }
 
@@ -12906,17 +13316,9 @@
     }
 
     function returnToChecklist() {
-      if (checklistReturn && history.state && history.state.avianChecklistBack) {
-        history.back();
-        return;
-      }
+      if (typeof navReturnTo === 'function' && navReturnTo('checklist')) return;
       restoreChecklistFromSnapshot();
     }
-
-    window.addEventListener('popstate', function () {
-      if (!checklistReturn) return;
-      restoreChecklistFromSnapshot();
-    });
 
     let checklistScrollPending = null;
 
@@ -13543,9 +13945,9 @@
       }
     }
 
-    function deleteSighting(id) {
+    async function deleteSighting(id) {
       if (!id) return;
-      if (!confirm('Delete this sighting permanently?')) return;
+      if (!(await confirmAsync('Delete this sighting permanently?', 'Delete sighting'))) return;
       const idx = sightings.findIndex(s => s.id === id);
       if (idx < 0) return;
       sightings.splice(idx, 1);
@@ -14190,7 +14592,7 @@
 
     function useLastLocation() {
       const last = readLastLogLocation();
-      if (!last) { alert('No previous location yet.'); return; }
+      if (!last) { toast('No previous location yet.', 'err'); return; }
       if (last.location_name) document.getElementById('form-location').value = last.location_name;
       if (last.county) document.getElementById('form-county').value = last.county;
       if (last.state) document.getElementById('form-state').value = last.state;
@@ -14331,7 +14733,7 @@
 
     function saveSightingRecord() {
       const speciesCode = document.getElementById('form-species').value;
-      if (!speciesCode) { alert('Pick a species from the search results first.'); return; }
+      if (!speciesCode) { toast('Pick a species from the search results first.', 'err'); return; }
       const cropped = (crop.hasImage && (crop.dirty || !editingId)) ? generateCroppedDataUrl() : null;
       const isCover = document.getElementById('form-is-cover').checked ? 1 : 0;
       if (isCover) sightings.forEach(s => { if (s.species_code === speciesCode) s.is_cover = 0; });
@@ -14359,7 +14761,7 @@
         }
       } else {
         sightings.push(Object.assign({
-          id: 's_' + Date.now(),
+          id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('s_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8)),
           photo_url: cropped || '',
           photo_full: crop.fullDataUrl || cropped || '',
           crop_meta: crop.hasImage ? getCropMeta() : null
@@ -14370,6 +14772,7 @@
       markAchTargetIfNeeded(speciesCode);
       if (!editingId && bulkQueue.length >= 10) markAchBulkIfNeeded(bulkQueue.length);
       const savedId = editingId || (sightings[sightings.length - 1] && sightings[sightings.length - 1].id);
+      if (window.avianPublishOne && savedId) window.avianPublishOne(savedId);
 
       const moreBulk = !editingId && bulkQueue.length && bulkIndex < bulkQueue.length - 1;
       if (moreBulk) {
@@ -14380,7 +14783,6 @@
       const finishId = savedId;
       clearBulkQueue();
       closeUploadModal();
-      if (window.avianMaybePublish) window.avianMaybePublish();
       refreshUI({ toast: true });
       renderLifeList();
       renderGallery();
@@ -15809,6 +16211,7 @@
         const co = evaluateAchievements('country');
         return (st.rows || []).concat(co.rows || []);
       };
+      achHoldPersist = true;
       let before = [], after = [];
       try {
         sightings.splice(idx, 1);
@@ -15819,6 +16222,7 @@
         before = [];
         after = [];
       } finally {
+        achHoldPersist = false;
         if (sightings.indexOf(removed) < 0) sightings.splice(Math.min(idx, sightings.length), 0, removed);
         achEarned = snapEarned;
         achXpSplit = snapSplit;
@@ -18382,13 +18786,12 @@
       loadSavedPlaces();
       migrateSightingsIfNeeded();
       const idbRows = await loadSightingsFromIDB();
-      if (Array.isArray(idbRows) && idbRows.length) {
-        sightings.length = 0;
-        idbRows.forEach(s => sightings.push(s));
-        ensureFullPhotos();
-      } else {
-        seedSightings();
-      }
+      const bootMerged = mergeSightingLists([idbRows, readSightingList(sightingsStorageKey()), readSightingList('avian_sightings')]);
+      sightings.length = 0;
+      bootMerged.forEach(s => sightings.push(s));
+      ensureFullPhotos();
+      if (stripSeedSightings()) persistSightings();
+      if (typeof hydrateSightingPhotos === 'function') await hydrateSightingPhotos();
       initMap();
       syncStateLockBtn();
       setStatsMode(statsMode);
@@ -18608,25 +19011,12 @@
       return pfNormLoc(a) === pfNormLoc(b);
     }
     function dedupeSightings() {
+      const seen = new Set();
       const out = [];
       sightings.forEach(s => {
-        if (!s || !s.id) return;
-        let hit = -1;
-        for (let i = 0; i < out.length; i++) {
-          if (String(out[i].id) === String(s.id) || pfSameSpot(out[i], s)) { hit = i; break; }
-        }
-        if (hit < 0) { out.push(s); return; }
-        const prev = out[hit];
-        const prevLocal = prev.photo_url && String(prev.photo_url).startsWith('data:');
-        const curLocal = s.photo_url && String(s.photo_url).startsWith('data:');
-        if ((curLocal && !prevLocal) || (!prev.photo_url && s.photo_url)) {
-          prev.photo_url = s.photo_url;
-          prev.photo_full = s.photo_full || s.photo_url;
-        }
-        if (!pfHasCoords(prev) && pfHasCoords(s)) { prev.lat = s.lat; prev.lng = s.lng; }
-        ['county','state','country','notes','location_name'].forEach(k => {
-          if ((prev[k] == null || prev[k] === '') && s[k]) prev[k] = s[k];
-        });
+        if (!s || !s.id || seen.has(String(s.id))) return;
+        seen.add(String(s.id));
+        out.push(s);
       });
       if (out.length !== sightings.length) {
         sightings.length = 0;
@@ -18638,8 +19028,9 @@
 
     async function pfFetchOwnPublic() {
       const tries = [
-        'id,species_code,date,lat,lng,location_name,county,state,country,notes,photo_url,is_cover,rarity',
-        'id,species_code,date,lat,lng,location_name,county,state,photo_url,is_cover,rarity'
+        'id,client_id,species_code,date,lat,lng,location_name,county,state,country,notes,photo_url,is_cover,rarity',
+        'id,species_code,date,lat,lng,location_name,county,state,photo_url,is_cover,rarity',
+        'id,species_code,date,lat,lng,location_name,state,photo_url,is_cover'
       ];
       let lastError = null;
       for (let t = 0; t < tries.length; t++) {
@@ -18664,22 +19055,18 @@
       try {
         const remote = await pfFetchOwnPublic();
         if (!remote) return;
-        if (dedupeSightings()) {}
+        dedupeSightings();
         const byId = {};
         sightings.forEach(s => { if (s && s.id) byId[String(s.id)] = s; });
         let changed = false;
         for (const row of remote) {
           if (!row || !row.id) continue;
-          let local = byId[String(row.id)];
+          const localId = row.client_id || row.id;
+          let local = byId[String(localId)] || byId[String(row.id)];
           if (!local) {
-            for (let i = 0; i < sightings.length; i++) {
-              if (pfSameSpot(sightings[i], row)) { local = sightings[i]; break; }
-            }
-          }
-          if (!local) {
-            local = { id: row.id, species_code: row.species_code || '', share_public: true };
+            local = { id: localId, species_code: row.species_code || '', share_public: true };
             sightings.push(local);
-            byId[String(row.id)] = local;
+            byId[String(local.id)] = local;
             changed = true;
           }
           ['species_code','date','location_name','county','state','country','notes','is_cover','rarity'].forEach(k => {
@@ -18691,16 +19078,22 @@
             local.lng = Number(row.lng);
             changed = true;
           }
-          if (row.photo_url && (!local.photo_url || !String(local.photo_url).startsWith('data:'))) {
+          if (row.photo_url) local.photo_remote = String(row.photo_url).split('?')[0];
+          const hasLocalPhoto = local.photo_url && String(local.photo_url).startsWith('data:');
+          if (row.photo_url && !hasLocalPhoto) {
             const cached = await cacheRemotePhoto(row.photo_url);
-            if (cached && cached !== local.photo_url) {
+            if (cached && String(cached).startsWith('data:')) {
               local.photo_url = cached;
               local.photo_full = cached;
+              if (typeof putSightingPhoto === 'function') await putSightingPhoto(local.id, cached);
+              changed = true;
+            } else if (!local.photo_url) {
+              local.photo_url = local.photo_remote;
+              local.photo_full = local.photo_remote;
               changed = true;
             }
           }
         }
-        if (dedupeSightings()) changed = true;
         if (changed) {
           ensureFullPhotos();
           persistSightings();
@@ -18713,25 +19106,20 @@
     }
 
     async function reloadSightingsForCurrentUser() {
+      const carried = sightings.slice();
       migrateSightingsIfNeeded();
+      const userIdb = await loadSightingsFromIDB();
+      const lists = [userIdb, readSightingList(sightingsStorageKey()), carried];
+      if (pfUser && pfUser.id) {
+        lists.push(await loadLogsByKey('guest'));
+        lists.push(readSightingList('avian_sightings_guest'));
+        lists.push(readSightingList('avian_sightings'));
+      }
+      const merged = mergeSightingLists(lists);
       sightings.length = 0;
-      const idbRows = await loadSightingsFromIDB();
-      if (Array.isArray(idbRows) && idbRows.length) {
-        idbRows.forEach(s => sightings.push(s));
-      } else {
-        try {
-          const saved = JSON.parse(localStorage.getItem(sightingsStorageKey()) || 'null');
-          if (Array.isArray(saved)) saved.forEach(s => sightings.push(s));
-        } catch (e) {}
-      }
-      if (dedupeSightings()) persistSightings();
-      // Only use stock seed data when there is no signed-in user and no local data.
-      if (!sightings.length && !(typeof pfUser !== 'undefined' && pfUser && pfUser.id)) {
-        SEED.forEach(r => sightings.push({
-          id: r[0], species_code: r[1], date: r[2], lat: r[3], lng: r[4],
-          location_name: r[5], state: r[6], country: r[7], notes: r[8], photo_url: r[9], photo_full: r[9], is_cover: r[10]
-        }));
-      }
+      merged.forEach(s => sightings.push(s));
+      if (stripSeedSightings() || merged.length) persistSightings();
+      if (typeof hydrateSightingPhotos === 'function') await hydrateSightingPhotos();
       ensureFullPhotos();
       if (typeof renderGallery === 'function') renderGallery();
       if (typeof renderLifeList === 'function') renderLifeList();
@@ -19166,109 +19554,121 @@
       if (strip) pfAwardSql = true;
       return null;
     }
+    async function pfUpsertPublic(row) {
+      const without = function (keys) {
+        const copy = Object.assign({}, row);
+        keys.forEach(function (k) { delete copy[k]; });
+        return copy;
+      };
+      const attempts = [
+        function () { return supabaseClient.from('public_sightings').upsert(row, { onConflict: 'id' }); },
+        function () { return supabaseClient.from('public_sightings').upsert(without(['awards', 'location_name', 'is_cover', 'is_lifer', 'country']), { onConflict: 'id' }); },
+        function () { return supabaseClient.from('public_sightings').upsert(without(['awards', 'location_name', 'is_cover', 'is_lifer', 'country', 'notes']), { onConflict: 'id' }); }
+      ];
+      let last = null;
+      for (let i = 0; i < attempts.length; i++) {
+        const res = await attempts[i]();
+        if (!res.error) return null;
+        last = res.error;
+        const msg = String(res.error.message || '');
+        if (!/column|schema|conflict|client_id|constraint|unique|uuid/i.test(msg)) break;
+      }
+      return last;
+    }
+    function pfIsUuid(v) {
+      return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
+    }
+    function pfPublicId(s) {
+      if (!s) return '';
+      if (pfIsUuid(s.public_id)) return s.public_id;
+      if (pfIsUuid(s.id)) { s.public_id = s.id; return s.id; }
+      try {
+        s.public_id = (crypto.randomUUID && crypto.randomUUID()) ||
+          'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = Math.random() * 16 | 0;
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+          });
+      } catch (e) {
+        s.public_id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          const r = Math.random() * 16 | 0;
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+      }
+      return s.public_id;
+    }
+    async function publishOne(s) {
+      if (!pfUser || !s || !s.id) return { error: 'not signed in' };
+      if (SEED_IDS.has(s.id)) return null;
+      const isPrivate = s.share_public === false || s.share_public === 0;
+      let photo = s.photo_remote || null;
+      if (!isPrivate && s.photo_url) {
+        const src = String(s.photo_url);
+        if (src.startsWith('http')) photo = src.split('?')[0];
+        else if (src.startsWith('data:')) {
+          try {
+            const shrunk = await shrinkDataUrl(src);
+            if (shrunk && String(shrunk).startsWith('data:')) {
+              const safeId = String(pfPublicId(s)).replace(/[^a-zA-Z0-9_-]/g, '');
+              const uploaded = await pfUploadImage(shrunk, pfUser.id + '/' + safeId + '.jpg');
+              if (typeof uploaded === 'string') photo = uploaded;
+            }
+          } catch (e) {}
+        }
+      } else if (isPrivate) photo = null;
+      const exact = !!(s.share_exact && s.lat != null && s.lng != null);
+      const row = {
+        id: pfPublicId(s),
+        user_id: pfUser.id,
+        species_code: s.species_code,
+        species_name: pfSpName(s.species_code),
+        date: s.date ? String(s.date).slice(0, 10) : null,
+        county: s.county || '',
+        state: s.state || '',
+        location_name: s.location_name || '',
+        lat: exact ? Number(s.lat) : null,
+        lng: exact ? Number(s.lng) : null,
+        has_exact_location: exact,
+        photo_url: photo,
+        rarity: pfRarity(s.species_code, s.state),
+        is_cover: Number(s.is_cover) ? 1 : 0,
+        is_lifer: (typeof isLiferOnDay === 'function' && isLiferOnDay(s.species_code, s.date ? String(s.date).slice(0, 10) : '')) ? 1 : 0,
+        awards: (s.id && pfAwardMemo[s.id] && pfAwardMemo[s.id].awards) || []
+      };
+      const err = await pfUpsertPublic(row);
+      if (err) return err;
+      if (photo) s.photo_remote = photo;
+      pfPublicByKey = null;
+      pfFeedCache = null;
+      if (pfUser) delete pfProfileCache[pfUser.id];
+      try { persistSightings(); } catch (e) {}
+      return null;
+    }
     async function publishPublic(opts) {
       opts = opts || {};
       if (!pfUser) return;
-      pfAwardSql = false;
       if (!opts.silent) pfMsg('Publishing your sightings…');
-      const SEED_IDS = new Set(SEED.map(r => r[0]));
-      const recentRaw = pfRecentLocal().filter(s => s && !SEED_IDS.has(s.id));
-      const recent = [];
-      recentRaw.forEach(s => {
-        if (recent.some(k => String(k.id) === String(s.id) || pfSameSpot(k, s))) return;
-        recent.push(s);
-      });
-      const awardMap = {};
-      recent.forEach(s => {
-        const hit = s && pfAwardMemo[s.id];
-        if (hit && hit.awards) awardMap[s.id] = hit.awards;
-      });
-      const rows = [];
+      const recent = pfRecentLocal().filter(s => s && !SEED_IDS.has(s.id) && s.share_public !== false && s.share_public !== 0);
+      let failed = 0;
       for (let i = 0; i < recent.length; i++) {
-        const s = recent[i];
-        if (i === 0 || i % 25 === 0) pfMsg((opts.catchup ? 'Updating your public list' : 'Publishing') + ' ' + (i + 1) + ' / ' + recent.length + '…');
-        const pubPhoto = s.share_public !== false && s.share_public !== 0 && !!s.photo_url;
-        let photo = null;
-        if (pubPhoto) {
-          const shrunk = await shrinkDataUrl(s.photo_url);
-          if (shrunk) {
-            const safeId = String(s.id || (s.species_code + '-' + (s.date || i))).replace(/[^a-zA-Z0-9_-]/g, '');
-            const uploaded = await pfUploadImage(shrunk, pfUser.id + '/' + safeId + '.jpg');
-            if (uploaded && uploaded.error) {
-              pfMsg('Photo storage is not ready. ' + pfStorageSql());
-              return;
-            }
-            photo = uploaded || null;
-          }
-        }
-        const exact = !!(s.share_exact && s.lat != null && s.lng != null);
-        rows.push({
-          id: s.id,
-          user_id: pfUser.id,
-          species_code: s.species_code,
-          species_name: pfSpName(s.species_code),
-          date: s.date ? String(s.date).slice(0, 10) : null,
-          county: s.county || '',
-          state: s.state || '',
-          location_name: s.location_name || '',
-          lat: exact ? Number(s.lat) : null,
-          lng: exact ? Number(s.lng) : null,
-          has_exact_location: exact,
-          photo_url: photo,
-          rarity: pfRarity(s.species_code, s.state),
-          is_cover: Number(s.is_cover) ? 1 : 0,
-          is_lifer: (typeof isLiferOnDay === 'function' && isLiferOnDay(s.species_code, s.date ? String(s.date).slice(0, 10) : '')) ? 1 : 0,
-          awards: (awardMap && awardMap[s.id]) || []
-        });
+        if (i === 0 || i % 25 === 0) pfMsg('Publishing ' + (i + 1) + ' / ' + recent.length + '…');
+        const err = await publishOne(recent[i]);
+        if (err) failed++;
       }
-      const st = pfStats();
-      const prev = (pfSelf && pfSelf.public_stats) || {};
-      const grants = prev.exact_grants || [];
-      if (prev.avatar && String(prev.avatar).startsWith('data:')) {
-        const upA = await pfUploadImage(prev.avatar, pfUser.id + '/avatar.jpg');
-        if (upA && !upA.error) prev.avatar = upA + '?v=' + Date.now();
-      }
-      if (prev.cover && String(prev.cover).startsWith('data:')) {
-        const upC = await pfUploadImage(prev.cover, pfUser.id + '/cover.jpg');
-        if (upC && !upC.error) prev.cover = upC + '?v=' + Date.now();
-      }
-      const stats = Object.assign({}, prev, {
-        species: st.species,
-        photos: rows.filter(r => r.photo_url).length,
-        level: st.level ? st.level.level : null,
-        band: st.level ? st.level.band : '',
-        earned: st.earned,
-        exact_grants: grants,
-        exact_denies: prev.exact_denies || [],
-        exact_public: !!prev.exact_public,
-        avatar: prev.avatar || null,
-        cover: prev.cover || null
-      });
-      await supabaseClient.from('public_sightings').delete().eq('user_id', pfUser.id);
-      pfPublicByKey = null;
-      pfPublicCounts = {};
-      pfFeedCache = null;
-      if (pfUser) delete pfProfileCache[pfUser.id];
-      if (rows.length) {
-        const err = await pfInsertPublic(rows);
-        if (err) { pfMsg(err.message || 'Could not publish'); return; }
-      }
-      const up = await supabaseClient.from('profiles').update({
-        public_stats: stats,
-        updated_at: new Date().toISOString()
-      }).eq('id', pfUser.id).select().single();
-      if (up.data) pfSelf = up.data;
-      if (up.error) { pfMsg(up.error.message); return; }
       if (!opts.silent) {
         await renderSelf();
-        pfMsg(pfAwardSql ? 'Public list updated. Awards still need the one-time SQL step.' : 'Public list updated');
-      } else if (opts.catchup) {
-        pfMsg('Public list now includes every sighting (' + rows.length + ').');
+        pfMsg(failed ? 'Some sightings could not publish.' : 'Public list updated');
       }
     }
+    window.avianPublishOne = function (id) {
+      clearTimeout(pfPubTimer);
+      pfPubTimer = setTimeout(function () {
+        const s = (sightings || []).find(function (row) { return row && String(row.id) === String(id); });
+        if (s) publishOne(s);
+      }, 400);
+    };
     window.avianMaybePublish = function () {
       clearTimeout(pfPubTimer);
-      pfPubTimer = setTimeout(() => { publishPublic({ silent: true }); }, 900);
+      pfPubTimer = setTimeout(function () { publishPublic({ silent: true }); }, 900);
     };
 
     function pfDayKey(d) {
@@ -19607,10 +20007,10 @@
 
     async function pfPublishBanner() {
       const slot = document.getElementById('pf-publish-slot');
-      if (!slot) return;
-      slot.innerHTML = '';
+      if (slot) slot.innerHTML = '';
     }
     async function renderSelf() {
+      if (typeof navTouch === 'function') navTouch();
       if (pfPreview) return renderPreview();
       const gen = ++pfGen;
       pfKillMap();
@@ -19762,6 +20162,7 @@
     }
 
     async function renderOther() {
+      if (typeof navTouch === 'function') navTouch();
       const gen = ++pfGen;
       pfKillMap();
       if (!pfOther) { renderSelf(); return; }
@@ -20917,25 +21318,55 @@
       });
       map.addLayer(pfMapCluster);
     }
-    async function pfCatchUpPublic() {
-      if (pfCatchTried || pfCatching || !pfLocalReady || !pfUser) return;
-      const localN = pfRecentLocal().length;
-      if (!localN) return;
-      const q = await supabaseClient.from('public_sightings').select('id', { count: 'exact', head: true }).eq('user_id', pfUser.id);
-      if (q.error) return;
-      if ((q.count || 0) >= localN) { pfCatchTried = true; return; }
-      pfCatchTried = true;
-      pfCatching = true;
-      try { await publishPublic({ silent: true, catchup: true }); }
-      finally { pfCatching = false; }
+    let pfSyncTimer = null;
+    let pfSyncing = false;
+    let pfSyncQueued = false;
+    function pfScheduleSync(delay) {
+      clearTimeout(pfSyncTimer);
+      pfSyncTimer = setTimeout(pfSyncPublic, delay == null ? 600 : delay);
     }
+    async function pfSyncPublic() {
+      if (!pfUser || !pfLocalReady) { pfSyncQueued = true; return; }
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) { pfSyncQueued = true; return; }
+      if (pfSyncing) { pfSyncQueued = true; return; }
+      pfSyncing = true;
+      pfSyncQueued = false;
+      try {
+        const remote = await pfFetchOwnPublic();
+        const have = new Set();
+        (remote || []).forEach(function (r) {
+          if (!r) return;
+          if (r.id) have.add(String(r.id));
+        });
+        let changed = false;
+        for (let i = 0; i < sightings.length; i++) {
+          const s = sightings[i];
+          if (!s || !s.id || SEED_IDS.has(s.id)) continue;
+          if (s.share_public === false || s.share_public === 0) continue;
+          const pid = pfPublicId(s);
+          if (have.has(pid) && s.photo_remote) continue;
+          const err = await publishOne(s);
+          if (!err) changed = true;
+        }
+        if (changed) {
+          try { persistSightings(); } catch (e) {}
+          pfFeedCache = null;
+        }
+      } catch (e) {
+        pfSyncQueued = true;
+      } finally {
+        pfSyncing = false;
+        if (pfSyncQueued) pfScheduleSync(2000);
+      }
+    }
+    async function pfCatchUpPublic() { return pfSyncPublic(); }
     window.pfAfterLocalLoad = async function () {
       pfLocalReady = true;
       if (typeof dedupeSightings === 'function' && dedupeSightings()) {
         try { persistSightings(); } catch (e) {}
       }
       if (pfUser && typeof syncPublicSightingsToLocal === 'function') await syncPublicSightingsToLocal();
-      pfCatchUpPublic();
+      pfScheduleSync(200);
     };
 
     async function pfCounts(id) {
@@ -21099,8 +21530,25 @@
       const byId = {};
       (profs || []).forEach(p => { byId[p.id] = p; });
       rows = rows || [];
-      if (!rows.length) { pfList = null; box.innerHTML = '<div class="pf-empty">No public sightings from people you follow yet.</div>'; return; }
-      box.innerHTML = pfListHtml(rows, 'checkin', {}, { byId: byId });
+      const whoHas = {};
+      rows.forEach(r => { if (r && r.user_id) whoHas[r.user_id] = 1; });
+      const quiet = ids.filter(id => !whoHas[id]);
+      function quietNote() {
+        if (!quiet.length) return '';
+        const names = quiet.map(id => {
+          const p = byId[id];
+          const n = (p && (p.display_name || p.username)) || 'Someone you follow';
+          return pfEsc(n);
+        });
+        const list = names.length === 1 ? names[0] : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+        return '<div class="pf-note" style="margin:10px 0">Following ' + list + ', but they haven’t published any public sightings yet. They’ll show up here after they publish from their account.</div>';
+      }
+      if (!rows.length) {
+        pfList = null;
+        box.innerHTML = '<div class="pf-empty">No public sightings from people you follow yet.</div>' + quietNote();
+        return;
+      }
+      box.innerHTML = pfListHtml(rows, 'checkin', {}, { byId: byId }) + quietNote();
       pfFitSpecies();
       pfBindList();
       const shown = rows.slice(0, PF_PAGE);
@@ -21148,7 +21596,7 @@
       if (key === 'share_exact') s.share_exact = !s.share_exact;
       if (key === 'share_public') s.share_public = !(s.share_public !== false && s.share_public !== 0);
       try { persistSightings(); } catch (e) {}
-      if (window.avianMaybePublish) window.avianMaybePublish();
+      if (window.avianPublishOne) window.avianPublishOne(id);
       renderSelf();
     }
     function pfPinStatus(text) {
@@ -22091,6 +22539,7 @@
       pfOther = null;
       pfPreview = false;
       pfTab = 'feed';
+      if (typeof navTouch === 'function') navTouch();
       renderSelf();
     }
     window.openProfile = openProfile;
@@ -22396,23 +22845,248 @@
     function pfBootUser() {
       pfRefreshUser().then(() => {
         pfRefreshNotes();
-        if (pfLocalReady) pfCatchUpPublic();
+        if (pfLocalReady) pfScheduleSync(200);
       });
     }
+    window.addEventListener('online', function () { pfScheduleSync(400); });
     pfBootUser();
     supabaseClient.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
-        // User arrived via reset link — show a simple form to set a new password
-        const newPass = prompt('Set a new password (at least 6 characters):');
-        if (newPass && newPass.length >= 6) {
-          supabaseClient.auth.updateUser({ password: newPass }).then(res => {
-            if (res.error) alert('Could not update password: ' + res.error.message);
-            else alert('Password updated. You are now signed in.');
-          });
-        }
+        openPasswordRecovery();
       }
       pfBootUser();
     });
+    function openPasswordRecovery() {
+      const modal = document.getElementById('confirm-modal');
+      const ttl = document.getElementById('confirm-title');
+      const msg = document.getElementById('confirm-message');
+      const actions = document.getElementById('confirm-actions');
+      if (!modal || !ttl || !msg || !actions) return;
+      ttl.textContent = 'Set a new password';
+      msg.innerHTML = '<input type="password" id="recovery-pass" placeholder="At least 6 characters" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--input);color:var(--text)" />';
+      actions.innerHTML = '<button type="button" class="ghost" id="recovery-cancel">Cancel</button><button type="button" class="btn-em" id="recovery-save">Update</button>';
+      modal.classList.add('on');
+      const cancel = document.getElementById('recovery-cancel');
+      const save = document.getElementById('recovery-save');
+      const done = function () { modal.classList.remove('on'); actions.innerHTML = '<button type="button" class="ghost" id="confirm-cancel">Cancel</button><button type="button" class="btn-em" id="confirm-ok">OK</button>'; };
+      if (cancel) cancel.onclick = done;
+      if (save) save.onclick = function () {
+        const inp = document.getElementById('recovery-pass');
+        const pw = (inp && inp.value || '').trim();
+        if (pw.length < 6) { toast('Password must be at least 6 characters', 'err'); return; }
+        supabaseClient.auth.updateUser({ password: pw }).then(res => {
+          if (res.error) toast('Could not update password: ' + res.error.message, 'err');
+          else toast('Password updated. You are now signed in.', 'ok');
+          done();
+        });
+      };
+    }
+
+    // Wire polish UI
+    (function wirePolish() {
+      const next = document.getElementById('onboard-next');
+      const back = document.getElementById('onboard-back');
+      const skip = document.getElementById('onboard-skip');
+      if (next) next.addEventListener('click', function () {
+        if (onboardStep >= onboardTotal - 1) closeOnboard(true);
+        else showOnboardStep(onboardStep + 1);
+      });
+      if (back) back.addEventListener('click', function () { showOnboardStep(onboardStep - 1); });
+      if (skip) skip.addEventListener('click', function () { closeOnboard(false); });
+      const kb = document.getElementById('key-banner-btn');
+      if (kb) kb.addEventListener('click', function () {
+        openKeyModal();
+        setTimeout(function () { switchSettingsSection('data'); }, 50);
+      });
+      const kc = document.getElementById('key-banner-close');
+      if (kc) kc.addEventListener('click', dismissKeyBanner);
+      maybeStartOnboard();
+      setTimeout(updateKeyBanner, 300);
+    })();
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      });
+    }
+
+    // Mobile / browser back walks the in-app stack. Map is the root entry,
+    // so a back gesture there leaves the app instead of trapping the user.
+    let navStack = ['map'];
+    let navSilent = false;
+    let navExpectPop = false;
+    let navTimer = null;
+
+    function navOn(id) {
+      const el = document.getElementById(id);
+      return !!(el && el.classList.contains('on'));
+    }
+    function navScreen() {
+      if (navOn('photo-lightbox')) return 'lightbox';
+      if (navOn('confirm-modal')) return 'confirm';
+      if (navOn('onboard-overlay')) return 'onboard:' + (typeof onboardStep === 'number' ? onboardStep : 0);
+      if (navOn('photo-pick-confirm')) return 'pick';
+      if (navOn('upload-modal')) return 'upload';
+      if (navOn('detail-modal')) return 'detail';
+      if (navOn('report-modal')) return 'report';
+      if (navOn('analyze-modal')) return 'analyze';
+      if (navOn('fieldbook-modal')) return 'fieldbook';
+      if (navOn('ach-modal')) return 'ach';
+      if (navOn('key-modal')) return 'settings';
+      if (navOn('region-species-modal')) return 'checklist';
+      const pfDetailEl = document.getElementById('pf-detail');
+      if (pfDetailEl && !pfDetailEl.hidden) return 'pf-detail';
+      if (navOn('profile-modal')) {
+        if (typeof pfOther !== 'undefined' && pfOther && pfOther.id) return 'pf-other:' + pfOther.id;
+        return 'profile';
+      }
+      const view = document.querySelector('main .view.on');
+      const tab = view && view.id ? view.id.replace('view-', '') : 'map';
+      if (tab === 'search') {
+        const dos = document.getElementById('search-dossier');
+        if (dos && !dos.hidden && typeof searchCode !== 'undefined' && searchCode) return 'dossier:' + searchCode;
+      }
+      const logPop = document.getElementById('log-choice');
+      if (logPop && logPop.classList.contains('on')) return 'log';
+      if (tab && tab !== 'map') return 'tab:' + tab;
+      return 'map';
+    }
+    function navTouch() {
+      clearTimeout(navTimer);
+      navTimer = setTimeout(navNote, 40);
+    }
+    function navNote() {
+      if (navSilent || navExpectPop) return;
+      const now = navScreen();
+      if (now === navStack[navStack.length - 1]) return;
+      let found = -1;
+      for (let i = navStack.length - 2; i >= 0; i--) {
+        if (navStack[i] === now) { found = i; break; }
+      }
+      if (found >= 0) {
+        const steps = navStack.length - 1 - found;
+        navStack.length = found + 1;
+        navExpectPop = true;
+        try { history.go(-steps); } catch (e) { navExpectPop = false; }
+        return;
+      }
+      try { history.pushState({ avianScreen: now }, ''); } catch (e) { return; }
+      navStack.push(now);
+    }
+    function navReturnTo(screen) {
+      const idx = navStack.lastIndexOf(screen);
+      if (idx < 0 || idx >= navStack.length - 1) return false;
+      const steps = navStack.length - 1 - idx;
+      navStack.length = idx + 1;
+      navExpectPop = true;
+      try { history.go(-steps); } catch (e) { navExpectPop = false; return false; }
+      return true;
+    }
+    function navHide(id) {
+      const el = document.getElementById(id);
+      if (el && el.classList.contains('on')) el.classList.remove('on');
+    }
+    function navApply(screen) {
+      navSilent = true;
+      const s = screen || 'map';
+      if (s !== 'lightbox' && navOn('photo-lightbox') && typeof closePhotoLightbox === 'function') closePhotoLightbox();
+      if (s !== 'confirm') {
+        const m = document.getElementById('confirm-modal');
+        if (m && m.classList.contains('on')) {
+          const cancel = document.getElementById('recovery-cancel') || document.getElementById('confirm-cancel');
+          if (cancel) cancel.click();
+          else m.classList.remove('on');
+        }
+      }
+      if (s.indexOf('onboard:') !== 0) {
+        if (navOn('onboard-overlay') && typeof closeOnboard === 'function') closeOnboard(false);
+      } else if (typeof showOnboardStep === 'function') {
+        const ov = document.getElementById('onboard-overlay');
+        if (ov) ov.classList.add('on');
+        showOnboardStep(parseInt(s.split(':')[1] || '0', 10) || 0);
+      }
+      if (s !== 'log' && typeof closeLogChoice === 'function') closeLogChoice();
+      if (s !== 'pick' && typeof closePhotoPickConfirm === 'function' && navOn('photo-pick-confirm')) closePhotoPickConfirm();
+      if (s !== 'upload' && navOn('upload-modal') && typeof closeUploadModal === 'function') closeUploadModal();
+      if (s !== 'detail' && navOn('detail-modal') && typeof closeDetailModal === 'function') closeDetailModal({ skipResume: true });
+      if (s !== 'report' && navOn('report-modal') && typeof closeFieldReportModal === 'function') closeFieldReportModal();
+      if (s !== 'analyze' && navOn('analyze-modal') && typeof closeAnalyzeSheet === 'function') closeAnalyzeSheet();
+      if (s !== 'fieldbook' && navOn('fieldbook-modal') && typeof closeFieldBook === 'function') closeFieldBook();
+      if (s !== 'ach' && navOn('ach-modal') && typeof closeAchModal === 'function') closeAchModal();
+      if (s !== 'settings' && navOn('key-modal') && typeof closeKeyModal === 'function') closeKeyModal();
+      if (s !== 'checklist') {
+        if (navOn('region-species-modal')) navHide('region-species-modal');
+      } else if (!navOn('region-species-modal')) {
+        if (typeof checklistReturn !== 'undefined' && checklistReturn && typeof restoreChecklistFromSnapshot === 'function') restoreChecklistFromSnapshot();
+        else if (typeof openRegionSpeciesModal === 'function') openRegionSpeciesModal();
+      }
+      const pfDetailEl = document.getElementById('pf-detail');
+      if (s !== 'pf-detail' && pfDetailEl && !pfDetailEl.hidden && typeof pfCloseDetail === 'function') pfCloseDetail();
+      const wantProfile = s === 'profile' || s.indexOf('pf-other:') === 0 || s === 'pf-detail';
+      if (!wantProfile && navOn('profile-modal') && typeof closeProfile === 'function') closeProfile();
+      else if (s === 'profile' && typeof pfOther !== 'undefined' && pfOther && typeof profileBack === 'function') profileBack();
+      else if (s.indexOf('pf-other:') === 0) {
+        const modal = document.getElementById('profile-modal');
+        if (modal && !modal.classList.contains('on')) {
+          modal.classList.add('on');
+          document.body.classList.add('pf-open');
+        }
+      }
+      if (s.indexOf('dossier:') === 0) {
+        if (typeof switchTab === 'function') switchTab('search');
+        const code = s.slice(8);
+        const dos = document.getElementById('search-dossier');
+        if (dos && dos.hidden && typeof openSearchDossier === 'function') openSearchDossier(code);
+      } else if (s.indexOf('tab:') === 0) {
+        const dos = document.getElementById('search-dossier');
+        if (dos && !dos.hidden && typeof closeSearchDossier === 'function') closeSearchDossier();
+        if (typeof switchTab === 'function') switchTab(s.slice(4));
+      } else if (s === 'map' || s === 'log' || s === 'lightbox' || s === 'confirm' || s.indexOf('onboard:') === 0) {
+        const dos = document.getElementById('search-dossier');
+        if (s === 'map' && dos && !dos.hidden && typeof closeSearchDossier === 'function') closeSearchDossier();
+        const view = document.querySelector('main .view.on');
+        const tab = view && view.id ? view.id.replace('view-', '') : 'map';
+        if (s === 'map' && tab !== 'map' && typeof switchTab === 'function') switchTab('map');
+      }
+      setTimeout(function () {
+        navSilent = false;
+        const live = navScreen();
+        if (navStack[navStack.length - 1] !== live && !navExpectPop) navStack[navStack.length - 1] = live;
+      }, 80);
+    }
+    window.addEventListener('popstate', function (e) {
+      const target = (e.state && e.state.avianScreen) || 'map';
+      if (navExpectPop) {
+        navExpectPop = false;
+        if (navScreen() !== target) navApply(target);
+        else navStack[navStack.length - 1] = target;
+        return;
+      }
+      const at = navStack.lastIndexOf(target);
+      if (at === -1) navStack.push(target);
+      else navStack.length = at + 1;
+      navApply(target);
+    });
+    function navBoot() {
+      try { history.replaceState({ avianScreen: 'map' }, ''); } catch (e) {}
+      navStack = ['map'];
+      const watch = [
+        'photo-lightbox', 'confirm-modal', 'onboard-overlay', 'photo-pick-confirm',
+        'upload-modal', 'detail-modal', 'report-modal', 'analyze-modal', 'fieldbook-modal',
+        'ach-modal', 'key-modal', 'region-species-modal', 'profile-modal', 'pf-detail',
+        'search-dossier', 'log-choice', 'view-map', 'view-lifelist', 'view-gallery',
+        'view-radar', 'view-search'
+      ];
+      const obs = new MutationObserver(function () { navTouch(); });
+      watch.forEach(function (id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        obs.observe(el, { attributes: true, attributeFilter: ['class', 'hidden'] });
+      });
+    }
+    navBoot();
+
+
   </script>
 </body>
 </html>
