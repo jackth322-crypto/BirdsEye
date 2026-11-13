@@ -4457,18 +4457,20 @@
     async function backfillCounties() {
       const need = sightings.filter(s => s.lat != null && s.lng != null && !s.county);
       if (!need.length) return;
-      for (let i = 0; i < need.length; i++) {
-        const info = await lookupCounty(need[i].lat, need[i].lng);
+      const batch = need.slice(0, 8);
+      let changed = false;
+      for (let i = 0; i < batch.length; i++) {
+        const info = await lookupCounty(batch[i].lat, batch[i].lng);
         if (info.county) {
-          need[i].county = info.county;
-          if (need[i].location_name === 'Field Observation') need[i].location_name = '';
+          batch[i].county = info.county;
+          if (batch[i].location_name === 'Field Observation') batch[i].location_name = '';
+          changed = true;
         }
-        if (info.state && !need[i].state) need[i].state = info.state;
-        await new Promise(r => setTimeout(r, 180));
+        if (info.state && !batch[i].state) { batch[i].state = info.state; changed = true; }
+        await new Promise(r => setTimeout(r, 250));
       }
-      persistSightings();
-      if (typeof renderGallery === 'function') renderGallery();
-      if (typeof renderLifeList === 'function') renderLifeList();
+      if (changed) persistSightings();
+      if (need.length > batch.length) setTimeout(backfillCounties, 25000);
     }
 
     function sightingsStorageKey() {
@@ -4555,21 +4557,57 @@
       if (full.startsWith('data:') || full.startsWith('http')) row.photo_full = row.photo_remote || row.photo_url || '';
       return row;
     }
-    async function hydrateSightingPhotos() {
+    function displayPhotoSrc(s) {
+      if (!s) return '';
+      const url = String(s.photo_url || '');
+      if (url.startsWith('http') || url.startsWith('data:')) return url;
+      const full = String(s.photo_full || '');
+      if (full.startsWith('http') || full.startsWith('data:')) return full;
+      return s.photo_remote ? String(s.photo_remote) : '';
+    }
+    function primePhotoUrls() {
       for (let i = 0; i < sightings.length; i++) {
         const s = sightings[i];
-        if (!s || !s.id) continue;
-        const url = String(s.photo_url || '');
-        if (url.startsWith('data:')) continue;
+        if (!s || displayPhotoSrc(s)) continue;
+        if (s.photo_remote) {
+          s.photo_url = s.photo_remote;
+          if (!s.photo_full) s.photo_full = s.photo_remote;
+        }
+      }
+    }
+    let photoHydrateTimer = null;
+    function schedulePhotoHydrate() {
+      clearTimeout(photoHydrateTimer);
+      photoHydrateTimer = setTimeout(runPhotoHydrate, 800);
+    }
+    async function runPhotoHydrate() {
+      const pending = [];
+      for (let i = 0; i < sightings.length; i++) {
+        const s = sightings[i];
+        if (s && s.id && !displayPhotoSrc(s)) pending.push(s);
+      }
+      for (let i = 0; i < pending.length; i++) {
+        const s = pending[i];
         const cached = await getSightingPhoto(s.id);
         if (cached) {
           s.photo_url = cached;
-          s.photo_full = cached;
-        } else if (s.photo_remote) {
-          s.photo_url = s.photo_remote;
-          s.photo_full = s.photo_remote;
+          if (!s.photo_full) s.photo_full = cached;
         }
+        if (i % 8 === 7) await new Promise(r => setTimeout(r, 40));
       }
+      const gal = document.getElementById('view-gallery');
+      if (gal && gal.classList.contains('on') && typeof renderGallery === 'function') renderGallery();
+    }
+    function ensureSightingPhoto(s) {
+      const have = displayPhotoSrc(s);
+      if (have || !s || !s.id) return Promise.resolve(have);
+      return getSightingPhoto(s.id).then(function (cached) {
+        if (cached) {
+          s.photo_url = cached;
+          if (!s.photo_full) s.photo_full = cached;
+        }
+        return cached || '';
+      });
     }
 
     let achHoldPersist = false;
@@ -4580,9 +4618,13 @@
       const key = sightingsStorageKey();
       const slim = sightings.map(slimSighting);
       try { localStorage.setItem(key, JSON.stringify(slim)); } catch (e) {}
-      if (typeof pfScheduleSync === 'function') pfScheduleSync(800);
+      if (typeof pfScheduleSync === 'function' && !window.__beSyncHold) pfScheduleSync(2500);
       sightings.forEach(function (s) {
-        if (s && s.id && s.photo_url && String(s.photo_url).startsWith('data:')) putSightingPhoto(s.id, s.photo_url);
+        if (!s || !s.id) return;
+        const url = String(s.photo_url || '');
+        if (!url.startsWith('data:') || s._photoStored === url) return;
+        s._photoStored = url;
+        putSightingPhoto(s.id, url);
       });
       openBirdseyeDb().then(function (db) {
         if (!db) return;
@@ -5118,7 +5160,7 @@
     function initMap() {
       mapInstance = L.map('map', {
         zoomControl: false,
-        preferCanvas: false,
+        preferCanvas: true,
         fadeAnimation: false,
         markerZoomAnimation: false,
         zoomAnimation: true,
@@ -8407,7 +8449,7 @@
         filtered.push(s);
       }
       // No cap: plot every filtered sighting with coordinates.
-      const usePhotos = mapInstance.getZoom() >= 10;
+      const usePhotos = false;
       for (let i = 0; i < filtered.length; i++) {
         const s = filtered[i];
         const lat = Number(s.lat), lng = Number(s.lng);
@@ -8439,7 +8481,6 @@
         const sid = s.id;
         marker._beCard =
           '<div class="popup-open" data-sid="' + sid + '">' +
-          (s.photo_url ? '<img src="' + s.photo_url + '" alt="" />' : '') +
           '<div class="pop-card-top"><b>' + name + '</b></div>' +
           '<div class="muted">' + placeLabel(s) + ' · ' + s.date + '</div>' +
           '<div class="hint" style="margin-top:4px;text-align:center">Tap for details</div></div>';
@@ -8448,6 +8489,16 @@
           noteClusterPopup(marker);
           const root = e.popup.getElement();
           if (!root) return;
+          const host = root.querySelector('.popup-open');
+          if (host && !host.querySelector('img')) {
+            ensureSightingPhoto(s).then(function (src) {
+              if (!src || !host.isConnected || host.querySelector('img')) return;
+              const img = document.createElement('img');
+              img.alt = '';
+              img.src = src;
+              host.insertBefore(img, host.firstChild);
+            });
+          }
           const go = function (ev) {
             if (ev.target && ev.target.classList && (ev.target.classList.contains('leaflet-popup-close-button') || ev.target.classList.contains('pop-arrow'))) return;
             L.DomEvent.stop(ev);
@@ -17176,7 +17227,6 @@
       populateFilterDropdowns();
       renderMapMarkers();
       updateRegionalHUD();
-      persistSightings();
       refreshExportStamp();
       if (typeof syncAchievements === 'function') syncAchievements({ toast: !!(opts && opts.toast) });
       searchCatalog = null;
@@ -18789,18 +18839,19 @@
       const bootMerged = mergeSightingLists([idbRows, readSightingList(sightingsStorageKey()), readSightingList('avian_sightings')]);
       sightings.length = 0;
       bootMerged.forEach(s => sightings.push(s));
+      primePhotoUrls();
       ensureFullPhotos();
       if (stripSeedSightings()) persistSightings();
-      if (typeof hydrateSightingPhotos === 'function') await hydrateSightingPhotos();
       initMap();
       syncStateLockBtn();
       setStatsMode(statsMode);
       resolveStateLocation();
       refreshUI();
+      schedulePhotoHydrate();
       await loadData();
       refreshUI();
       achInitSilent = false;
-      backfillCounties();
+      setTimeout(backfillCounties, 12000);
       if (typeof window.pfAfterLocalLoad === 'function') window.pfAfterLocalLoad();
     });
   </script>
@@ -19079,19 +19130,10 @@
             changed = true;
           }
           if (row.photo_url) local.photo_remote = String(row.photo_url).split('?')[0];
-          const hasLocalPhoto = local.photo_url && String(local.photo_url).startsWith('data:');
-          if (row.photo_url && !hasLocalPhoto) {
-            const cached = await cacheRemotePhoto(row.photo_url);
-            if (cached && String(cached).startsWith('data:')) {
-              local.photo_url = cached;
-              local.photo_full = cached;
-              if (typeof putSightingPhoto === 'function') await putSightingPhoto(local.id, cached);
-              changed = true;
-            } else if (!local.photo_url) {
-              local.photo_url = local.photo_remote;
-              local.photo_full = local.photo_remote;
-              changed = true;
-            }
+          if (!displayPhotoSrc(local) && local.photo_remote) {
+            local.photo_url = local.photo_remote;
+            local.photo_full = local.photo_remote;
+            changed = true;
           }
         }
         if (changed) {
@@ -19116,10 +19158,13 @@
         lists.push(readSightingList('avian_sightings'));
       }
       const merged = mergeSightingLists(lists);
+      const before = new Set((Array.isArray(userIdb) ? userIdb : []).map(s => s && s.id).filter(Boolean));
+      const grew = merged.some(s => s && !before.has(s.id));
       sightings.length = 0;
       merged.forEach(s => sightings.push(s));
-      if (stripSeedSightings() || merged.length) persistSightings();
-      if (typeof hydrateSightingPhotos === 'function') await hydrateSightingPhotos();
+      primePhotoUrls();
+      if (stripSeedSightings() || grew) persistSightings();
+      schedulePhotoHydrate();
       ensureFullPhotos();
       if (typeof renderGallery === 'function') renderGallery();
       if (typeof renderLifeList === 'function') renderLifeList();
@@ -21293,18 +21338,11 @@
       hit.forEach(s => {
         const pt = pfExactPoint(s) || pfRegionPoint(s, places);
         if (!pt) return;
-        const src = s.photo_url || s.photo_full || '';
         const name = (typeof taxName === 'function' ? taxName(s.species_code).comName : s.species_code) || '';
         const color = typeof photoColor === 'function' ? photoColor(s.species_code, s.state) : '#34d399';
-        const icon = src
-          ? L.divIcon({ className: 'bird-chit', html: '<img src="' + String(src).replace(/"/g, '"') + '" alt="" style="border:3px solid ' + color + '" />', iconSize: [40, 40], iconAnchor: [20, 20] })
-          : null;
-        const m = icon
-          ? L.marker([pt.lat, pt.lng], { icon: icon })
-          : L.circleMarker([pt.lat, pt.lng], { radius: 8, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.95 });
+        const m = L.circleMarker([pt.lat, pt.lng], { radius: 8, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.95 });
         m._pfSight = s;
         m._beCard = '<div class="popup-open" data-sid="' + (s.id || '') + '">' +
-          (src ? '<img src="' + src + '" alt="" />' : '') +
           '<div class="pop-card-top"><b>' + pfEsc(name) + '</b></div>' +
           '<div class="muted">' + pfEsc((s.location_name || s.county || '') + (s.date ? ' · ' + s.date : '')) + '</div>' +
           '<div class="hint" style="margin-top:4px;text-align:center">Tap for details</div></div>';
@@ -21339,15 +21377,24 @@
           if (r.id) have.add(String(r.id));
         });
         let changed = false;
+        const queue = [];
         for (let i = 0; i < sightings.length; i++) {
           const s = sightings[i];
           if (!s || !s.id || SEED_IDS.has(s.id)) continue;
           if (s.share_public === false || s.share_public === 0) continue;
           const pid = pfPublicId(s);
           if (have.has(pid) && s.photo_remote) continue;
-          const err = await publishOne(s);
-          if (!err) changed = true;
+          queue.push(s);
         }
+        window.__beSyncHold = true;
+        const batch = queue.slice(0, 4);
+        for (let i = 0; i < batch.length; i++) {
+          const err = await publishOne(batch[i]);
+          if (!err) changed = true;
+          await new Promise(function (r) { setTimeout(r, 120); });
+        }
+        if (queue.length > batch.length) pfSyncQueued = true;
+        window.__beSyncHold = false;
         if (changed) {
           try { persistSightings(); } catch (e) {}
           pfFeedCache = null;
@@ -21356,17 +21403,14 @@
         pfSyncQueued = true;
       } finally {
         pfSyncing = false;
-        if (pfSyncQueued) pfScheduleSync(2000);
+        window.__beSyncHold = false;
+        if (pfSyncQueued) pfScheduleSync(4000);
       }
     }
     async function pfCatchUpPublic() { return pfSyncPublic(); }
     window.pfAfterLocalLoad = async function () {
       pfLocalReady = true;
-      if (typeof dedupeSightings === 'function' && dedupeSightings()) {
-        try { persistSightings(); } catch (e) {}
-      }
-      if (pfUser && typeof syncPublicSightingsToLocal === 'function') await syncPublicSightingsToLocal();
-      pfScheduleSync(200);
+      setTimeout(function () { pfScheduleSync(800); }, 6000);
     };
 
     async function pfCounts(id) {
