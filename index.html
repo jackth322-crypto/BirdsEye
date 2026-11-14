@@ -1212,12 +1212,20 @@
     .pop-seg button { flex: 1; font-size: 10px; padding: 3px 6px; }
     .pop-pager { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 6px; color: var(--muted); font-size: 11px; font-weight: 700; }
     .pop-pager button { background: none; border: 0; color: var(--text-2); font-size: 16px; line-height: 1; padding: 2px 6px; cursor: pointer; }
+
+    .bird-dot-chit { background:transparent; border:0; }
+    .bird-dot-chit > span { display:block; width:16px; height:16px; margin:2px; box-sizing:border-box; border:2px solid #fff; border-radius:50%; box-shadow:0 1px 4px rgba(0,0,0,.3); }
+    .bird-dot-chit > span, .bird-chit img { transition:transform .15s ease, box-shadow .15s ease; }
+    .be-map-card { display:block; width:100%; margin:0; padding:0; border:0; background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; }
+    .be-map-card > span { display:block; }
+    .be-map-card:focus-visible { outline:2px solid var(--em3); outline-offset:3px; }
     .chit-focus { z-index: 1200 !important; }
     .bird-chit.chit-focus img {
+      box-shadow: 0 0 0 2px #fff, 0 0 0 5px var(--em3);
       transform: scale(1.28);
       transform-origin: center center;
     }
-    .leaflet-marker-icon.chit-focus > span {
+    .leaflet-marker-icon.chit-focus > span, .rarity-cluster.chit-focus > div {
       box-shadow: 0 0 0 2px #fff, 0 0 0 5px var(--em3), 0 0 12px rgba(52,211,153,.8);
       transform: scale(1.35);
     }
@@ -4909,7 +4917,7 @@
       if (!beReady) return;
       bePaint = true;
       try {
-        refreshUI(); renderGallery(); renderLifeList();
+        refreshUI({sync:true}); renderGallery(); renderLifeList();
         if (typeof plotPhotoChits === 'function') plotPhotoChits();
         const modal = document.getElementById('profile-modal');
         if (modal && modal.classList.contains('on') && pfUser && !pfOther && !pfEditing && !pfPreview && !pfDetail) renderSelf();
@@ -6329,31 +6337,45 @@
       return out.length ? out : [marker];
     }
 
-    let chitFocusGen = 0;
+    let chitFocusGen = 0, focusedChit = null;
     function clearChitFocus() {
       chitFocusGen++;
+      if (focusedChit && focusedChit._beFocusStyle) {
+        focusedChit.setStyle(focusedChit._beFocusStyle);
+        focusedChit.setRadius(focusedChit._beFocusRadius);
+        delete focusedChit._beFocusStyle;
+      }
+      focusedChit = null;
       document.querySelectorAll('.chit-focus').forEach(el => {
-        el.classList.remove('chit-focus');
-        el.style.zIndex = '';
+        el.classList.remove('chit-focus'); el.style.zIndex = '';
       });
     }
 
     function highlightCycleMarker(marker) {
-      const token = ++chitFocusGen;
-      document.querySelectorAll('.chit-focus').forEach(el => {
-        el.classList.remove('chit-focus');
-        el.style.zIndex = '';
-      });
+      clearChitFocus();
+      const token = chitFocusGen;
       if (!marker) return;
+      focusedChit = marker;
+      // Leaflet path APIs work with Canvas as well as SVG.
+      if (marker.setRadius && marker.setStyle) {
+        marker._beFocusRadius = marker.getRadius();
+        marker._beFocusStyle = {color:marker.options.color, weight:marker.options.weight};
+        marker.setStyle({color:'#fff', weight:4});
+        marker.setRadius(marker._beFocusRadius * 1.3);
+        if (marker.bringToFront) marker.bringToFront();
+      }
       const paint = function () {
         if (token !== chitFocusGen) return;
-        const el = marker.getElement && marker.getElement();
+        let el = marker.getElement && marker.getElement();
+        if (!el || !el.isConnected) {
+          const group = markersLayer && markersLayer.hasLayer(marker) ? markersLayer : huntLayer;
+          const visible = group && group.hasLayer(marker) && group.getVisibleParent(marker);
+          el = visible && visible.getElement && visible.getElement();
+        }
         if (!el) return;
-        el.classList.add('chit-focus');
-        el.style.zIndex = '1200';
+        el.classList.add('chit-focus'); el.style.zIndex = '1200';
       };
-      paint();
-      requestAnimationFrame(paint);
+      paint(); requestAnimationFrame(paint);
     }
 
     function clusterCardAnchor(peers) {
@@ -6380,12 +6402,11 @@
       clearChitFocus();
     }
 
-    function openFixedCycle(peers, index, keepPlace, skipPrefetch) {
+    function openFixedCycle(peers, index, keepPlace, skipPrefetch, noPan) {
       if (!peers.length) return;
       index = (index + peers.length) % peers.length;
       clusterFocus = peers[index];
       clusterPeers = peers;
-      highlightCycleMarker(clusterFocus);
       const inner = clusterFocus._beCard || '';
       const html = cycleCardHTML(inner, index, peers.length);
       if (!cyclePopup) {
@@ -6393,8 +6414,10 @@
         cyclePopup.on('remove', function () { clearChitFocus(); });
       }
       const here = (keepPlace && cyclePopup.getLatLng()) ? cyclePopup.getLatLng() : clusterCardAnchor(peers);
+      cyclePopup.options.autoPan = !keepPlace && !noPan;
       cyclePopup.setLatLng(here).setContent(html).openOn(mapInstance);
-      if (mapInstance && here) mapInstance.panInside(here, { padding: [56, 72], animate: true });
+      highlightCycleMarker(clusterFocus);
+      if (!keepPlace && !noPan && mapInstance && here) mapInstance.panInside(here, { padding: [56, 72], animate: true });
       const root = cyclePopup.getElement();
       if (root) {
         L.DomEvent.disableClickPropagation(root);
@@ -8663,87 +8686,127 @@
       markerTimer = setTimeout(renderMapMarkers, 50);
     }
 
-    function renderMapMarkers() {
+    // Reconcile by sighting ID so background photo downloads keep map interaction intact.
+    let beMapOwner = null;
+    function renderMapMarkers(opts) {
       if (!markersLayer || !mapInstance) return;
-      if (mapMode === 'hunt') { renderHuntMap(); return; }
-      if (huntLayer) huntLayer.clearLayers();
-      if (huntPins) huntPins.clearLayers();
-      markersLayer.clearLayers();
-      const now = Date.now();
-      const filtered = [];
-      for (let i = 0; i < sightings.length; i++) {
-        const s = sightings[i];
+      const owner = beStore ? beStore.owner : 'guest';
+      const ownerChanged = beMapOwner !== owner;
+      if (ownerChanged) {
+        mapInstance.closePopup(); closeFixedCycle();
+        clusterFocus = null; clusterPeers = [];
+        markersLayer.clearLayers();
+        beMapOwner = owner;
+      }
+      if (mapMode === 'hunt') {
+        if (ownerChanged || !(opts && opts.sync)) renderHuntMap();
+        return;
+      }
+      if (huntLayer && huntLayer.getLayers().length) huntLayer.clearLayers();
+      if (huntPins && huntPins.getLayers().length) huntPins.clearLayers();
+      const hadCycle = !!(cyclePopup && mapInstance.hasLayer(cyclePopup));
+      const active = clusterFocus && markersLayer.hasLayer(clusterFocus) &&
+        (hadCycle || clusterFocus.isPopupOpen()) ? clusterFocus : null;
+      const oldPeers = hadCycle ? clusterPeers.slice() : [];
+      const existing = new Map();
+      markersLayer.eachLayer(m => existing.set(String(m.options.sightingId), m));
+      const wanted = new Set(), added = [], removed = [], recolored = [];
+      const now = Date.now(), usePhotos = mapInstance.getZoom() >= 10;
+      let activeCardChanged = false;
+      for (const s of sightings) {
         if (currentSpeciesFilter !== 'all' && s.species_code !== currentSpeciesFilter) continue;
         if (photoCoversOnly && !Number(s.is_cover)) continue;
-        if (currentTimeFilter !== 'all') {
-          const days = (now - new Date(s.date).getTime()) / 86400000;
-          if (currentTimeFilter === '7d' && days > 7) continue;
-          if (currentTimeFilter === '30d' && days > 30) continue;
-          if (currentTimeFilter === '1y' && days > 365) continue;
-        }
-        filtered.push(s);
-      }
-      // No cap: plot every filtered sighting with coordinates.
-      const usePhotos = false;
-      for (let i = 0; i < filtered.length; i++) {
-        const s = filtered[i];
+        const days = (now - new Date(s.date).getTime()) / 86400000;
+        if ((currentTimeFilter === '7d' && days > 7) ||
+            (currentTimeFilter === '30d' && days > 30) ||
+            (currentTimeFilter === '1y' && days > 365)) continue;
+        if (s.lat == null || s.lng == null || s.lat === '' || s.lng === '') continue;
         const lat = Number(s.lat), lng = Number(s.lng);
-        if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+        if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) continue;
+        const key = String(s.id);
+        if (wanted.has(key)) continue;
+        wanted.add(key);
         const name = taxName(s.species_code).comName;
         const color = photoColor(s.species_code, s.state);
         const rarity = mapStableRank(s.species_code, s.state);
-        const src = s.photo_url || s.photo_full || '';
-        let marker;
-        if (usePhotos && src) {
-          marker = L.marker([lat, lng], {
-            rarity: rarity,
-            rarityColor: color,
-            speciesCode: s.species_code,
-            sightingId: s.id,
-            icon: L.divIcon({
-              className: 'bird-chit',
-              html: '<img src="' + String(src).replace(/"/g, '&quot;') + '" alt="" style="border:3px solid ' + color + '" />',
-              iconSize: [40, 40],
-              iconAnchor: [20, 20]
-            })
-          });
-        } else {
-          marker = L.circleMarker([lat, lng], {
-            radius: 8, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.95,
-            rarity: rarity, rarityColor: color, speciesCode: s.species_code, sightingId: s.id
-          });
-        }
-        const sid = s.id;
-        marker._beCard =
-          '<div class="popup-open" data-sid="' + sid + '">' +
-          '<div class="pop-card-top"><b>' + name + '</b></div>' +
-          '<div class="muted">' + placeLabel(s) + ' · ' + s.date + '</div>' +
-          '<div class="hint" style="margin-top:4px;text-align:center">Tap for details</div></div>';
-        marker.bindPopup(cycleCardHTML(marker._beCard, 0, 1), { closeButton: true, autoPan: true });
-        marker.on('popupopen', function (e) {
-          noteClusterPopup(marker);
-          const root = e.popup.getElement();
-          if (!root) return;
-          const host = root.querySelector('.popup-open');
-          if (host && !host.querySelector('img')) {
-            ensureSightingPhoto(s).then(function (src) {
-              if (!src || !host.isConnected || host.querySelector('img')) return;
-              const img = document.createElement('img');
-              img.alt = '';
-              img.src = src;
-              host.insertBefore(img, host.firstChild);
+        const src = pfSafeSrc(s.photo_url || s.photo_full || '');
+        const photo = usePhotos && src;
+        const iconKey = JSON.stringify([!!photo, photo || '', color]);
+        let marker = existing.get(key);
+        if (!marker) {
+          marker = L.marker([lat, lng], {sightingId:s.id, keyboard:true, title:name});
+          marker.bindPopup('', {closeButton:true, autoPan:true});
+          marker.on('popupopen', function (e) {
+            noteClusterPopup(marker);
+            const root = e.popup.getElement();
+            if (!root || !marker.isPopupOpen() || root._beCardBound) return;
+            root._beCardBound = true;
+            L.DomEvent.disableClickPropagation(root);
+            L.DomEvent.on(root, 'click', function (ev) {
+              const target = ev.target.closest && ev.target.closest('.popup-open');
+              if (!target) return;
+              L.DomEvent.stop(ev);
+              openSightingFromMap(marker.options.sightingId);
             });
-          }
-          const go = function (ev) {
-            if (ev.target && ev.target.classList && (ev.target.classList.contains('leaflet-popup-close-button') || ev.target.classList.contains('pop-arrow'))) return;
-            L.DomEvent.stop(ev);
-            openSightingFromMap(sid);
-          };
-          L.DomEvent.on(root, 'click', go);
-          L.DomEvent.on(root, 'mousedown', L.DomEvent.stopPropagation);
-          L.DomEvent.on(root, 'touchend', go);
-        });
-        markersLayer.addLayer(marker);
+          });
+          added.push(marker);
+        }
+        marker._beSighting = s;
+        if (marker.options.rarity !== rarity || marker.options.rarityColor !== color) recolored.push(marker);
+        Object.assign(marker.options, {rarity, rarityColor:color, speciesCode:s.species_code, title:name});
+        if (marker._beIconKey !== iconKey) {
+          marker.setIcon(L.divIcon({
+            className: photo ? 'bird-chit' : 'bird-dot-chit',
+            html: photo
+              ? '<img src="' + escHtml(src) + '" alt="" style="border:3px solid ' + escHtml(color) + '" />'
+              : '<span style="background:' + escHtml(color) + '"></span>',
+            iconSize: photo ? [40,40] : [20,20], iconAnchor: photo ? [20,20] : [10,10]
+          }));
+          marker._beIconKey = iconKey;
+        }
+        // Spiderfy temporarily moves marker coordinates; compare the actual saved location.
+        const location = lat + ',' + lng;
+        if (marker._beLocation && marker._beLocation !== location) marker.setLatLng([lat,lng]);
+        marker._beLocation = location;
+        const card = '<button type="button" class="popup-open be-map-card" data-sid="' + escHtml(s.id) + '">' +
+          (src ? '<img src="' + escHtml(src) + '" alt="' + escHtml(name) + '" />' : '') +
+          '<span class="pop-card-top"><b>' + escHtml(name) + '</b></span>' +
+          '<span class="muted">' + escHtml(placeLabel(s)) + ' · ' + escHtml(s.date) + '</span>' +
+          '<span class="hint" style="margin-top:4px;text-align:center">Tap for details</span></button>';
+        if (marker._beCard !== card) {
+          marker._beCard = card;
+          const popup = marker.getPopup(), autoPan = popup.options.autoPan;
+          if (marker === active) popup.options.autoPan = false;
+          marker.setPopupContent(cycleCardHTML(card, 0, 1));
+          popup.options.autoPan = autoPan;
+          if (marker === active) activeCardChanged = true;
+        }
+      }
+      existing.forEach((marker,key) => { if (!wanted.has(key)) removed.push(marker); });
+      if (removed.length) markersLayer.removeLayers(removed);
+      if (added.length) markersLayer.addLayers(added);
+      if (recolored.length) markersLayer.refreshClusters(recolored);
+      clusterPeers = clusterPeers.filter(m => markersLayer.hasLayer(m));
+      if (active && !markersLayer.hasLayer(active)) {
+        closeFixedCycle(); clusterFocus = null; clusterPeers = [];
+      } else if (active) {
+        if (hadCycle && (activeCardChanged || removed.length || added.length || !mapInstance.hasLayer(cyclePopup))) {
+          const peers = oldPeers.filter(m => markersLayer.hasLayer(m));
+          // Include newly synced photos at the selected location in the open pager.
+          const position = active._beSighting;
+          markersLayer.eachLayer(m => {
+            const row = m._beSighting;
+            if (row && position && !peers.includes(m) &&
+                Math.abs(Number(row.lat)-Number(position.lat)) < 0.0002 &&
+                Math.abs(Number(row.lng)-Number(position.lng)) < 0.0002) peers.push(m);
+          });
+          openFixedCycle(peers.length ? peers : [active], Math.max(0, peers.indexOf(active)), true, true);
+        } else if (!hadCycle && !active.isPopupOpen()) {
+          // A cluster changing can detach its child; keep the card at its existing location.
+          openFixedCycle([active], 0, false, true, true);
+        }
+        clusterFocus = active;
+        highlightCycleMarker(active);
       }
     }
 
@@ -17450,7 +17513,7 @@
 
     function refreshUI(opts) {
       populateFilterDropdowns();
-      renderMapMarkers();
+      renderMapMarkers(opts);
       updateRegionalHUD();
       refreshExportStamp();
       if (typeof syncAchievements === 'function') syncAchievements({ toast: !!(opts && opts.toast) });
