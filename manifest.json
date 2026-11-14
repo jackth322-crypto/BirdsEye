@@ -1,0 +1,14 @@
+{
+  "id": "./",
+  "name": "BirdsEye",
+  "short_name": "BirdsEye",
+  "description": "Your bird sightings and photos, available offline and synced to your account.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0c0a09",
+  "theme_color": "#059669",
+  "icons": [
+    {"src": "./dark_mode_icon-removebg-preview.png", "sizes": "any", "type": "image/png", "purpose": "any"}
+  ]
+}
