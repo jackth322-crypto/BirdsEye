@@ -16,8 +16,437 @@
 <script>
   const SUPABASE_URL = 'https://dqbiiqeyxxzazpaliley.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_QFYYrsYZEDrPr2SudmHbHQ_gbma5iDi';
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  async function beNetworkFetch(input, options = {}) {
+    const controller = new AbortController();
+    const abort = () => controller.abort(options.signal && options.signal.reason);
+    if(options.signal) { if(options.signal.aborted)abort();else options.signal.addEventListener('abort',abort,{once:true}); }
+    const timer=setTimeout(()=>controller.abort(new Error('Network timeout; will retry')),60000);
+    try { return await fetch(input,{...options,signal:controller.signal}); }
+    finally { clearTimeout(timer); if(options.signal)options.signal.removeEventListener('abort',abort); }
+  }
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY,{global:{fetch:beNetworkFetch}});
 </script>
+  <script>
+/* BirdsEye durable photo sync, v3. IndexedDB is the local source of truth.
+   Never infer identity from species, date, location, URL, or image hash. */
+(function (root) {
+  'use strict';
+  const DB = 'birdseye-sync-v3', VERSION = 1, TABLE = 'birdseye_sightings';
+  const PRIVATE = 'birdseye-private', PUBLIC = 'public-photos';
+  const FIELDS = ['species_code','species_name','date','lat','lng','location_name','county','state','country','notes','is_cover','rarity','share_public','share_exact','crop_meta','rating_override','photo_rating','ratings','awards','is_lifer','legacy_id','original_quality'];
+  const PLACEHOLDER = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" fill="#e9e9df"/><text x="200" y="200" text-anchor="middle" fill="#687568" font-family="sans-serif" font-size="16">Photo downloading</text></svg>');
+  const uuid = () => crypto.randomUUID();
+  const isUuid = id => /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(String(id));
+  const clone = x => x == null ? x : structuredClone(x);
+  const equal = (a,b) => JSON.stringify(a) === JSON.stringify(b);
+  const imageSrc = s => typeof s === 'string' && /^(data:image\/|blob:)/.test(s) && s !== PLACEHOLDER;
+  function request(req) { return new Promise((resolve,reject) => { req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error); }); }
+  function complete(tx) { return new Promise((resolve,reject) => { tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error || new Error('Local save failed')); tx.onabort=()=>reject(tx.error || new Error('Local save was interrupted')); }); }
+  async function hash(bytes) { const a=await crypto.subtle.digest('SHA-256',bytes); return Array.from(new Uint8Array(a),v=>v.toString(16).padStart(2,'0')).join(''); }
+  async function canonical(owner,id,publicId) {
+    if (isUuid(publicId)) return publicId;
+    if (isUuid(id)) return id;
+    const h=await hash(new TextEncoder().encode('birdseye:'+owner+':'+id));
+    return h.slice(0,8)+'-'+h.slice(8,12)+'-5'+h.slice(13,16)+'-a'+h.slice(17,20)+'-'+h.slice(20,32);
+  }
+  function metadata(s) {
+    const out={};
+    FIELDS.forEach(k=>{ if(s[k] !== undefined) out[k]=clone(s[k]); });
+    // Preserve custom/user-entered rating fields, but never serialize cached image data.
+    Object.keys(s).filter(k=>/rating|score_override/.test(k)&&!k.startsWith('_')).forEach(k=>{out[k]=clone(s[k]);});
+    if(out.share_public===undefined) out.share_public=true;
+    return out;
+  }
+  function wire(r) { return {id:r.id,metadata:r.metadata,has_photo:!!r.has_photo,photo_rev:r.photo_rev||null,original_path:r.original_path||null,display_path:r.display_path||null,public_url:r.public_url||null,legacy_url:r.legacy_url||null,deleted_at:r.deleted_at||null}; }
+  function patch(base,next) { const out={}; new Set([...Object.keys(base||{}),...Object.keys(next||{})]).forEach(k=>{if(!equal((base||{})[k],(next||{})[k])) out[k]=(next||{})[k]===undefined?null:next[k];}); return out; }
+  class PhotoStore {
+    constructor(client, hooks={}) {
+      this.client=client; this.hooks=hooks; this.owner='guest'; this.generation=0; this.dbPromise=null;
+      this.urls=new Map(); this.timer=null; this.running=false; this.again=false; this.lastError=''; this.localError='';
+      this.saving=Promise.resolve(); this.activating=Promise.resolve(); this.closed=false; this.downloadErrors=new Map();
+      this.channel=typeof BroadcastChannel!=='undefined'?new BroadcastChannel('birdseye-sync-v3'):null;
+      if(this.channel) this.channel.onmessage=e=>{if(e.data.owner===this.owner){this.render().catch(()=>{});if(!e.data.renderOnly)this.schedule(1000);}};
+    }
+    db() {
+      if(!this.dbPromise) this.dbPromise=new Promise((resolve,reject)=>{
+        const q=indexedDB.open(DB,VERSION);
+        q.onupgradeneeded=()=>{const d=q.result; for(const n of ['records','blobs','outbox','meta','cleanup']) if(!d.objectStoreNames.contains(n)) d.createObjectStore(n);};
+        q.onsuccess=()=>{q.result.onversionchange=()=>{q.result.close();this.dbPromise=null;};resolve(q.result);};
+        q.onerror=()=>{this.dbPromise=null;reject(q.error);};
+        q.onblocked=()=>this.status('Close another BirdsEye tab to finish the storage upgrade.');
+      });
+      return this.dbPromise;
+    }
+    async get(store,key) { if(store==='blobs' && !key[2])return undefined; const d=await this.db(); return request(d.transaction(store).objectStore(store).get(key)); }
+    async all(store,owner=this.owner) { const d=await this.db(); const rows=await request(d.transaction(store).objectStore(store).getAll(IDBKeyRange.bound([owner],[owner,[]]))); return rows; }
+    async commit(actions) {
+      if(!actions.length)return;
+      const d=await this.db(),tx=d.transaction([...new Set(actions.map(a=>a.store))],'readwrite'); const done=complete(tx);
+      for(const a of actions) {const s=tx.objectStore(a.store); if(a.remove)s.delete(a.key);else s.put(a.value,a.key);}
+      await done;
+    }
+    async locked(owner,fn) {
+      if(navigator.locks)return navigator.locks.request('birdseye-write:'+owner,fn);
+      const token=uuid(),key=['lease',owner],started=Date.now();
+      for(;;) {
+        const db=await this.db(),tx=db.transaction('meta','readwrite'),done=complete(tx),store=tx.objectStore('meta');
+        let acquired=false;
+        const req=store.get(key);req.onsuccess=()=>{if(!req.result||req.result.until<Date.now()){store.put({token,until:Date.now()+60000},key);acquired=true;}};
+        await done;if(acquired)break;
+        if(Date.now()-started>65000)throw new Error('Another tab is busy; this operation can be retried.');
+        await new Promise(resolve=>setTimeout(resolve,100));
+      }
+      try{return await fn();}finally{
+        const db=await this.db(),tx=db.transaction('meta','readwrite'),done=complete(tx),store=tx.objectStore('meta');
+        const req=store.get(key);req.onsuccess=()=>{if(req.result?.token===token)store.delete(key);};await done;
+      }
+    }
+    notify(owner) { if(this.channel)this.channel.postMessage({owner}); }
+    status(message) { if(message)this.lastError=message; if(this.hooks.status)this.hooks.status({owner:this.owner,error:this.localError||this.lastError,running:this.running}); }
+    async summary() {
+      const rows=await this.all('records'),q=await this.all('outbox');let cached=0;
+      for(const r of rows) if(!r.deleted_at&&r.has_photo&&await this.get('blobs',[this.owner,r.id,r.photo_rev,'original']))cached++;
+      return {photos:rows.filter(r=>!r.deleted_at&&r.has_photo).length,cached,pending:q.length,error:this.localError||this.lastError,running:this.running,owner:this.owner};
+    }
+    async legacyRows(owner) {
+      let db;
+      try { db=await new Promise((resolve,reject)=>{const q=indexedDB.open('birdseye');q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error);}); }catch(e){return [];}
+      const read=async(store,key)=>{if(!db.objectStoreNames.contains(store))return null;return request(db.transaction(store).objectStore(store).get(key));};
+      const lists=[]; const legacyKey=owner==='guest'?'avian_sightings_guest':'avian_sightings_'+owner;
+      try{lists.push(JSON.parse(localStorage.getItem(legacyKey)||'[]'));}catch(e){}
+      if(owner==='guest')try{lists.push(JSON.parse(localStorage.getItem('avian_sightings')||'[]'));}catch(e){}
+      lists.unshift(await read('logs',owner)||[]);
+      const map=new Map();
+      for(const list of lists)for(const s of Array.isArray(list)?list:[]) {
+        if(!s||!s.id||['s1','s2','s3','s4','s5','s6'].includes(s.id))continue;
+        const old=map.get(String(s.id)); if(!old)map.set(String(s.id),clone(s));
+        else for(const [k,v] of Object.entries(s))if(old[k]==null||old[k]==='')old[k]=v;
+      }
+      if(owner==='guest') {
+        const owned=new Set();
+        if(db.objectStoreNames.contains('logs')) {
+          const keys=await request(db.transaction('logs').objectStore('logs').getAllKeys());
+          for(const key of keys)if(key!=='guest')for(const row of await read('logs',key)||[])if(row?.id)owned.add(String(row.id));
+        }
+        for(let i=0;i<localStorage.length;i++) {
+          const key=localStorage.key(i);
+          if(/^avian_sightings_(?!guest$)/.test(key||''))try{for(const row of JSON.parse(localStorage.getItem(key)||'[]'))if(row?.id)owned.add(String(row.id));}catch(e){}
+        }
+        for(const id of owned)map.delete(id);
+      }
+      for(const s of map.values()) {
+        let stored=await read('photos',owner+':'+s.id);
+        if(!stored)stored=await read('photos','guest:'+s.id)||await read('photos',String(s.id));
+        if(!imageSrc(s.photo_url))s.photo_url=imageSrc(stored)?stored:(imageSrc(s._photoStored)?s._photoStored:s.photo_url);
+        if(!imageSrc(s.photo_full)&&imageSrc(s.photo_url))s.photo_full=s.photo_url;
+        if(!s.original_quality)s.original_quality='legacy-best-available';
+      }
+      db.close();return [...map.values()];
+    }
+    async migrate(owner) {
+      if(await this.get('meta',['migrated',owner]))return;
+      const rows=await this.legacyRows(owner);
+      await this.saveRows(owner,rows,{migration:true});
+      await this.commit([{store:'meta',key:['migrated',owner],value:{at:Date.now(),count:rows.length}}]);
+    }
+    async adoptGuest(owner) {
+      if(owner==='guest')return;
+      // Global claim is committed with the copied records under a cross-tab lock.
+      const adopt=async()=>{
+        
+        const guests=await this.all('records','guest'), actions=[];
+        for(const r of guests) {
+          if(r.deleted_at)continue;
+          if(await this.get('records',[owner,r.id]))continue;
+          const copy={...r,owner,version:0,base:null,mutation_id:uuid()};
+          copy.original_path=null;copy.display_path=null;copy.public_url=null;
+          actions.push({store:'records',key:[owner,r.id],value:copy},{store:'outbox',key:[owner,r.id],value:{owner,id:r.id,mutation_id:copy.mutation_id,attempts:0,next:0}});
+          for(const kind of ['original','display']) {const b=await this.get('blobs',['guest',r.id,r.photo_rev,kind]);if(b)actions.push({store:'blobs',key:[owner,r.id,r.photo_rev,kind],value:b});}
+          actions.push({store:'records',key:['guest',r.id],value:{...r,deleted_at:new Date().toISOString()}},{store:'outbox',key:['guest',r.id],remove:true});
+        }
+        actions.push({store:'meta',key:['guest-claim'],value:owner});await this.commit(actions);
+      };
+      await this.locked('guest-claim',adopt);
+    }
+    activate(owner) {
+      const own=owner||'guest'; this.owner=own; const gen=++this.generation;this.lastError='';this.localError='';
+      this.hooks.rows?.([]);clearTimeout(this.timer);
+      this.activating=(async()=>{
+        await this.saving.catch(()=>{});
+        await this.migrate('guest');await this.migrate(own);
+        await this.adoptGuest(own);
+        if(gen!==this.generation)return;
+        await this.render();this.schedule(0);
+        if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});
+      })();
+      this.activating.catch(e=>{this.localError='Local storage unavailable: '+e.message;this.status();});
+      return this.activating;
+    }
+    async blob(src) {
+      if(!imageSrc(src))return null;
+      const response=await fetch(src);if(!response.ok)throw new Error('Could not read the selected photo');
+      const b=await response.blob();if(!b.size)throw new Error('The selected photo is empty');return b;
+    }
+    save(rows) {
+      const owner=this.owner,gen=this.generation,snapshot=rows.map(s=>({...s}));
+      const task=this.saving.catch(()=>{}).then(()=>this.saveRows(owner,snapshot));this.saving=task;
+      task.then(async()=>{this.localError='';this.notify(owner);if(this.owner===owner&&gen===this.generation){this.schedule(0);this.status();}}).catch(e=>{this.localError='Not saved on this device: '+e.message;this.status();});
+      return task;
+    }
+    async saveRows(owner,rows,opts={}) {
+      // Blob conversion/hash work occurs before opening the atomic IDB transaction.
+      const prepared=[];
+      for(const source of rows) {
+        if(!source||!source.id)continue;
+        const id=await canonical(owner,source.id,source.public_id),s={...source};
+        if(id!==String(source.id))s.legacy_id=String(source.id);
+        const md=metadata(s); let original=null,display=null,rev=null;
+        // Hydrated object URLs carry their revision, avoiding re-encoding on metadata edits.
+        const unchanged=s._be_rev&&s.photo_url===s._be_display&&s.photo_full===s._be_original;
+        if(!unchanged && (imageSrc(s.photo_full)||imageSrc(s.photo_url))) {
+          original=await this.blob(imageSrc(s.photo_full)?s.photo_full:s.photo_url);
+          display=await this.blob(imageSrc(s.photo_url)?s.photo_url:s.photo_full);
+          rev=await hash(new TextEncoder().encode((await hash(await original.arrayBuffer()))+':'+(await hash(await display.arrayBuffer()))));
+        }
+        prepared.push({id,source,md,original,display,rev});
+      }
+      await this.locked(owner,async()=>{
+        const actions=[];
+        for(const p of prepared) {
+          const old=await this.get('records',[owner,p.id]);
+          if(old?.deleted_at)continue; // A stale tab/import cannot resurrect a tombstone.
+          const r=old?clone(old):{owner,id:p.id,metadata:{},version:0,base:null,has_photo:false};
+          if(opts.migration&&old)continue;
+          r.metadata=old && p.source._be_meta ? {...old.metadata,...patch(p.source._be_meta,p.md)} : p.md;
+          if(p.original){r.has_photo=true;r.photo_rev=p.rev;r.legacy_url=null;
+            if(p.rev!==old?.photo_rev){r.original_path=null;r.display_path=null;r.public_url=null;}
+            actions.push({store:'blobs',key:[owner,p.id,p.rev,'original'],value:p.original},{store:'blobs',key:[owner,p.id,p.rev,'display'],value:p.display});
+          }else if(!old){
+            const remote=p.source.photo_remote||(/^https?:/.test(p.source.photo_url||'')?p.source.photo_url:null);
+            r.has_photo=!!remote;r.legacy_url=remote;r.photo_rev=remote?'legacy-'+p.id:null;
+          }
+          if(!old||!equal(wire(old),wire(r))) {
+            r.mutation_id=uuid();r.updated_local=Date.now();
+            actions.push({store:'records',key:[owner,p.id],value:r},{store:'outbox',key:[owner,p.id],value:{owner,id:p.id,mutation_id:r.mutation_id,attempts:0,next:0}});
+          }
+          p.source.id=p.id;p.source.public_id=p.id;
+        }
+        await this.commit(actions);
+      });
+    }
+    async remove(ids) {
+      const owner=this.owner;await this.saving;await this.locked(owner,async()=>{
+        const actions=[];
+        for(const id of ids){const r=await this.get('records',[owner,id]);if(!r||r.deleted_at)continue;
+          r.deleted_at=new Date().toISOString();r.mutation_id=uuid();
+          actions.push({store:'records',key:[owner,id],value:r},{store:'outbox',key:[owner,id],value:{owner,id,mutation_id:r.mutation_id,attempts:0,next:0}});
+        }await this.commit(actions);
+      });await this.render();this.notify(owner);this.schedule(0);
+    }
+    url(owner,id,rev,kind,blob) {const key=JSON.stringify([owner,id,rev,kind]);if(!this.urls.has(key))this.urls.set(key,URL.createObjectURL(blob));return this.urls.get(key);}
+    async rows(owner=this.owner) {
+      const rows=[];
+      for(const r of await this.all('records',owner)) {
+        if(r.deleted_at)continue;
+        const display=await this.get('blobs',[owner,r.id,r.photo_rev,'display']),original=await this.get('blobs',[owner,r.id,r.photo_rev,'original']);
+        const d=display?this.url(owner,r.id,r.photo_rev,'display',display):(original?this.url(owner,r.id,r.photo_rev,'original',original):null);
+        const o=original?this.url(owner,r.id,r.photo_rev,'original',original):d;
+        rows.push({...r.metadata,id:r.id,public_id:r.id,photo_url:d||(r.has_photo?PLACEHOLDER:''),photo_full:o||(r.has_photo?PLACEHOLDER:''),photo_remote:r.public_url||r.legacy_url||'',_be_meta:clone(r.metadata),_be_rev:r.photo_rev,_be_display:d||PLACEHOLDER,_be_original:o||PLACEHOLDER,_be_has_photo:r.has_photo,_be_owner:owner});
+      }
+      return rows;
+    }
+    async render() {const owner=this.owner,gen=this.generation;const rows=await this.rows(owner);if(owner===this.owner&&gen===this.generation){this.hooks.rows?.(rows);this.status();}}
+    async exportRows() {
+      const out=[];const data=b=>new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(b);});
+      for(const r of await this.all('records')) {
+        if(r.deleted_at)continue;const s={...r.metadata,id:r.id,public_id:r.id};
+        const a=await this.get('blobs',[this.owner,r.id,r.photo_rev,'original']),b=await this.get('blobs',[this.owner,r.id,r.photo_rev,'display']);
+        if(r.has_photo&&!a)throw new Error('Some photos are still downloading.');
+        s.photo_full=a?await data(a):'';s.photo_url=b?await data(b):s.photo_full;out.push(s);
+      }return out;
+    }
+    schedule(delay=1000) { if(this.closed)return;clearTimeout(this.timer);this.timer=setTimeout(()=>this.sync().catch(e=>this.status(e.message)),delay); }
+    async assertOwner(owner) {
+      if(this.owner!==owner||owner==='guest')throw new Error('Account changed; upload remains queued.');
+      const {data,error}=await this.client.auth.getSession();
+      if(error||data?.session?.user?.id!==owner || this.owner!==owner)throw new Error('Sign in to resume this account’s sync.');
+      return data.session;
+    }
+    async sessionClient(owner) { const session=await this.assertOwner(owner); return this.hooks.clientForSession ? this.hooks.clientForSession(session) : this.client; }
+    async upload(bucket,path,blob,owner) {
+      const client=await this.sessionClient(owner);
+      const {error}=await client.storage.from(bucket).upload(path,blob,{contentType:blob.type||'image/jpeg',upsert:false,cacheControl:'31536000'});
+      if(error && !/already exists|duplicate/i.test(error.message||''))throw error;
+      // Paths contain a digest of immutable bytes. A retry finding the same object is success.
+    }
+    async send(r,owner) {
+      let payload=wire(r);
+      if(r.has_photo&&!r.deleted_at) {
+        let original, display;
+        const prefix=owner+'/'+r.id+'/';
+        if(!payload.original_path || !payload.display_path) {
+          original=await this.get('blobs',[owner,r.id,r.photo_rev,'original']);
+          display=await this.get('blobs',[owner,r.id,r.photo_rev,'display']);
+          if(!original||!display)throw new Error('Photo file is not available locally yet; download will retry.');
+          // Independent digests avoid duplicating an original whenever its crop changes.
+          payload.original_path=prefix+(await hash(await original.arrayBuffer()))+'/original';
+          payload.display_path=prefix+(await hash(await display.arrayBuffer()))+'/display';
+          await this.upload(PRIVATE,payload.original_path,original,owner);
+          await this.upload(PRIVATE,payload.display_path,display,owner);
+        }
+        payload.legacy_url=null;
+        if(r.metadata.share_public!==false && r.metadata.share_public!==0) {
+          if(!payload.public_url || r.legacy_url) {
+            display=display||await this.get('blobs',[owner,r.id,r.photo_rev,'display']);
+            if(!display)throw new Error('The display photo is still downloading.');
+            const pubPath=prefix+(await hash(await display.arrayBuffer()))+'/display';
+            await this.upload(PUBLIC,pubPath,display,owner);
+            payload.public_url=this.client.storage.from(PUBLIC).getPublicUrl(pubPath).data.publicUrl;
+          }
+        } else payload.public_url=null;
+      }
+      if(r.deleted_at)payload.public_url=null;
+      const client=await this.sessionClient(owner);
+      const res=await client.rpc('birdseye_commit',{p_id:r.id,p_expected_version:r.version||0,p_mutation_id:r.mutation_id,p_record:payload});
+      if(res.error)throw res.error;
+      const ack=res.data;if(!ack?.row)throw new Error('Unexpected sync response. Apply the BirdsEye SQL migration.');
+      await this.locked(owner,async()=>{
+        const current=await this.get('records',[owner,r.id]);if(!current)return;
+        if(!ack.ok){await this.conflict(current,r,ack.row,owner);return;}
+        const clean={...ack.row,owner,base:wire(ack.row)};
+        const actions=[];
+        if(current.mutation_id===r.mutation_id){actions.push({store:'records',key:[owner,r.id],value:clean},{store:'outbox',key:[owner,r.id],remove:true});}
+        else {current.version=ack.row.version;current.base=wire(ack.row);if(current.photo_rev===ack.row.photo_rev){current.original_path=ack.row.original_path;current.display_path=ack.row.display_path;}actions.push({store:'records',key:[owner,r.id],value:current});}
+        for(const url of [ack.previous_public_url,r.base?.public_url,r.legacy_url]) {
+          if(url && url!==ack.row.public_url ){
+            const marker='/storage/v1/object/public/'+PUBLIC+'/';
+            if(url.includes(marker)){const path=decodeURIComponent(url.split(marker)[1].split('?')[0]);if(path.startsWith(owner+'/'))actions.push({store:'cleanup',key:[owner,path],value:{owner,path}});}
+          }
+        }
+        await this.commit(actions);
+      });
+    }
+    async conflict(current,sent,remote,owner) {
+      const actions=[],base=current.base||{},local=wire(current);
+      if(remote.deleted_at){
+        // A delete is authoritative. Keep local bytes for recovery, but never resurrect the record.
+        actions.push({store:'records',key:[owner,current.id],value:{...remote,owner,base:wire(remote)}},{store:'outbox',key:[owner,current.id],remove:true});
+      }else {
+        const bothPhotos=local.has_photo && remote.has_photo && local.photo_rev!==base.photo_rev && remote.photo_rev!==base.photo_rev && local.photo_rev!==remote.photo_rev && (base.photo_rev || !String(remote.photo_rev).startsWith('legacy-'));
+        if(bothPhotos&&!local.deleted_at){
+          const id=await canonical(owner,'conflict:'+current.mutation_id),copy={...current,id,version:0,base:null,mutation_id:uuid(),public_url:null,original_path:null,display_path:null};
+          copy.metadata={...copy.metadata,notes:((copy.metadata.notes||'')+'\nPreserved after concurrent photo edits.').trim()};
+          for(const kind of ['original','display']){const b=await this.get('blobs',[owner,current.id,current.photo_rev,kind]);if(b)actions.push({store:'blobs',key:[owner,id,current.photo_rev,kind],value:b});}
+          actions.push({store:'records',key:[owner,id],value:copy},{store:'outbox',key:[owner,id],value:{owner,id,mutation_id:copy.mutation_id,attempts:0,next:0}});
+        }
+        const next={...remote,owner,base:wire(remote),metadata:{...remote.metadata,...patch(base.metadata||{},local.metadata)},mutation_id:uuid()};
+        if(local.deleted_at)next.deleted_at=local.deleted_at;
+        if(!bothPhotos && local.photo_rev!==base.photo_rev && local.has_photo)for(const k of ['has_photo','photo_rev','original_path','display_path','public_url','legacy_url'])next[k]=local[k];
+        actions.push({store:'records',key:[owner,next.id],value:next},{store:'outbox',key:[owner,next.id],value:{owner,id:next.id,mutation_id:next.mutation_id,attempts:0,next:0}});
+      }
+      await this.commit(actions);
+    }
+    async pull(owner) {
+      let last='';
+      for(;;){
+        const client=await this.sessionClient(owner);
+        let query=client.from(TABLE).select('*').eq('user_id',owner).order('id',{ascending:true}).limit(250);
+        if(last)query=query.gt('id',last);
+        const {data,error}=await query;if(error)throw error;
+        if(!data?.length)break;
+        await this.locked(owner,async()=>{
+          const actions=[];
+          for(const remote of data){
+            const local=await this.get('records',[owner,remote.id]),pending=await this.get('outbox',[owner,remote.id]);
+            if(pending)continue; // Push handles version conflicts without discarding offline edits.
+            if(!local||remote.version>local.version)actions.push({store:'records',key:[owner,remote.id],value:{...remote,owner,base:wire(remote)}});
+          }await this.commit(actions);
+        });
+        last=data[data.length-1].id;
+        if(data.length<250)break;
+      }
+      await this.render();
+    }
+    async hydrate(owner) {
+      const all=(await this.all('records',owner)).filter(r=>r.has_photo&&!r.deleted_at), rows=[];
+      for(const r of all) {
+        if(!await this.get('blobs',[owner,r.id,r.photo_rev,'display']) || !await this.get('blobs',[owner,r.id,r.photo_rev,'original']) || r.legacy_url) rows.push(r);
+      }
+      rows.sort((a,b)=>Number(this.downloadErrors.has(a.id))-Number(this.downloadErrors.has(b.id)));
+      if(rows.length>24){rows.length=24;this.again=true;}
+      let index=0;const worker=async()=>{
+        while(index<rows.length){const r=rows[index++];if(owner!==this.owner)return;
+          try{
+            const values={};
+            for(const kind of ['display','original']) {
+              if(await this.get('blobs',[owner,r.id,r.photo_rev,kind]))continue;
+              const path=r[kind+'_path'];let blob;
+              if(path){const client=await this.sessionClient(owner);const q=await client.storage.from(PRIVATE).download(path);if(q.error)throw q.error;blob=q.data;}
+              else if(r.legacy_url){const response=await fetch(r.legacy_url,{signal:AbortSignal.timeout(30000)});if(!response.ok)throw new Error('Legacy photo download failed: '+response.status);blob=await response.blob();}
+              else throw new Error('Photo record has no downloadable file.');
+              if(!blob?.size||!blob.type.startsWith('image/'))throw new Error('Downloaded file is not a valid image.');
+              values[kind]=blob;
+            }
+            await this.locked(owner,async()=>{
+              const now=await this.get('records',[owner,r.id]);if(!now||now.deleted_at||now.photo_rev!==r.photo_rev)return;
+              const actions=Object.entries(values).map(([kind,value])=>({store:'blobs',key:[owner,r.id,r.photo_rev,kind],value}));
+              // Legacy preview recovery is automatically copied to private storage, preserving its quality label.
+              if(r.legacy_url&&!now.original_path&&!await this.get('outbox',[owner,r.id])){
+                now.mutation_id=uuid();actions.push({store:'records',key:[owner,r.id],value:now},{store:'outbox',key:[owner,r.id],value:{owner,id:r.id,mutation_id:now.mutation_id,attempts:0,next:0}});this.again=true;
+              }
+              if(/^[a-f0-9]{64}$/.test(r.photo_rev)) {
+                const a=values.original||await this.get('blobs',[owner,r.id,r.photo_rev,'original']);
+                const b=values.display||await this.get('blobs',[owner,r.id,r.photo_rev,'display']);
+                if(a&&b) {
+                  const digest=await hash(new TextEncoder().encode((await hash(await a.arrayBuffer()))+':'+(await hash(await b.arrayBuffer()))));
+                  if(digest!==r.photo_rev)throw new Error('Photo integrity check failed; download will retry.');
+                }
+              }
+              await this.commit(actions);
+            });this.downloadErrors.delete(r.id);
+          }catch(e){this.downloadErrors.set(r.id,e.message);}
+        }
+      };await Promise.all([worker(),worker(),worker()]);await this.render();
+      if(this.downloadErrors.size)this.lastError=this.downloadErrors.size+' photo download(s) will retry automatically.';
+    }
+    async push(owner) {
+      if(this.pushing)return;
+      const run=async()=>{this.pushing=true;try {
+
+        const queue=await this.all('outbox',owner);
+        // Each item is independent: no head-of-queue starvation, including photo-free sightings.
+        for(const q of queue){
+          if(owner!==this.owner)break;if(q.next>Date.now())continue;
+          const r=await this.get('records',[owner,q.id]);if(!r)continue;
+          try{await this.send(r,owner);}catch(e){
+            await this.locked(owner,async()=>{const latest=await this.get('outbox',[owner,q.id]);if(latest?.mutation_id!==q.mutation_id)return;latest.attempts=(latest.attempts||0)+1;latest.next=Date.now()+Math.min(60000,1000*2**Math.min(6,latest.attempts));latest.error=e.message||String(e);await this.commit([{store:'outbox',key:[owner,q.id],value:latest}]);});
+            this.lastError=e.message||String(e);
+          }
+        }
+
+      } finally {this.pushing=false;}};
+      if(navigator.locks)await navigator.locks.request('birdseye-push:'+owner,{ifAvailable:true},lock=>lock?run():undefined);else await run();
+    }
+    async sync() {
+      if(this.running){this.again=true;if(this.owner!=='guest'&&navigator.onLine!==false)await this.push(this.owner);return;}if(this.owner==='guest'||navigator.onLine===false){this.status();this.schedule(15000);return;}
+      await this.activating;await this.saving.catch(()=>{});
+      if(this.running){this.again=true;return;}
+      const owner=this.owner;this.running=true;this.again=false;this.lastError='';this.status();
+      const run=async()=>{
+        await this.assertOwner(owner);await this.push(owner);await this.pull(owner);await this.hydrate(owner);await this.push(owner);
+        for(const q of await this.all('cleanup',owner)) {try{const client=await this.sessionClient(owner);const {error}=await client.storage.from(PUBLIC).remove([q.path]);if(error)throw error;await this.commit([{store:'cleanup',key:[owner,q.path],remove:true}]);}catch(e){this.lastError='Public photo cleanup will retry: '+e.message;}}
+        if(owner===this.owner){await this.pull(owner);await this.hydrate(owner);await this.render();this.channel?.postMessage({owner,renderOnly:true});}
+      };
+      try{if(navigator.locks)await navigator.locks.request('birdseye-sync:'+owner,{ifAvailable:true},lock=>lock?run():undefined);else await run();}
+      catch(e){this.lastError=e.message||String(e);}
+      finally{this.running=false;this.status();const pending=await this.all('outbox').catch(()=>[]);this.schedule(this.again?1000:(pending.length||this.lastError?10000:60000));}
+    }
+    close(){this.closed=true;clearTimeout(this.timer);this.channel?.close();for(const url of this.urls.values())URL.revokeObjectURL(url);}
+  }
+  root.BirdseyePhotoStore=PhotoStore;
+})(globalThis);
+
+  </script>
   <title>BirdsEye — Find what's flying.</title>
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#059669" />
@@ -3999,7 +4428,7 @@
               <button class="ghost" type="button" onclick="exportLogs()">Export logs</button>
               <button class="ghost" type="button" onclick="document.getElementById('import-logs').click()">Import logs</button>
             </div>
-            <button class="ghost" type="button" style="width:100%;margin-top:8px" onclick="exportLogsSlim()">Export list only (no full photos)</button>
+            <p class="hint" data-be-sync-status role="status">Loading your saved photos…</p><button class="ghost" type="button" style="width:100%;margin-top:8px" onclick="exportLogsSlim()">Export list only (no full photos)</button>
             <p class="hint" id="last-export-stamp" style="margin-top:8px">No export yet</p>
             <div id="export-parts" class="export-parts" hidden></div>
             <button id="btn-delete-all-logs" class="ghost" type="button" style="width:100%;margin-top:18px;color:#ef4444;border-color:#ef4444">Delete all logs</button>
@@ -4473,217 +4902,94 @@
       if (need.length > batch.length) setTimeout(backfillCounties, 25000);
     }
 
-    function sightingsStorageKey() {
-      return 'avian_sightings_' + (typeof pfUser !== 'undefined' && pfUser && pfUser.id ? pfUser.id : 'guest');
-    }
-    function idbSightingsKey() {
-      return (typeof pfUser !== 'undefined' && pfUser && pfUser.id) ? pfUser.id : 'guest';
-    }
-    function migrateSightingsIfNeeded() {
+    let beStore = null, beReady = false, bePaint = false, beBootPromise = null, beAuthGeneration = 0;
+    function beRefreshPhotos(rows) {
+      sightings.length = 0;
+      rows.forEach(s => sightings.push(s));
+      if (!beReady) return;
+      bePaint = true;
       try {
-        const old = localStorage.getItem('avian_sightings');
-        if (!old) return;
-        const key = sightingsStorageKey();
-        if (!localStorage.getItem(key)) localStorage.setItem(key, old);
-      } catch (e) {}
+        refreshUI(); renderGallery(); renderLifeList();
+        if (typeof plotPhotoChits === 'function') plotPhotoChits();
+        const modal = document.getElementById('profile-modal');
+        if (modal && modal.classList.contains('on') && pfUser && !pfOther && !pfEditing && !pfPreview && !pfDetail) renderSelf();
+      } finally { bePaint = false; }
     }
-
-    function openBirdseyeDb() {
-      return new Promise(function (resolve) {
-        if (!window.indexedDB) { resolve(null); return; }
-        try {
-          const req = indexedDB.open('birdseye', 2);
-          req.onupgradeneeded = function () {
-            const db = req.result;
-            if (!db.objectStoreNames.contains('logs')) db.createObjectStore('logs');
-            if (!db.objectStoreNames.contains('photos')) db.createObjectStore('photos');
-          };
-          req.onsuccess = function () { resolve(req.result); };
-          req.onerror = function () { resolve(null); };
-        } catch (e) { resolve(null); }
-      });
+    let beStatusGeneration = 0;
+    async function bePaintStatus() {
+      if (!beStore) return;
+      const gen = ++beStatusGeneration;
+      const summary = await beStore.summary().catch(e => ({error:e.message,photos:0,cached:0,pending:0}));
+      if (gen !== beStatusGeneration || beStore.closed) return;
+      let message;
+      if (summary.error) message = 'Sync needs attention: ' + summary.error;
+      else if (summary.owner === 'guest') message = summary.photos + ' photos saved on this device · Sign in for backup';
+      else if (navigator.onLine === false) message = 'Offline · ' + summary.cached + ' photos available' + (summary.pending ? ' · ' + summary.pending + ' changes waiting' : '');
+      else if (summary.pending) message = summary.photos + ' photos · ' + summary.pending + ' changes syncing';
+      else if (summary.cached < summary.photos) message = summary.photos + ' photos · ' + (summary.photos-summary.cached) + ' downloading';
+      else message = summary.photos + ' photos · Backed up · ' + (navigator.serviceWorker?.controller ? 'Available offline' : 'Preparing offline access');
+      if(window.beOfflineShellError)message += ' · Offline app setup failed; it will retry when reopened';
+      document.querySelectorAll('[data-be-sync-status]').forEach(el => {el.textContent=message; el.title=message;});
     }
-    function photoStoreKey(id) {
-      return idbSightingsKey() + ':' + String(id || '');
+    function beGetStore() {
+      if (!beStore) beStore = new BirdseyePhotoStore(supabaseClient, {rows:beRefreshPhotos,status:bePaintStatus,clientForSession: session => window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{accessToken:async()=>session.access_token,global:{fetch:beNetworkFetch}})});
+      return beStore;
     }
-    function getPhotoByKey(db, key) {
-      return new Promise(function (resolve) {
-        try {
-          const tx = db.transaction('photos', 'readonly');
-          const get = tx.objectStore('photos').get(key);
-          get.onsuccess = function () { resolve(get.result || ''); };
-          get.onerror = function () { resolve(''); };
-        } catch (e) { resolve(''); }
-      });
-    }
-    function putSightingPhoto(id, dataUrl) {
-      if (!id || !dataUrl || !String(dataUrl).startsWith('data:')) return Promise.resolve();
-      return openBirdseyeDb().then(function (db) {
-        if (!db) return;
-        return new Promise(function (resolve) {
-          try {
-            const tx = db.transaction('photos', 'readwrite');
-            tx.oncomplete = function () { resolve(); };
-            tx.onerror = function () { resolve(); };
-            tx.objectStore('photos').put(String(dataUrl), photoStoreKey(id));
-          } catch (e) { resolve(); }
-        });
-      });
-    }
-    function getSightingPhoto(id) {
-      return openBirdseyeDb().then(async function (db) {
-        if (!db || !id) return '';
-        const keys = [photoStoreKey(id), 'guest:' + id, String(id)];
-        if (typeof pfUser !== 'undefined' && pfUser && pfUser.id) keys.unshift(pfUser.id + ':' + id);
-        const seen = {};
-        for (let i = 0; i < keys.length; i++) {
-          if (seen[keys[i]]) continue;
-          seen[keys[i]] = 1;
-          const hit = await getPhotoByKey(db, keys[i]);
-          if (hit && String(hit).startsWith('data:')) {
-            if (keys[i] !== photoStoreKey(id)) putSightingPhoto(id, hit);
-            return hit;
-          }
+    async function beInitialize() {
+      if (!beBootPromise) beBootPromise = (async function () {
+        const store = beGetStore();
+        // Restore only the account represented by the browser's existing session.
+        // Do not wait on token refresh or a profile request to show local photos.
+        let cachedSession=null;
+        try { cachedSession=JSON.parse(localStorage.getItem('sb-'+new URL(SUPABASE_URL).hostname.split('.')[0]+'-auth-token')||'null'); } catch(e) {}
+        pfUser=cachedSession && cachedSession.user || null;
+        if(pfUser) {
+          try{pfSelf=JSON.parse(localStorage.getItem('birdseye_profile_'+pfUser.id)||'null');}catch(e){}
+          if(!pfSelf)pfSelf={id:pfUser.id,display_name:'Your profile',public_stats:{}};
         }
-        return '';
-      });
+        await store.activate(pfUser ? pfUser.id : 'guest');
+        beReady = true;
+        await store.render();
+      })();
+      return beBootPromise;
     }
-    function slimSighting(s) {
-      const row = Object.assign({}, s);
-      const url = String(row.photo_url || '');
-      const full = String(row.photo_full || '');
-      if (url.startsWith('http')) row.photo_remote = url.split('?')[0];
-      if (url.startsWith('data:')) row.photo_url = row.photo_remote || '';
-      if (full.startsWith('data:') || full.startsWith('http')) row.photo_full = row.photo_remote || row.photo_url || '';
-      return row;
-    }
-    function displayPhotoSrc(s) {
-      if (!s) return '';
-      const url = String(s.photo_url || '');
-      if (url.startsWith('http') || url.startsWith('data:')) return url;
-      const full = String(s.photo_full || '');
-      if (full.startsWith('http') || full.startsWith('data:')) return full;
-      return s.photo_remote ? String(s.photo_remote) : '';
-    }
-    function primePhotoUrls() {
-      for (let i = 0; i < sightings.length; i++) {
-        const s = sightings[i];
-        if (!s || displayPhotoSrc(s)) continue;
-        if (s.photo_remote) {
-          s.photo_url = s.photo_remote;
-          if (!s.photo_full) s.photo_full = s.photo_remote;
-        }
-      }
-    }
-    let photoHydrateTimer = null;
-    function schedulePhotoHydrate() {
-      clearTimeout(photoHydrateTimer);
-      photoHydrateTimer = setTimeout(runPhotoHydrate, 800);
-    }
-    async function runPhotoHydrate() {
-      const pending = [];
-      for (let i = 0; i < sightings.length; i++) {
-        const s = sightings[i];
-        if (s && s.id && !displayPhotoSrc(s)) pending.push(s);
-      }
-      for (let i = 0; i < pending.length; i++) {
-        const s = pending[i];
-        const cached = await getSightingPhoto(s.id);
-        if (cached) {
-          s.photo_url = cached;
-          if (!s.photo_full) s.photo_full = cached;
-        }
-        if (i % 8 === 7) await new Promise(r => setTimeout(r, 40));
-      }
-      const gal = document.getElementById('view-gallery');
-      if (gal && gal.classList.contains('on') && typeof renderGallery === 'function') renderGallery();
-    }
-    function ensureSightingPhoto(s) {
-      const have = displayPhotoSrc(s);
-      if (have || !s || !s.id) return Promise.resolve(have);
-      return getSightingPhoto(s.id).then(function (cached) {
-        if (cached) {
-          s.photo_url = cached;
-          if (!s.photo_full) s.photo_full = cached;
-        }
-        return cached || '';
-      });
-    }
-
+    function sightingsStorageKey() { return 'avian_sightings_' + (beStore ? beStore.owner : 'guest'); }
+    function idbSightingsKey() { return beStore ? beStore.owner : 'guest'; }
+    function migrateSightingsIfNeeded() { /* Migration is transactional and owner-scoped in beStore. */ }
+    function localPhotoSrc(s) { return s ? (s.photo_url || s.photo_full || '') : ''; }
+    function sightingHasPhoto(s) { return !!(s && (s._be_has_photo || s.photo_url || s.photo_full || s.photo_remote)); }
+    function detachRemoteUrls() { /* View URLs are derived from durable blobs. */ }
+    function schedulePhotoHydrate() { if (beStore) beStore.schedule(0); }
+    function ensureSightingPhoto(s) { return Promise.resolve(localPhotoSrc(s)); }
     let achHoldPersist = false;
     function persistSightings() {
-      if (achHoldPersist) return;
+      if (!beReady || bePaint || achHoldPersist) return Promise.resolve();
       ensureSoloCovers();
-      migrateSightingsIfNeeded();
-      const key = sightingsStorageKey();
-      const slim = sightings.map(slimSighting);
-      try { localStorage.setItem(key, JSON.stringify(slim)); } catch (e) {}
-      if (typeof pfScheduleSync === 'function' && !window.__beSyncHold) pfScheduleSync(2500);
-      sightings.forEach(function (s) {
-        if (!s || !s.id) return;
-        const url = String(s.photo_url || '');
-        if (!url.startsWith('data:') || s._photoStored === url) return;
-        s._photoStored = url;
-        putSightingPhoto(s.id, url);
+      sightings.forEach(s => {
+        if (!s.species_name) s.species_name = pfSpName(s.species_code);
+        if (!s.rarity) s.rarity = pfRarity(s.species_code,s.state);
+        s.is_lifer = typeof isLiferOnDay === 'function' && isLiferOnDay(s.species_code,s.date) ? 1 : 0;
+        if (typeof pfAwardMemo !== 'undefined' && pfAwardMemo[s.id]) s.awards = pfAwardMemo[s.id].awards || [];
       });
-      openBirdseyeDb().then(function (db) {
-        if (!db) return;
-        try {
-          const tx = db.transaction('logs', 'readwrite');
-          tx.objectStore('logs').put(slim, idbSightingsKey());
-        } catch (e) {}
-      });
+      const work = beGetStore().save(sightings);
+      work.catch(e => toast('Could not save: ' + e.message, 'err'));
+      return work;
+    }
+    function readSightingList(key) { try {const a=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];} }
+    function mergeSightingLists(lists) {
+      const map=new Map();
+      lists.forEach(list=>(list||[]).forEach(s=>{if(s&&s.id&&!SEED_IDS.has(s.id)){const old=map.get(String(s.id));map.set(String(s.id),old?Object.assign({},s,old):s);}}));
+      return [...map.values()];
     }
 
-    function loadLogsByKey(key) {
-      return openBirdseyeDb().then(function (db) {
-        if (!db) return null;
-        return new Promise(function (resolve) {
-          try {
-            const tx = db.transaction('logs', 'readonly');
-            const get = tx.objectStore('logs').get(key);
-            get.onsuccess = function () { resolve(get.result || null); };
-            get.onerror = function () { resolve(null); };
-          } catch (e) { resolve(null); }
-        });
-      });
-    }
-    function loadSightingsFromIDB() {
-      return loadLogsByKey(idbSightingsKey());
-    }
-    function readSightingList(key) {
-      try {
-        const saved = JSON.parse(localStorage.getItem(key) || 'null');
-        return Array.isArray(saved) ? saved : [];
-      } catch (e) { return []; }
-    }
-    function mergeSightingLists(lists) {
-      const byId = {};
-      const out = [];
-      lists.forEach(function (rows) {
-        (rows || []).forEach(function (s) {
-          if (!s || !s.id || SEED_IDS.has(s.id)) return;
-          const id = String(s.id);
-          const prev = byId[id];
-          if (!prev) {
-            const copy = Object.assign({}, s);
-            byId[id] = copy;
-            out.push(copy);
-            return;
-          }
-          Object.keys(s).forEach(function (k) {
-            if (s[k] == null || s[k] === '') return;
-            if (prev[k] == null || prev[k] === '') prev[k] = s[k];
-          });
-          const prevPhoto = prev.photo_url || prev.photo_full || '';
-          const nextPhoto = s.photo_url || s.photo_full || '';
-          if (String(nextPhoto).startsWith('data:') && !String(prevPhoto).startsWith('data:')) {
-            prev.photo_url = s.photo_url || nextPhoto;
-            prev.photo_full = s.photo_full || nextPhoto;
-          }
-        });
-      });
-      return out;
+    function beOwnCounts(id) {
+      let counts={followers:0,following:0};
+      try{counts=JSON.parse(localStorage.getItem('birdseye_counts_'+id)||'null')||counts;}catch(e){}
+      if(navigator.onLine!==false)pfCounts(id).then(fresh=>{
+        try{localStorage.setItem('birdseye_counts_'+id,JSON.stringify(fresh));}catch(e){}
+        if(pfUser?.id===id&&!pfOther){const nodes=document.querySelectorAll('#pf-body .pf-social b');if(nodes[0])nodes[0].textContent=fresh.followers;if(nodes[1])nodes[1].textContent=fresh.following;}
+      }).catch(()=>{});
+      return counts;
     }
 
     function exportedSightingIds() {
@@ -4854,28 +5160,13 @@
       clearExportParts();
     }
 
-    function saveUnexportedLogs() {
-      const already = exportedSightingIds();
-      const never = !already.size && !localStorage.getItem('avian_last_export');
-      const rows = sightings.filter(function (s) { return never || !already.has(s.id); });
-      if (!rows.length) {
-        toast('No new logs since the last export.', 'info');
-        return;
-      }
-      let parts;
+    async function saveUnexportedLogs() {
       try {
-        parts = chunkSightingsForExport(rows, savedPlaces || [], new Date().toISOString(), 'birdseye-logs-new');
-      } catch (e) {
-        toast('Could not build the new-log backup. Try Export list only.', 'err');
-        return;
-      }
-      parts.forEach(function (part, idx) {
-        downloadExportBlob(part.blob, part.name, idx * 500);
-      });
-      const ids = [];
-      parts.forEach(function (part) { (part.ids || []).forEach(function (id) { ids.push(id); }); });
-      rememberExportedIds(ids);
-      clearExportParts();
+        const already=exportedSightingIds(), rows=(await beGetStore().exportRows()).filter(s=>!already.has(s.id));
+        if(!rows.length){toast('No new logs since the last export.','info');return;}
+        const parts=chunkSightingsForExport(rows,savedPlaces||[],new Date().toISOString(),'birdseye-logs-new');
+        parts.forEach((p,i)=>downloadExportBlob(p.blob,p.name,i*500));rememberExportedIds(rows.map(s=>s.id));clearExportParts();
+      } catch(e){toast('Could not export: '+e.message,'err');}
     }
 
     async function shareExportPart(idx) {
@@ -4910,63 +5201,20 @@
       setTimeout(function () { URL.revokeObjectURL(url); }, 20000);
     }
 
-    function exportLogs() {
-      try {
-        exportPartFiles = chunkSightingsForExport(sightings, savedPlaces || [], new Date().toISOString());
-      } catch (e) {
-        toast('Could not build the full photo backup in memory. Use Export list only, or export from Chrome/Firefox.', 'err');
-        return;
-      }
-      renderExportParts();
+    async function exportLogs() {
+      try { exportPartFiles = chunkSightingsForExport(await beGetStore().exportRows(), savedPlaces || [], new Date().toISOString()); renderExportParts(); }
+      catch(e) { toast('Could not export: '+e.message,'err'); }
     }
 
     function exportLogsSlim() {
-      const slim = sightings.map(function (s) {
-        const row = Object.assign({}, s);
-        if (row.photo_full && row.photo_url && row.photo_full !== row.photo_url) row.photo_full = row.photo_url;
-        return row;
-      });
-      try {
-        exportPartFiles = chunkSightingsForExport(slim, savedPlaces || [], new Date().toISOString());
-      } catch (e) {
-        toast('Could not build the list backup.', 'err');
-        return;
-      }
-      exportPartFiles.forEach(function (part) {
-        part.name = part.name.replace('birdseye-logs', 'birdseye-logs-lite');
-        part.file = new File([part.blob], part.name, { type: 'application/json' });
-      });
-      renderExportParts();
+      const rows=sightings.map(s=>{const r={...s};Object.keys(r).forEach(k=>{if(k.startsWith('_')||['photo_url','photo_full','photo_remote'].includes(k))delete r[k];});return r;});
+      exportPartFiles=chunkSightingsForExport(rows,savedPlaces||[],new Date().toISOString(),'birdseye-logs-lite'); renderExportParts();
     }
 
     async function deleteAllLogs() {
-      if (!(await confirmAsync('Delete all local logs and photos on this device? This cannot be undone.', 'Delete all logs'))) return;
-      sightings.length = 0;
-      try { persistSightings(); } catch (e) {}
-      try { localStorage.removeItem(sightingsStorageKey()); } catch (e) {}
-      try { localStorage.removeItem('avian_sightings'); } catch (e) {}
-      if (window.indexedDB) {
-        try {
-          const req = indexedDB.open('birdseye', 2);
-          req.onupgradeneeded = function () {
-            const db = req.result;
-            if (!db.objectStoreNames.contains('logs')) db.createObjectStore('logs');
-            if (!db.objectStoreNames.contains('photos')) db.createObjectStore('photos');
-          };
-          req.onsuccess = function () {
-            try {
-              const tx = req.result.transaction(['logs', 'photos'], 'readwrite');
-              tx.objectStore('logs').clear();
-              tx.objectStore('photos').clear();
-            } catch (e) {}
-          };
-        } catch (e) {}
-      }
-      if (typeof renderGallery === 'function') renderGallery();
-      if (typeof renderLifeList === 'function') renderLifeList();
-      if (typeof refreshUI === 'function') refreshUI();
-      if (typeof plotPhotoChits === 'function') plotPhotoChits();
-      toast('All local logs deleted.', 'ok');
+      if (!(await confirmAsync('Delete all sightings in this account? Deletions will sync to your other devices.', 'Delete all sightings'))) return;
+      try { await beGetStore().remove(sightings.map(s=>s.id)); toast('Sightings deleted. Changes will sync automatically.','ok'); }
+      catch(e) { toast('Could not delete: '+e.message,'err'); }
     }
     (function bindDeleteAllLogs() {
       const btn = document.getElementById('btn-delete-all-logs');
@@ -5018,7 +5266,7 @@
       return { added: added, filled: filled };
     }
 
-    function applyImportedBackup(dataList) {
+    async function applyImportedBackup(dataList) {
       const rows = [];
       const places = [];
       dataList.forEach(function (data) {
@@ -5032,7 +5280,7 @@
       }
       const stats = mergeImportedSightings(rows);
       mergeImportedPlaces(places);
-      persistSightings();
+      try { await persistSightings(); await beGetStore().render(); } catch(e) { return; }
       refreshUI({ toast: true });
       renderLifeList();
       renderGallery();
@@ -5069,7 +5317,7 @@
           }, 0);
           if (!(await confirmAsync('Merge ' + n + ' sighting' + (n === 1 ? '' : 's') + ' from ' + files.length +
               ' file' + (files.length === 1 ? '' : 's') + ' into your current log? Existing logs stay.', 'Import logs'))) return;
-          applyImportedBackup(parsed);
+          await applyImportedBackup(parsed);
           if (failed) toast(failed + ' file' + (failed === 1 ? '' : 's') + ' could not be read.', 'err');
         };
         reader.readAsText(file);
@@ -5142,16 +5390,7 @@
       return decodeState(code);
     }
 
-    function seedSightings() {
-      sightings.length = 0;
-      migrateSightingsIfNeeded();
-      const merged = mergeSightingLists([
-        readSightingList(sightingsStorageKey()),
-        readSightingList('avian_sightings')
-      ]);
-      merged.forEach(s => sightings.push(s));
-      ensureFullPhotos();
-    }
+    function seedSightings() { if (beStore) beStore.render(); }
 
     function ensureFullPhotos() {
       sightings.forEach(s => { if (s.photo_url && !s.photo_full) s.photo_full = s.photo_url; });
@@ -5552,15 +5791,11 @@
       if (msg) msg.textContent = 'Saved.';
       if (typeof publishPublic === 'function') publishPublic({ silent: true });
     }
-    function signOutFromSettings() {
-      if (typeof supabaseClient === 'undefined' || !supabaseClient.auth) return;
-      supabaseClient.auth.signOut().then(() => {
-        pfUser = null; pfSelf = null; pfOther = null; pfPreview = false;
-        if (typeof syncProfileButton === 'function') syncProfileButton();
-        if (typeof renderAuth === 'function') renderAuth();
-        refreshSettingsProfile();
-        refreshSettingsPrivacy();
-      });
+    async function signOutFromSettings() {
+      await beGetStore().saving.catch(()=>{});
+      const {error}=await supabaseClient.auth.signOut({scope:'local'});
+      if(error){toast(error.message,'err');return;}
+      await pfRefreshUser(); renderAuth(); refreshSettingsProfile(); refreshSettingsPrivacy();
     }
     async function changeSettingsPassword() {
       const msg = document.getElementById('settings-pass-msg');
@@ -9342,7 +9577,7 @@
         ' onclick="onPhotoCardClick(event,\'gallery\',\'' + p.id + '\')">' +
         (picking ? '<span class="tick">✓</span>' : '') +
         (Number(p.is_cover) ? coverMarkHTML() : '') +
-        '<img src="' + p.photo_url + '" loading="lazy" alt="" />' +
+        '<img src="' + (localPhotoSrc(p) || '') + '" loading="lazy" alt="" />' +
         '<div class="meta"><h4>' + p._name + '</h4><div class="muted mono">' + p.date + ' · ' + placeLabel(p) + '</div></div></div>';
     }
 
@@ -9391,7 +9626,7 @@
       const sortEl = document.getElementById('gallery-sort');
       const filter = filterEl ? filterEl.value : 'all';
       const sort = sortEl ? sortEl.value : 'newest';
-      let photos = sightings.filter(s => s.photo_url && (filter === 'all' || s.species_code === filter));
+      let photos = sightings.filter(s => sightingHasPhoto(s) && (filter === 'all' || s.species_code === filter));
       photos.forEach(p => { p._name = taxName(p.species_code).comName; });
       if (ratingsViewOn) {
         if (ratingsScope === 'lifers') {
@@ -9734,17 +9969,9 @@
       if (modal) modal.classList.remove('on');
     }
 
-    function confirmPhotoPickDelete() {
-      const rows = photoPickSightings();
-      const ids = new Set(rows.map(s => s.id));
-      for (let i = sightings.length - 1; i >= 0; i--) {
-        if (ids.has(sightings[i].id)) sightings.splice(i, 1);
-      }
-      persistSightings();
-      closePhotoPickConfirm();
-      clearPhotoPick();
-      refreshUI({ toast: true });
-      renderRadar();
+    async function confirmPhotoPickDelete() {
+      try { await beGetStore().remove(photoPickSightings().map(s=>s.id)); closePhotoPickConfirm(); clearPhotoPick(); renderRadar(); }
+      catch(e) { toast('Could not delete: '+e.message,'err'); }
     }
 
     let fieldBookOpenGroup = '';
@@ -13997,18 +14224,9 @@
     }
 
     async function deleteSighting(id) {
-      if (!id) return;
-      if (!(await confirmAsync('Delete this sighting permanently?', 'Delete sighting'))) return;
-      const idx = sightings.findIndex(s => s.id === id);
-      if (idx < 0) return;
-      sightings.splice(idx, 1);
-      persistSightings();
-      closeUploadModal();
-      closeDetailModal();
-      refreshUI({ toast: true });
-      renderLifeList();
-      renderGallery();
-      renderRadar();
+      if (!id || !(await confirmAsync('Delete this sighting and sync its deletion to your other devices?', 'Delete sighting'))) return;
+      try { await beGetStore().remove([id]); closeUploadModal(); closeDetailModal(); renderRadar(); }
+      catch(e) { toast('Could not delete: '+e.message,'err'); }
     }
     const lbZoom = { scale: 1, x: 0, y: 0, min: 1, max: 6, dragging: false, sx: 0, sy: 0, ox: 0, oy: 0, pinch: 0, moved: false };
 
@@ -14371,7 +14589,7 @@
       const reader = new FileReader();
       reader.onload = async ev => {
         const full = await downscaleImage(ev.target.result, 1600);
-        crop.fullDataUrl = full;
+        crop.fullDataUrl = ev.target.result;
         loadCropImage(full, true);
         const hint = document.getElementById('crop-hint');
         if (hint) hint.textContent = 'Drag to frame the bird. What you see in the square is what gets saved.';
@@ -14482,7 +14700,7 @@
       const sy = -crop.oy / scale;
       const sw = V / scale;
       const sh = V / scale;
-      const out = 640;
+      const out = 1280;
       const canvas = document.createElement('canvas');
       canvas.width = out; canvas.height = out;
       const ctx = canvas.getContext('2d');
@@ -14782,7 +15000,9 @@
       btn.className = box.checked ? 'btn-em' : 'ghost';
     }
 
-    function saveSightingRecord() {
+    async function saveSightingRecord() {
+      if (!beReady || window.__beSavingForm) return;
+      const saveOwner=beGetStore().owner, beforeRows=sightings.map(s=>({...s}));
       const speciesCode = document.getElementById('form-species').value;
       if (!speciesCode) { toast('Pick a species from the search results first.', 'err'); return; }
       const cropped = (crop.hasImage && (crop.dirty || !editingId)) ? generateCroppedDataUrl() : null;
@@ -14818,11 +15038,16 @@
           crop_meta: crop.hasImage ? getCropMeta() : null
         }, payload));
       }
-      persistSightings();
+      const savedId = editingId || (sightings[sightings.length - 1] && sightings[sightings.length - 1].id);
+      window.__beSavingForm = true;
+      try { await persistSightings(); }
+      catch(e) { if(saveOwner===beGetStore().owner){sightings.length=0;beforeRows.forEach(s=>sightings.push(s));} return; }
+      finally { window.__beSavingForm = false; }
+      if(saveOwner!==beGetStore().owner)return;
       rememberLastLogLocation(payload);
       markAchTargetIfNeeded(speciesCode);
       if (!editingId && bulkQueue.length >= 10) markAchBulkIfNeeded(bulkQueue.length);
-      const savedId = editingId || (sightings[sightings.length - 1] && sightings[sightings.length - 1].id);
+
       if (window.avianPublishOne && savedId) window.avianPublishOne(savedId);
 
       const moreBulk = !editingId && bulkQueue.length && bulkIndex < bulkQueue.length - 1;
@@ -18834,14 +19059,8 @@
       });
       restoreHeatCache();
       loadSavedPlaces();
-      migrateSightingsIfNeeded();
-      const idbRows = await loadSightingsFromIDB();
-      const bootMerged = mergeSightingLists([idbRows, readSightingList(sightingsStorageKey()), readSightingList('avian_sightings')]);
-      sightings.length = 0;
-      bootMerged.forEach(s => sightings.push(s));
-      primePhotoUrls();
-      ensureFullPhotos();
-      if (stripSeedSightings()) persistSightings();
+      try { await beInitialize(); }
+      catch (e) { toast('Local photo storage could not open: ' + e.message, 'err'); }
       initMap();
       syncStateLockBtn();
       setStatsMode(statsMode);
@@ -18980,7 +19199,7 @@
     }
     function pfSafeSrc(u) {
       const s = String(u || '');
-      if (s.startsWith('data:image/') || s.startsWith('https://') || s.startsWith('http://')) return s;
+      if (s.startsWith('blob:') || s.startsWith('data:image/') || s.startsWith('https://') || s.startsWith('http://')) return s;
       return '';
     }
     function pfRecentLocal() {
@@ -19101,89 +19320,39 @@
       return [];
     }
 
-    async function syncPublicSightingsToLocal() {
-      if (!pfUser || !pfUser.id || typeof supabaseClient === 'undefined') return;
-      try {
-        const remote = await pfFetchOwnPublic();
-        if (!remote) return;
-        dedupeSightings();
-        const byId = {};
-        sightings.forEach(s => { if (s && s.id) byId[String(s.id)] = s; });
-        let changed = false;
-        for (const row of remote) {
-          if (!row || !row.id) continue;
-          const localId = row.client_id || row.id;
-          let local = byId[String(localId)] || byId[String(row.id)];
-          if (!local) {
-            local = { id: localId, species_code: row.species_code || '', share_public: true };
-            sightings.push(local);
-            byId[String(local.id)] = local;
-            changed = true;
-          }
-          ['species_code','date','location_name','county','state','country','notes','is_cover','rarity'].forEach(k => {
-            if (row[k] == null || row[k] === '') return;
-            if (local[k] == null || local[k] === '') { local[k] = row[k]; changed = true; }
-          });
-          if (!pfHasCoords(local) && pfHasCoords(row)) {
-            local.lat = Number(row.lat);
-            local.lng = Number(row.lng);
-            changed = true;
-          }
-          if (row.photo_url) local.photo_remote = String(row.photo_url).split('?')[0];
-          if (!displayPhotoSrc(local) && local.photo_remote) {
-            local.photo_url = local.photo_remote;
-            local.photo_full = local.photo_remote;
-            changed = true;
-          }
-        }
-        if (changed) {
-          ensureFullPhotos();
-          persistSightings();
-          if (typeof renderGallery === 'function') renderGallery();
-          if (typeof renderLifeList === 'function') renderLifeList();
-          if (typeof refreshUI === 'function') refreshUI();
-          if (typeof plotPhotoChits === 'function') plotPhotoChits();
-        }
-      } catch (e) {}
-    }
+    async function syncPublicSightingsToLocal() { if (beStore) beStore.schedule(0); }
 
     async function reloadSightingsForCurrentUser() {
-      const carried = sightings.slice();
-      migrateSightingsIfNeeded();
-      const userIdb = await loadSightingsFromIDB();
-      const lists = [userIdb, readSightingList(sightingsStorageKey()), carried];
-      if (pfUser && pfUser.id) {
-        lists.push(await loadLogsByKey('guest'));
-        lists.push(readSightingList('avian_sightings_guest'));
-        lists.push(readSightingList('avian_sightings'));
-      }
-      const merged = mergeSightingLists(lists);
-      const before = new Set((Array.isArray(userIdb) ? userIdb : []).map(s => s && s.id).filter(Boolean));
-      const grew = merged.some(s => s && !before.has(s.id));
-      sightings.length = 0;
-      merged.forEach(s => sightings.push(s));
-      primePhotoUrls();
-      if (stripSeedSightings() || grew) persistSightings();
-      schedulePhotoHydrate();
-      ensureFullPhotos();
-      if (typeof renderGallery === 'function') renderGallery();
-      if (typeof renderLifeList === 'function') renderLifeList();
-      if (typeof refreshUI === 'function') refreshUI();
-      if (typeof plotPhotoChits === 'function') plotPhotoChits();
-      if (pfUser) await syncPublicSightingsToLocal();
+      await beGetStore().activate(pfUser ? pfUser.id : 'guest');
     }
 
     async function pfRefreshUser() {
-      const { data } = await supabaseClient.auth.getSession();
-      const prevId = pfUser && pfUser.id;
-      pfUser = (data && data.session && data.session.user) || null;
-      pfSelf = pfUser ? await pfEnsure(pfUser) : null;
-      syncProfileButton();
-      if (prevId !== (pfUser && pfUser.id)) {
+      await beInitialize();
+      const generation = ++beAuthGeneration;
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error || generation !== beAuthGeneration) return;
+      const user = data && data.session && data.session.user || null;
+      pfUser = user;
+      if (beGetStore().owner !== (user ? user.id : 'guest')) {
+        pfSelf = null; pfOther = null; pfDetail = null; pfProfileCache = {}; pfFeedCache = null;
+        pfSocialCounts = {}; pfPublicByKey = null; pfPublicCounts = {};
+        closeDetailModal(); closeUploadModal(); closePhotoLightbox();
+        clearPhotoPick();
         await reloadSightingsForCurrentUser();
-      } else if (pfUser) {
-        await syncPublicSightingsToLocal();
       }
+      if (generation !== beAuthGeneration) return;
+      if (user) {
+        try { pfSelf = JSON.parse(localStorage.getItem('birdseye_profile_' + user.id) || 'null'); } catch(e) {}
+        if(!pfSelf)pfSelf={id:user.id,display_name:'Your profile',public_stats:{}};
+        syncProfileButton();
+        // Profile requests never delay the local collection and may fail offline.
+        pfEnsure(user).then(profile => {
+          if (generation !== beAuthGeneration || !pfUser || pfUser.id !== user.id) return;
+          if (profile) {pfSelf=profile;try{localStorage.setItem('birdseye_profile_'+user.id,JSON.stringify(profile));}catch(e){}}
+          syncProfileButton();
+        }).catch(()=>{});
+      } else { pfSelf=null; syncProfileButton(); }
+      beGetStore().schedule(0);
     }
     async function pfEnsure(user) {
       const existing = await supabaseClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
@@ -19623,86 +19792,14 @@
     function pfIsUuid(v) {
       return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
     }
-    function pfPublicId(s) {
-      if (!s) return '';
-      if (pfIsUuid(s.public_id)) return s.public_id;
-      if (pfIsUuid(s.id)) { s.public_id = s.id; return s.id; }
-      try {
-        s.public_id = (crypto.randomUUID && crypto.randomUUID()) ||
-          'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            const r = Math.random() * 16 | 0;
-            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-          });
-      } catch (e) {
-        s.public_id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-          const r = Math.random() * 16 | 0;
-          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-      }
-      return s.public_id;
-    }
+    function pfPublicId(s) { return s ? (s.public_id || s.id) : ''; }
     async function publishOne(s) {
-      if (!pfUser || !s || !s.id) return { error: 'not signed in' };
-      if (SEED_IDS.has(s.id)) return null;
-      const isPrivate = s.share_public === false || s.share_public === 0;
-      let photo = s.photo_remote || null;
-      if (!isPrivate && s.photo_url) {
-        const src = String(s.photo_url);
-        if (src.startsWith('http')) photo = src.split('?')[0];
-        else if (src.startsWith('data:')) {
-          try {
-            const shrunk = await shrinkDataUrl(src);
-            if (shrunk && String(shrunk).startsWith('data:')) {
-              const safeId = String(pfPublicId(s)).replace(/[^a-zA-Z0-9_-]/g, '');
-              const uploaded = await pfUploadImage(shrunk, pfUser.id + '/' + safeId + '.jpg');
-              if (typeof uploaded === 'string') photo = uploaded;
-            }
-          } catch (e) {}
-        }
-      } else if (isPrivate) photo = null;
-      const exact = !!(s.share_exact && s.lat != null && s.lng != null);
-      const row = {
-        id: pfPublicId(s),
-        user_id: pfUser.id,
-        species_code: s.species_code,
-        species_name: pfSpName(s.species_code),
-        date: s.date ? String(s.date).slice(0, 10) : null,
-        county: s.county || '',
-        state: s.state || '',
-        location_name: s.location_name || '',
-        lat: exact ? Number(s.lat) : null,
-        lng: exact ? Number(s.lng) : null,
-        has_exact_location: exact,
-        photo_url: photo,
-        rarity: pfRarity(s.species_code, s.state),
-        is_cover: Number(s.is_cover) ? 1 : 0,
-        is_lifer: (typeof isLiferOnDay === 'function' && isLiferOnDay(s.species_code, s.date ? String(s.date).slice(0, 10) : '')) ? 1 : 0,
-        awards: (s.id && pfAwardMemo[s.id] && pfAwardMemo[s.id].awards) || []
-      };
-      const err = await pfUpsertPublic(row);
-      if (err) return err;
-      if (photo) s.photo_remote = photo;
-      pfPublicByKey = null;
-      pfFeedCache = null;
-      if (pfUser) delete pfProfileCache[pfUser.id];
-      try { persistSightings(); } catch (e) {}
-      return null;
+      try { await persistSightings(); beGetStore().schedule(0); return null; }
+      catch(e) { return e; }
     }
     async function publishPublic(opts) {
-      opts = opts || {};
-      if (!pfUser) return;
-      if (!opts.silent) pfMsg('Publishing your sightings…');
-      const recent = pfRecentLocal().filter(s => s && !SEED_IDS.has(s.id) && s.share_public !== false && s.share_public !== 0);
-      let failed = 0;
-      for (let i = 0; i < recent.length; i++) {
-        if (i === 0 || i % 25 === 0) pfMsg('Publishing ' + (i + 1) + ' / ' + recent.length + '…');
-        const err = await publishOne(recent[i]);
-        if (err) failed++;
-      }
-      if (!opts.silent) {
-        await renderSelf();
-        pfMsg(failed ? 'Some sightings could not publish.' : 'Public list updated');
-      }
+      await persistSightings(); beGetStore().schedule(0);
+      if (!opts || !opts.silent) pfMsg('Your changes will sync automatically.');
     }
     window.avianPublishOne = function (id) {
       clearTimeout(pfPubTimer);
@@ -20062,7 +20159,7 @@
       if (!pfUser || !pfSelf) { renderAuth(); return; }
       document.getElementById('pf-title').textContent = 'Your profile';
       document.getElementById('pf-back').hidden = true;
-      const counts = await pfCounts(pfUser.id);
+      const counts = beOwnCounts(pfUser.id);
       if (gen !== pfGen) return;
       const st = pfStats();
       const actions = '';
@@ -20293,16 +20390,10 @@
       return out.slice(0, 3);
     }
     function pfFindPinned(rows, key) {
-      let loose = null;
-      const parts = String(key || '').split('|');
-      const looseKey = parts.slice(0, 4).join('|');
-      for (let i = 0; i < (rows || []).length; i++) {
-        const s = rows[i];
-        if (!s) continue;
-        if (pfSightKey(s) === key) return s;
-        if (!loose && [s.species_code || '', String(s.date || '').slice(0, 10), pfCountyKey(s.county), s.state || ''].join('|') === looseKey) loose = s;
-      }
-      return loose;
+      const direct=(rows||[]).find(s=>pfSightKey(s)===key); if(direct)return direct;
+      // Migrate an old pin only when its descriptive key is unambiguous.
+      const candidates=(rows||[]).filter(s=>[s.species_code||'',String(s.date||'').slice(0,10),pfCountyKey(s.county),s.state||'',String(s.location_name||'').trim()].join('|')===key);
+      return candidates.length===1?candidates[0]:null;
     }
     function pfPinnedMatches(rows, profile) {
       const hits = [];
@@ -20406,7 +20497,7 @@
       const back = document.getElementById('pf-back');
       if (back) back.hidden = false;
       if (pfTab !== 'sightings' && pfTab !== 'photos' && pfTab !== 'map') pfTab = 'sightings';
-      const counts = await pfCounts(pfUser.id);
+      const counts = beOwnCounts(pfUser.id);
       if (gen !== pfGen) return;
       const rows = pfAsOthers(pfRecentLocal());
       let body = pfHero(pfSelf, null, counts, { mine: false }) +
@@ -21359,54 +21450,8 @@
     let pfSyncTimer = null;
     let pfSyncing = false;
     let pfSyncQueued = false;
-    function pfScheduleSync(delay) {
-      clearTimeout(pfSyncTimer);
-      pfSyncTimer = setTimeout(pfSyncPublic, delay == null ? 600 : delay);
-    }
-    async function pfSyncPublic() {
-      if (!pfUser || !pfLocalReady) { pfSyncQueued = true; return; }
-      if (typeof navigator !== 'undefined' && navigator.onLine === false) { pfSyncQueued = true; return; }
-      if (pfSyncing) { pfSyncQueued = true; return; }
-      pfSyncing = true;
-      pfSyncQueued = false;
-      try {
-        const remote = await pfFetchOwnPublic();
-        const have = new Set();
-        (remote || []).forEach(function (r) {
-          if (!r) return;
-          if (r.id) have.add(String(r.id));
-        });
-        let changed = false;
-        const queue = [];
-        for (let i = 0; i < sightings.length; i++) {
-          const s = sightings[i];
-          if (!s || !s.id || SEED_IDS.has(s.id)) continue;
-          if (s.share_public === false || s.share_public === 0) continue;
-          const pid = pfPublicId(s);
-          if (have.has(pid) && s.photo_remote) continue;
-          queue.push(s);
-        }
-        window.__beSyncHold = true;
-        const batch = queue.slice(0, 4);
-        for (let i = 0; i < batch.length; i++) {
-          const err = await publishOne(batch[i]);
-          if (!err) changed = true;
-          await new Promise(function (r) { setTimeout(r, 120); });
-        }
-        if (queue.length > batch.length) pfSyncQueued = true;
-        window.__beSyncHold = false;
-        if (changed) {
-          try { persistSightings(); } catch (e) {}
-          pfFeedCache = null;
-        }
-      } catch (e) {
-        pfSyncQueued = true;
-      } finally {
-        pfSyncing = false;
-        window.__beSyncHold = false;
-        if (pfSyncQueued) pfScheduleSync(4000);
-      }
-    }
+    function pfScheduleSync(delay) { if (beStore) beStore.schedule(delay || 0); }
+    async function pfSyncPublic() { if (beStore) return beStore.sync(); }
     async function pfCatchUpPublic() { return pfSyncPublic(); }
     window.pfAfterLocalLoad = async function () {
       pfLocalReady = true;
@@ -21740,9 +21785,7 @@
     function pfSocialWrite(bag) {
       try { localStorage.setItem('avian_card_social', JSON.stringify(bag)); } catch (e) {}
     }
-    function pfSightKey(s) {
-      return [s.species_code || '', String(s.date || '').slice(0, 10), pfCountyKey(s.county), s.state || '', String(s.location_name || '').trim()].join('|');
-    }
+    function pfSightKey(s) { return String(s.public_id || s.id || ''); }
     async function pfPublicIndex() {
       if (pfPublicByKey) return pfPublicByKey;
       if (!pfUser) return {};
@@ -22196,7 +22239,7 @@
       (async function () {
         try {
           let shots = [];
-          const isCurrent = x => x && (String(x.id) === String(s.id) || pfSameSpot(x, s));
+          const isCurrent = x => x && (String(x.id) === String(s.id));
           if (ownerId && pfIsPublicId(ownerId) && s.species_code) {
             const rows = await pfPublicRows(cols => supabaseClient.from('public_sightings').select(cols).eq('user_id', ownerId).eq('species_code', s.species_code).limit(40));
             if (rows && rows.length) await pfEnsurePhotos(rows);
@@ -22210,7 +22253,7 @@
             }));
             const merged = [];
             local.concat(shots).forEach(row => {
-              if (!row || merged.some(k => String(k.id) === String(row.id) || pfSameSpot(k, row))) return;
+              if (!row || merged.some(k => String(k.id) === String(row.id))) return;
               merged.push(row);
             });
             shots = merged;
@@ -22257,7 +22300,7 @@
       else if (act === 'view-all-photos') { pfTab = 'photos'; pfOther ? renderOther() : renderSelf(); }
       else if (act === 'save') pfSave();
       else if (act === 'publish') publishPublic();
-      else if (act === 'signout') supabaseClient.auth.signOut().then(() => { pfUser = null; pfSelf = null; pfOther = null; pfPreview = false; syncProfileButton(); renderAuth(); });
+      else if (act === 'signout') signOutFromSettings();
       else if (act === 'signin' || act === 'signup') pfAuth(act === 'signup');
       else if (act === 'show-signup') renderAuth('signup');
       else if (act === 'show-signin') renderAuth('signin');
@@ -22570,7 +22613,8 @@
       pfOther = null;
       pfEditing = false;
       pfPreview = false;
-      pfRefreshUser().then(() => { if (pfUser) renderSelf(); else renderAuth(); });
+      if(pfUser && pfSelf)renderSelf();else renderAuth();
+      pfRefreshUser().then(() => { if(document.getElementById('profile-modal').classList.contains('on')) {if(pfUser)renderSelf();else renderAuth();} }).catch(()=>{});
     }
     function closeProfile() {
       pfCloseDetail();
@@ -22890,15 +22934,20 @@
       pfRefreshUser().then(() => {
         pfRefreshNotes();
         if (pfLocalReady) pfScheduleSync(200);
-      });
+      }).catch(e => { if(beStore)beStore.status(e.message); });
     }
-    window.addEventListener('online', function () { pfScheduleSync(400); });
-    pfBootUser();
+    window.addEventListener('online', function () { pfScheduleSync(0); });
+    window.addEventListener('offline', bePaintStatus);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) pfScheduleSync(0); });
+    window.addEventListener('focus', () => pfScheduleSync(0));
+    navigator.serviceWorker?.addEventListener('message', event => { if(event.data?.type==='BIRDSEYE_SYNC')pfScheduleSync(0);if(event.data?.type==='BIRDSEYE_OFFLINE_ERROR'){window.beOfflineShellError=event.data.message;bePaintStatus();} });
+    navigator.serviceWorker?.addEventListener('controllerchange', () => { window.beOfflineShellError='';bePaintStatus(); });
+    window.addEventListener('DOMContentLoaded', () => { beInitialize().then(pfBootUser).catch(()=>{}); });
     supabaseClient.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
         openPasswordRecovery();
       }
-      pfBootUser();
+      setTimeout(() => { if (beReady) pfBootUser(); }, 0);
     });
     function openPasswordRecovery() {
       const modal = document.getElementById('confirm-modal');
@@ -22950,7 +22999,10 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js').catch(function () {});
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+          if (reg.active) reg.active.postMessage({type:'CACHE_CORE'});
+          if ('sync' in reg) reg.sync.register('birdseye-sync').catch(()=>{});
+        }).catch(function (e) { window.beOfflineShellError=e.message;bePaintStatus();console.error('BirdsEye offline setup:',e); });
       });
     }
 
