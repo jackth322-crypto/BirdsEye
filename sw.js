@@ -1,5 +1,5 @@
 /* BirdsEye offline app shell. Photo bytes and upload queue live in IndexedDB. */
-const CACHE = 'birdseye-v3-20261113-1';
+const CACHE = 'birdseye-v3-20261114-map-1';
 const CORE = [
   './', './index.html', './manifest.json',
   './avian_ebird_data.json', './avian_na_data.json', './avian_eu_data.json',
